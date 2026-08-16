@@ -88,36 +88,48 @@ app.post("/save-bill", (req, res) => {
     // GET NEXT BILL NUMBER
     // ---------------------------------------
 
-    const getBillNumberSQL = `
-        SELECT
-            COALESCE(
-                MAX(
-                    CAST(
-                        REPLACE(bill_no, 'BILL-', '')
-                        AS UNSIGNED
-                    )
-                ),
-                0
-            ) + 1 AS next_number
-        FROM bills
-        WHERE bill_no LIKE 'BILL-%'
-    `;
+    
+     // ---------------------------------------
+// GET NEXT BILL NUMBER
+// ---------------------------------------
 
-    connection.query(
-        getBillNumberSQL,
-        (numberError, numberResult) => {
+// Use AUTO_INCREMENT id from bills table.
+// First bill = BILL-0001
+// Second bill = BILL-0002
+// Third bill = BILL-0003
 
-            if (numberError) {
+const getBillNumberSQL = `
+    SELECT COALESCE(MAX(id), 0) + 1 AS next_number
+    FROM bills
+`;
 
-                console.error("Bill number generation error:");
-                console.error(numberError);
+connection.query(
+    getBillNumberSQL,
+    (numberError, numberResult) => {
 
-                return res.status(500).json({
-                    success: false,
-                    message: "Could not generate bill number",
-                    error: numberError.message
-                });
-            }
+        if (numberError) {
+
+            console.error("Bill number generation error:");
+            console.error(numberError);
+
+            return res.status(500).json({
+                success: false,
+                message: "Could not generate bill number",
+                error: numberError.message
+            });
+        }
+
+        const nextNumber =
+            Number(numberResult[0].next_number) || 1;
+
+        const billNo =
+            "BILL-" +
+            String(nextNumber).padStart(4, "0");
+
+        console.log(
+            "Generated Bill Number:",
+            billNo
+        );
 
             // ---------------------------------------
             // BILL NUMBER

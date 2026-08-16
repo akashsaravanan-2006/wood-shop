@@ -1,56 +1,44 @@
-// =========================================
-// WOOD SHOP BACKEND - SERVER.JS
-// =========================================
-
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
-
 const connection = require("./db");
+const path = require("path");
 
 const app = express();
 
 
-// =========================================
+// ======================================================
 // MIDDLEWARE
-// =========================================
+// ======================================================
 
-app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// Allow frontend requests
+app.use(cors());
 
-app.use(express.json({
-    limit: "10mb"
-}));
+// Allow JSON request body
+app.use(express.json());
 
-app.use(express.urlencoded({
-    extended: true
-}));
-
+// Serve backend static files
 app.use(express.static(path.join(__dirname)));
 
 
-// =========================================
-// HOME
-// =========================================
+// ======================================================
+// HOME ROUTE
+// ======================================================
 
 app.get("/", (req, res) => {
 
     res.json({
         success: true,
-        message: "Wood Shop Backend is running"
+        message: "WoodShop Backend is Running..."
     });
 
 });
 
 
-// =========================================
+// ======================================================
 // DATABASE TEST
-// =========================================
+// ======================================================
 
 app.get("/db-test", (req, res) => {
 
@@ -60,7 +48,10 @@ app.get("/db-test", (req, res) => {
 
             if (err) {
 
-                console.error("DATABASE TEST ERROR:");
+                console.error(
+                    "DATABASE CONNECTION ERROR:"
+                );
+
                 console.error(err);
 
                 return res.status(500).json({
@@ -80,7 +71,8 @@ app.get("/db-test", (req, res) => {
 
             }
 
-            return res.json({
+
+            res.json({
 
                 success: true,
 
@@ -98,25 +90,25 @@ app.get("/db-test", (req, res) => {
 });
 
 
-// =========================================
+// ======================================================
 // SAVE BILL
-// =========================================
+// ======================================================
 
 app.post("/save-bill", (req, res) => {
+
+    const bill = req.body;
+
 
     console.log("======================================");
     console.log("SAVE BILL REQUEST");
     console.log("======================================");
 
-    const bill = req.body;
-
-    console.log("Received Bill:");
     console.log(bill);
 
 
-    // =====================================
-    // CHECK DATA
-    // =====================================
+    // ==================================================
+    // BASIC VALIDATION
+    // ==================================================
 
     if (!bill) {
 
@@ -125,283 +117,42 @@ app.post("/save-bill", (req, res) => {
             success: false,
 
             message:
-                "Bill data is missing"
+                "Bill data is required"
 
         });
 
     }
 
 
-    // =====================================
-    // CUSTOMER DATA
-    // =====================================
+    // ==================================================
+    // GET NEXT BILL NUMBER
+    // ==================================================
 
-    const customerName =
-        bill.customerName || "";
-
-    const customerMobile =
-        bill.customerMobile || "";
-
-    const customerPlace =
-        bill.customerPlace || "";
-
-
-    // =====================================
-    // DATE & TIME
-    // =====================================
-
-    const billDate =
-        bill.billDate || null;
-
-    const billTime =
-        bill.billTime || null;
-
-
-    // =====================================
-    // PAYMENT
-    // =====================================
-
-    const paymentType =
-        bill.paymentType || "";
-
-
-    // =====================================
-    // AMOUNTS
-    // =====================================
-
-    const advanceAmount =
-        Number(bill.advanceAmount) || 0;
-
-    const balanceAmount =
-        Number(bill.balanceAmount) || 0;
-
-    const totalCFT =
-        Number(bill.totalCFT) || 0;
-
-    const woodTotal =
-        Number(bill.woodTotal) || 0;
-
-    const labourCharge =
-        Number(bill.labourCharge) || 0;
-
-    const otherCharge =
-        Number(bill.otherCharge) || 0;
-
-    const othersTotal =
-        Number(bill.othersTotal) || 0;
-
-    const grandTotal =
-        Number(bill.grandTotal) || 0;
-
-
-    // =====================================
-    // CUSTOMER ID
-    // =====================================
-
-    let customerId =
-        bill.customerId || "";
-
-
-    // =====================================
-    // JSON DATA
-    // =====================================
-
-    let woodData = "[]";
-
-    let othersData = "[]";
-
-
-    try {
-
-        woodData =
-            JSON.stringify(
-                Array.isArray(bill.woodData)
-                    ? bill.woodData
-                    : []
-            );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "WOOD DATA JSON ERROR:",
-            error
-        );
-
-        woodData = "[]";
-
-    }
-
-
-    try {
-
-        othersData =
-            JSON.stringify(
-                Array.isArray(bill.othersData)
-                    ? bill.othersData
-                    : []
-            );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "OTHERS DATA JSON ERROR:",
-            error
-        );
-
-        othersData = "[]";
-
-    }
-
-
-    // =====================================
-    // IMPORTANT
-    // =====================================
-    //
-    // We DO NOT generate bill number
-    // using MAX(), SUBSTRING(), CAST(), etc.
-    //
-    // We insert TEMP first.
-    //
-    // TiDB gives us AUTO_INCREMENT id.
-    //
-    // id 1  -> BILL-0001
-    // id 2  -> BILL-0002
-    // id 3  -> BILL-0003
-    //
-    // =====================================
-
-
-    const insertSql = `
-
-        INSERT INTO bills
-        (
-            bill_no,
-            customer_id,
-            customer_name,
-            customer_mobile,
-            customer_place,
-            bill_date,
-            bill_time,
-            payment_type,
-            advance_amount,
-            balance_amount,
-            total_cft,
-            wood_total,
-            labour_charge,
-            other_charge,
-            others_total,
-            grand_total,
-            wood_data,
-            others_data
-        )
-
-        VALUES
-        (
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?
-        )
-
+    const getBillNumberSQL = `
+        SELECT COALESCE(MAX(id), 0) + 1 AS next_number
+        FROM bills
     `;
 
 
-    const values = [
-
-        "TEMP",
-
-        customerId,
-
-        customerName,
-
-        customerMobile,
-
-        customerPlace,
-
-        billDate,
-
-        billTime,
-
-        paymentType,
-
-        advanceAmount,
-
-        balanceAmount,
-
-        totalCFT,
-
-        woodTotal,
-
-        labourCharge,
-
-        otherCharge,
-
-        othersTotal,
-
-        grandTotal,
-
-        woodData,
-
-        othersData
-
-    ];
-
-
-    // =====================================
-    // INSERT BILL
-    // =====================================
-
     connection.query(
-        insertSql,
-        values,
-        (insertError, result) => {
+        getBillNumberSQL,
+        (numberError, numberResult) => {
 
-            if (insertError) {
+            if (numberError) {
+
+                console.error(
+                    "======================================"
+                );
+
+                console.error(
+                    "BILL NUMBER GENERATION ERROR"
+                );
 
                 console.error(
                     "======================================"
                 );
 
-                console.error(
-                    "INSERT BILL ERROR"
-                );
-
-                console.error(
-                    "Message:",
-                    insertError.message
-                );
-
-                console.error(
-                    "Code:",
-                    insertError.code
-                );
-
-                console.error(
-                    "SQL State:",
-                    insertError.sqlState
-                );
-
-                console.error(
-                    "======================================"
-                );
+                console.error(numberError);
 
 
                 return res.status(500).json({
@@ -409,72 +160,33 @@ app.post("/save-bill", (req, res) => {
                     success: false,
 
                     message:
-                        "Database Error",
+                        "Could not generate bill number",
 
                     error:
-                        insertError.message,
+                        numberError.message,
 
                     code:
-                        insertError.code
+                        numberError.code
 
                 });
 
             }
 
 
-            // =================================
-            // GET AUTO_INCREMENT ID
-            // =================================
+            // ==================================================
+            // CREATE BILL NUMBER
+            // ==================================================
 
-            const billId =
-                Number(result.insertId);
+            const nextNumber =
+                Number(
+                    numberResult[0].next_number
+                ) || 1;
 
-
-            console.log(
-                "Database ID:",
-                billId
-            );
-
-
-            if (!billId || billId <= 0) {
-
-                console.error(
-                    "Invalid insertId:",
-                    result.insertId
-                );
-
-                return res.status(500).json({
-
-                    success: false,
-
-                    message:
-                        "Could not generate bill number"
-
-                });
-
-            }
-
-
-            // =================================
-            // GENERATE BILL NUMBER
-            // =================================
 
             const billNo =
                 "BILL-" +
-                String(billId).padStart(4, "0");
-
-
-            // =================================
-            // GENERATE CUSTOMER ID
-            // =================================
-
-            if (!customerId) {
-
-                customerId =
-                    "CUST-" +
-                    String(billId).padStart(4, "0");
-
-            }
+                String(nextNumber)
+                    .padStart(4, "0");
 
 
             console.log(
@@ -482,57 +194,266 @@ app.post("/save-bill", (req, res) => {
                 billNo
             );
 
+
+            // ==================================================
+            // CUSTOMER ID
+            // ==================================================
+
+            let customerId =
+                bill.customerId;
+
+
+            if (!customerId) {
+
+                customerId =
+                    "CUST-" +
+                    String(nextNumber)
+                        .padStart(4, "0");
+
+            }
+
+
             console.log(
                 "Customer ID:",
                 customerId
             );
 
 
-            // =================================
-            // UPDATE BILL NUMBER
-            // =================================
+            // ==================================================
+            // PREPARE BILL VALUES
+            // ==================================================
 
-            const updateSql = `
+            const customerName =
+                bill.customerName || "";
 
-                UPDATE bills
 
-                SET
-                    bill_no = ?,
-                    customer_id = ?
+            const customerMobile =
+                bill.customerMobile || "";
 
-                WHERE id = ?
+
+            const customerPlace =
+                bill.customerPlace || "";
+
+
+            const billDate =
+                bill.billDate || null;
+
+
+            const billTime =
+                bill.billTime || null;
+
+
+            const paymentType =
+                bill.paymentType || "";
+
+
+            const advanceAmount =
+                Number(
+                    bill.advanceAmount
+                ) || 0;
+
+
+            const balanceAmount =
+                Number(
+                    bill.balanceAmount
+                ) || 0;
+
+
+            const totalCFT =
+                Number(
+                    bill.totalCFT
+                ) || 0;
+
+
+            const woodTotal =
+                Number(
+                    bill.woodTotal
+                ) || 0;
+
+
+            const labourCharge =
+                Number(
+                    bill.labourCharge
+                ) || 0;
+
+
+            const otherCharge =
+                Number(
+                    bill.otherCharge
+                ) || 0;
+
+
+            const othersTotal =
+                Number(
+                    bill.othersTotal
+                ) || 0;
+
+
+            const grandTotal =
+                Number(
+                    bill.grandTotal
+                ) || 0;
+
+
+            const woodData =
+                JSON.stringify(
+                    bill.woodData || []
+                );
+
+
+            const othersData =
+                JSON.stringify(
+                    bill.othersData || []
+                );
+
+
+            const remark =
+                bill.remark || "";
+
+
+            // ==================================================
+            // INSERT BILL
+            // ==================================================
+
+            const sql = `
+
+                INSERT INTO bills
+                (
+                    bill_no,
+                    customer_id,
+                    customer_name,
+                    customer_mobile,
+                    customer_place,
+                    bill_date,
+                    bill_time,
+                    payment_type,
+                    advance_amount,
+                    balance_amount,
+                    total_cft,
+                    wood_total,
+                    labour_charge,
+                    other_charge,
+                    others_total,
+                    grand_total,
+                    wood_data,
+                    others_data,
+                    remark
+                )
+
+                VALUES
+                (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
 
             `;
 
 
+            // ==================================================
+            // VALUES ARRAY
+            // ==================================================
+
+            const values = [
+
+                billNo,
+
+                customerId,
+
+                customerName,
+
+                customerMobile,
+
+                customerPlace,
+
+                billDate,
+
+                billTime,
+
+                paymentType,
+
+                advanceAmount,
+
+                balanceAmount,
+
+                totalCFT,
+
+                woodTotal,
+
+                labourCharge,
+
+                otherCharge,
+
+                othersTotal,
+
+                grandTotal,
+
+                woodData,
+
+                othersData,
+
+                remark
+
+            ];
+
+
+            // ==================================================
+            // DATABASE INSERT
+            // ==================================================
+
             connection.query(
+                sql,
+                values,
+                (err, result) => {
 
-                updateSql,
-
-                [
-                    billNo,
-                    customerId,
-                    billId
-                ],
-
-                (updateError) => {
-
-                    if (updateError) {
+                    if (err) {
 
                         console.error(
                             "======================================"
                         );
 
                         console.error(
-                            "BILL NUMBER UPDATE ERROR"
+                            "DATABASE SAVE ERROR"
                         );
 
                         console.error(
-                            updateError.message
+                            "======================================"
                         );
 
                         console.error(
-                            updateError.code
+                            "Message:",
+                            err.message
+                        );
+
+                        console.error(
+                            "Code:",
+                            err.code
+                        );
+
+                        console.error(
+                            "SQL:",
+                            sql
+                        );
+
+                        console.error(
+                            "Values:",
+                            values
                         );
 
                         console.error(
@@ -545,22 +466,22 @@ app.post("/save-bill", (req, res) => {
                             success: false,
 
                             message:
-                                "Bill Number Update Failed",
+                                "Database Error",
 
                             error:
-                                updateError.message,
+                                err.message,
 
                             code:
-                                updateError.code
+                                err.code
 
                         });
 
                     }
 
 
-                    // =================================
+                    // ==================================================
                     // SUCCESS
-                    // =================================
+                    // ==================================================
 
                     console.log(
                         "======================================"
@@ -571,8 +492,12 @@ app.post("/save-bill", (req, res) => {
                     );
 
                     console.log(
+                        "======================================"
+                    );
+
+                    console.log(
                         "Bill ID:",
-                        billId
+                        result.insertId
                     );
 
                     console.log(
@@ -598,7 +523,7 @@ app.post("/save-bill", (req, res) => {
                             "Bill Saved Successfully",
 
                         billId:
-                            billId,
+                            result.insertId,
 
                         billNo:
                             billNo,
@@ -609,28 +534,24 @@ app.post("/save-bill", (req, res) => {
                     });
 
                 }
-
             );
 
         }
-
     );
 
 });
 
 
-// =========================================
+// ======================================================
 // GET ALL BILLS
-// =========================================
+// ======================================================
 
 app.get("/bills", (req, res) => {
 
     const sql = `
 
         SELECT *
-
         FROM bills
-
         ORDER BY id DESC
 
     `;
@@ -643,9 +564,11 @@ app.get("/bills", (req, res) => {
             if (err) {
 
                 console.error(
-                    "GET BILLS ERROR:",
-                    err
+                    "GET ALL BILLS ERROR:"
                 );
+
+                console.error(err);
+
 
                 return res.status(500).json({
 
@@ -665,7 +588,7 @@ app.get("/bills", (req, res) => {
             }
 
 
-            return res.json({
+            res.json({
 
                 success: true,
 
@@ -680,41 +603,49 @@ app.get("/bills", (req, res) => {
 });
 
 
-// =========================================
-// GET SINGLE BILL
-// =========================================
+// ======================================================
+// GET PENDING BILLS
+// ======================================================
 
-app.get("/bill/:id", (req, res) => {
-
-    const id =
-        req.params.id;
-
+app.get("/pending-bills", (req, res) => {
 
     const sql = `
 
-        SELECT *
+        SELECT
+
+            id,
+            bill_no,
+            customer_id,
+            customer_name,
+            customer_mobile,
+            customer_place,
+            bill_date,
+            advance_amount,
+            balance_amount,
+            grand_total,
+            remark
 
         FROM bills
 
-        WHERE id = ?
+        WHERE balance_amount > 1
+
+        ORDER BY id DESC
 
     `;
 
 
     connection.query(
-
         sql,
-
-        [id],
-
         (err, results) => {
 
             if (err) {
 
                 console.error(
-                    "GET SINGLE BILL ERROR:",
-                    err
+                    "GET PENDING BILLS ERROR:"
                 );
+
+                console.error(err);
+
 
                 return res.status(500).json({
 
@@ -734,10 +665,73 @@ app.get("/bill/:id", (req, res) => {
             }
 
 
-            if (
-                !results ||
-                results.length === 0
-            ) {
+            res.json({
+
+                success: true,
+
+                bills:
+                    results
+
+            });
+
+        }
+    );
+
+});
+
+
+// ======================================================
+// GET SINGLE BILL
+// ======================================================
+
+app.get("/bill/:id", (req, res) => {
+
+    const id =
+        req.params.id;
+
+
+    const sql = `
+
+        SELECT *
+        FROM bills
+        WHERE id = ?
+
+    `;
+
+
+    connection.query(
+        sql,
+        [id],
+        (err, results) => {
+
+            if (err) {
+
+                console.error(
+                    "GET SINGLE BILL ERROR:"
+                );
+
+                console.error(err);
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        "Database Error",
+
+                    error:
+                        err.message,
+
+                    code:
+                        err.code
+
+                });
+
+            }
+
+
+            if (results.length === 0) {
 
                 return res.status(404).json({
 
@@ -751,7 +745,7 @@ app.get("/bill/:id", (req, res) => {
             }
 
 
-            return res.json({
+            res.json({
 
                 success: true,
 
@@ -761,134 +755,51 @@ app.get("/bill/:id", (req, res) => {
             });
 
         }
-
     );
 
 });
 
 
-// =========================================
-// GET PENDING BILLS
-// =========================================
-
-app.get("/pending-bills", (req, res) => {
-
-    const sql = `
-
-        SELECT
-
-            id,
-
-            bill_no,
-
-            customer_id,
-
-            customer_name,
-
-            customer_mobile,
-
-            customer_place,
-
-            bill_date,
-
-            advance_amount,
-
-            balance_amount,
-
-            grand_total,
-
-            remark
-
-        FROM bills
-
-        WHERE balance_amount > 1
-
-        ORDER BY id DESC
-
-    `;
-
-
-    connection.query(
-
-        sql,
-
-        (err, results) => {
-
-            if (err) {
-
-                console.error(
-                    "GET PENDING BILLS ERROR:",
-                    err
-                );
-
-                return res.status(500).json({
-
-                    success: false,
-
-                    message:
-                        "Database Error",
-
-                    error:
-                        err.message,
-
-                    code:
-                        err.code
-
-                });
-
-            }
-
-
-            return res.json({
-
-                success: true,
-
-                bills:
-                    results
-
-            });
-
-        }
-
-    );
-
-});
-
-
-// =========================================
+// ======================================================
 // UPDATE PENDING BILL PAYMENT
-// =========================================
+// ======================================================
 
 app.put("/update-pending", (req, res) => {
 
-    const id =
-        req.body.id;
+    const {
+        id,
+        paidAmount
+    } = req.body;
 
-    const paidAmount =
-        Number(req.body.paidAmount);
 
-
-    // =====================================
+    // ==================================================
     // VALIDATION
-    // =====================================
+    // ==================================================
 
-    if (!id) {
+    if (
+        !id ||
+        paidAmount === undefined
+    ) {
 
         return res.status(400).json({
 
             success: false,
 
             message:
-                "Bill ID is required"
+                "Bill ID and paid amount are required"
 
         });
 
     }
 
 
+    const payment =
+        Number(paidAmount);
+
+
     if (
-        isNaN(paidAmount) ||
-        paidAmount <= 0
+        isNaN(payment) ||
+        payment <= 0
     ) {
 
         return res.status(400).json({
@@ -903,39 +814,31 @@ app.put("/update-pending", (req, res) => {
     }
 
 
-    // =====================================
-    // GET CURRENT BILL
-    // =====================================
-
-    const selectSql = `
-
-        SELECT
-
-            advance_amount,
-
-            balance_amount
-
-        FROM bills
-
-        WHERE id = ?
-
-    `;
-
+    // ==================================================
+    // GET CURRENT PAYMENT
+    // ==================================================
 
     connection.query(
+        `
+            SELECT
+                advance_amount,
+                balance_amount
 
-        selectSql,
+            FROM bills
 
+            WHERE id = ?
+        `,
         [id],
-
         (err, results) => {
 
             if (err) {
 
                 console.error(
-                    "GET PAYMENT DATA ERROR:",
-                    err
+                    "SELECT PENDING BILL ERROR:"
                 );
+
+                console.error(err);
+
 
                 return res.status(500).json({
 
@@ -956,7 +859,6 @@ app.put("/update-pending", (req, res) => {
 
 
             if (
-                !results ||
                 results.length === 0
             ) {
 
@@ -972,82 +874,68 @@ app.put("/update-pending", (req, res) => {
             }
 
 
-            const currentAdvance =
+            // ==================================================
+            // OLD VALUES
+            // ==================================================
+
+            const advance =
                 Number(
                     results[0].advance_amount
                 ) || 0;
 
 
-            const currentBalance =
+            const balance =
                 Number(
                     results[0].balance_amount
                 ) || 0;
 
 
-            if (
-                paidAmount >
-                currentBalance
-            ) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Paid amount cannot be greater than balance"
-
-                });
-
-            }
-
+            // ==================================================
+            // NEW VALUES
+            // ==================================================
 
             const newAdvance =
-                currentAdvance +
-                paidAmount;
+                advance + payment;
 
 
             const newBalance =
-                currentBalance -
-                paidAmount;
+                Math.max(
+                    balance - payment,
+                    0
+                );
 
 
-            // =================================
-            // UPDATE PAYMENT
-            // =================================
-
-            const updateSql = `
-
-                UPDATE bills
-
-                SET
-
-                    advance_amount = ?,
-
-                    balance_amount = ?
-
-                WHERE id = ?
-
-            `;
-
+            // ==================================================
+            // UPDATE
+            // ==================================================
 
             connection.query(
+                `
+                    UPDATE bills
 
-                updateSql,
+                    SET
+                        advance_amount = ?,
+                        balance_amount = ?
 
+                    WHERE id = ?
+                `,
                 [
                     newAdvance,
                     newBalance,
                     id
                 ],
+                (updateError) => {
 
-                (updateErr) => {
-
-                    if (updateErr) {
+                    if (updateError) {
 
                         console.error(
-                            "UPDATE PAYMENT ERROR:",
-                            updateErr
+                            "UPDATE PENDING BILL ERROR:"
                         );
+
+                        console.error(
+                            updateError
+                        );
+
 
                         return res.status(500).json({
 
@@ -1057,17 +945,21 @@ app.put("/update-pending", (req, res) => {
                                 "Database Error",
 
                             error:
-                                updateErr.message,
+                                updateError.message,
 
                             code:
-                                updateErr.code
+                                updateError.code
 
                         });
 
                     }
 
 
-                    return res.json({
+                    // ==================================================
+                    // SUCCESS
+                    // ==================================================
+
+                    res.json({
 
                         success: true,
 
@@ -1083,23 +975,116 @@ app.put("/update-pending", (req, res) => {
                     });
 
                 }
-
             );
 
         }
-
     );
 
 });
 
 
-// =========================================
-// 404 API ROUTE
-// =========================================
+// ======================================================
+// UPDATE REMARK
+// ======================================================
+
+app.post("/update-remark", (req, res) => {
+
+    const {
+        id,
+        remark
+    } = req.body;
+
+
+    // ==================================================
+    // VALIDATION
+    // ==================================================
+
+    if (!id) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Bill ID is required"
+
+        });
+
+    }
+
+
+    // ==================================================
+    // SQL
+    // ==================================================
+
+    const sql = `
+
+        UPDATE bills
+
+        SET remark = ?
+
+        WHERE id = ?
+
+    `;
+
+
+    connection.query(
+        sql,
+        [
+            remark || "",
+            id
+        ],
+        (err) => {
+
+            if (err) {
+
+                console.error(
+                    "UPDATE REMARK ERROR:"
+                );
+
+                console.error(err);
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        "Database Error",
+
+                    error:
+                        err.message,
+
+                    code:
+                        err.code
+
+                });
+
+            }
+
+
+            res.json({
+
+                success: true,
+
+                message:
+                    "Remark Saved Successfully"
+
+            });
+
+        }
+    );
+
+});
+
+
+// ======================================================
+// 404 ROUTE
+// ======================================================
 
 app.use((req, res) => {
 
-    return res.status(404).json({
+    res.status(404).json({
 
         success: false,
 
@@ -1114,31 +1099,88 @@ app.use((req, res) => {
 });
 
 
-// =========================================
-// EXPORT FOR VERCEL
-// =========================================
+// ======================================================
+// ERROR HANDLER
+// ======================================================
 
-module.exports = app;
+app.use(
+    (err, req, res, next) => {
+
+        console.error(
+            "======================================"
+        );
+
+        console.error(
+            "SERVER ERROR"
+        );
+
+        console.error(
+            "======================================"
+        );
+
+        console.error(err);
 
 
-// =========================================
-// LOCAL DEVELOPMENT
-// =========================================
+        res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error",
+
+            error:
+                err.message
+
+        });
+
+    }
+);
+
+
+// ======================================================
+// LOCAL DEVELOPMENT SERVER
+// ======================================================
 
 if (require.main === module) {
 
     const PORT =
         process.env.PORT || 5000;
 
+
     app.listen(
         PORT,
+        "0.0.0.0",
         () => {
 
             console.log(
-                `Wood Shop Backend running on port ${PORT}`
+                "======================================"
+            );
+
+            console.log(
+                "WOODSHOP BACKEND STARTED"
+            );
+
+            console.log(
+                "======================================"
+            );
+
+            console.log(
+                "Server running on port:",
+                PORT
+            );
+
+            console.log(
+                "======================================"
             );
 
         }
     );
 
 }
+
+
+// ======================================================
+// VERCEL
+// ======================================================
+
+module.exports = app;

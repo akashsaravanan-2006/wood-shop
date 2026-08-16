@@ -83,36 +83,246 @@ app.get("/db-test", (req, res) => {
 // SAVE BILL
 // =======================================
 
+// =======================================
+// SAVE BILL
+// =======================================
+
 app.post("/save-bill", (req, res) => {
 
     const bill = req.body;
 
     console.log("======================================");
     console.log("SAVE BILL REQUEST");
-    console.log("======================================");
     console.log(bill);
+    console.log("======================================");
 
     // ===================================
     // VALIDATION
     // ===================================
 
     if (!bill) {
-
         return res.status(400).json({
             success: false,
-            message: "Bill data is required"
+            message: "Bill data is missing"
         });
-
     }
 
     if (!bill.customerId) {
-
         return res.status(400).json({
             success: false,
             message: "Customer ID is required"
         });
-
     }
+
+    // ===================================
+    // INSERT BILL
+    // ===================================
+    //
+    // bill_no is temporarily empty.
+    // After INSERT, TiDB gives us insertId.
+    //
+    // Example:
+    // insertId = 1  -> BILL-0001
+    // insertId = 2  -> BILL-0002
+    //
+    // ===================================
+
+    const sql = `
+        INSERT INTO bills
+        (
+            bill_no,
+            customer_id,
+            customer_name,
+            customer_mobile,
+            customer_place,
+            bill_date,
+            bill_time,
+            payment_type,
+            advance_amount,
+            balance_amount,
+            total_cft,
+            wood_total,
+            labour_charge,
+            other_charge,
+            others_total,
+            grand_total,
+            wood_data,
+            others_data,
+            remark
+        )
+        VALUES
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+    `;
+
+    const values = [
+
+        // Temporary bill number
+        "",
+
+        // Customer
+        bill.customerId || "",
+        bill.customerName || "",
+        bill.customerMobile || "",
+        bill.customerPlace || "",
+
+        // Date / time
+        bill.billDate || null,
+        bill.billTime || null,
+
+        // Payment
+        bill.paymentType || "",
+
+        // Amounts
+        Number(bill.advanceAmount) || 0,
+        Number(bill.balanceAmount) || 0,
+
+        // Wood
+        Number(bill.totalCFT) || 0,
+        Number(bill.woodTotal) || 0,
+
+        // Charges
+        Number(bill.labourCharge) || 0,
+        Number(bill.otherCharge) || 0,
+        Number(bill.othersTotal) || 0,
+
+        // Grand total
+        Number(bill.grandTotal) || 0,
+
+        // JSON
+        JSON.stringify(bill.woodData || []),
+        JSON.stringify(bill.othersData || []),
+
+        // Remark
+        bill.remark || ""
+
+    ];
+
+    // ===================================
+    // EXECUTE INSERT
+    // ===================================
+
+    connection.query(
+        sql,
+        values,
+        (err, result) => {
+
+            if (err) {
+
+                console.error("======================================");
+                console.error("DATABASE SAVE ERROR");
+                console.error("======================================");
+                console.error("Message:", err.message);
+                console.error("Code:", err.code);
+                console.error("SQL State:", err.sqlState);
+                console.error("======================================");
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Database Error",
+                    error: err.message,
+                    code: err.code
+                });
+            }
+
+            // ===================================
+            // GET AUTO_INCREMENT ID
+            // ===================================
+
+            const billId = result.insertId;
+
+            // ===================================
+            // GENERATE BILL NUMBER
+            // ===================================
+
+            const billNo =
+                "BILL-" +
+                String(billId).padStart(4, "0");
+
+            console.log("======================================");
+            console.log("BILL SAVED SUCCESSFULLY");
+            console.log("Bill ID:", billId);
+            console.log("Bill Number:", billNo);
+            console.log("======================================");
+
+            // ===================================
+            // UPDATE BILL NUMBER
+            // ===================================
+
+            const updateSQL = `
+                UPDATE bills
+                SET bill_no = ?
+                WHERE id = ?
+            `;
+
+            connection.query(
+                updateSQL,
+                [billNo, billId],
+                (updateError) => {
+
+                    if (updateError) {
+
+                        console.error(
+                            "BILL NUMBER UPDATE ERROR:"
+                        );
+
+                        console.error(updateError);
+
+                        return res.status(500).json({
+                            success: false,
+                            message:
+                                "Bill saved but bill number update failed",
+                            error:
+                                updateError.message
+                        });
+                    }
+
+                    // ===================================
+                    // SUCCESS RESPONSE
+                    // ===================================
+
+                    return res.json({
+
+                        success: true,
+
+                        message:
+                            "Bill Saved Successfully",
+
+                        billId:
+                            billId,
+
+                        billNo:
+                            billNo
+
+                    });
+
+                }
+            );
+
+        }
+    );
+
+});
+
 
     // ===================================
     // GET NEXT BILL NUMBER

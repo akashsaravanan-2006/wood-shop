@@ -1,63 +1,50 @@
 // =========================================
-// CONFIRM.JS - COMPLETE UPDATED CODE
+// CONFIRM.JS
 // =========================================
-
 
 // =========================================
 // ELEMENTS
 // =========================================
 
 const confirmInput = document.getElementById("confirmInput");
-
 const saveBtn = document.getElementById("saveBtn");
-
 const printBtn = document.getElementById("printBtn");
-
 const cancelBtn = document.getElementById("cancelBtn");
-
 const homeBtn = document.getElementById("homeBtn");
-
 const message = document.getElementById("message");
 
 const billNoText = document.getElementById("billNo");
-
 const customerIdText = document.getElementById("customerId");
-
-const printCustomerId =
-    document.getElementById("printCustomerId");
-
+const printCustomerId = document.getElementById("printCustomerId");
 
 // =========================================
-// INITIAL BUTTON STATE
+// PRINT DISABLED INITIALLY
 // =========================================
 
 if (printBtn) {
     printBtn.disabled = true;
 }
 
-
 // =========================================
 // GLOBAL VARIABLES
 // =========================================
 
-// This will contain the bill after successful save
 let billData = null;
-
-
-// These are ONLY for temporary display.
-// The real bill number comes from the server/database.
-let billNo = "BILL-0001";
-
-let customerId = "CUST-0001";
-
+let savedBillNo = null;
 
 // =========================================
-// INITIAL DISPLAY
+// CUSTOMER ID
 // =========================================
 
-if (billNoText) {
-    billNoText.textContent = billNo;
-}
+// Customer ID can still use localStorage.
+// Bill number MUST come from backend.
+
+let customerCount =
+    Number(localStorage.getItem("customerCount")) || 0;
+
+let customerId =
+    "CUST-" +
+    String(customerCount + 1).padStart(4, "0");
 
 if (customerIdText) {
     customerIdText.textContent = customerId;
@@ -67,12 +54,22 @@ if (printCustomerId) {
     printCustomerId.textContent = customerId;
 }
 
+// =========================================
+// SHOW BILL NUMBER
+// =========================================
+
+// Don't create bill number here.
+// Backend will create BILL-0001, BILL-0002, etc.
+
+if (billNoText) {
+    billNoText.textContent = "Generating...";
+}
 
 // =========================================
 // DATE & TIME
 // =========================================
 
-function getCurrentDateTime() {
+function getCurrentDate() {
 
     const now = new Date();
 
@@ -80,67 +77,48 @@ function getCurrentDateTime() {
         now.getFullYear();
 
     const month =
-        String(now.getMonth() + 1)
-            .padStart(2, "0");
+        String(now.getMonth() + 1).padStart(2, "0");
 
     const day =
-        String(now.getDate())
-            .padStart(2, "0");
+        String(now.getDate()).padStart(2, "0");
 
-    const hours =
-        String(now.getHours())
-            .padStart(2, "0");
-
-    const minutes =
-        String(now.getMinutes())
-            .padStart(2, "0");
-
-    const seconds =
-        String(now.getSeconds())
-            .padStart(2, "0");
-
-
-    return {
-
-        date:
-            `${year}-${month}-${day}`,
-
-        time:
-            `${hours}:${minutes}:${seconds}`
-
-    };
-
+    return `${year}-${month}-${day}`;
 }
 
+function getCurrentTime() {
+
+    const now = new Date();
+
+    const hours =
+        String(now.getHours()).padStart(2, "0");
+
+    const minutes =
+        String(now.getMinutes()).padStart(2, "0");
+
+    const seconds =
+        String(now.getSeconds()).padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+}
 
 // =========================================
-// SAFE JSON PARSER
+// SAFE JSON
 // =========================================
 
-function getLocalStorageJSON(key) {
+function getLocalJSON(key) {
 
     try {
 
         const value =
             localStorage.getItem(key);
 
-
         if (!value) {
             return [];
         }
 
+        return JSON.parse(value);
 
-        const parsed =
-            JSON.parse(value);
-
-
-        return Array.isArray(parsed)
-            ? parsed
-            : [];
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             `Error reading ${key}:`,
@@ -148,11 +126,8 @@ function getLocalStorageJSON(key) {
         );
 
         return [];
-
     }
-
 }
-
 
 // =========================================
 // SHOW MESSAGE
@@ -165,11 +140,8 @@ function showMessage(text, color) {
     }
 
     message.style.color = color;
-
     message.textContent = text;
-
 }
-
 
 // =========================================
 // SAVE BUTTON
@@ -181,28 +153,18 @@ if (saveBtn) {
         "click",
         async function () {
 
+            // -----------------------------------------
+            // CHECK YES
+            // -----------------------------------------
 
-            // =====================================
-            // CHECK CONFIRMATION
-            // =====================================
+            const confirmation =
+                confirmInput
+                    ? confirmInput.value
+                        .trim()
+                        .toUpperCase()
+                    : "";
 
-            if (!confirmInput) {
-
-                showMessage(
-                    "Confirmation input not found.",
-                    "red"
-                );
-
-                return;
-
-            }
-
-
-            if (
-                confirmInput.value
-                    .trim()
-                    .toUpperCase() !== "YES"
-            ) {
+            if (confirmation !== "YES") {
 
                 showMessage(
                     'Please type "YES" to continue.',
@@ -210,102 +172,56 @@ if (saveBtn) {
                 );
 
                 return;
-
             }
 
-
-            // =====================================
-            // PREVENT DOUBLE CLICK
-            // =====================================
-
-            if (saveBtn.disabled) {
-                return;
-            }
-
+            // -----------------------------------------
+            // DISABLE BUTTON
+            // -----------------------------------------
 
             saveBtn.disabled = true;
-
 
             showMessage(
                 "Saving bill...",
                 "#555"
             );
 
-
-            // =====================================
-            // DATE & TIME
-            // =====================================
-
-            const dateTime =
-                getCurrentDateTime();
-
-
-            // =====================================
+            // -----------------------------------------
             // CREATE BILL DATA
-            // =====================================
-            //
-            // IMPORTANT:
-            // Do NOT generate BILL number here.
-            //
-            // server.js will generate:
-            //
-            // BILL-0001
-            // BILL-0002
-            // BILL-0003
-            //
-            // =====================================
+            // -----------------------------------------
 
             billData = {
 
-                // Temporary values.
-                // Server will replace these with
-                // the real database-generated values.
+                // IMPORTANT:
+                // DO NOT CREATE billNo HERE
 
-                billNo: null,
-
-                customerId: null,
-
-
-                // Date
-
-                billDate:
-                    dateTime.date,
-
-                billTime:
-                    dateTime.time,
-
-
-                // =================================
-                // CUSTOMER DETAILS
-                // =================================
+                customerId:
+                    customerId,
 
                 customerName:
                     localStorage.getItem(
                         "customerName"
                     ) || "",
 
-
                 customerMobile:
                     localStorage.getItem(
                         "customerMobile"
                     ) || "",
-
 
                 customerPlace:
                     localStorage.getItem(
                         "customerPlace"
                     ) || "",
 
+                billDate:
+                    getCurrentDate(),
 
-                // =================================
-                // PAYMENT
-                // =================================
+                billTime:
+                    getCurrentTime(),
 
                 paymentType:
                     localStorage.getItem(
                         "paymentType"
                     ) || "",
-
 
                 advanceAmount:
                     Number(
@@ -314,18 +230,12 @@ if (saveBtn) {
                         )
                     ) || 0,
 
-
                 balanceAmount:
                     Number(
                         localStorage.getItem(
                             "balanceAmount"
                         )
                     ) || 0,
-
-
-                // =================================
-                // TOTALS
-                // =================================
 
                 totalCFT:
                     Number(
@@ -334,14 +244,12 @@ if (saveBtn) {
                         )
                     ) || 0,
 
-
                 woodTotal:
                     Number(
                         localStorage.getItem(
                             "woodTotal"
                         )
                     ) || 0,
-
 
                 labourCharge:
                     Number(
@@ -350,14 +258,12 @@ if (saveBtn) {
                         )
                     ) || 0,
 
-
                 otherCharge:
                     Number(
                         localStorage.getItem(
                             "otherCharge"
                         )
                     ) || 0,
-
 
                 othersTotal:
                     Number(
@@ -366,7 +272,6 @@ if (saveBtn) {
                         )
                     ) || 0,
 
-
                 grandTotal:
                     Number(
                         localStorage.getItem(
@@ -374,36 +279,26 @@ if (saveBtn) {
                         )
                     ) || 0,
 
-
-                // =================================
-                // WOOD DATA
-                // =================================
-
                 woodData:
-                    getLocalStorageJSON(
+                    getLocalJSON(
                         "woodData"
                     ),
 
-
-                // =================================
-                // OTHER ITEMS
-                // =================================
-
                 othersData:
-                    getLocalStorageJSON(
+                    getLocalJSON(
                         "othersData"
                     ),
 
-
-                // =================================
-                // CREATED TIME
-                // =================================
-
-                createdAt:
-                    new Date().toISOString()
+                remark:
+                    localStorage.getItem(
+                        "remark"
+                    ) || ""
 
             };
 
+            // -----------------------------------------
+            // DEBUG
+            // -----------------------------------------
 
             console.log(
                 "================================"
@@ -414,7 +309,6 @@ if (saveBtn) {
             );
 
             console.log(
-                "Bill Data:",
                 billData
             );
 
@@ -422,282 +316,157 @@ if (saveBtn) {
                 "================================"
             );
 
-
-            // =====================================
-            // BACKEND API
-            // =====================================
-
-            const API_URL =
-                "https://wood-shop-backend.vercel.app/api/save-bill";
-
+            // -----------------------------------------
+            // SEND TO BACKEND
+            // -----------------------------------------
 
             try {
 
-
-                // =================================
-                // SEND REQUEST
-                // =================================
-
                 const response =
                     await fetch(
-                        API_URL,
+                        "https://wood-shop-backend.vercel.app/api/save-bill",
                         {
-
                             method: "POST",
 
                             headers: {
-
                                 "Content-Type":
                                     "application/json"
-
                             },
 
                             body:
                                 JSON.stringify(
                                     billData
                                 )
-
                         }
                     );
 
-
-                // =================================
-                // READ RESPONSE
-                // =================================
-
-                let data;
-
-
-                try {
-
-                    data =
-                        await response.json();
-
-                }
-
-                catch (jsonError) {
-
-                    console.error(
-                        "Invalid JSON response:",
-                        jsonError
-                    );
-
-                    throw new Error(
-                        "Server returned an invalid response."
-                    );
-
-                }
-
-
-                console.log(
-                    "Server HTTP Status:",
-                    response.status
-                );
-
-                console.log(
-                    "Server Response:",
-                    data
-                );
-
-
-                // =================================
-                // HTTP ERROR
-                // =================================
+                // -------------------------------------
+                // CHECK HTTP RESPONSE
+                // -------------------------------------
 
                 if (!response.ok) {
 
+                    let errorMessage =
+                        "Server error: " +
+                        response.status;
+
+                    try {
+
+                        const errorData =
+                            await response.json();
+
+                        if (errorData.message) {
+
+                            errorMessage =
+                                errorData.message;
+                        }
+
+                    } catch (e) {
+
+                        console.error(
+                            "Could not read error response",
+                            e
+                        );
+                    }
+
                     throw new Error(
-
-                        data.message ||
-
-                        data.error ||
-
-                        (
-                            "HTTP Error: " +
-                            response.status
-                        )
-
+                        errorMessage
                     );
-
                 }
 
+                // -------------------------------------
+                // READ RESPONSE
+                // -------------------------------------
 
-                // =================================
-                // CHECK SUCCESS
-                // =================================
+                const data =
+                    await response.json();
 
-                if (data.success === true) {
+                console.log(
+                    "SERVER RESPONSE:",
+                    data
+                );
 
+                // -------------------------------------
+                // SUCCESS
+                // -------------------------------------
 
-                    // =================================
-                    // GET NUMBER FROM SERVER
-                    // =================================
+                if (data.success) {
 
-                    if (data.billNo) {
+                    // Backend generated number
+                    savedBillNo =
+                        data.billNo;
 
-                        billNo =
-                            data.billNo;
-
-                    }
-
-
-                    if (data.customerId) {
-
-                        customerId =
-                            data.customerId;
-
-                    }
-
-
-                    // =================================
-                    // UPDATE BILL DATA
-                    // =================================
-
-                    billData.billNo =
-                        billNo;
-
-
-                    billData.customerId =
-                        customerId;
-
-
-                    // =================================
-                    // UPDATE SCREEN
-                    // =================================
-
+                    // Show actual bill number
                     if (billNoText) {
 
                         billNoText.textContent =
-                            billNo;
-
+                            savedBillNo;
                     }
 
-
-                    if (customerIdText) {
-
-                        customerIdText.textContent =
-                            customerId;
-
-                    }
-
-
-                    if (printCustomerId) {
-
-                        printCustomerId.textContent =
-                            customerId;
-
-                    }
-
-
-                    // =================================
-                    // PRINT STATUS
-                    // =================================
-
+                    // Save bill number locally
                     localStorage.setItem(
-                        "printStatus",
-                        "Not Printed"
+                        "lastBillNo",
+                        savedBillNo
                     );
 
+                    // Update customer count
+                    customerCount++;
 
-                    // =================================
+                    localStorage.setItem(
+                        "customerCount",
+                        customerCount
+                    );
+
+                    // Add bill number to billData
+                    billData.billNo =
+                        savedBillNo;
+
+                    // Add bill ID
+                    billData.billId =
+                        data.billId;
+
+                    // Save complete bill data
+                    localStorage.setItem(
+                        "savedBillData",
+                        JSON.stringify(
+                            billData
+                        )
+                    );
+
+                    // ---------------------------------
                     // SUCCESS MESSAGE
-                    // =================================
+                    // ---------------------------------
 
                     showMessage(
-                        "Bill Saved Successfully.",
+                        "Bill Saved Successfully. " +
+                        savedBillNo,
                         "green"
                     );
 
-
-                    // =================================
-                    // BUTTON STATE
-                    // =================================
+                    // ---------------------------------
+                    // BUTTONS
+                    // ---------------------------------
 
                     saveBtn.disabled = true;
 
-
                     if (printBtn) {
-
-                        printBtn.disabled =
-                            false;
-
+                        printBtn.disabled = false;
                     }
 
-
-                    // =================================
-                    // DEBUG
-                    // =================================
-
-                    console.log(
-                        "================================"
-                    );
-
-                    console.log(
-                        "BILL SAVED SUCCESSFULLY"
-                    );
-
-                    console.log(
-                        "Bill No:",
-                        billNo
-                    );
-
-                    console.log(
-                        "Customer ID:",
-                        customerId
-                    );
-
-                    console.log(
-                        "================================"
-                    );
-
-
-                }
-
-                else {
-
-
-                    // =================================
-                    // SERVER RETURNED FAILURE
-                    // =================================
+                } else {
 
                     throw new Error(
-
                         data.message ||
-
-                        data.error ||
-
-                        "Bill could not be saved."
-
+                        "Bill could not be saved"
                     );
-
                 }
 
-
-            }
-
-            catch (error) {
-
-
-                // =====================================
-                // ERROR
-                // =====================================
+            } catch (error) {
 
                 console.error(
-                    "================================"
-                );
-
-                console.error(
-                    "SAVE BILL ERROR"
-                );
-
-                console.error(
+                    "SAVE BILL ERROR:",
                     error
                 );
-
-                console.error(
-                    "================================"
-                );
-
 
                 showMessage(
                     error.message ||
@@ -705,19 +474,13 @@ if (saveBtn) {
                     "red"
                 );
 
-
-                // Allow retry
-
-                saveBtn.disabled =
-                    false;
-
+                // Allow user to try again
+                saveBtn.disabled = false;
             }
 
         }
     );
-
 }
-
 
 // =========================================
 // PRINT BUTTON
@@ -729,11 +492,6 @@ if (printBtn) {
         "click",
         function () {
 
-
-            // =================================
-            // CHECK BILL SAVED
-            // =================================
-
             if (
                 printBtn.disabled ||
                 !billData
@@ -744,26 +502,23 @@ if (printBtn) {
                 );
 
                 return;
-
             }
 
-
-            // =================================
+            // -----------------------------------------
             // PRINT STATUS
-            // =================================
+            // -----------------------------------------
 
             localStorage.setItem(
                 "printStatus",
                 "Printed"
             );
 
-
             console.log(
                 "================================"
             );
 
             console.log(
-                "PRINTING BILL..."
+                "PRINTING BILL"
             );
 
             console.log(
@@ -780,10 +535,9 @@ if (printBtn) {
                 "================================"
             );
 
-
-            // =================================
+            // -----------------------------------------
             // OPEN BILL PAGE
-            // =================================
+            // -----------------------------------------
 
             const printWindow =
                 window.open(
@@ -791,21 +545,14 @@ if (printBtn) {
                     "_blank"
                 );
 
-
             if (!printWindow) {
 
                 alert(
-                    "Please allow pop-ups to print the bill."
+                    "Please allow pop-ups for this website."
                 );
 
                 return;
-
             }
-
-
-            // =================================
-            // PRINT AFTER PAGE LOAD
-            // =================================
 
             printWindow.onload =
                 function () {
@@ -820,14 +567,10 @@ if (printBtn) {
                         },
                         500
                     );
-
                 };
-
         }
     );
-
 }
-
 
 // =========================================
 // CLEAR TEMPORARY BILL DATA
@@ -835,76 +578,48 @@ if (printBtn) {
 
 function clearBillData() {
 
-    localStorage.removeItem(
-        "woodData"
-    );
+    const keys = [
 
-    localStorage.removeItem(
-        "othersData"
-    );
+        "woodData",
+        "othersData",
 
-    localStorage.removeItem(
-        "customerName"
-    );
+        "customerName",
+        "customerMobile",
+        "customerPlace",
 
-    localStorage.removeItem(
-        "customerMobile"
-    );
+        "paymentType",
 
-    localStorage.removeItem(
-        "customerPlace"
-    );
+        "advanceAmount",
+        "balanceAmount",
 
-    localStorage.removeItem(
-        "paymentType"
-    );
+        "totalCFT",
+        "woodTotal",
 
-    localStorage.removeItem(
-        "advanceAmount"
-    );
+        "labourCharge",
+        "otherCharge",
+        "othersTotal",
 
-    localStorage.removeItem(
-        "balanceAmount"
-    );
+        "grandTotal",
 
-    localStorage.removeItem(
-        "totalCFT"
-    );
+        "remark",
 
-    localStorage.removeItem(
-        "woodTotal"
-    );
+        "billDate",
+        "billTime",
 
-    localStorage.removeItem(
-        "labourCharge"
-    );
+        "printStatus",
 
-    localStorage.removeItem(
-        "otherCharge"
-    );
+        "savedBillData"
+    ];
 
-    localStorage.removeItem(
-        "othersTotal"
-    );
+    keys.forEach(
+        function (key) {
 
-    localStorage.removeItem(
-        "grandTotal"
+            localStorage.removeItem(
+                key
+            );
+        }
     );
-
-    localStorage.removeItem(
-        "billDate"
-    );
-
-    localStorage.removeItem(
-        "billTime"
-    );
-
-    localStorage.removeItem(
-        "printStatus"
-    );
-
 }
-
 
 // =========================================
 // CANCEL BUTTON
@@ -916,29 +631,22 @@ if (cancelBtn) {
         "click",
         function () {
 
-
             const result =
                 confirm(
                     "Are you sure you want to cancel?"
                 );
 
-
             if (!result) {
                 return;
             }
 
-
             clearBillData();
-
 
             window.location.href =
                 "../html/bill.html";
-
         }
     );
-
 }
-
 
 // =========================================
 // HOME BUTTON
@@ -950,29 +658,22 @@ if (homeBtn) {
         "click",
         function () {
 
-
             const confirmHome =
                 confirm(
                     "Are you sure you want to go Home?"
                 );
 
-
             if (!confirmHome) {
                 return;
             }
 
-
             clearBillData();
-
 
             window.location.href =
                 "index.html";
-
         }
     );
-
 }
-
 
 // =========================================
 // PAGE LOADED
@@ -991,12 +692,16 @@ window.addEventListener(
         );
 
         console.log(
-            "Waiting for server-generated bill number..."
+            "Customer ID:",
+            customerId
+        );
+
+        console.log(
+            "Bill number will be generated by backend."
         );
 
         console.log(
             "================================"
         );
-
     }
 );

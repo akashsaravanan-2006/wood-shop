@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labour Charges</title>
+
+    <link rel="stylesheet" href="../css/labour.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Labour & Other Charges</h1>
+
+        <!-- Wood Total -->
+        <div class="box">
+            <label>Wood Total</label>
+            <h2 id="woodTotal">₹ 0.00</h2>
+        </div>
+
+        <!-- Labour Charge -->
+        <div class="box">
+            <label>Labour Charge</label>
+            <input
+                type="number"
+                id="labourCharge"
+                placeholder="Enter Labour Charge"
+                min="0">
+        </div>
+
+        <!-- Other Charge -->
+        <div class="box">
+            <label>Other Charge</label>
+            <input
+                type="number"
+                id="otherCharge"
+                placeholder="Enter Other Charge"
+                min="0">
+        </div>
+
+        <!-- Add Other -->
+        <div class="box">
+            <button
+                type="button"
+                id="addOther">
+                + Add Other
+            </button>
+        </div>
+
+        <!-- Other Charges Table -->
+        <div id="otherSection" style="display:none;">
+
+            <table border="1" width="100%">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="othersBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <br>
+
+        <!-- Others Total -->
+        <div class="box">
+            <label>Others Total</label>
+            <h2 id="othersTotal">₹ 0.00</h2>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="box">
+            <label>Grand Total</label>
+            <h2 id="finalTotal">₹ 0.00</h2>
+        </div>
+
+        <br>
+
+        <!-- Confirm -->
+        <button
+            type="button"
+            id="confirmBtn">
+            Confirm
+        </button>
+        <button id="backBtn">Back</button>
+
+    </div>
+<script>
+    document.getElementById("backBtn").addEventListener("click", function () {
+        window.location.href = "wood.html";
+    });
+</script>
+    <script src="../js/labour.js"></script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

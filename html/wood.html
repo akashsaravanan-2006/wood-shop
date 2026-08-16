@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Wood Calculation</title>
+
+    <link rel="stylesheet"
+          href="../css/wood.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1> Wood Calculation</h1>
+
+    <!-- =========================
+         ALL CALCULATIONS
+    ========================== -->
+
+    <div id="allCalculations">
+
+        <!-- =========================
+             CALCULATION 1
+        ========================== -->
+
+        <div class="calculation">
+
+            <h2>Calculation 1</h2>
+
+            <!-- =========================
+                 WOOD TYPE
+            ========================== -->
+
+            <div class="row">
+
+                <label>Wood Type</label>
+
+                <select class="woodType">
+
+                    <option value="Teak">
+                        Teak
+                    </option>
+
+                    <option value="Neem">
+                        Neem
+                    </option>
+
+                    <option value="Pine">
+                        Pine
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+                <input
+                    type="text"
+                    class="otherWood"
+                    placeholder="Enter Other Wood Name"
+                    style="display:none;">
+
+            </div>
+
+            <!-- =========================
+                 BREADTH & THICKNESS
+            ========================== -->
+
+            <div class="row twoColumn">
+
+                <div class="field">
+
+                    <label>Breadth (inch)</label>
+
+                    <input
+                        type="number"
+                        class="breadth"
+                        step="0.01"
+                        min="0"
+                        placeholder="Enter Breadth">
+
+                </div>
+
+                <div class="field">
+
+                    <label>Thickness (inch)</label>
+
+                    <input
+                        type="number"
+                        class="thickness"
+                        step="0.01"
+                        min="0"
+                        placeholder="Enter Thickness">
+
+                </div>
+
+            </div>
+
+           
+            <!-- =========================
+                 LENGTH HEADER
+            ========================== -->
+
+            <div class="lengthHeader">
+
+                <div class="headLength">
+                    Length (Feet)
+                </div>
+
+                <div class="headQty">
+                    Quantity
+                </div>
+
+                <div class="headRemove">
+                    Remove
+                </div>
+
+            </div>
+
+            <!-- =========================
+                 LENGTH ROWS START
+            ========================== -->
+
+            <div class="lengthRows">                <!-- =========================
+                     FIRST LENGTH ROW
+                ========================== -->
+
+                <div class="lengthRow">
+
+                    <!-- Length -->
+
+                    <div class="lengthInput">
+
+                        <input
+                            type="number"
+                            class="length"
+                            step="0.01"
+                            min="0"
+                            placeholder="Length">
+
+                        <input
+                            type="number"
+                            class="extraLength"
+                            step="0.01"
+                            min="0"
+                            value="0"
+                            placeholder="0">
+
+                    </div>
+
+                    <!-- Quantity -->
+
+                    <div class="qtyInput">
+
+                        <input
+                            type="number"
+                            class="qty"
+                            min="1"
+                            placeholder="Qty">
+
+                    </div>
+
+                    <!-- Remove -->
+
+                    <div class="removeBox">
+
+                        <button
+                            type="button"
+                            class="removeRow">
+
+                            ✖
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =========================
+                 ADD LENGTH
+            ========================== -->
+
+            <div class="buttonRow">
+
+                <button
+                    type="button"
+                    class="addLength">
+
+                    + Add Length
+
+                </button>
+
+            </div>
+
+            <hr>
+             <!-- =========================
+                 RATE
+            ========================== -->
+
+            <div class="row twoColumn">
+
+    <div class="field">
+
+        <label>Rate (₹ / CFT)</label>
+
+        <input
+            type="number"
+            class="rate"
+            step="0.01"
+            min="0"
+            placeholder="Enter Rate">
+
+    </div>
+
+    <div class="field">
+
+        <label>Quality</label>
+
+        <select class="quality">
+
+            <option value="1">1</option>
+
+            <option value="2">2</option>
+
+            <option value="3">3</option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+            <!-- =========================
+                 ACTION BUTTONS
+            ========================== -->
+
+            <div class="buttonRow">
+
+                <button
+                    type="button"
+                    class="calculate">
+
+                    Calculate
+
+                </button>
+
+                <button
+                    type="button"
+                    class="remove">
+
+                    Remove
+
+                </button>
+
+                <button
+                    type="button"
+                    class="clear">
+
+                    Clear
+
+                </button>
+
+            </div>
+
+            <!-- =========================
+                 RESULT
+            ========================== -->
+
+            <div class="result">
+
+                <h3>
+
+                    Cubic Feet :
+                    <span class="cf">0.00</span>
+
+                </h3>
+
+                <h3>
+
+                    Amount :
+                    ₹ <span class="amount">0.00</span>
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>    <!-- =========================
+         BOTTOM SECTION
+    ========================== -->
+
+    <div id="bottomSection">
+
+        <div class="bottomButtons">
+
+            <button
+                type="button"
+                id="addCalculation">
+
+                + Add Another Calculation
+
+            </button>
+
+            <button
+                type="button"
+                id="confirmBtn">
+
+                Confirm
+
+            </button>
+
+            <button
+                type="button"
+                id="finalCalculation">
+
+                Final Calculation
+
+            </button>
+            <button id="homeBtn" type="button">
+    Home
+</button>
+
+        </div>
+
+        <!-- =========================
+             GRAND TOTAL
+        ========================== -->
+
+        <div class="grand">
+
+            <h2>
+
+                Grand Total :
+
+                ₹ <span id="grandTotal">
+
+                    0.00
+
+                </span>
+
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="../js/wood.js"></script>
+<script src="../js/inputControl.js"></script>
+<script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

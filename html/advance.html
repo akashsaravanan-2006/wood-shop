@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Advance Payment</title>
+
+    <link rel="stylesheet"
+          href="../css/advance.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Advance Payment</h1>
+
+        <hr>
+
+        <!-- ========================= -->
+        <!-- Grand Total -->
+        <!-- ========================= -->
+
+        <div class="row">
+
+            <label>Grand Total</label>
+
+            <input
+                type="text"
+                id="grandTotal"
+                readonly>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- Payment Type -->
+        <!-- ========================= -->
+
+        <div class="row">
+
+            <label>Payment Type</label>
+
+            <div class="paymentType">
+
+                <label class="radioLabel">
+
+                    <input
+                        type="radio"
+                        name="paymentType"
+                        value="cash"
+                        checked>
+
+                    Ready Cash
+
+                </label>
+
+                <label class="radioLabel">
+
+                    <input
+                        type="radio"
+                        name="paymentType"
+                        value="advance">
+
+                    Advance
+
+                </label>
+
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- Advance Section -->
+        <!-- ========================= -->
+
+        <div id="advanceSection">
+
+            <div class="row">
+
+                <label>Advance Amount</label>
+
+                <input
+                    type="number"
+                    id="advanceAmount"
+                    placeholder="Enter Advance Amount">
+
+            </div>
+
+            <div class="row">
+
+                <label>Balance Amount</label>
+
+                <input
+                    type="text"
+                    id="balanceAmount"
+                    readonly>
+
+            </div>
+
+            <div class="buttonRow">
+
+                <button
+                    type="button"
+                    id="calculateBtn">
+
+                    Calculate
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- Next Button -->
+        <!-- ========================= -->
+
+        <div class="buttonRow">
+
+            <button
+                type="button"
+                id="nextBtn">
+
+                Next
+
+            </button>
+            <div class="button-container">
+
+    <button id="backBtn">
+        Back
+    </button>
+
+</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../js/advance.js"></script>
+<script src="../js/inputControl.js"></script>
+<script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

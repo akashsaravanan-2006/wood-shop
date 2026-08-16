@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Confirm Bill</title>
+
+    <link rel="stylesheet"
+          href="../css/confirm.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>Confirm Bill</h1>
+
+            <hr>
+
+            <div class="details">
+
+                <div class="row">
+
+                    <span>Bill Number</span>
+
+                    <strong id="billNo">Loading...</strong>
+
+                </div>
+
+                <div class="row" style="display:none;">
+
+                    <span>Customer ID</span>
+
+                    <strong id="customerId">Loading...</strong>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h3>
+
+                Type
+                <span class="green">YES</span>
+                to confirm and save the bill
+
+            </h3>
+
+            <input
+                type="text"
+                id="confirmInput"
+                placeholder="Type YES">
+
+            <p id="message"></p>
+
+            <div class="buttons">
+
+                <button id="saveBtn">
+
+                    Save Bill
+
+                </button>
+
+                <button
+                    id="printBtn"
+                    disabled>
+
+                    Print Bill
+
+                </button>
+
+                <button id="cancelBtn">
+    Cancel
+</button>
+
+<button class="home-btn" id="homeBtn">
+    Home
+</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Hidden Print Area -->
+
+    <div id="printOnly">
+
+        <h2>Customer Token</h2>
+
+        <h1 id="printCustomerId">
+
+            Loading...
+
+        </h1>
+
+    </div>
+
+    <script
+        type="module"
+        src="../js/confirm.js">
+        
+
+    </script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

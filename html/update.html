@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Update Pending Bill</title>
+
+    <link rel="stylesheet" href="../css/update.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Update Pending Bill</h1>
+
+        <div class="card">
+
+            <div class="row">
+                <label>Bill No</label>
+                <input type="text" id="billNo" readonly>
+            </div>
+
+            <div class="row">
+                <label>Customer ID</label>
+                <input type="text" id="customerId" readonly>
+            </div>
+
+            <div class="row">
+                <label>Customer Name</label>
+                <input type="text" id="customerName" readonly>
+            </div>
+
+            <div class="row">
+                <label>Mobile Number</label>
+                <input type="text" id="customerMobile" readonly>
+            </div>
+
+            <div class="row">
+                <label>Place</label>
+                <input type="text" id="customerPlace" readonly>
+            </div>
+
+            <div class="row">
+                <label>Bill Date</label>
+                <input type="text" id="billDate" readonly>
+            </div>
+
+            <div class="row">
+                <label>Grand Total</label>
+                <input type="text" id="grandTotal" readonly>
+            </div>
+
+            <div class="row">
+                <label>Advance Amount</label>
+                <input type="text" id="advanceAmount" readonly>
+            </div>
+
+            <div class="row">
+                <label>Pending Amount</label>
+                <input type="text" id="balanceAmount" readonly>
+            </div>
+
+            <hr>
+
+            <div class="row">
+
+                <label>Enter Paid Amount</label>
+
+                <input
+                    type="number"
+                    id="paidAmount"
+                    placeholder="Enter Paid Amount">
+
+            </div>
+<hr>
+
+<div class="row">
+
+    <label>New Advance Amount</label>
+
+    <input
+        type="text"
+        id="newAdvance"
+        readonly>
+
+</div>
+
+<div class="row">
+
+    <label>New Pending Amount</label>
+
+    <input
+        type="text"
+        id="newBalance"
+        readonly>
+
+</div>
+            <div class="buttonGroup">
+
+                <button id="updateBtn">
+                    Update Payment
+                </button>
+
+                <button id="backBtn">
+                    Back
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="../js/update.js"></script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,708 @@
+/* ===========================================
+   GLOBAL
+=========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    padding:30px 15px;
+}
+
+.container{
+    width:95%;
+    max-width:1200px;
+    margin:auto;
+}
+
+/* ===========================================
+   HEADING
+=========================================== */
+
+h1{
+    text-align:center;
+    color:#7B3F00;
+    margin-bottom:30px;
+    font-size:34px;
+    font-weight:bold;
+}
+
+/* ===========================================
+   CALCULATION CARD
+=========================================== */
+
+.calculation{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+    margin-bottom:30px;
+}
+
+.calculation h2{
+    color:#8B4513;
+    margin-bottom:25px;
+    font-size:24px;
+}
+
+/* ===========================================
+   FORM ROW
+=========================================== */
+
+.row{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.row label{
+    width:150px;
+    font-weight:bold;
+    color:#333;
+    font-size:17px;
+}
+
+.row input,
+.row select{
+
+    flex:1;
+
+    height:45px;
+
+    padding:10px 15px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    font-size:16px;
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+.row input:focus,
+.row select:focus{
+
+    border-color:#8B4513;
+
+    box-shadow:0 0 5px rgba(139,69,19,.3);
+
+}
+
+/* ===========================================
+   BREADTH & THICKNESS
+=========================================== */
+
+.twoColumn{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.field{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.field label{
+
+    width:auto;
+
+    margin-bottom:8px;
+
+    font-size:17px;
+
+}
+
+.field input{
+
+    width:100%;
+
+    height:45px;
+
+    padding:10px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    font-size:16px;
+
+}
+
+.field input:focus{
+
+    border-color:#8B4513;
+
+}
+
+/* ===========================================
+   HORIZONTAL LINE
+=========================================== */
+
+hr{
+
+    margin:25px 0;
+
+    border:none;
+
+    border-top:1px solid #ddd;
+
+}/* ===========================================
+   LENGTH HEADER
+=========================================== */
+
+.lengthHeader{
+
+    display:grid;
+
+    grid-template-columns:3fr 1fr 80px;
+
+    align-items:center;
+
+    background:#8B4513;
+
+    color:#fff;
+
+    padding:12px 15px;
+
+    border-radius:6px;
+
+    font-weight:bold;
+
+    font-size:17px;
+
+    margin-bottom:15px;
+
+}
+
+.headLength{
+    text-align:left;
+}
+
+.headQty{
+    text-align:center;
+}
+
+.headRemove{
+    text-align:center;
+}
+
+
+/* ===========================================
+   LENGTH CONTAINER
+=========================================== */
+
+.lengthRows{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+
+/* ===========================================
+   EACH LENGTH ROW
+=========================================== */
+
+.lengthRow{
+
+    display:grid;
+
+    grid-template-columns:3fr 1fr 80px;
+
+    gap:15px;
+
+    align-items:center;
+
+}
+
+
+/* ===========================================
+   LENGTH INPUTS
+=========================================== */
+
+.lengthInput{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.length{
+
+    flex:3;
+
+}
+
+.extraLength{
+
+    width:70px;
+
+    text-align:center;
+
+}
+
+.lengthInput input{
+
+    height:45px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    padding:10px;
+
+    font-size:16px;
+
+    outline:none;
+
+}
+
+.lengthInput input:focus{
+
+    border-color:#8B4513;
+
+    box-shadow:0 0 5px rgba(139,69,19,.3);
+
+}
+
+
+/* ===========================================
+   QUANTITY
+=========================================== */
+
+.qtyInput{
+
+    width:100%;
+
+}
+
+.qtyInput input{
+
+    width:100%;
+
+    height:45px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    padding:10px;
+
+    font-size:16px;
+
+    outline:none;
+
+}
+
+.qtyInput input:focus{
+
+    border-color:#8B4513;
+
+    box-shadow:0 0 5px rgba(139,69,19,.3);
+
+}
+
+
+/* ===========================================
+   REMOVE BUTTON
+=========================================== */
+
+.removeRow{
+
+    width:50px;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:6px;
+
+    background:#e53935;
+
+    color:#fff;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.removeRow:hover{
+
+    background:#c62828;
+
+}
+
+
+/* ===========================================
+   BUTTONS
+=========================================== */
+
+.buttonRow{
+
+    display:flex;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+    margin-top:20px;
+
+}
+
+.buttonRow button{
+
+    padding:12px 22px;
+
+    border:none;
+
+    border-radius:6px;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:.3s;
+
+}
+
+.buttonRow button:hover{
+
+    opacity:.9;
+
+}
+
+
+/* Individual Buttons */
+
+.addLength{
+
+    background:#2196F3;
+
+}
+
+.calculate{
+
+    background:#28a745;
+
+}
+
+.remove{
+
+    background:#6c757d;
+
+}
+
+.clear{
+
+    background:#dc3545;
+
+}/* ===========================================
+   RESULT BOX
+=========================================== */
+
+.result{
+
+    margin-top:25px;
+
+    background:#f8f8f8;
+
+    border-left:6px solid #8B4513;
+
+    padding:20px;
+
+    border-radius:8px;
+
+}
+
+.result h3{
+
+    margin:10px 0;
+
+    font-size:22px;
+
+}
+
+.cf{
+
+    color:#2196F3;
+
+    font-weight:bold;
+
+}
+
+.amount{
+
+    color:#28a745;
+
+    font-weight:bold;
+
+}
+
+
+/* ===========================================
+   BOTTOM BUTTONS
+=========================================== */
+
+.bottomButtons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:25px;
+
+    flex-wrap:wrap;
+
+}
+
+#addCalculation{
+
+    background:#673AB7;
+
+    color:white;
+
+}
+
+#confirmBtn{
+
+    background:#4CAF50;
+
+    color:white;
+
+}
+
+#finalCalculation{
+
+    background:#FF5722;
+
+    color:white;
+
+}
+
+.bottomButtons button{
+
+    padding:12px 22px;
+
+    border:none;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:.3s;
+
+}
+
+.bottomButtons button:hover{
+
+    opacity:.9;
+
+}
+
+
+/* ===========================================
+   GRAND TOTAL
+=========================================== */
+
+.grand{
+
+    margin-top:30px;
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    text-align:center;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+
+}
+
+.grand h2{
+
+    font-size:28px;
+
+    color:#333;
+
+}
+
+#grandTotal{
+
+    color:#d32f2f;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+}
+
+
+/* ===========================================
+   RESPONSIVE
+=========================================== */
+
+@media(max-width:768px){
+
+    .row{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .row label{
+
+        width:100%;
+
+    }
+
+    .twoColumn{
+
+        flex-direction:column;
+
+    }
+
+    .lengthHeader{
+
+        display:none;
+
+    }
+
+    .lengthRow{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:12px;
+
+        align-items:stretch;
+
+        border:1px solid #ddd;
+
+        border-radius:8px;
+
+        padding:12px;
+
+    }
+
+    .lengthInput{
+
+        width:100%;
+
+    }
+
+    .length{
+
+        flex:1;
+
+    }
+
+    .extraLength{
+
+        width:80px;
+
+    }
+
+    .qtyInput{
+
+        width:100%;
+
+    }
+
+    .removeRow{
+
+        width:100%;
+
+    }
+
+    .buttonRow{
+
+        flex-direction:column;
+
+    }
+
+    .buttonRow button{
+
+        width:100%;
+
+    }
+
+    .bottomButtons{
+
+        flex-direction:column;
+
+    }
+
+    .bottomButtons button{
+
+        width:100%;
+
+    }
+
+    .grand h2{
+
+        font-size:22px;
+
+    }
+
+    #grandTotal{
+
+        font-size:28px;
+
+    }
+
+}/* ==========================================
+   HOME BUTTON
+========================================== */
+
+#homeBtn {
+    background: #343a40;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#homeBtn:hover {
+    background: #23272b;
+}

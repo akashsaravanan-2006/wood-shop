@@ -1,0 +1,177 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Page Background */
+body {
+  background: #f4f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Card Container */
+.container {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  text-align: center;
+}
+
+/* Headings */
+.card h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  color: #555;
+  margin: 15px 0;
+}
+
+.green {
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Divider */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 15px 0;
+}
+
+/* Bill Details */
+.details {
+  margin: 15px 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.95rem;
+}
+
+.row span {
+  color: #555;
+}
+
+.row strong {
+  color: #222;
+}
+
+/* Input */
+#confirmInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-size: 1rem;
+  text-align: center;
+}
+
+#confirmInput:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Message */
+#message {
+  font-size: 0.9rem;
+  margin: 8px 0;
+  color: #d9534f; /* red for errors */
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+button {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Button Styles */
+#saveBtn {
+  background: #28a745;
+  color: #fff;
+}
+
+#saveBtn:hover {
+  background: #218838;
+}
+
+#printBtn {
+  background: #007bff;
+  color: #fff;
+}
+
+#printBtn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+#printBtn:hover:enabled {
+  background: #0056b3;
+}
+
+#cancelBtn {
+  background: #dc3545;
+  color: #fff;
+}
+
+#cancelBtn:hover {
+  background: #c82333;
+}
+
+.home-btn {
+  background: #ffc107;
+  color: #333;
+}
+
+.home-btn:hover {
+  background: #e0a800;
+}
+
+/* Print Area (Hidden by default) */
+#printOnly {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
+
+#printOnly h2 {
+  color: #007bff;
+}
+
+#printOnly h1 {
+  font-size: 2rem;
+  color: #333;
+}

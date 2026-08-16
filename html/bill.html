@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Wood Bill</title>
+
+    <link rel="stylesheet" href="../css/bill.css">
+
+</head>
+
+<body>
+
+    <div class="bill-container">
+
+        <!-- ========================= -->
+        <!-- Header -->
+        <!-- ========================= -->
+
+        <div class="header">
+
+            <div class="logo">
+
+                <img src="../img/logo.jpg" id="logo">
+
+            </div>
+
+            <div class="company">
+
+                <h1>ஸ்ரீ அம்மன் சாமில்</h1>
+
+                <h4>தேக்கு, வேம்பு, பூவரசு வியாபாரம்</h4>
+
+                <p>2/17,A, மணப்பாறை மெயின் ரோடு, சத்தியமங்கலம்</p>
+                    <p>குளித்தலை வட்டம், கரூர் மாவட்டம் - 639 120</p>
+
+                <h3>Mobile : 9443076409  , 9715050908</h3>
+                <h4>GST : 33DLKPK5760D1Z5</h4>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <!-- ========================= -->
+        <!-- Bill Info -->
+        <!-- ========================= -->
+
+        <div class="billInfo">
+
+            <div>
+
+                <b>Bill No :</b>
+
+                <span id="billNo"></span>
+
+            </div>
+
+            <div>
+
+    <b>Date :</b>
+
+    <span id="billDate"></span>
+
+    <br>
+
+    <small id="billDayTime"></small>
+
+</div>
+
+        </div>
+
+        <hr>
+
+        <!-- ========================= -->
+        <!-- Customer -->
+        <!-- ========================= -->
+
+        <div class="customer">
+
+    <span><b>Customer :</b> <span id="customerName"></span></span>
+
+    <span><b>Mobile :</b> <span id="customerMobile"></span></span>
+
+    <span><b>Place :</b> <span id="customerPlace"></span></span>
+
+</div>
+
+        <hr>
+
+        <!-- ========================= -->
+        <!-- Wood Details -->
+        <!-- ========================= -->
+
+        
+
+        <!-- ========================= -->
+<!-- Wood Details -->
+<!-- ========================= -->
+
+<h2>Wood Details</h2>
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>S.No</th>
+            <th>Wood</th>
+            <th>Size</th>
+            <th>Length</th>
+            <th>Qty</th>
+            <th>Total Length</th>
+            <th>CFT</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Quality</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody id="woodTable">
+
+    </tbody>
+
+</table>
+
+        <!-- ========================= -->
+        <!-- Other Charges -->
+        <!-- ========================= -->
+
+        <!-- ========================= -->
+<!-- Other Charges -->
+<!-- ========================= -->
+
+<h2>Other Charges</h2>
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>S.No</th>
+            <th>Name</th>
+            <th>Amount</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody id="chargeTable">
+
+    </tbody>
+
+</table>
+
+        <!-- ========================= -->
+        <!-- Totals -->
+        <!-- ========================= -->
+
+        <div class="totals">
+
+    <div class="cftTotal">
+
+    <h3>CFT Total</h3>
+
+    <div id="cftSummary"></div>
+
+</div>
+
+    <p>
+        Wood Total
+        <span id="woodTotal"></span>
+    </p>
+
+    <p>
+        Others Total
+        <span id="othersTotal"></span>
+    </p>
+
+    <h2>
+        Grand Total
+        <span id="grandTotal"></span>
+    </h2>
+    
+
+<p>
+Balance Amount
+<span id="balanceAmount"></span>
+</p>
+
+</div>
+        <!-- ========================= -->
+        <!-- Signature -->
+        <!-- ========================= -->
+
+        <div class="signature">
+
+            <p>
+
+                Customer Signature
+
+            </p>
+
+            <p>
+
+                Authorized Signature
+
+            </p>
+
+        </div>
+
+        <br>
+
+        <!-- ========================= -->
+        <!-- Buttons -->
+        <!-- ========================= -->
+
+     <div class="buttons">
+
+    <button id="confirmBill">
+        Confirm
+    </button>
+
+    <button id="printBtn">
+        Print Bill
+    </button>
+
+    <button onclick="history.back()">
+        Back
+    </button>
+
+</div>
+
+    <script src="../js/bill.js"></script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+

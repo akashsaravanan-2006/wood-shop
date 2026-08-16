@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pending Bills</title>
+
+    <link rel="stylesheet" href="../css/pendingBills.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- =======================================
+             HEADER
+        ======================================== -->
+
+        <div class="pageHeader">
+
+            <h1>Pending Bills</h1>
+
+            <button
+                id="homeBtn"
+                onclick="window.location.href='index.html'">
+                Back
+            </button>
+
+        </div>
+
+
+        <!-- =======================================
+             SEARCH / REFRESH
+        ======================================== -->
+
+        <div class="topBar">
+
+            <input
+                type="text"
+                id="searchBox"
+                placeholder="Search by Customer ID / Name / Mobile">
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+            <button id="refreshBtn">
+                Refresh
+            </button>
+
+        </div>
+
+
+        <!-- =======================================
+             PENDING BILLS TABLE
+        ======================================== -->
+
+        <table id="pendingTable">
+
+            <thead>
+
+                <tr>
+                    <th>S.No</th>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Place</th>
+                    <th>Mobile</th>
+                    <th>Bill Date</th>
+                    <th>Advance Amount</th>
+                    <th>Pending Amount</th>
+                    <th>Remark</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tableBody">
+
+                <!-- Data from MySQL -->
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =======================================
+         JAVASCRIPT
+    ======================================== -->
+
+    <script src="../js/pendingBills.js"></script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

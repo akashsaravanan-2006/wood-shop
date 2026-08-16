@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Bill History</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/history.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- ===================================
+             HEADER
+        ==================================== -->
+
+        <div class="header">
+
+            <h1>Bill History</h1>
+
+            <button id="homeBtn">
+                Home
+            </button>
+
+        </div>
+
+
+        <!-- ===================================
+             SEARCH
+        ==================================== -->
+
+        <div class="searchBox">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search Bill No / Customer ID / Name / Mobile">
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+            <button id="refreshBtn">
+                Refresh
+            </button>
+
+        </div>
+
+
+        <!-- ===================================
+             SUMMARY
+        ==================================== -->
+
+        <div class="summary">
+
+            <div>
+                <span>Total Bills</span>
+                <strong id="totalBills">0</strong>
+            </div>
+
+            <div>
+                <span>Pending Bills</span>
+                <strong id="pendingBills">0</strong>
+            </div>
+
+            <div>
+                <span>Paid Bills</span>
+                <strong id="paidBills">0</strong>
+            </div>
+
+        </div>
+
+
+        <!-- ===================================
+             TABLE
+        ==================================== -->
+
+        <div class="tableContainer">
+
+            <table id="historyTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>S.No</th>
+
+                        <th>Bill No</th>
+
+                        <th>Customer ID</th>
+
+                        <th>Customer Name</th>
+
+                        <th>Mobile</th>
+
+                        <th>Place</th>
+
+                        <th>Date</th>
+
+                        <th>Payment Type</th>
+
+                        <th>Grand Total</th>
+
+                        <th>Advance</th>
+
+                        <th>Balance</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="historyBody">
+
+                    <!-- MySQL data -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <script src="../js/history.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Information</title>
+
+    <link rel="stylesheet" href="../css/personal.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Customer Information</h1>
+
+        <!-- Customer Name -->
+        <div class="inputBox">
+            <label for="customerName">Customer Name</label>
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Enter Customer Name">
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="inputBox">
+            <label for="mobileNumber">Mobile Number</label>
+            <input
+                type="tel"
+                id="mobileNumber"
+                maxlength="10"
+                placeholder="Enter Mobile Number">
+        </div>
+
+        <!-- Place -->
+        <div class="inputBox">
+            <label for="place">Place</label>
+            <input
+                type="text"
+                id="place"
+                placeholder="Enter Place">
+        </div>
+
+        <!-- Next Button -->
+        <button
+            type="button"
+            id="nextBtn">
+            Next
+        </button>
+<div class="button-container">
+
+    <button id="backBtn">
+        Back
+    </button>
+
+</div>
+    </div>
+
+    <script src="../js/personal.js"></script>
+    <script src="../js/inputControl.js"></script>
+    <script src="../js/formPersistence.js"></script>
+
+</body>
+
+</html>

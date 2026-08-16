@@ -1,0 +1,420 @@
+/* =======================================
+   GLOBAL
+======================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* =======================================
+   BODY
+======================================= */
+
+body {
+
+    background: #f4f6f8;
+
+    padding: 25px;
+
+}
+
+
+/* =======================================
+   CONTAINER
+======================================= */
+
+.container {
+
+    width: 100%;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 15px
+        rgba(0, 0, 0, 0.10);
+
+}
+
+
+/* =======================================
+   HEADER
+======================================= */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.header h1 {
+
+    color: #222;
+
+    font-size: 28px;
+
+}
+
+
+#homeBtn {
+
+    background: #343a40;
+
+    color: white;
+
+    border: none;
+
+    padding: 11px 20px;
+
+    border-radius: 7px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+#homeBtn:hover {
+
+    background: #23272b;
+
+}
+
+
+/* =======================================
+   SEARCH
+======================================= */
+
+.searchBox {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.searchBox input {
+
+    flex: 1;
+
+    padding: 12px 15px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    font-size: 15px;
+
+}
+
+
+.searchBox input:focus {
+
+    border-color: #007bff;
+
+}
+
+
+.searchBox button {
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+}
+
+
+#searchBtn {
+
+    background: #007bff;
+
+}
+
+
+#searchBtn:hover {
+
+    background: #0056b3;
+
+}
+
+
+#refreshBtn {
+
+    background: #28a745;
+
+}
+
+
+#refreshBtn:hover {
+
+    background: #218838;
+
+}
+
+
+/* =======================================
+   SUMMARY
+======================================= */
+
+.summary {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.summary div {
+
+    flex: 1;
+
+    padding: 15px;
+
+    background: #f8f9fa;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    border: 1px solid #e5e5e5;
+
+}
+
+
+.summary span {
+
+    display: block;
+
+    color: #666;
+
+    font-size: 14px;
+
+    margin-bottom: 5px;
+
+}
+
+
+.summary strong {
+
+    font-size: 24px;
+
+    color: #222;
+
+}
+
+
+/* =======================================
+   TABLE
+======================================= */
+
+.tableContainer {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    min-width: 1200px;
+
+    border-collapse: collapse;
+
+}
+
+
+th {
+
+    background: #007bff;
+
+    color: white;
+
+    padding: 12px 10px;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+td {
+
+    padding: 11px 10px;
+
+    border: 1px solid #ddd;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+tbody tr:hover {
+
+    background: #f5f9ff;
+
+}
+
+
+/* =======================================
+   BILL NUMBER
+======================================= */
+
+.billNo {
+
+    font-weight: bold;
+
+}
+
+
+/* =======================================
+   PENDING BILL
+======================================= */
+
+.pendingRow {
+
+    color: #dc3545;
+
+    background: #fff5f5;
+
+}
+
+
+.pendingRow td {
+
+    color: #dc3545;
+
+}
+
+
+/* =======================================
+   STATUS
+======================================= */
+
+.status {
+
+    font-weight: bold;
+
+}
+
+
+.status.pending {
+
+    color: #dc3545;
+
+    font-weight: bold;
+
+}
+
+
+.status.paid {
+
+    color: #198754;
+
+    font-weight: bold;
+
+}
+
+
+/* =======================================
+   MOBILE
+======================================= */
+
+@media (max-width: 700px) {
+
+    body {
+
+        padding: 10px;
+
+    }
+
+    .container {
+
+        padding: 15px;
+
+    }
+
+    .header {
+
+        flex-direction: column;
+
+        gap: 15px;
+
+        align-items: stretch;
+
+    }
+
+    .header h1 {
+
+        text-align: center;
+
+    }
+
+    #homeBtn {
+
+        width: 100%;
+
+    }
+
+    .searchBox {
+
+        flex-direction: column;
+
+    }
+
+    .searchBox button {
+
+        width: 100%;
+
+    }
+
+    .summary {
+
+        flex-direction: column;
+
+    }
+
+}

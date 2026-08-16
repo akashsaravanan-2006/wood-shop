@@ -136,17 +136,19 @@ saveBtn.addEventListener("click", function () {
     // SAVE TO MYSQL
     // =====================================
 
-    fetch("http://localhost:5000/save-bill", {
 
-        method: "POST",
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+fetch("https://wood-shop-opal.vercel.app/save-bill", {
 
-        body: JSON.stringify(billData)
+    method: "POST",
 
-    })
+    headers: {
+        "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify(billData)
+
+})
 
     .then(response => {
 

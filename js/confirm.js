@@ -138,7 +138,7 @@ saveBtn.addEventListener("click", function () {
 
 
 
-fetch("https://wood-shop-opal.vercel.app/save-bill", {
+fetch("https://wood-shop-backend.vercel.app/api/save-bill", {
 
     method: "POST",
 

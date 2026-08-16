@@ -509,20 +509,26 @@ app.use((err, req, res, next) => {
 // START SERVER
 // =======================================
 
-// On your laptop:
-//     http://localhost:5000
-//
-// On Render:
-//     Render will automatically provide PORT.
+// =======================================
+// SERVER START / VERCEL EXPORT
+// =======================================
 
-const PORT = process.env.PORT || 5000;
+// Run server locally only
+if (require.main === module) {
 
-app.listen(PORT, "0.0.0.0", () => {
+    const PORT = process.env.PORT || 5000;
 
-    console.log("======================================");
-    console.log("🚀 WOODSHOP BACKEND STARTED");
-    console.log("======================================");
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log("======================================");
+    app.listen(PORT, "0.0.0.0", () => {
 
-});
+        console.log("======================================");
+        console.log("🚀 WOODSHOP BACKEND STARTED");
+        console.log("======================================");
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log("======================================");
+
+    });
+
+}
+
+// Export Express app for Vercel
+module.exports = app;

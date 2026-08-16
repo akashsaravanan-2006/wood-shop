@@ -71,6 +71,19 @@ app.post("/save-bill", (req, res) => {
 
     const bill = req.body;
 
+    console.log("======================================");
+    console.log("SAVE BILL REQUEST");
+    console.log(bill);
+    console.log("======================================");
+
+    // Basic validation
+    if (!bill.billNo) {
+        return res.status(400).json({
+            success: false,
+            message: "Bill number is missing"
+        });
+    }
+
     const sql = `
         INSERT INTO bills
         (
@@ -93,12 +106,71 @@ app.post("/save-bill", (req, res) => {
             wood_data,
             others_data
         )
-        VALUES
-        (
-            ?,?,?,?,?,?,?,?,?,?,
-            ?,?,?,?,?,?,?,?
-        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    const values = [
+
+        bill.billNo,
+        bill.customerId,
+
+        bill.customerName || "",
+        bill.customerMobile || "",
+        bill.customerPlace || "",
+
+        bill.billDate,
+        bill.billTime,
+
+        bill.paymentType || "",
+
+        Number(bill.advanceAmount) || 0,
+        Number(bill.balanceAmount) || 0,
+
+        Number(bill.totalCFT) || 0,
+        Number(bill.woodTotal) || 0,
+        Number(bill.labourCharge) || 0,
+        Number(bill.otherCharge) || 0,
+        Number(bill.othersTotal) || 0,
+        Number(bill.grandTotal) || 0,
+
+        JSON.stringify(bill.woodData || []),
+        JSON.stringify(bill.othersData || [])
+
+    ];
+
+    connection.query(sql, values, (err, result) => {
+
+        if (err) {
+
+            console.error("======================================");
+            console.error("❌ SAVE BILL DATABASE ERROR");
+            console.error(err);
+            console.error("SQL MESSAGE:", err.message);
+            console.error("SQL CODE:", err.code);
+            console.error("======================================");
+
+            return res.status(500).json({
+                success: false,
+                message: "Database Error",
+                error: err.message,
+                code: err.code
+            });
+        }
+
+        console.log("✅ Bill saved successfully");
+        console.log("Bill ID:", result.insertId);
+        console.log("Bill No:", bill.billNo);
+
+        res.json({
+            success: true,
+            message: "Bill Saved Successfully",
+            billId: result.insertId,
+            billNo: bill.billNo
+        });
+
+    });
+
+});
 
     // =======================================
     // BILL NUMBER

@@ -1,3 +1,7 @@
+// ======================================================
+// WOODSHOP BACKEND - SERVER.JS
+// ======================================================
+
 require("dotenv").config();
 
 const express = require("express");
@@ -12,13 +16,10 @@ const app = express();
 // MIDDLEWARE
 // ======================================================
 
-// Allow frontend requests
 app.use(cors());
 
-// Allow JSON request body
 app.use(express.json());
 
-// Serve backend static files
 app.use(express.static(path.join(__dirname)));
 
 
@@ -29,8 +30,12 @@ app.use(express.static(path.join(__dirname)));
 app.get("/", (req, res) => {
 
     res.json({
+
         success: true,
-        message: "WoodShop Backend is Running..."
+
+        message:
+            "WoodShop Backend is Running..."
+
     });
 
 });
@@ -99,9 +104,17 @@ app.post("/save-bill", (req, res) => {
     const bill = req.body;
 
 
-    console.log("======================================");
-    console.log("SAVE BILL REQUEST");
-    console.log("======================================");
+    console.log(
+        "======================================"
+    );
+
+    console.log(
+        "SAVE BILL REQUEST"
+    );
+
+    console.log(
+        "======================================"
+    );
 
     console.log(bill);
 
@@ -125,17 +138,28 @@ app.post("/save-bill", (req, res) => {
 
 
     // ==================================================
-    // GET NEXT BILL NUMBER
+    // GENERATE BILL NUMBER + CUSTOMER ID
+    // ==================================================
+    //
+    // IMPORTANT:
+    // Both use the SAME number.
+    //
+    // Empty database:
+    // COUNT = 0
+    // nextNumber = 1
+    // BILL-0001
+    // CUST-0001
+    //
     // ==================================================
 
-    const getBillNumberSQL = `
-        SELECT COALESCE(MAX(id), 0) + 1 AS next_number
+    const getNextNumberSQL = `
+        SELECT COUNT(*) AS total
         FROM bills
     `;
 
 
     connection.query(
-        getBillNumberSQL,
+        getNextNumberSQL,
         (numberError, numberResult) => {
 
             if (numberError) {
@@ -174,14 +198,22 @@ app.post("/save-bill", (req, res) => {
 
 
             // ==================================================
-            // CREATE BILL NUMBER
+            // COUNT + 1
             // ==================================================
 
-            const nextNumber =
+            const totalBills =
                 Number(
-                    numberResult[0].next_number
-                ) || 1;
+                    numberResult[0].total
+                ) || 0;
 
+
+            const nextNumber =
+                totalBills + 1;
+
+
+            // ==================================================
+            // BILL NUMBER
+            // ==================================================
 
             const billNo =
                 "BILL-" +
@@ -189,32 +221,34 @@ app.post("/save-bill", (req, res) => {
                     .padStart(4, "0");
 
 
+            // ==================================================
+            // CUSTOMER ID
+            // SAME NUMBER
+            // ==================================================
+
+            const customerId =
+                "CUST-" +
+                String(nextNumber)
+                    .padStart(4, "0");
+
+
+            console.log(
+                "Total Bills:",
+                totalBills
+            );
+
+            console.log(
+                "Next Number:",
+                nextNumber
+            );
+
             console.log(
                 "Generated Bill Number:",
                 billNo
             );
 
-
-            // ==================================================
-            // CUSTOMER ID
-            // ==================================================
-
-            let customerId =
-                bill.customerId;
-
-
-            if (!customerId) {
-
-                customerId =
-                    "CUST-" +
-                    String(nextNumber)
-                        .padStart(4, "0");
-
-            }
-
-
             console.log(
-                "Customer ID:",
+                "Generated Customer ID:",
                 customerId
             );
 
@@ -247,16 +281,31 @@ app.post("/save-bill", (req, res) => {
                 bill.paymentType || "";
 
 
+            // ==================================================
+            // MONEY VALUES
+            // ==================================================
+            //
+            // Database columns are INT.
+            // Therefore round all money values.
+            //
+            // CFT is NOT rounded here.
+            //
+            // ==================================================
+
             const advanceAmount =
-                Number(
-                    bill.advanceAmount
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.advanceAmount
+                    ) || 0
+                );
 
 
             const balanceAmount =
-                Number(
-                    bill.balanceAmount
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.balanceAmount
+                    ) || 0
+                );
 
 
             const totalCFT =
@@ -266,34 +315,48 @@ app.post("/save-bill", (req, res) => {
 
 
             const woodTotal =
-                Number(
-                    bill.woodTotal
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.woodTotal
+                    ) || 0
+                );
 
 
             const labourCharge =
-                Number(
-                    bill.labourCharge
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.labourCharge
+                    ) || 0
+                );
 
 
             const otherCharge =
-                Number(
-                    bill.otherCharge
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.otherCharge
+                    ) || 0
+                );
 
 
             const othersTotal =
-                Number(
-                    bill.othersTotal
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.othersTotal
+                    ) || 0
+                );
 
 
             const grandTotal =
-                Number(
-                    bill.grandTotal
-                ) || 0;
+                Math.round(
+                    Number(
+                        bill.grandTotal
+                    ) || 0
+                );
 
+
+            // ==================================================
+            // JSON DATA
+            // ==================================================
 
             const woodData =
                 JSON.stringify(
@@ -306,6 +369,10 @@ app.post("/save-bill", (req, res) => {
                     bill.othersData || []
                 );
 
+
+            // ==================================================
+            // REMARK
+            // ==================================================
 
             const remark =
                 bill.remark || "";
@@ -413,6 +480,34 @@ app.post("/save-bill", (req, res) => {
             ];
 
 
+            console.log(
+                "======================================"
+            );
+
+            console.log(
+                "INSERTING BILL"
+            );
+
+            console.log(
+                "Bill Number:",
+                billNo
+            );
+
+            console.log(
+                "Customer ID:",
+                customerId
+            );
+
+            console.log(
+                "Grand Total:",
+                grandTotal
+            );
+
+            console.log(
+                "======================================"
+            );
+
+
             // ==================================================
             // DATABASE INSERT
             // ==================================================
@@ -496,7 +591,7 @@ app.post("/save-bill", (req, res) => {
                     );
 
                     console.log(
-                        "Bill ID:",
+                        "Database ID:",
                         result.insertId
                     );
 
@@ -514,6 +609,10 @@ app.post("/save-bill", (req, res) => {
                         "======================================"
                     );
 
+
+                    // ==================================================
+                    // SEND RESULT TO FRONTEND
+                    // ==================================================
 
                     return res.json({
 
@@ -534,9 +633,11 @@ app.post("/save-bill", (req, res) => {
                     });
 
                 }
+
             );
 
         }
+
     );
 
 });
@@ -612,7 +713,6 @@ app.get("/pending-bills", (req, res) => {
     const sql = `
 
         SELECT
-
             id,
             bill_no,
             customer_id,
@@ -731,7 +831,9 @@ app.get("/bill/:id", (req, res) => {
             }
 
 
-            if (results.length === 0) {
+            if (
+                results.length === 0
+            ) {
 
                 return res.status(404).json({
 
@@ -793,8 +895,14 @@ app.put("/update-pending", (req, res) => {
     }
 
 
+    // ==================================================
+    // PAYMENT
+    // ==================================================
+
     const payment =
-        Number(paidAmount);
+        Math.round(
+            Number(paidAmount)
+        );
 
 
     if (
@@ -820,6 +928,7 @@ app.put("/update-pending", (req, res) => {
 
     connection.query(
         `
+
             SELECT
                 advance_amount,
                 balance_amount
@@ -827,6 +936,7 @@ app.put("/update-pending", (req, res) => {
             FROM bills
 
             WHERE id = ?
+
         `,
         [id],
         (err, results) => {
@@ -895,13 +1005,17 @@ app.put("/update-pending", (req, res) => {
             // ==================================================
 
             const newAdvance =
-                advance + payment;
+                Math.round(
+                    advance + payment
+                );
 
 
             const newBalance =
                 Math.max(
-                    balance - payment,
-                    0
+                    0,
+                    Math.round(
+                        balance - payment
+                    )
                 );
 
 
@@ -911,6 +1025,7 @@ app.put("/update-pending", (req, res) => {
 
             connection.query(
                 `
+
                     UPDATE bills
 
                     SET
@@ -918,6 +1033,7 @@ app.put("/update-pending", (req, res) => {
                         balance_amount = ?
 
                     WHERE id = ?
+
                 `,
                 [
                     newAdvance,
@@ -975,9 +1091,11 @@ app.put("/update-pending", (req, res) => {
                     });
 
                 }
+
             );
 
         }
+
     );
 
 });
@@ -1174,6 +1292,7 @@ if (require.main === module) {
             );
 
         }
+
     );
 
 }

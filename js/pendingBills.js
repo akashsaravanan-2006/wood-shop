@@ -3,123 +3,276 @@ const searchBox = document.getElementById("searchBox");
 const searchBtn = document.getElementById("searchBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 
-// =======================================
-// BACKEND URL
-// =======================================
+// ======================================================
+// BACKEND API URL
+// ======================================================
+//
+// If your backend and frontend are deployed in the SAME
+// Vercel project, keep this as:
+//
+// const API_URL = "";
+//
+// If your backend is deployed separately, put its URL here:
+//
+// const API_URL = "https://your-backend-url.com";
+//
+// DO NOT use localhost for the Vercel website.
+//
+// ======================================================
 
-const API_URL = "YOUR_DEPLOYED_BACKEND_URL";
+const API_URL = "";
 
 let allBills = [];
 
-// =======================================
-// Load Pending Bills
-// =======================================
+
+// ======================================================
+// LOAD PENDING BILLS
+// ======================================================
 
 async function loadPendingBills() {
 
     try {
 
-        const response = await fetch(`${API_URL}/pending-bills`);
+        console.log("Loading pending bills...");
 
+        const response = await fetch(`${API_URL}/pending-bills`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log("Response status:", response.status);
+
+        // Check HTTP status
         if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
+
+            throw new Error(
+                `Server returned HTTP ${response.status}`
+            );
+
         }
 
         const data = await response.json();
 
-        allBills = data;
+        console.log("Pending bills response:", data);
+
+        // ==================================================
+        // IMPORTANT
+        // Backend returns:
+        //
+        // {
+        //     success: true,
+        //     bills: [...]
+        // }
+        //
+        // So we MUST use data.bills
+        // ==================================================
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message || "Unable to load pending bills"
+            );
+
+        }
+
+        allBills = Array.isArray(data.bills)
+            ? data.bills
+            : [];
+
+        console.log(
+            "Pending bills loaded:",
+            allBills
+        );
 
         displayBills(allBills);
 
-    } catch (error) {
+    }
+    catch (error) {
 
-        console.error("Pending Bills Error:", error);
+        console.error(
+            "LOAD PENDING BILLS ERROR:",
+            error
+        );
 
-        alert("Unable to load pending bills.");
+        allBills = [];
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="10" class="noData">
+                    Unable to load pending bills
+                </td>
+            </tr>
+        `;
+
+        alert(
+            "Unable to load pending bills.\n\n" +
+            "Please check the server connection."
+        );
 
     }
+
 }
 
-// =======================================
-// Display Bills
-// =======================================
+
+// ======================================================
+// DISPLAY BILLS
+// ======================================================
 
 function displayBills(bills) {
 
     tableBody.innerHTML = "";
 
+    // Make sure bills is an array
+    if (!Array.isArray(bills)) {
+
+        bills = [];
+
+    }
+
+
+    // ==================================================
+    // NO DATA
+    // ==================================================
+
     if (bills.length === 0) {
 
         tableBody.innerHTML = `
-        <tr>
-            <td colspan="10" class="noData">
-                No Pending Bills Found
-            </td>
-        </tr>`;
+            <tr>
+                <td colspan="10" class="noData">
+                    No Pending Bills Found
+                </td>
+            </tr>
+        `;
 
         return;
+
     }
+
+
+    // ==================================================
+    // DISPLAY EACH BILL
+    // ==================================================
 
     bills.forEach((bill, index) => {
 
+        const customerId =
+            bill.customer_id ?? "";
+
+        const customerName =
+            bill.customer_name ?? "";
+
+        const customerPlace =
+            bill.customer_place ?? "";
+
+        const customerMobile =
+            bill.customer_mobile ?? "";
+
+        const billDate =
+            bill.bill_date ?? "";
+
+        const advanceAmount =
+            Number(bill.advance_amount) || 0;
+
+        const balanceAmount =
+            Number(bill.balance_amount) || 0;
+
+        const remark =
+            bill.remark ?? "";
+
+
         tableBody.innerHTML += `
 
-        <tr>
+            <tr>
 
-            <td>${index + 1}</td>
+                <!-- S.NO -->
+                <td>
+                    ${index + 1}
+                </td>
 
-            <td>${bill.customer_id}</td>
 
-            <td>${bill.customer_name}</td>
+                <!-- CUSTOMER ID -->
+                <td>
+                    ${customerId}
+                </td>
 
-            <td>${bill.customer_place}</td>
 
-            <td>${bill.customer_mobile}</td>
+                <!-- CUSTOMER NAME -->
+                <td>
+                    ${customerName}
+                </td>
 
-            <td>${bill.bill_date}</td>
 
-            <td class="advanceAmount">
-                ₹${parseFloat(bill.advance_amount || 0).toFixed(2)}
-            </td>
+                <!-- PLACE -->
+                <td>
+                    ${customerPlace}
+                </td>
 
-            <td class="pendingAmount">
-                ₹${parseFloat(bill.balance_amount || 0).toFixed(2)}
-            </td>
 
-            <td>
+                <!-- MOBILE -->
+                <td>
+                    ${customerMobile}
+                </td>
 
-                <div class="remarkBox">
 
-                    <input
-                        type="text"
-                        class="remarkInput"
-                        id="remark-${bill.id}"
-                        value="${bill.remark || ''}"
-                        placeholder="Enter Remark">
+                <!-- BILL DATE -->
+                <td>
+                    ${billDate}
+                </td>
+
+
+                <!-- ADVANCE -->
+                <td class="advanceAmount">
+                    ₹${advanceAmount.toFixed(2)}
+                </td>
+
+
+                <!-- PENDING -->
+                <td class="pendingAmount">
+                    ₹${balanceAmount.toFixed(2)}
+                </td>
+
+
+                <!-- REMARK -->
+                <td>
+
+                    <div class="remarkBox">
+
+                        <input
+                            type="text"
+                            class="remarkInput"
+                            id="remark-${bill.id}"
+                            value="${escapeHtml(remark)}"
+                            placeholder="Enter Remark"
+                        >
+
+                        <button
+                            class="saveRemarkBtn"
+                            onclick="saveRemark(${bill.id})"
+                            title="Save Remark"
+                        >
+                            ✓
+                        </button>
+
+                    </div>
+
+                </td>
+
+
+                <!-- UPDATE -->
+                <td>
 
                     <button
-                        class="saveRemarkBtn"
-                        onclick="saveRemark(${bill.id})">
-                        ✓
+                        class="updateBtn"
+                        onclick="updatePending(${bill.id})"
+                    >
+                        Update
                     </button>
 
-                </div>
+                </td>
 
-            </td>
-
-            <td>
-
-                <button
-                    class="updateBtn"
-                    onclick="updatePending(${bill.id})">
-
-                    Update
-
-                </button>
-
-            </td>
-
-        </tr>
+            </tr>
 
         `;
 
@@ -127,119 +280,289 @@ function displayBills(bills) {
 
 }
 
-// =======================================
-// Search
-// =======================================
 
-searchBtn.addEventListener("click", () => {
+// ======================================================
+// ESCAPE HTML
+// ======================================================
+//
+// Prevents customer remarks from breaking HTML
+//
+// ======================================================
 
-    const text = searchBox.value.toLowerCase();
+function escapeHtml(value) {
 
-    const result = allBills.filter(bill =>
-
-        String(bill.customer_id).toLowerCase().includes(text) ||
-
-        String(bill.customer_name).toLowerCase().includes(text) ||
-
-        String(bill.customer_mobile).includes(text)
-
-    );
-
-    displayBills(result);
-
-});
-
-// =======================================
-// Refresh
-// =======================================
-
-refreshBtn.addEventListener("click", () => {
-
-    searchBox.value = "";
-
-    loadPendingBills();
-
-});
-
-// =======================================
-// Update Button
-// =======================================
-
-function updatePending(id) {
-
-    location.assign("update.html?id=" + id);
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
-// =======================================
-// Save Remark
-// =======================================
 
-async function saveRemark(id) {
+// ======================================================
+// SEARCH
+// ======================================================
 
-    const remark = document.getElementById(`remark-${id}`).value;
+if (searchBtn) {
 
-    try {
+    searchBtn.addEventListener("click", () => {
 
-        const response = await fetch(`${API_URL}/update-remark`, {
+        const text =
+            searchBox.value
+                .trim()
+                .toLowerCase();
 
-            method: "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        // If search box is empty,
+        // show all bills
 
-            body: JSON.stringify({
-                id: id,
-                remark: remark
-            })
+        if (text === "") {
 
-        });
+            displayBills(allBills);
 
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-
-            alert("Remark Saved Successfully");
-
-        } else {
-
-            alert("Unable to Save Remark");
+            return;
 
         }
 
-    } catch (err) {
 
-        console.error("Remark Error:", err);
+        const result =
+            allBills.filter((bill) => {
 
-        alert("Server Error");
+                const customerId =
+                    String(
+                        bill.customer_id ?? ""
+                    ).toLowerCase();
 
-    }
+                const customerName =
+                    String(
+                        bill.customer_name ?? ""
+                    ).toLowerCase();
 
-}
+                const customerMobile =
+                    String(
+                        bill.customer_mobile ?? ""
+                    ).toLowerCase();
 
-// =======================================
-// HOME BUTTON
-// =======================================
 
-const homeBtn = document.getElementById("homeBtn");
+                return (
 
-if (homeBtn) {
+                    customerId.includes(text) ||
 
-    homeBtn.addEventListener("click", () => {
+                    customerName.includes(text) ||
 
-        window.location.href = "index.html";
+                    customerMobile.includes(text)
+
+                );
+
+            });
+
+
+        displayBills(result);
 
     });
 
 }
 
-// =======================================
-// PAGE LOAD
-// =======================================
 
-loadPendingBills();
+// ======================================================
+// SEARCH USING ENTER KEY
+// ======================================================
+
+if (searchBox) {
+
+    searchBox.addEventListener("keypress", (event) => {
+
+        if (event.key === "Enter") {
+
+            searchBtn.click();
+
+        }
+
+    });
+
+}
+
+
+// ======================================================
+// REFRESH
+// ======================================================
+
+if (refreshBtn) {
+
+    refreshBtn.addEventListener("click", () => {
+
+        searchBox.value = "";
+
+        loadPendingBills();
+
+    });
+
+}
+
+
+// ======================================================
+// UPDATE PENDING BILL
+// ======================================================
+
+function updatePending(id) {
+
+    console.log(
+        "Opening update page for bill:",
+        id
+    );
+
+    window.location.href =
+        `update.html?id=${encodeURIComponent(id)}`;
+
+}
+
+
+// ======================================================
+// SAVE REMARK
+// ======================================================
+
+async function saveRemark(id) {
+
+    const remarkInput =
+        document.getElementById(
+            `remark-${id}`
+        );
+
+
+    if (!remarkInput) {
+
+        alert("Remark input not found.");
+
+        return;
+
+    }
+
+
+    const remark =
+        remarkInput.value.trim();
+
+
+    try {
+
+        console.log(
+            "Saving remark for bill:",
+            id
+        );
+
+
+        const response = await fetch(
+            `${API_URL}/update-remark`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    id: id,
+
+                    remark: remark
+
+                })
+
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Server returned HTTP ${response.status}`
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Remark response:",
+            result
+        );
+
+
+        if (result.success) {
+
+            alert(
+                "Remark Saved Successfully"
+            );
+
+            // Reload data so the saved remark
+            // is displayed from the database
+
+            loadPendingBills();
+
+        }
+        else {
+
+            alert(
+                result.message ||
+                "Unable to Save Remark"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "SAVE REMARK ERROR:",
+            error
+        );
+
+        alert(
+            "Server Error while saving remark."
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// HOME BUTTON
+// ======================================================
+
+const homeBtn =
+    document.getElementById("homeBtn");
+
+
+if (homeBtn) {
+
+    homeBtn.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// PAGE LOAD
+// ======================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadPendingBills();
+
+    }
+);

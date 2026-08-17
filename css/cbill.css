@@ -1,0 +1,377 @@
+/* =========================================
+   CBILL.CSS
+   FINAL BILL
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    padding: 20px;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f3f3f3;
+
+    color: #222;
+
+}
+
+
+.bill-container {
+
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    background: white;
+
+    padding: 30px;
+
+    box-shadow:
+        0 0 10px
+        rgba(0, 0, 0, 0.15);
+
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header {
+
+    text-align: center;
+
+    border-bottom:
+        2px solid #222;
+
+    padding-bottom: 15px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.header h1 {
+
+    margin: 0;
+
+    font-size: 30px;
+
+}
+
+
+.header p {
+
+    margin: 5px 0 0;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================
+   BILL INFO
+========================================= */
+
+.bill-info {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+    padding: 15px;
+
+    border:
+        1px solid #ccc;
+
+}
+
+
+.bill-info div {
+
+    padding: 5px;
+
+}
+
+
+.bill-info strong {
+
+    margin-right: 8px;
+
+}
+
+
+/* =========================================
+   CUSTOMER
+========================================= */
+
+.customer-section {
+
+    border:
+        1px solid #ccc;
+
+    padding: 15px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.customer-section h2 {
+
+    margin-top: 0;
+
+}
+
+
+.customer-section p {
+
+    margin: 7px 0;
+
+}
+
+
+/* =========================================
+   HEADINGS
+========================================= */
+
+h2 {
+
+    font-size: 19px;
+
+    margin-top: 20px;
+
+    margin-bottom: 10px;
+
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-bottom: 20px;
+
+}
+
+
+th,
+td {
+
+    border:
+        1px solid #555;
+
+    padding: 8px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+}
+
+
+th {
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================
+   CFT SUMMARY
+========================================= */
+
+.summary-section {
+
+    border:
+        1px solid #ccc;
+
+    padding: 12px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.summary-section p {
+
+    margin: 5px 0;
+
+}
+
+
+/* =========================================
+   TOTALS
+========================================= */
+
+.totals {
+
+    width: 100%;
+
+    max-width: 450px;
+
+    margin-left: auto;
+
+    margin-top: 20px;
+
+}
+
+
+.totals div {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    padding: 8px 12px;
+
+    border-bottom:
+        1px solid #ddd;
+
+}
+
+
+.totals .grand-total {
+
+    font-size: 19px;
+
+    font-weight: bold;
+
+    border-top:
+        2px solid #222;
+
+}
+
+
+/* =========================================
+   REMARK
+========================================= */
+
+.remark {
+
+    margin-top: 25px;
+
+    padding: 12px;
+
+    border:
+        1px solid #ccc;
+
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-top: 30px;
+
+}
+
+
+.buttons button {
+
+    padding:
+        10px 25px;
+
+    border: none;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+}
+
+
+/* =========================================
+   PRINT
+========================================= */
+
+@media print {
+
+    body {
+
+        background: white;
+
+        padding: 0;
+
+    }
+
+
+    .bill-container {
+
+        width: 100%;
+
+        max-width: none;
+
+        box-shadow: none;
+
+        padding: 10px;
+
+    }
+
+
+    .buttons {
+
+        display: none;
+    }
+
+
+    table {
+
+        page-break-inside: auto;
+
+    }
+
+
+    tr {
+
+        page-break-inside: avoid;
+
+        page-break-after: auto;
+
+    }
+
+}

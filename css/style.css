@@ -74,3 +74,25 @@ button:hover{
 
     background:#5c2d0c;
 }
+/* =====================================
+   CREATOR WATERMARK
+   ===================================== */
+
+.creator-watermark {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    margin: 0;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    color: rgba(0, 0, 0, 0.30);
+
+    pointer-events: none;
+    user-select: none;
+
+    z-index: 9999;
+}

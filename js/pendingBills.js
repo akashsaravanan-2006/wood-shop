@@ -3,17 +3,27 @@ const searchBox = document.getElementById("searchBox");
 const searchBtn = document.getElementById("searchBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 
+// =======================================
+// BACKEND URL
+// =======================================
+
+const API_URL = "YOUR_DEPLOYED_BACKEND_URL";
+
 let allBills = [];
 
-// ===============================
+// =======================================
 // Load Pending Bills
-// ===============================
+// =======================================
 
 async function loadPendingBills() {
 
     try {
 
-        const response = await fetch("http://localhost:5000/pending-bills");
+        const response = await fetch(`${API_URL}/pending-bills`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
 
         const data = await response.json();
 
@@ -21,20 +31,18 @@ async function loadPendingBills() {
 
         displayBills(allBills);
 
-    }
-    catch (error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error("Pending Bills Error:", error);
 
         alert("Unable to load pending bills.");
 
     }
-
 }
 
-// ===============================
+// =======================================
 // Display Bills
-// ===============================
+// =======================================
 
 function displayBills(bills) {
 
@@ -44,10 +52,11 @@ function displayBills(bills) {
 
         tableBody.innerHTML = `
         <tr>
-            <td colspan="9" class="noData">
+            <td colspan="10" class="noData">
                 No Pending Bills Found
             </td>
         </tr>`;
+
         return;
     }
 
@@ -70,45 +79,45 @@ function displayBills(bills) {
             <td>${bill.bill_date}</td>
 
             <td class="advanceAmount">
-                ₹${parseFloat(bill.advance_amount).toFixed(2)}
+                ₹${parseFloat(bill.advance_amount || 0).toFixed(2)}
             </td>
 
             <td class="pendingAmount">
-    ₹${parseFloat(bill.balance_amount).toFixed(2)}
-</td>
+                ₹${parseFloat(bill.balance_amount || 0).toFixed(2)}
+            </td>
 
-<td>
+            <td>
 
-    <div class="remarkBox">
+                <div class="remarkBox">
 
-        <input
-            type="text"
-            class="remarkInput"
-            id="remark-${bill.id}"
-            value="${bill.remark || ''}"
-            placeholder="Enter Remark">
+                    <input
+                        type="text"
+                        class="remarkInput"
+                        id="remark-${bill.id}"
+                        value="${bill.remark || ''}"
+                        placeholder="Enter Remark">
 
-        <button
-            class="saveRemarkBtn"
-            onclick="saveRemark(${bill.id})">
-            ✓
-        </button>
+                    <button
+                        class="saveRemarkBtn"
+                        onclick="saveRemark(${bill.id})">
+                        ✓
+                    </button>
 
-    </div>
+                </div>
 
-</td>
+            </td>
 
-<td>
+            <td>
 
-    <button
-        class="updateBtn"
-        onclick="updatePending(${bill.id})">
+                <button
+                    class="updateBtn"
+                    onclick="updatePending(${bill.id})">
 
-        Update
+                    Update
 
-    </button>
+                </button>
 
-</td>
+            </td>
 
         </tr>
 
@@ -118,9 +127,9 @@ function displayBills(bills) {
 
 }
 
-// ===============================
+// =======================================
 // Search
-// ===============================
+// =======================================
 
 searchBtn.addEventListener("click", () => {
 
@@ -128,11 +137,11 @@ searchBtn.addEventListener("click", () => {
 
     const result = allBills.filter(bill =>
 
-        bill.customer_id.toLowerCase().includes(text) ||
+        String(bill.customer_id).toLowerCase().includes(text) ||
 
-        bill.customer_name.toLowerCase().includes(text) ||
+        String(bill.customer_name).toLowerCase().includes(text) ||
 
-        bill.customer_mobile.includes(text)
+        String(bill.customer_mobile).includes(text)
 
     );
 
@@ -140,9 +149,9 @@ searchBtn.addEventListener("click", () => {
 
 });
 
-// ===============================
+// =======================================
 // Refresh
-// ===============================
+// =======================================
 
 refreshBtn.addEventListener("click", () => {
 
@@ -152,40 +161,44 @@ refreshBtn.addEventListener("click", () => {
 
 });
 
-// ===============================
+// =======================================
 // Update Button
-// ===============================
+// =======================================
 
 function updatePending(id) {
-
 
     location.assign("update.html?id=" + id);
 
 }
-// ===============================
-// Page Load
-// ===============================
 
-loadPendingBills();
+// =======================================
+// Save Remark
+// =======================================
+
 async function saveRemark(id) {
 
     const remark = document.getElementById(`remark-${id}`).value;
 
     try {
 
-        const response = await fetch(
-            "http://localhost:5000/update-remark",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id: id,
-                    remark: remark
-                })
-            }
-        );
+        const response = await fetch(`${API_URL}/update-remark`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                id: id,
+                remark: remark
+            })
+
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
 
         const result = await response.json();
 
@@ -201,13 +214,14 @@ async function saveRemark(id) {
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Remark Error:", err);
 
         alert("Server Error");
 
     }
 
 }
+
 // =======================================
 // HOME BUTTON
 // =======================================
@@ -215,7 +229,17 @@ async function saveRemark(id) {
 const homeBtn = document.getElementById("homeBtn");
 
 if (homeBtn) {
+
     homeBtn.addEventListener("click", () => {
+
         window.location.href = "index.html";
+
     });
+
 }
+
+// =======================================
+// PAGE LOAD
+// =======================================
+
+loadPendingBills();

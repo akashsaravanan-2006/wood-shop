@@ -1,28 +1,19 @@
 // ======================================
-// UPDATE.JS
-// UPDATE PENDING BILL PAYMENT
+// UPDATE PENDING BILL
 // ======================================
 
-
-// ======================================
-// BACKEND API URL
-// ======================================
-
-const API_URL =
-    "https://wood-shop-backend.vercel.app/api";
+// IMPORTANT:
+// Use the deployed backend, NOT localhost.
+const API_URL = "https://wood-shop-backend.vercel.app/api";
 
 
 // ======================================
 // GET BILL ID FROM URL
 // ======================================
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+const params = new URLSearchParams(window.location.search);
 
-const billId =
-    params.get("id");
+const billId = params.get("id");
 
 
 // ======================================
@@ -31,10 +22,7 @@ const billId =
 
 if (!billId) {
 
-    alert("Bill ID not found.");
-
-    window.location.href =
-        "pendingBills.html";
+    alert("Bill ID is missing.");
 
 }
 
@@ -92,60 +80,20 @@ const backBtn =
 
 async function loadBill() {
 
+    if (!billId) {
+        return;
+    }
+
     try {
 
         console.log(
-            "================================="
-        );
-
-        console.log(
-            "Loading Bill"
-        );
-
-        console.log(
-            "Bill ID:",
+            "Loading bill:",
             billId
         );
 
-        console.log(
-            "API:",
-            `${API_URL}/bill/${billId}`
+        const response = await fetch(
+            `${API_URL}/bill/${encodeURIComponent(billId)}`
         );
-
-        console.log(
-            "================================="
-        );
-
-
-        // ==================================
-        // LOADING MESSAGE
-        // ==================================
-
-        if (billNo) {
-
-            billNo.value =
-                "Loading...";
-
-        }
-
-
-        // ==================================
-        // GET BILL
-        // ==================================
-
-        const response =
-            await fetch(
-                `${API_URL}/bill/${encodeURIComponent(billId)}`,
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    }
-                }
-            );
-
 
         console.log(
             "Response status:",
@@ -154,192 +102,96 @@ async function loadBill() {
 
 
         // ==================================
-        // HTTP ERROR
+        // CHECK HTTP RESPONSE
         // ==================================
 
         if (!response.ok) {
 
-            const errorText =
-                await response.text();
-
-            console.error(
-                "Server response:",
-                errorText
-            );
-
             throw new Error(
-                `Server returned HTTP ${response.status}`
+                "HTTP Error " + response.status
             );
 
         }
 
 
         // ==================================
-        // JSON RESPONSE
+        // READ JSON
         // ==================================
 
-        const data =
+        const result =
             await response.json();
 
-
         console.log(
-            "Bill API response:",
-            data
+            "API Response:",
+            result
         );
 
 
         // ==================================
-        // SUPPORT DIFFERENT RESPONSE TYPES
+        // CHECK API SUCCESS
         // ==================================
 
-        let bill = null;
+        if (!result.success) {
 
-
-        // Response:
-        // {
-        //   success: true,
-        //   bill: {...}
-        // }
-
-        if (
-            data &&
-            data.success &&
-            data.bill
-        ) {
-
-            bill =
-                data.bill;
-
-        }
-
-
-        // Response:
-        // {
-        //   success: true,
-        //   result: {...}
-        // }
-
-        else if (
-            data &&
-            data.success &&
-            data.result
-        ) {
-
-            bill =
-                Array.isArray(data.result)
-                    ? data.result[0]
-                    : data.result;
-
-        }
-
-
-        // Response directly:
-        // {
-        //   id: 30001,
-        //   bill_no: "BILL-0001"
-        // }
-
-        else if (
-            data &&
-            data.bill_no
-        ) {
-
-            bill =
-                data;
+            throw new Error(
+                result.message ||
+                "Unable to load bill"
+            );
 
         }
 
 
         // ==================================
-        // BILL NOT FOUND
+        // IMPORTANT:
+        // Backend returns { success, bill }
         // ==================================
+
+        const bill = result.bill;
+
 
         if (!bill) {
 
             throw new Error(
-                data?.message ||
-                "Bill details not found"
+                "Bill data not found"
             );
 
         }
 
 
-        console.log(
-            "Bill loaded:",
-            bill
-        );
-
-
         // ==================================
-        // DISPLAY BILL DETAILS
+        // DISPLAY BILL DATA
         // ==================================
 
-        if (billNo) {
+        billNo.value =
+            bill.bill_no || "";
 
-            billNo.value =
-                bill.bill_no || "";
+        customerId.value =
+            bill.customer_id || "";
 
-        }
+        customerName.value =
+            bill.customer_name || "";
 
+        customerMobile.value =
+            bill.customer_mobile || "";
 
-        if (customerId) {
-
-            customerId.value =
-                bill.customer_id || "";
-
-        }
-
-
-        if (customerName) {
-
-            customerName.value =
-                bill.customer_name || "";
-
-        }
-
-
-        if (customerMobile) {
-
-            customerMobile.value =
-                bill.customer_mobile || "";
-
-        }
-
-
-        if (customerPlace) {
-
-            customerPlace.value =
-                bill.customer_place || "";
-
-        }
+        customerPlace.value =
+            bill.customer_place || "";
 
 
         // ==================================
         // BILL DATE
         // ==================================
 
-        if (billDate) {
-
-            let dateValue =
-                bill.bill_date || "";
-
-            // Convert date to YYYY-MM-DD
-            // for <input type="date">
-
-            if (
-                typeof dateValue === "string"
-            ) {
-
-                dateValue =
-                    dateValue.substring(
-                        0,
-                        10
-                    );
-
-            }
+        if (bill.bill_date) {
 
             billDate.value =
-                dateValue;
+                String(bill.bill_date)
+                .substring(0, 10);
+
+        }
+        else {
+
+            billDate.value = "";
 
         }
 
@@ -349,112 +201,58 @@ async function loadBill() {
         // ==================================
 
         const total =
-            Number(
-                bill.grand_total
-            ) || 0;
+            Number(bill.grand_total) || 0;
+
+        grandTotal.value =
+            total.toFixed(2);
 
 
         // ==================================
-        // ADVANCE
+        // OLD ADVANCE
         // ==================================
 
-        const advance =
-            Number(
-                bill.advance_amount
-            ) || 0;
+        const oldAdvance =
+            Number(bill.advance_amount) || 0;
 
-
-        // ==================================
-        // BALANCE
-        // ==================================
-
-        let balance =
-            Number(
-                bill.balance_amount
-            );
-
-
-        // If database balance is missing,
-        // calculate it.
-
-        if (
-            isNaN(balance)
-        ) {
-
-            balance =
-                Math.max(
-                    total - advance,
-                    0
-                );
-
-        }
+        advanceAmount.value =
+            oldAdvance.toFixed(2);
 
 
         // ==================================
-        // DISPLAY VALUES
+        // OLD BALANCE
         // ==================================
 
-        if (grandTotal) {
+        const oldBalance =
+            Number(bill.balance_amount) || 0;
 
-            grandTotal.value =
-                total.toFixed(2);
-
-        }
-
-
-        if (advanceAmount) {
-
-            advanceAmount.value =
-                advance.toFixed(2);
-
-        }
-
-
-        if (balanceAmount) {
-
-            balanceAmount.value =
-                balance.toFixed(2);
-
-        }
+        balanceAmount.value =
+            oldBalance.toFixed(2);
 
 
         // ==================================
         // NEW VALUES
         // ==================================
 
-        if (newAdvance) {
+        newAdvance.value =
+            oldAdvance.toFixed(2);
 
-            newAdvance.value =
-                advance.toFixed(2);
-
-        }
-
-
-        if (newBalance) {
-
-            newBalance.value =
-                balance.toFixed(2);
-
-        }
+        newBalance.value =
+            oldBalance.toFixed(2);
 
 
         // ==================================
         // CLEAR PAYMENT INPUT
         // ==================================
 
-        if (paidAmount) {
-
-            paidAmount.value = "";
-
-        }
+        paidAmount.value = "";
 
 
         console.log(
-            "Bill loaded successfully."
+            "Bill loaded successfully:",
+            bill
         );
 
     }
-
 
     catch (error) {
 
@@ -463,16 +261,9 @@ async function loadBill() {
             error
         );
 
-
-        if (billNo) {
-
-            billNo.value = "";
-
-        }
-
-
         alert(
-            "Unable to load bill details."
+            "Unable to load bill details.\n\n" +
+            error.message
         );
 
     }
@@ -493,46 +284,29 @@ if (paidAmount) {
 
             const advance =
                 Number(
-                    advanceAmount?.value
+                    advanceAmount.value
                 ) || 0;
 
 
             const balance =
                 Number(
-                    balanceAmount?.value
+                    balanceAmount.value
                 ) || 0;
 
 
-            let paid =
+            const paid =
                 Number(
                     paidAmount.value
                 ) || 0;
 
 
             // ==================================
-            // NEGATIVE PAYMENT NOT ALLOWED
+            // VALIDATE PAYMENT
             // ==================================
 
             if (paid < 0) {
 
-                paid = 0;
-
-                paidAmount.value = "0";
-
-            }
-
-
-            // ==================================
-            // DO NOT ALLOW OVERPAYMENT
-            // ==================================
-
-            if (paid > balance) {
-
-                paid =
-                    balance;
-
-                paidAmount.value =
-                    balance.toFixed(2);
+                paidAmount.value = 0;
 
             }
 
@@ -541,7 +315,7 @@ if (paidAmount) {
             // NEW ADVANCE
             // ==================================
 
-            const nextAdvance =
+            let nextAdvance =
                 advance + paid;
 
 
@@ -549,31 +323,30 @@ if (paidAmount) {
             // NEW BALANCE
             // ==================================
 
-            const nextBalance =
-                Math.max(
-                    balance - paid,
-                    0
-                );
+            let nextBalance =
+                balance - paid;
+
+
+            // ==================================
+            // DON'T ALLOW NEGATIVE BALANCE
+            // ==================================
+
+            if (nextBalance < 0) {
+
+                nextBalance = 0;
+
+            }
 
 
             // ==================================
             // DISPLAY
             // ==================================
 
-            if (newAdvance) {
+            newAdvance.value =
+                nextAdvance.toFixed(2);
 
-                newAdvance.value =
-                    nextAdvance.toFixed(2);
-
-            }
-
-
-            if (newBalance) {
-
-                newBalance.value =
-                    nextBalance.toFixed(2);
-
-            }
+            newBalance.value =
+                nextBalance.toFixed(2);
 
         }
     );
@@ -593,17 +366,17 @@ if (updateBtn) {
 
 
             // ==================================
-            // GET PAYMENT
+            // GET PAID AMOUNT
             // ==================================
 
             const paid =
                 Number(
-                    paidAmount?.value
+                    paidAmount.value
                 ) || 0;
 
 
             // ==================================
-            // VALIDATE PAYMENT
+            // VALIDATE
             // ==================================
 
             if (paid <= 0) {
@@ -618,17 +391,17 @@ if (updateBtn) {
 
 
             // ==================================
-            // CURRENT BALANCE
+            // GET CURRENT BALANCE
             // ==================================
 
             const currentBalance =
                 Number(
-                    balanceAmount?.value
+                    balanceAmount.value
                 ) || 0;
 
 
             // ==================================
-            // PREVENT OVERPAYMENT
+            // DON'T ALLOW OVER PAYMENT
             // ==================================
 
             if (paid > currentBalance) {
@@ -643,121 +416,70 @@ if (updateBtn) {
 
 
             // ==================================
-            // CONFIRM PAYMENT
+            // DISABLE BUTTON
             // ==================================
 
-            const confirmPayment =
-                confirm(
-                    `Confirm payment of ₹${paid.toFixed(2)}?`
-                );
+            updateBtn.disabled = true;
 
-
-            if (!confirmPayment) {
-
-                return;
-
-            }
+            updateBtn.textContent =
+                "Updating...";
 
 
             try {
 
-
-                // ==================================
-                // DISABLE BUTTON
-                // ==================================
-
-                updateBtn.disabled =
-                    true;
-
-                updateBtn.textContent =
-                    "Updating...";
-
-
                 console.log(
-                    "================================="
-                );
-
-                console.log(
-                    "Updating Payment"
-                );
-
-                console.log(
-                    "Bill ID:",
+                    "Updating bill:",
                     billId
                 );
 
                 console.log(
-                    "Paid Amount:",
+                    "Paid amount:",
                     paid
                 );
 
-                console.log(
-                    "API:",
-                    `${API_URL}/update-pending`
-                );
-
-                console.log(
-                    "================================="
-                );
-
 
                 // ==================================
-                // UPDATE DATABASE
+                // SEND UPDATE TO BACKEND
                 // ==================================
 
-                const response =
-                    await fetch(
-                        `${API_URL}/update-pending`,
-                        {
-                            method: "PUT",
+                const response = await fetch(
+                    `${API_URL}/update-pending`,
+                    {
+                        method: "PUT",
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                            body: JSON.stringify({
+                        body: JSON.stringify({
 
-                                id:
-                                    billId,
+                            id: Number(billId),
 
-                                paidAmount:
-                                    paid
+                            paidAmount: paid
 
-                            })
-                        }
-                    );
+                        })
 
-
-                console.log(
-                    "Update response status:",
-                    response.status
+                    }
                 );
 
 
                 // ==================================
-                // HTTP ERROR
+                // CHECK HTTP RESPONSE
                 // ==================================
 
                 if (!response.ok) {
 
-                    const errorText =
-                        await response.text();
-
-                    console.error(
-                        "Update server response:",
-                        errorText
-                    );
-
                     throw new Error(
-                        `Server returned HTTP ${response.status}`
+                        "HTTP Error " +
+                        response.status
                     );
 
                 }
 
 
                 // ==================================
-                // READ RESPONSE
+                // READ RESULT
                 // ==================================
 
                 const result =
@@ -765,74 +487,62 @@ if (updateBtn) {
 
 
                 console.log(
-                    "Update API response:",
+                    "Update response:",
                     result
                 );
+
+
+                // ==================================
+                // CHECK SUCCESS
+                // ==================================
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        "Payment update failed"
+                    );
+
+                }
 
 
                 // ==================================
                 // SUCCESS
                 // ==================================
 
-                if (
-                    result.success
-                ) {
-
-
-                    alert(
-                        "Payment Updated Successfully"
-                    );
-
-
-                    // ==================================
-                    // GO TO PENDING BILLS
-                    // ==================================
-
-                    window.location.href =
-                        "pendingBills.html";
-
-
-                }
+                alert(
+                    "Payment Updated Successfully"
+                );
 
 
                 // ==================================
-                // FAILED
+                // GO BACK TO PENDING BILLS
                 // ==================================
 
-                else {
-
-                    alert(
-                        result.message ||
-                        "Update Failed"
-                    );
-
-
-                    updateBtn.disabled =
-                        false;
-
-                    updateBtn.textContent =
-                        "Update";
-
-                }
+                window.location.href =
+                    "pendingBills.html";
 
             }
-
 
             catch (error) {
 
                 console.error(
-                    "UPDATE PAYMENT ERROR:",
+                    "UPDATE ERROR:",
                     error
                 );
 
 
                 alert(
-                    "Server Error while updating payment."
+                    "Payment update failed.\n\n" +
+                    error.message
                 );
 
 
-                updateBtn.disabled =
-                    false;
+                // ==================================
+                // ENABLE BUTTON AGAIN
+                // ==================================
+
+                updateBtn.disabled = false;
 
                 updateBtn.textContent =
                     "Update";
@@ -865,14 +575,7 @@ if (backBtn) {
 
 
 // ======================================
-// PAGE LOAD
+// LOAD BILL WHEN PAGE OPENS
 // ======================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        loadBill();
-
-    }
-);
+loadBill();

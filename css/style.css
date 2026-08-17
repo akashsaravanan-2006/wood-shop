@@ -1,101 +1,103 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
+body {
+    background: #f4f4f4;
 
-    background:#f4f4f4;
+    display: flex;
 
-    display:flex;
+    justify-content: center;
 
-    justify-content:center;
+    align-items: center;
 
-    align-items:center;
-
-    height:100vh;
+    height: 100vh;
 }
 
-.container{
+.container {
+    background: white;
 
-    background:white;
+    width: 400px;
 
-    width:400px;
+    padding: 40px;
 
-    padding:40px;
+    border-radius: 15px;
 
-    border-radius:15px;
+    text-align: center;
 
-    text-align:center;
-
-    box-shadow:0 0 15px rgba(0,0,0,.2);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
-h1{
+h1 {
+    margin-bottom: 10px;
 
-    margin-bottom:10px;
-
-    color:#8B4513;
+    color: #8B4513;
 }
 
-p{
+p {
+    margin-bottom: 30px;
 
-    margin-bottom:30px;
-
-    color:#555;
+    color: #555;
 }
 
-button{
+button {
+    width: 100%;
 
-    width:100%;
+    padding: 18px;
 
-    padding:18px;
+    margin: 10px 0;
 
-    margin:10px 0;
+    font-size: 18px;
 
-    font-size:18px;
+    border: none;
 
-    border:none;
+    border-radius: 8px;
 
-    border-radius:8px;
+    cursor: pointer;
 
-    cursor:pointer;
+    background: #8B4513;
 
-    background:#8B4513;
+    color: white;
 
-    color:white;
-
-    transition:.3s;
+    transition: 0.3s;
 }
 
-button:hover{
-
-    background:#5c2d0c;
+button:hover {
+    background: #5c2d0c;
 }
+
+
 /* =====================================
    AKASH S WATERMARK
    ===================================== */
 
 .creator-watermark {
-    position: fixed !important;
-    bottom: 15px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: fixed;
 
-    margin: 0 !important;
-    padding: 0 !important;
+    bottom: 12px;
 
-    color: #000000 !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    font-family: Arial, sans-serif !important;
+    left: 50%;
 
-    z-index: 99999 !important;
+    transform: translateX(-50%);
 
-    pointer-events: none !important;
-    user-select: none !important;
-}
-    z-index: 9999;
+    margin: 0;
+
+    padding: 0;
+
+    color: #000000;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    z-index: 99999;
+
+    pointer-events: none;
+
+    user-select: none;
 }

@@ -2,14 +2,14 @@
 // WOOD PAGE ONLY PERSISTENCE
 // =======================================
 //
-// Values are saved ONLY for the Wood page.
+// Saves ONLY Wood page inputs.
 //
-// They remain while the user moves through:
+// Values remain while moving:
 // Wood → Labour → Advance → Bill → Confirm
 //
-// They are cleared ONLY when:
-// 1. Bill is confirmed/saved
-// 2. User goes Home
+// Values are cleared ONLY when:
+// 1. User clicks Home
+// 2. Bill is successfully saved
 // =======================================
 
 
@@ -17,7 +17,7 @@ const WOOD_STORAGE_KEY = "wood_page_data";
 
 
 // =======================================
-// CHECK IF CURRENT PAGE IS WOOD PAGE
+// CHECK CURRENT PAGE
 // =======================================
 
 function isWoodPage() {
@@ -27,7 +27,7 @@ function isWoodPage() {
 
     return (
         path.endsWith("/wood.html") ||
-        path.endsWith("/wood") ||
+        path.endsWith("/woodcalculation.html") ||
         path.endsWith("/wood-calculation.html")
     );
 
@@ -35,12 +35,11 @@ function isWoodPage() {
 
 
 // =======================================
-// SAVE WOOD PAGE VALUES
+// SAVE WOOD PAGE
 // =======================================
 
 function saveWoodPageData() {
 
-    // Do nothing on other pages
     if (!isWoodPage()) {
         return;
     }
@@ -50,7 +49,9 @@ function saveWoodPageData() {
 
 
     document
-        .querySelectorAll("input, select, textarea")
+        .querySelectorAll(
+            "input, select, textarea"
+        )
         .forEach(function(input) {
 
             if (!input.id && !input.name) {
@@ -62,7 +63,7 @@ function saveWoodPageData() {
                 input.id || input.name;
 
 
-            // Checkbox
+            // CHECKBOX
             if (input.type === "checkbox") {
 
                 data[key] =
@@ -71,7 +72,7 @@ function saveWoodPageData() {
             }
 
 
-            // Radio
+            // RADIO
             else if (input.type === "radio") {
 
                 if (input.checked) {
@@ -84,7 +85,7 @@ function saveWoodPageData() {
             }
 
 
-            // Normal input/select/textarea
+            // NORMAL INPUT
             else {
 
                 data[key] =
@@ -100,16 +101,20 @@ function saveWoodPageData() {
         JSON.stringify(data)
     );
 
+
+    console.log(
+        "Wood page data saved."
+    );
+
 }
 
 
 // =======================================
-// LOAD WOOD PAGE VALUES
+// LOAD WOOD PAGE
 // =======================================
 
 function loadWoodPageData() {
 
-    // Do nothing on other pages
     if (!isWoodPage()) {
         return;
     }
@@ -126,7 +131,8 @@ function loadWoodPageData() {
     }
 
 
-    let data = {};
+    let data;
+
 
     try {
 
@@ -137,7 +143,7 @@ function loadWoodPageData() {
     catch (error) {
 
         console.error(
-            "Wood storage error:",
+            "Unable to read wood page data:",
             error
         );
 
@@ -147,7 +153,9 @@ function loadWoodPageData() {
 
 
     document
-        .querySelectorAll("input, select, textarea")
+        .querySelectorAll(
+            "input, select, textarea"
+        )
         .forEach(function(input) {
 
             if (!input.id && !input.name) {
@@ -164,7 +172,7 @@ function loadWoodPageData() {
             }
 
 
-            // Checkbox
+            // CHECKBOX
             if (input.type === "checkbox") {
 
                 input.checked =
@@ -173,7 +181,7 @@ function loadWoodPageData() {
             }
 
 
-            // Radio
+            // RADIO
             else if (input.type === "radio") {
 
                 input.checked =
@@ -182,7 +190,7 @@ function loadWoodPageData() {
             }
 
 
-            // Normal input
+            // NORMAL INPUT
             else {
 
                 input.value =
@@ -192,11 +200,16 @@ function loadWoodPageData() {
 
         });
 
+
+    console.log(
+        "Wood page data loaded."
+    );
+
 }
 
 
 // =======================================
-// CLEAR WOOD PAGE VALUES
+// CLEAR ONLY WOOD PAGE DATA
 // =======================================
 
 function clearWoodPageData() {
@@ -228,7 +241,7 @@ document.addEventListener(
 
 
 // =======================================
-// SAVE WHILE USER TYPES
+// SAVE WHEN USER TYPES
 // =======================================
 
 document.addEventListener(

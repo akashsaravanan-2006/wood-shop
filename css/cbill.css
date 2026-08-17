@@ -1,9 +1,13 @@
-/* =====================================================
+/* =========================================
    CBILL CSS
-   ===================================================== */
+   SAME DESIGN AS BILL PAGE
+   ========================================= */
+
 
 * {
+
     box-sizing: border-box;
+
 }
 
 
@@ -15,22 +19,22 @@ body {
 
     background: #eeeeee;
 
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 
     color: #000;
 
 }
 
 
-/* =====================================================
+/* =========================================
    BILL CONTAINER
-   ===================================================== */
+   ========================================= */
 
 .bill-container {
 
     width: 850px;
 
-    max-width: 100%;
+    min-height: 1000px;
 
     margin: auto;
 
@@ -38,16 +42,16 @@ body {
 
     padding: 30px;
 
-    border: 1px solid #222;
+    border: 1px solid black;
 
 }
 
 
-/* =====================================================
-   SHOP HEADER
-   ===================================================== */
+/* =========================================
+   HEADER
+   ========================================= */
 
-.shop-header {
+.header {
 
     display: flex;
 
@@ -55,53 +59,70 @@ body {
 
     align-items: center;
 
-    min-height: 170px;
+}
+
+
+.logo {
+
+    width: 180px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
 
 }
 
 
-.shop-logo {
+.logo img {
 
-    width: 150px;
+    width: 100px;
 
-    text-align: center;
+    height: auto;
 
-}
-
-
-.logo-symbol {
-
-    font-size: 70px;
+    object-fit: contain;
 
 }
 
 
-.shop-details {
-
-    text-align: right;
+.company {
 
     flex: 1;
 
-}
-
-
-.shop-details h1 {
-
-    margin: 0 0 5px;
-
-    font-size: 30px;
+    text-align: right;
 
 }
 
 
-.shop-details h3 {
+.company h1 {
 
-    margin: 5px 0;
+    margin: 0;
+
+    font-size: 32px;
 
 }
 
 
-.shop-details p {
+.company h4 {
+
+    margin: 4px 0;
+
+    font-size: 16px;
+
+}
+
+
+.company h3 {
+
+    margin: 4px 0;
+
+    font-size: 16px;
+
+}
+
+
+.company p {
 
     margin: 3px 0;
 
@@ -110,26 +131,26 @@ body {
 }
 
 
-/* =====================================================
+/* =========================================
    HR
-   ===================================================== */
+   ========================================= */
 
 hr {
 
-    border: none;
+    border: 0;
 
     border-top: 2px solid #000;
 
-    margin: 15px 0;
+    margin: 18px 0;
 
 }
 
 
-/* =====================================================
-   BILL TOP
-   ===================================================== */
+/* =========================================
+   BILL INFORMATION
+   ========================================= */
 
-.bill-top {
+.billInfo {
 
     display: flex;
 
@@ -144,6 +165,13 @@ hr {
 }
 
 
+.billInfo > div:last-child {
+
+    text-align: right;
+
+}
+
+
 #billNo {
 
     font-weight: bold;
@@ -151,58 +179,59 @@ hr {
 }
 
 
-.date-section {
-
-    text-align: right;
-
-}
-
-
-/* =====================================================
+/* =========================================
    CUSTOMER
-   ===================================================== */
+   ========================================= */
 
-.customer-section {
+.customer {
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns:
-        1.5fr 1fr 1fr;
+    justify-content: space-between;
+
+    align-items: center;
 
     gap: 20px;
 
-    padding: 15px 0;
-
     font-size: 17px;
+
+    min-height: 55px;
 
 }
 
 
-/* =====================================================
+.customer span {
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================
    HEADINGS
-   ===================================================== */
+   ========================================= */
 
 h2 {
 
+    font-size: 23px;
+
     margin-top: 20px;
 
-    font-size: 22px;
+    margin-bottom: 12px;
 
 }
 
 
-/* =====================================================
+h3 {
+
+    margin-top: 10px;
+
+}
+
+
+/* =========================================
    TABLE
-   ===================================================== */
-
-.table-wrapper {
-
-    width: 100%;
-
-    overflow-x: auto;
-
-}
-
+   ========================================= */
 
 table {
 
@@ -210,7 +239,7 @@ table {
 
     border-collapse: collapse;
 
-    font-size: 14px;
+    margin-bottom: 20px;
 
 }
 
@@ -221,53 +250,64 @@ th {
 
     color: white;
 
+    border: 1px solid black;
+
     padding: 10px 5px;
 
-    border: 1px solid #000;
-
     text-align: center;
+
+    font-size: 14px;
 
 }
 
 
 td {
 
-    padding: 8px 5px;
+    border: 1px solid black;
 
-    border: 1px solid #000;
+    padding: 8px 5px;
 
     text-align: center;
 
+    font-size: 14px;
+
 }
 
 
-/* =====================================================
+/* =========================================
    TOTALS
-   ===================================================== */
+   ========================================= */
 
 .totals {
 
-    width: 360px;
+    width: 350px;
 
     margin-left: auto;
 
-    margin-top: 25px;
+    margin-top: 20px;
 
 }
 
 
-.totals h3 {
+.cftTotal {
 
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 
-    font-size: 20px;
+}
+
+
+.cftTotal h3 {
+
+    text-align: left;
+
+    margin-bottom: 8px;
 
 }
 
 
 #cftSummary p {
 
-    margin: 6px 0;
+    margin: 5px 0;
 
     display: flex;
 
@@ -276,39 +316,39 @@ td {
 }
 
 
-.total-row {
+.totals > p {
 
     display: flex;
 
     justify-content: space-between;
-
-    padding: 7px 0;
 
     font-size: 17px;
 
+    margin: 10px 0;
+
 }
 
 
-.grand-total {
+.totals > h2 {
 
     display: flex;
 
     justify-content: space-between;
 
+    border-top: 2px solid black;
+
+    padding-top: 10px;
+
     font-size: 23px;
-
-    font-weight: bold;
-
-    padding: 10px 0;
 
 }
 
 
-/* =====================================================
+/* =========================================
    SIGNATURE
-   ===================================================== */
+   ========================================= */
 
-.signature-section {
+.signature {
 
     display: flex;
 
@@ -316,14 +356,14 @@ td {
 
     margin-top: 90px;
 
-    padding-bottom: 30px;
+    font-weight: bold;
 
 }
 
 
-/* =====================================================
+/* =========================================
    BUTTONS
-   ===================================================== */
+   ========================================= */
 
 .buttons {
 
@@ -333,20 +373,20 @@ td {
 
     gap: 20px;
 
-    margin-top: 20px;
+    margin-top: 25px;
 
 }
 
 
 .buttons button {
 
+    padding: 12px 35px;
+
     border: none;
 
-    padding: 13px 45px;
+    border-radius: 5px;
 
     font-size: 16px;
-
-    border-radius: 5px;
 
     cursor: pointer;
 
@@ -373,29 +413,32 @@ td {
 
 #printBtn:hover {
 
-    background: #008b43;
+    background: #008f45;
 
 }
 
 
 #homeBtn:hover {
 
-    background: #d99c00;
+    background: #d99d00;
 
 }
 
 
-/* =====================================================
+/* =========================================
    PRINT
-   ===================================================== */
+   ========================================= */
 
 @media print {
 
+
     body {
 
-        background: white;
+        margin: 0;
 
         padding: 0;
+
+        background: white;
 
     }
 
@@ -404,11 +447,13 @@ td {
 
         width: 100%;
 
-        max-width: none;
+        min-height: auto;
 
-        border: none;
+        margin: 0;
 
         padding: 10px;
+
+        border: none;
 
     }
 
@@ -416,6 +461,7 @@ td {
     .buttons {
 
         display: none;
+
     }
 
 

@@ -15,45 +15,59 @@
 
 </head>
 
+
 <body>
+
 
 <div class="bill-container">
 
-    <!-- ================================================= -->
-    <!-- SHOP HEADER -->
-    <!-- ================================================= -->
 
-    <div class="shop-header">
+    <!-- ========================= -->
+    <!-- Header -->
+    <!-- ========================= -->
 
-        <div class="shop-logo">
-            <div class="logo-symbol">ॐ</div>
+    <div class="header">
+
+        <div class="logo">
+
+            <img
+                src="../img/logo.jpg"
+                id="logo"
+                alt="Logo">
+
         </div>
 
-        <div class="shop-details">
 
-            <h1>மீ அம்மன் சாமில்</h1>
+        <div class="company">
+
+            <h1>
+                ஸ்ரீ அம்மன் சாமில்
+            </h1>
+
+
+            <h4>
+                தேக்கு, வேம்பு, பூவரசு வியாபாரம்
+            </h4>
+
+
+            <p>
+                2/17,A, மணப்பாறை மெயின் ரோடு, சத்தியமங்கலம்
+            </p>
+
+
+            <p>
+                குளித்தலை வட்டம், கரூர் மாவட்டம் - 639 120
+            </p>
+
 
             <h3>
-                தேக்கு, வேம்பு, புவரச வியாபாரம்
+                Mobile : 9443076409 , 9715050908
             </h3>
 
-            <p>
-                2/17A, மணப்பாறை மெயின் ரோடு,
-                சத்தியமங்கலம்
-            </p>
 
-            <p>
-                குளித்தலை வட்டம்,
-                கரூர் மாவட்டம் - 639 120
-            </p>
-
-            <p>
-                <b>Mobile : 9443076409 , 9715050908</b>
-            </p>
-
-            <p>
-                <b>GST : 33DLKPK5760D1Z5</b>
-            </p>
+            <h4>
+                GST : 33DLKPK5760D1Z5
+            </h4>
 
         </div>
 
@@ -63,15 +77,18 @@
     <hr>
 
 
-    <!-- ================================================= -->
-    <!-- BILL NUMBER + DATE -->
-    <!-- ================================================= -->
+    <!-- ========================= -->
+    <!-- Bill Information -->
+    <!-- ========================= -->
 
-    <div class="bill-top">
+    <div class="billInfo">
+
 
         <div>
 
-            <b>Bill No :</b>
+            <b>
+                Bill No :
+            </b>
 
             <span id="billNo">
                 Loading...
@@ -80,9 +97,11 @@
         </div>
 
 
-        <div class="date-section">
+        <div>
 
-            <b>Date :</b>
+            <b>
+                Date :
+            </b>
 
             <span id="billDate">
                 -
@@ -90,11 +109,12 @@
 
             <br>
 
-            <span id="billDayTime">
+            <small id="billDayTime">
                 -
-            </span>
+            </small>
 
         </div>
+
 
     </div>
 
@@ -102,43 +122,51 @@
     <hr>
 
 
-    <!-- ================================================= -->
-    <!-- CUSTOMER DETAILS -->
-    <!-- ================================================= -->
+    <!-- ========================= -->
+    <!-- Customer -->
+    <!-- ========================= -->
 
-    <div class="customer-section">
+    <div class="customer">
 
-        <div>
 
-            <b>Customer :</b>
+        <span>
+
+            <b>
+                Customer :
+            </b>
 
             <span id="customerName">
                 -
             </span>
 
-        </div>
+        </span>
 
 
-        <div>
+        <span>
 
-            <b>Mobile :</b>
+            <b>
+                Mobile :
+            </b>
 
             <span id="customerMobile">
                 -
             </span>
 
-        </div>
+        </span>
 
 
-        <div>
+        <span>
 
-            <b>Place :</b>
+            <b>
+                Place :
+            </b>
 
             <span id="customerPlace">
                 -
             </span>
 
-        </div>
+        </span>
+
 
     </div>
 
@@ -146,171 +174,221 @@
     <hr>
 
 
-    <!-- ================================================= -->
-    <!-- WOOD DETAILS -->
-    <!-- ================================================= -->
+    <!-- ========================= -->
+    <!-- Wood Details -->
+    <!-- ========================= -->
 
-    <h2>Wood Details</h2>
-
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>S.No</th>
-                    <th>Wood</th>
-                    <th>Size</th>
-                    <th>Length</th>
-                    <th>Qty</th>
-                    <th>Total Length</th>
-                    <th>CFT</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                    <th>Quality</th>
-
-                </tr>
-
-            </thead>
+    <h2>
+        Wood Details
+    </h2>
 
 
-            <tbody id="woodTable">
+    <table>
 
-            </tbody>
+        <thead>
 
-        </table>
+            <tr>
 
-    </div>
+                <th>
+                    S.No
+                </th>
+
+                <th>
+                    Wood
+                </th>
+
+                <th>
+                    Size
+                </th>
+
+                <th>
+                    Length
+                </th>
+
+                <th>
+                    Qty
+                </th>
+
+                <th>
+                    Total Length
+                </th>
+
+                <th>
+                    CFT
+                </th>
+
+                <th>
+                    Rate
+                </th>
+
+                <th>
+                    Amount
+                </th>
+
+                <th>
+                    Quality
+                </th>
+
+            </tr>
+
+        </thead>
 
 
-    <!-- ================================================= -->
-    <!-- OTHER CHARGES -->
-    <!-- ================================================= -->
+        <tbody id="woodTable">
 
-    <h2>Other Charges</h2>
+        </tbody>
 
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-
-                </tr>
-
-            </thead>
+    </table>
 
 
-            <tbody id="chargeTable">
+    <!-- ========================= -->
+    <!-- Other Charges -->
+    <!-- ========================= -->
 
-            </tbody>
-
-        </table>
-
-    </div>
+    <h2>
+        Other Charges
+    </h2>
 
 
-    <!-- ================================================= -->
-    <!-- TOTALS -->
-    <!-- ================================================= -->
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    S.No
+                </th>
+
+                <th>
+                    Name
+                </th>
+
+                <th>
+                    Amount
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="chargeTable">
+
+        </tbody>
+
+    </table>
+
+
+    <!-- ========================= -->
+    <!-- Totals -->
+    <!-- ========================= -->
 
     <div class="totals">
 
-        <h3>CFT Total</h3>
 
-        <div id="cftSummary">
+        <div class="cftTotal">
+
+            <h3>
+                CFT Total
+            </h3>
+
+
+            <div id="cftSummary">
+
+            </div>
+
         </div>
 
 
-        <div class="total-row">
+        <p>
 
-            <span>Wood Total</span>
+            Wood Total
 
             <span id="woodTotal">
                 ₹ 0
             </span>
 
-        </div>
+        </p>
 
 
-        <div class="total-row">
+        <p>
 
-            <span>Others Total</span>
+            Others Total
 
             <span id="othersTotal">
                 ₹ 0
             </span>
 
-        </div>
+        </p>
 
 
-        <hr>
+        <h2>
 
-
-        <div class="grand-total">
-
-            <span>Grand Total</span>
+            Grand Total
 
             <span id="grandTotal">
                 ₹ 0
             </span>
 
-        </div>
+        </h2>
 
 
-        <div class="total-row">
+        <p>
 
-            <span>Balance Amount</span>
+            Balance Amount
 
             <span id="balanceAmount">
                 ₹ 0
             </span>
 
-        </div>
+        </p>
+
 
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- SIGNATURE -->
-    <!-- ================================================= -->
+    <!-- ========================= -->
+    <!-- Signature -->
+    <!-- ========================= -->
 
-    <div class="signature-section">
+    <div class="signature">
 
-        <div>
-            <b>Customer Signature</b>
-        </div>
+        <p>
+            Customer Signature
+        </p>
 
-        <div>
-            <b>Authorized Signature</b>
-        </div>
+
+        <p>
+            Authorized Signature
+        </p>
 
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- BUTTONS -->
-    <!-- ================================================= -->
+    <br>
+
+
+    <!-- ========================= -->
+    <!-- Buttons -->
+    <!-- ========================= -->
 
     <div class="buttons">
 
+
         <button id="printBtn">
-            Print
+
+            Print Bill
+
         </button>
 
 
         <button id="homeBtn">
+
             Home
+
         </button>
+
 
     </div>
 
@@ -319,6 +397,7 @@
 
 
 <script src="../js/cbill.js"></script>
+
 
 </body>
 

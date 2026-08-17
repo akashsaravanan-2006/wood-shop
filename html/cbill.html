@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Final Bill</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/cbill.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="bill-container">
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <div class="header">
+
+        <h1>WOOD SHOP</h1>
+
+        <p>FINAL BILL</p>
+
+    </div>
+
+
+    <!-- =========================================
+         BILL INFORMATION
+    ========================================== -->
+
+    <div class="bill-info">
+
+        <div>
+
+            <strong>Bill No:</strong>
+
+            <span id="billNo">
+                ---
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <strong>Customer ID:</strong>
+
+            <span id="customerId">
+                ---
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <strong>Date:</strong>
+
+            <span id="billDate">
+                ---
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <strong>Day / Time:</strong>
+
+            <span id="billDayTime">
+                ---
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         CUSTOMER DETAILS
+    ========================================== -->
+
+    <div class="customer-section">
+
+        <h2>Customer Details</h2>
+
+        <p>
+            <strong>Name:</strong>
+            <span id="customerName">-</span>
+        </p>
+
+        <p>
+            <strong>Mobile:</strong>
+            <span id="customerMobile">-</span>
+        </p>
+
+        <p>
+            <strong>Place:</strong>
+            <span id="customerPlace">-</span>
+        </p>
+
+    </div>
+
+
+    <!-- =========================================
+         WOOD DETAILS
+    ========================================== -->
+
+    <h2>Wood Details</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>S.No</th>
+
+                    <th>Wood</th>
+
+                    <th>B × T</th>
+
+                    <th>Length</th>
+
+                    <th>Qty</th>
+
+                    <th>Total Length</th>
+
+                    <th>CFT</th>
+
+                    <th>Rate</th>
+
+                    <th>Amount</th>
+
+                    <th>Quality</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="woodTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =========================================
+         CFT SUMMARY
+    ========================================== -->
+
+    <div class="summary-section">
+
+        <h2>CFT Summary</h2>
+
+        <div id="cftSummary">
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         OTHER CHARGES
+    ========================================== -->
+
+    <h2>Other Charges</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>S.No</th>
+
+                    <th>Description</th>
+
+                    <th>Amount</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="chargeTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =========================================
+         TOTALS
+    ========================================== -->
+
+    <div class="totals">
+
+        <div>
+
+            <span>Wood Total</span>
+
+            <strong id="woodTotal">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Other Charges</span>
+
+            <strong id="othersTotal">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Advance</span>
+
+            <strong id="advanceAmount">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Balance</span>
+
+            <strong id="balanceAmount">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <div class="grand-total">
+
+            <span>Grand Total</span>
+
+            <strong id="grandTotal">
+                ₹ 0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         REMARK
+    ========================================== -->
+
+    <div class="remark">
+
+        <strong>Remark:</strong>
+
+        <span id="remark">
+            -
+        </span>
+
+    </div>
+
+
+    <!-- =========================================
+         BUTTONS
+    ========================================== -->
+
+    <div class="buttons">
+
+        <button
+            id="printBtn"
+            type="button"
+        >
+            Print
+        </button>
+
+
+        <button
+            id="homeBtn"
+            type="button"
+        >
+            Home
+        </button>
+
+    </div>
+
+
+</div>
+
+
+<script src="../js/cbill.js"></script>
+
+</body>
+
+</html>

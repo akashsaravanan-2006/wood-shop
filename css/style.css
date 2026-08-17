@@ -1,11 +1,26 @@
+/* =====================================
+   RESET
+   ===================================== */
+
 * {
+
     margin: 0;
+
     padding: 0;
+
     box-sizing: border-box;
+
     font-family: Arial, Helvetica, sans-serif;
+
 }
 
+
+/* =====================================
+   BODY
+   ===================================== */
+
 body {
+
     background: #f4f4f4;
 
     display: flex;
@@ -14,13 +29,24 @@ body {
 
     align-items: center;
 
-    height: 100vh;
+    min-height: 100vh;
+
+    padding: 20px;
+
 }
 
+
+/* =====================================
+   MAIN CONTAINER
+   ===================================== */
+
 .container {
+
     background: white;
 
     width: 400px;
+
+    max-width: 100%;
 
     padding: 40px;
 
@@ -28,22 +54,88 @@ body {
 
     text-align: center;
 
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.20);
+
 }
 
-h1 {
-    margin-bottom: 10px;
 
-    color: #8B4513;
+/* =====================================
+   SHOP NAME
+   ===================================== */
+
+.container h3 {
+
+    margin-bottom: 5px;
+
+    color: #000000;
+
 }
 
-p {
-    margin-bottom: 30px;
 
-    color: #555;
+/* =====================================
+   BUSINESS TYPE
+   ===================================== */
+
+.container h4 {
+
+    margin-bottom: 5px;
+
+    color: #000000;
+
 }
+
+
+/* =====================================
+   ADDRESS
+   ===================================== */
+
+.address {
+
+    margin-top: 5px;
+
+    margin-bottom: 25px;
+
+    color: #555555;
+
+    line-height: 1.5;
+
+}
+
+
+/* =====================================
+   MOBILE
+   ===================================== */
+
+.container h3:nth-of-type(2) {
+
+    margin-top: 15px;
+
+    margin-bottom: 0;
+
+    color: #000000;
+
+}
+
+
+/* =====================================
+   GST
+   ===================================== */
+
+.container h4:last-of-type {
+
+    margin-bottom: 15px;
+
+    color: #000000;
+
+}
+
+
+/* =====================================
+   BUTTONS
+   ===================================== */
 
 button {
+
     width: 100%;
 
     padding: 18px;
@@ -51,6 +143,8 @@ button {
     margin: 10px 0;
 
     font-size: 18px;
+
+    font-weight: 500;
 
     border: none;
 
@@ -62,42 +156,62 @@ button {
 
     color: white;
 
-    transition: 0.3s;
-}
+    transition: background 0.3s ease,
+                transform 0.1s ease;
 
-button:hover {
-    background: #5c2d0c;
 }
 
 
 /* =====================================
-   AKASH S WATERMARK
+   BUTTON HOVER
    ===================================== */
 
-.creator-watermark {
-    position: fixed;
+button:hover {
 
-    bottom: 12px;
+    background: #5c2d0c;
 
-    left: 50%;
+}
 
-    transform: translateX(-50%);
 
-    margin: 0;
+/* =====================================
+   BUTTON CLICK
+   ===================================== */
 
-    padding: 0;
+button:active {
 
-    color: #000000;
+    transform: scale(0.98);
 
-    font-size: 14px;
+}
 
-    font-weight: 500;
 
-    font-family: Arial, Helvetica, sans-serif;
+/* =====================================
+   MOBILE RESPONSIVE
+   ===================================== */
 
-    z-index: 99999;
+@media (max-width: 500px) {
 
-    pointer-events: none;
+    body {
 
-    user-select: none;
+        padding: 15px;
+
+    }
+
+
+    .container {
+
+        width: 100%;
+
+        padding: 30px 20px;
+
+    }
+
+
+    button {
+
+        padding: 16px;
+
+        font-size: 17px;
+
+    }
+
 }

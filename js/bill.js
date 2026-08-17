@@ -1,48 +1,23 @@
 // =========================================
 // BILL.JS
+// QUOTATION PAGE
 // =========================================
 
 
 // =========================================
-// API URL
+// BILL NUMBER + CUSTOMER ID
 // =========================================
-
-const API_URL =
-    "https://wood-shop-backend.vercel.app/api";
-
-
-// =========================================
-// BILL ID
-// =========================================
-//
 // IMPORTANT:
-// The bill number is generated when the bill
-// is SAVED in the database.
 //
-// bill.js only loads the exact saved bill.
+// bill.html is ONLY the quotation page.
 //
-// Example:
+// Bill No      = ---
+// Customer ID  = ---
 //
-// DB empty
-//      ↓
-// first bill = BILL-0001 / CUST-0001
+// The actual Bill No and Customer ID
+// will be displayed later in cbill.html
+// after the bill is confirmed and saved.
 //
-// DB has 1 bill
-//      ↓
-// second bill = BILL-0002 / CUST-0002
-//
-// DB has 7 bills
-//      ↓
-// eighth bill = BILL-0008 / CUST-0008
-//
-// =========================================
-
-const savedBillId =
-    localStorage.getItem("savedBillId");
-
-
-// =========================================
-// ELEMENTS
 // =========================================
 
 const billNoElement =
@@ -53,203 +28,20 @@ const customerIdElement =
 
 
 // =========================================
-// LOAD EXACT SAVED BILL
+// ALWAYS SHOW ---
 // =========================================
 
-async function loadSavedBill() {
+if (billNoElement) {
 
-    try {
-
-        // -------------------------------------
-        // CHECK BILL ID
-        // -------------------------------------
-
-        if (!savedBillId) {
-
-            console.error(
-                "savedBillId not found in localStorage"
-            );
-
-            if (billNoElement) {
-                billNoElement.textContent = "---";
-            }
-
-            if (customerIdElement) {
-                customerIdElement.textContent = "---";
-            }
-
-            return;
-        }
-
-
-        console.log(
-            "Loading exact saved bill ID:",
-            savedBillId
-        );
-
-
-        // -------------------------------------
-        // GET BILL FROM DATABASE
-        // -------------------------------------
-
-        const response =
-            await fetch(
-                `${API_URL}/bill/${savedBillId}`
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-
-        }
-
-
-        const result =
-            await response.json();
-
-
-        console.log(
-            "Database response:",
-            result
-        );
-
-
-        // =====================================
-        // IMPORTANT
-        // Backend may return:
-        //
-        // {
-        //     success: true,
-        //     bill: {
-        //         id: 8,
-        //         bill_no: "BILL-0008",
-        //         customer_id: "CUST-0008"
-        //     }
-        // }
-        //
-        // So use result.bill first.
-        // =====================================
-
-        const bill =
-            result.bill || result;
-
-
-        if (!bill) {
-
-            throw new Error(
-                "Bill data not found"
-            );
-
-        }
-
-
-        // =====================================
-        // EXACT BILL NUMBER
-        // =====================================
-
-        if (billNoElement) {
-
-            billNoElement.textContent =
-                bill.bill_no || "---";
-
-        }
-
-
-        // =====================================
-        // EXACT CUSTOMER ID
-        // =====================================
-
-        if (customerIdElement) {
-
-            customerIdElement.textContent =
-                bill.customer_id || "---";
-
-        }
-
-
-        // =====================================
-        // SAVE EXACT VALUES AGAIN
-        // =====================================
-
-        if (bill.bill_no) {
-
-            localStorage.setItem(
-                "savedBillNo",
-                bill.bill_no
-            );
-
-        }
-
-
-        if (bill.customer_id) {
-
-            localStorage.setItem(
-                "savedCustomerId",
-                bill.customer_id
-            );
-
-        }
-
-
-        if (bill.id) {
-
-            localStorage.setItem(
-                "savedBillId",
-                bill.id
-            );
-
-        }
-
-
-        console.log(
-            "EXACT BILL NUMBER:",
-            bill.bill_no
-        );
-
-
-        console.log(
-            "EXACT CUSTOMER ID:",
-            bill.customer_id
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "BILL LOAD ERROR:",
-            error
-        );
-
-
-        if (billNoElement) {
-
-            billNoElement.textContent =
-                "---";
-
-        }
-
-
-        if (customerIdElement) {
-
-            customerIdElement.textContent =
-                "---";
-
-        }
-
-    }
+    billNoElement.textContent = "---";
 
 }
 
+if (customerIdElement) {
 
-// =========================================
-// START BILL LOADING
-// =========================================
+    customerIdElement.textContent = "---";
 
-loadSavedBill();
+}
 
 
 // =========================================
@@ -261,7 +53,6 @@ const billDate =
 
 let savedDate =
     localStorage.getItem("billDate");
-
 
 const days = [
 
@@ -484,7 +275,9 @@ if (woodTotalElement) {
 
     woodTotalElement.textContent =
         "₹ " +
-        Math.round(woodTotal);
+        Math.round(
+            woodTotal
+        );
 
 }
 
@@ -503,7 +296,9 @@ if (othersTotalElement) {
 
     othersTotalElement.textContent =
         "₹ " +
-        Math.round(othersTotal);
+        Math.round(
+            othersTotal
+        );
 
 }
 
@@ -522,7 +317,9 @@ if (grandTotalElement) {
 
     grandTotalElement.textContent =
         "₹ " +
-        Math.round(grandTotal);
+        Math.round(
+            grandTotal
+        );
 
 }
 
@@ -561,7 +358,9 @@ if (advanceElement) {
 
     advanceElement.textContent =
         "₹ " +
-        Math.round(advanceAmount);
+        Math.round(
+            advanceAmount
+        );
 
 }
 
@@ -580,7 +379,9 @@ if (balanceElement) {
 
     balanceElement.textContent =
         "₹ " +
-        Math.round(balanceAmount);
+        Math.round(
+            balanceAmount
+        );
 
 }
 
@@ -1119,6 +920,15 @@ if (
 // =========================================
 // PRINT BUTTON
 // =========================================
+// IMPORTANT:
+//
+// This is still the quotation page.
+// Keep the existing print functionality.
+//
+// Later we will change the CONFIRM page
+// Print button to open cbill.html.
+//
+// =========================================
 
 const printBtn =
     document.getElementById(
@@ -1178,7 +988,7 @@ window.onafterprint =
     function () {
 
         console.log(
-            "Bill Printed Successfully"
+            "Quotation Printed Successfully"
         );
 
     };

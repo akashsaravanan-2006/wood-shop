@@ -2,32 +2,25 @@
 // HISTORY.JS
 // =======================================
 
-const API_URL = "http://localhost:5000";
+// =======================================
+// BACKEND API
+// =======================================
 
-const historyBody =
-    document.getElementById("historyBody");
+const API_URL = "https://wood-shop-backend.vercel.app/api";
 
-const searchInput =
-    document.getElementById("searchInput");
+// =======================================
+// ELEMENTS
+// =======================================
 
-const searchBtn =
-    document.getElementById("searchBtn");
+const historyBody = document.getElementById("historyBody");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const homeBtn = document.getElementById("homeBtn");
 
-const refreshBtn =
-    document.getElementById("refreshBtn");
-
-const homeBtn =
-    document.getElementById("homeBtn");
-
-const totalBills =
-    document.getElementById("totalBills");
-
-const pendingBills =
-    document.getElementById("pendingBills");
-
-const paidBills =
-    document.getElementById("paidBills");
-
+const totalBills = document.getElementById("totalBills");
+const pendingBills = document.getElementById("pendingBills");
+const paidBills = document.getElementById("paidBills");
 
 let allBills = [];
 
@@ -48,14 +41,66 @@ async function loadBills() {
             </tr>
         `;
 
-        const response =
-            await fetch(`${API_URL}/bills`);
+        console.log("Loading history...");
+        console.log("API:", `${API_URL}/bills`);
+
+        const response = await fetch(`${API_URL}/bills`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log("History response status:", response.status);
 
         if (!response.ok) {
-            throw new Error("Failed to load bills");
+
+            const errorText = await response.text();
+
+            console.error("Server response:", errorText);
+
+            throw new Error(
+                `Server returned HTTP ${response.status}`
+            );
         }
 
-        allBills = await response.json();
+        const data = await response.json();
+
+        console.log("History API response:", data);
+
+        // ===================================
+        // SUPPORT BOTH RESPONSE FORMATS
+        // ===================================
+
+        if (Array.isArray(data)) {
+
+            allBills = data;
+
+        }
+        else if (
+            data &&
+            data.success &&
+            Array.isArray(data.bills)
+        ) {
+
+            allBills = data.bills;
+
+        }
+        else if (
+            data &&
+            Array.isArray(data.result)
+        ) {
+
+            allBills = data.result;
+
+        }
+        else {
+
+            throw new Error(
+                data?.message || "Invalid bills response"
+            );
+
+        }
 
         displayBills(allBills);
 
@@ -63,7 +108,7 @@ async function loadBills() {
 
     catch (error) {
 
-        console.error(error);
+        console.error("HISTORY LOAD ERROR:", error);
 
         historyBody.innerHTML = `
             <tr>
@@ -72,6 +117,8 @@ async function loadBills() {
                 </td>
             </tr>
         `;
+
+        updateSummary(0, 0, 0);
 
     }
 
@@ -89,6 +136,16 @@ function displayBills(bills) {
     let pendingCount = 0;
     let paidCount = 0;
 
+    if (!Array.isArray(bills)) {
+
+        bills = [];
+
+    }
+
+
+    // ===================================
+    // NO BILLS
+    // ===================================
 
     if (bills.length === 0) {
 
@@ -107,17 +164,17 @@ function displayBills(bills) {
     }
 
 
+    // ===================================
+    // DISPLAY EACH BILL
+    // ===================================
+
     bills.forEach((bill, index) => {
 
         const balance =
             Number(bill.balance_amount) || 0;
 
-
-        // ===================================
-        // STATUS
-        // ===================================
-
-        const isPending = balance > 1;
+        const isPending =
+            balance > 0;
 
         let statusText;
 
@@ -143,22 +200,29 @@ function displayBills(bills) {
 
         if (bill.bill_date) {
 
-            const d =
-                new Date(bill.bill_date);
+            const d = new Date(bill.bill_date);
 
-            date =
-                d.toLocaleDateString("en-IN");
+            if (!isNaN(d.getTime())) {
+
+                date =
+                    d.toLocaleDateString("en-IN");
+
+            }
+            else {
+
+                date = bill.bill_date;
+
+            }
 
         }
 
 
         // ===================================
-        // TABLE ROW
+        // CREATE ROW
         // ===================================
 
         const row =
             document.createElement("tr");
-
 
         if (isPending) {
 
@@ -169,26 +233,28 @@ function displayBills(bills) {
 
         row.innerHTML = `
 
-            <td>${index + 1}</td>
+            <td>
+                ${index + 1}
+            </td>
 
             <td class="billNo">
-                ${bill.bill_no || "-"}
+                ${escapeHtml(bill.bill_no || "-")}
             </td>
 
             <td>
-                ${bill.customer_id || "-"}
+                ${escapeHtml(bill.customer_id || "-")}
             </td>
 
             <td>
-                ${bill.customer_name || "-"}
+                ${escapeHtml(bill.customer_name || "-")}
             </td>
 
             <td>
-                ${bill.customer_mobile || "-"}
+                ${escapeHtml(bill.customer_mobile || "-")}
             </td>
 
             <td>
-                ${bill.customer_place || "-"}
+                ${escapeHtml(bill.customer_place || "-")}
             </td>
 
             <td>
@@ -196,7 +262,7 @@ function displayBills(bills) {
             </td>
 
             <td>
-                ${bill.payment_type || "-"}
+                ${escapeHtml(bill.payment_type || "-")}
             </td>
 
             <td>
@@ -215,9 +281,9 @@ function displayBills(bills) {
                 ₹ ${balance.toFixed(2)}
             </td>
 
-            <td class="status ${isPending
-                ? "pending"
-                : "paid"}">
+            <td class="status ${
+                isPending ? "pending" : "paid"
+            }">
 
                 ${statusText}
 
@@ -240,6 +306,22 @@ function displayBills(bills) {
 
 
 // =======================================
+// ESCAPE HTML
+// =======================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// =======================================
 // SUMMARY
 // =======================================
 
@@ -249,11 +331,23 @@ function updateSummary(
     paid
 ) {
 
-    totalBills.textContent = total;
+    if (totalBills) {
 
-    pendingBills.textContent = pending;
+        totalBills.textContent = total;
 
-    paidBills.textContent = paid;
+    }
+
+    if (pendingBills) {
+
+        pendingBills.textContent = pending;
+
+    }
+
+    if (paidBills) {
+
+        paidBills.textContent = paid;
+
+    }
 
 }
 
@@ -336,49 +430,98 @@ function searchBills() {
 // SEARCH BUTTON
 // =======================================
 
-searchBtn.addEventListener(
-    "click",
-    searchBills
-);
+if (searchBtn) {
+
+    searchBtn.addEventListener(
+        "click",
+        searchBills
+    );
+
+}
 
 
 // =======================================
 // LIVE SEARCH
 // =======================================
 
-searchInput.addEventListener(
-    "input",
-    searchBills
-);
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        searchBills
+    );
+
+}
+
+
+// =======================================
+// ENTER KEY
+// =======================================
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "keypress",
+        function (event) {
+
+            if (event.key === "Enter") {
+
+                searchBills();
+
+            }
+
+        }
+    );
+
+}
 
 
 // =======================================
 // REFRESH
 // =======================================
 
-refreshBtn.addEventListener(
-    "click",
-    loadBills
-);
+if (refreshBtn) {
+
+    refreshBtn.addEventListener(
+        "click",
+        function () {
+
+            loadBills();
+
+        }
+    );
+
+}
 
 
 // =======================================
 // HOME
 // =======================================
 
-homeBtn.addEventListener(
-    "click",
+if (homeBtn) {
+
+    homeBtn.addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
+
+
+// =======================================
+// START
+// =======================================
+
+document.addEventListener(
+    "DOMContentLoaded",
     function () {
 
-        window.location.href =
-            "index.html";
+        loadBills();
 
     }
 );
-
-
-// =======================================
-// INITIAL LOAD
-// =======================================
-
-loadBills();

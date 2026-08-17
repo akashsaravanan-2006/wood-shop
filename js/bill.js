@@ -12,34 +12,57 @@ const API_URL =
 
 
 // =========================================
-// BILL NUMBER + CUSTOMER ID
+// BILL ID
 // =========================================
-
-// IMPORTANT:
-// Do NOT directly use old savedBillNo.
 //
-// We first get the exact database ID
-// of the bill that was just saved.
+// IMPORTANT:
+// The bill number is generated when the bill
+// is SAVED in the database.
+//
+// bill.js only loads the exact saved bill.
+//
+// Example:
+//
+// DB empty
+//      ↓
+// first bill = BILL-0001 / CUST-0001
+//
+// DB has 1 bill
+//      ↓
+// second bill = BILL-0002 / CUST-0002
+//
+// DB has 7 bills
+//      ↓
+// eighth bill = BILL-0008 / CUST-0008
+//
+// =========================================
 
 const savedBillId =
     localStorage.getItem("savedBillId");
 
 
+// =========================================
+// ELEMENTS
+// =========================================
+
 const billNoElement =
     document.getElementById("billNo");
-
 
 const customerIdElement =
     document.getElementById("customerId");
 
 
 // =========================================
-// LOAD EXACT BILL NUMBER
+// LOAD EXACT SAVED BILL
 // =========================================
 
-async function loadBillNumber() {
+async function loadSavedBill() {
 
     try {
+
+        // -------------------------------------
+        // CHECK BILL ID
+        // -------------------------------------
 
         if (!savedBillId) {
 
@@ -48,10 +71,11 @@ async function loadBillNumber() {
             );
 
             if (billNoElement) {
+                billNoElement.textContent = "---";
+            }
 
-                billNoElement.textContent =
-                    "---";
-
+            if (customerIdElement) {
+                customerIdElement.textContent = "---";
             }
 
             return;
@@ -59,10 +83,14 @@ async function loadBillNumber() {
 
 
         console.log(
-            "Loading bill ID:",
+            "Loading exact saved bill ID:",
             savedBillId
         );
 
+
+        // -------------------------------------
+        // GET BILL FROM DATABASE
+        // -------------------------------------
 
         const response =
             await fetch(
@@ -79,80 +107,120 @@ async function loadBillNumber() {
         }
 
 
-        const data =
+        const result =
             await response.json();
 
 
         console.log(
-            "Current bill from database:",
-            data
+            "Database response:",
+            result
         );
 
 
         // =====================================
-        // DISPLAY EXACT DATABASE BILL NUMBER
+        // IMPORTANT
+        // Backend may return:
+        //
+        // {
+        //     success: true,
+        //     bill: {
+        //         id: 8,
+        //         bill_no: "BILL-0008",
+        //         customer_id: "CUST-0008"
+        //     }
+        // }
+        //
+        // So use result.bill first.
+        // =====================================
+
+        const bill =
+            result.bill || result;
+
+
+        if (!bill) {
+
+            throw new Error(
+                "Bill data not found"
+            );
+
+        }
+
+
+        // =====================================
+        // EXACT BILL NUMBER
         // =====================================
 
         if (billNoElement) {
 
             billNoElement.textContent =
-                data.bill_no || "---";
+                bill.bill_no || "---";
 
         }
 
 
         // =====================================
-        // DISPLAY EXACT CUSTOMER ID
+        // EXACT CUSTOMER ID
         // =====================================
 
         if (customerIdElement) {
 
             customerIdElement.textContent =
-                data.customer_id || "---";
+                bill.customer_id || "---";
 
         }
 
 
         // =====================================
-        // UPDATE LOCAL STORAGE
+        // SAVE EXACT VALUES AGAIN
         // =====================================
 
-        if (data.bill_no) {
+        if (bill.bill_no) {
 
             localStorage.setItem(
                 "savedBillNo",
-                data.bill_no
+                bill.bill_no
             );
 
         }
 
 
-        if (data.customer_id) {
+        if (bill.customer_id) {
 
             localStorage.setItem(
                 "savedCustomerId",
-                data.customer_id
+                bill.customer_id
             );
 
         }
 
 
-        // =====================================
-        // SAVE EXACT BILL ID AGAIN
-        // =====================================
+        if (bill.id) {
 
-        localStorage.setItem(
-            "savedBillId",
-            data.id
+            localStorage.setItem(
+                "savedBillId",
+                bill.id
+            );
+
+        }
+
+
+        console.log(
+            "EXACT BILL NUMBER:",
+            bill.bill_no
         );
 
+
+        console.log(
+            "EXACT CUSTOMER ID:",
+            bill.customer_id
+        );
 
     }
 
     catch (error) {
 
         console.error(
-            "BILL NUMBER ERROR:",
+            "BILL LOAD ERROR:",
             error
         );
 
@@ -164,14 +232,24 @@ async function loadBillNumber() {
 
         }
 
+
+        if (customerIdElement) {
+
+            customerIdElement.textContent =
+                "---";
+
+        }
+
     }
 
 }
 
 
-// Start loading bill number
+// =========================================
+// START BILL LOADING
+// =========================================
 
-loadBillNumber();
+loadSavedBill();
 
 
 // =========================================
@@ -180,7 +258,6 @@ loadBillNumber();
 
 const billDate =
     document.getElementById("billDate");
-
 
 let savedDate =
     localStorage.getItem("billDate");
@@ -221,18 +298,18 @@ if (savedDate) {
         );
 
 
-    const billDayTime =
-        document.getElementById(
-            "billDayTime"
-        );
-
-
     if (billDate) {
 
         billDate.textContent =
             savedDate;
 
     }
+
+
+    const billDayTime =
+        document.getElementById(
+            "billDayTime"
+        );
 
 
     if (billDayTime) {
@@ -407,7 +484,7 @@ if (woodTotalElement) {
 
     woodTotalElement.textContent =
         "₹ " +
-        woodTotal.toFixed(2);
+        Math.round(woodTotal);
 
 }
 
@@ -426,7 +503,7 @@ if (othersTotalElement) {
 
     othersTotalElement.textContent =
         "₹ " +
-        othersTotal.toFixed(2);
+        Math.round(othersTotal);
 
 }
 
@@ -445,7 +522,7 @@ if (grandTotalElement) {
 
     grandTotalElement.textContent =
         "₹ " +
-        grandTotal.toFixed(2);
+        Math.round(grandTotal);
 
 }
 
@@ -484,7 +561,7 @@ if (advanceElement) {
 
     advanceElement.textContent =
         "₹ " +
-        advanceAmount.toFixed(2);
+        Math.round(advanceAmount);
 
 }
 
@@ -503,7 +580,7 @@ if (balanceElement) {
 
     balanceElement.textContent =
         "₹ " +
-        balanceAmount.toFixed(2);
+        Math.round(balanceAmount);
 
 }
 
@@ -607,9 +684,11 @@ if (woodTable) {
                     <td>-</td>
 
                     <td>
-                        ${Number(
-                            item.totalLength || 0
-                        ).toFixed(2)}
+                        ${Math.round(
+                            Number(
+                                item.totalLength || 0
+                            )
+                        )}
                     </td>
 
                     <td>
@@ -619,15 +698,19 @@ if (woodTable) {
                     </td>
 
                     <td>
-                        ₹ ${Number(
-                            item.rate || 0
-                        ).toFixed(2)}
+                        ₹ ${Math.round(
+                            Number(
+                                item.rate || 0
+                            )
+                        )}
                     </td>
 
                     <td>
-                        ₹ ${Number(
-                            item.amount || 0
-                        ).toFixed(2)}
+                        ₹ ${Math.round(
+                            Number(
+                                item.amount || 0
+                            )
+                        )}
                     </td>
 
                     <td>
@@ -714,9 +797,11 @@ if (woodTable) {
                             </td>
 
                             <td>
-                                ${Number(
-                                    piece.totalLength || 0
-                                ).toFixed(2)}
+                                ${Math.round(
+                                    Number(
+                                        piece.totalLength || 0
+                                    )
+                                )}
                             </td>
 
                             <td>
@@ -726,15 +811,19 @@ if (woodTable) {
                             </td>
 
                             <td>
-                                ₹ ${Number(
-                                    item.rate || 0
-                                ).toFixed(2)}
+                                ₹ ${Math.round(
+                                    Number(
+                                        item.rate || 0
+                                    )
+                                )}
                             </td>
 
                             <td>
-                                ₹ ${Number(
-                                    item.amount || 0
-                                ).toFixed(2)}
+                                ₹ ${Math.round(
+                                    Number(
+                                        item.amount || 0
+                                    )
+                                )}
                             </td>
 
                             <td>
@@ -769,9 +858,11 @@ if (woodTable) {
                             </td>
 
                             <td>
-                                ${Number(
-                                    piece.totalLength || 0
-                                ).toFixed(2)}
+                                ${Math.round(
+                                    Number(
+                                        piece.totalLength || 0
+                                    )
+                                )}
                             </td>
 
                             <td></td>
@@ -884,7 +975,9 @@ if (
         </td>
 
         <td>
-            ₹ ${labourCharge.toFixed(2)}
+            ₹ ${Math.round(
+                labourCharge
+            )}
         </td>
 
     `;
@@ -926,7 +1019,9 @@ if (
         </td>
 
         <td>
-            ₹ ${otherCharge.toFixed(2)}
+            ₹ ${Math.round(
+                otherCharge
+            )}
         </td>
 
     `;
@@ -968,9 +1063,11 @@ if (chargeTable) {
                 </td>
 
                 <td>
-                    ₹ ${Number(
-                        item.amount || 0
-                    ).toFixed(2)}
+                    ₹ ${Math.round(
+                        Number(
+                            item.amount || 0
+                        )
+                    )}
                 </td>
 
             `;
@@ -1168,9 +1265,7 @@ if (cftDiv) {
 
                 :
 
-                ${cftSummary[
-                    wood
-                ].toFixed(2)}
+                ${cftSummary[wood].toFixed(2)}
 
                 CFT
 

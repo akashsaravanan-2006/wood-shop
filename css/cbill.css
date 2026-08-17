@@ -19,12 +19,16 @@ body {
         Helvetica,
         sans-serif;
 
-    background: #f3f3f3;
+    background: #f2f2f2;
 
     color: #222;
 
 }
 
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
 
 .bill-container {
 
@@ -32,9 +36,9 @@ body {
 
     max-width: 1100px;
 
-    margin: auto;
+    margin: 0 auto;
 
-    background: white;
+    background: #ffffff;
 
     padding: 30px;
 
@@ -74,7 +78,7 @@ body {
 
 .header p {
 
-    margin: 5px 0 0;
+    margin: 6px 0 0;
 
     font-size: 18px;
 
@@ -84,7 +88,7 @@ body {
 
 
 /* =========================================
-   BILL INFO
+   BILL INFORMATION
 ========================================= */
 
 .bill-info {
@@ -92,13 +96,13 @@ body {
     display: grid;
 
     grid-template-columns:
-        repeat(2, 1fr);
+        1fr 1fr;
 
     gap: 10px;
 
-    margin-bottom: 20px;
-
     padding: 15px;
+
+    margin-bottom: 20px;
 
     border:
         1px solid #ccc;
@@ -106,14 +110,14 @@ body {
 }
 
 
-.bill-info div {
+.info-row {
 
     padding: 5px;
 
 }
 
 
-.bill-info strong {
+.info-row strong {
 
     margin-right: 8px;
 
@@ -121,17 +125,17 @@ body {
 
 
 /* =========================================
-   CUSTOMER
+   CUSTOMER DETAILS
 ========================================= */
 
 .customer-section {
 
-    border:
-        1px solid #ccc;
-
     padding: 15px;
 
     margin-bottom: 20px;
+
+    border:
+        1px solid #ccc;
 
 }
 
@@ -217,12 +221,12 @@ th {
 
 .summary-section {
 
-    border:
-        1px solid #ccc;
-
     padding: 12px;
 
     margin-bottom: 20px;
+
+    border:
+        1px solid #ccc;
 
 }
 
@@ -240,9 +244,9 @@ th {
 
 .totals {
 
-    width: 100%;
+    width: 450px;
 
-    max-width: 450px;
+    max-width: 100%;
 
     margin-left: auto;
 
@@ -255,8 +259,7 @@ th {
 
     display: flex;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     padding: 8px 12px;
 
@@ -314,13 +317,15 @@ th {
 .buttons button {
 
     padding:
-        10px 25px;
+        10px 30px;
 
     border: none;
 
+    border-radius: 5px;
+
     cursor: pointer;
 
-    font-size: 15px;
+    font-size: 16px;
 
 }
 
@@ -333,9 +338,11 @@ th {
 
     body {
 
-        background: white;
+        margin: 0;
 
         padding: 0;
+
+        background: white;
 
     }
 
@@ -346,9 +353,9 @@ th {
 
         max-width: none;
 
-        box-shadow: none;
-
         padding: 10px;
+
+        box-shadow: none;
 
     }
 
@@ -356,6 +363,7 @@ th {
     .buttons {
 
         display: none;
+
     }
 
 
@@ -369,8 +377,6 @@ th {
     tr {
 
         page-break-inside: avoid;
-
-        page-break-after: auto;
 
     }
 

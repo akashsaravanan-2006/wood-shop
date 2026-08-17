@@ -1,51 +1,112 @@
-const tableBody = document.getElementById("tableBody");
-const searchBox = document.getElementById("searchBox");
-const searchBtn = document.getElementById("searchBtn");
-const refreshBtn = document.getElementById("refreshBtn");
+// =======================================
+// PENDING BILLS.JS
+// =======================================
 
-// ======================================================
+// =======================================
 // BACKEND API URL
-// ======================================================
-//
-// If your backend and frontend are deployed in the SAME
-// Vercel project, keep this as:
-//
-// const API_URL = "";
-//
-// If your backend is deployed separately, put its URL here:
-//
-// const API_URL = "https://your-backend-url.com";
-//
-// DO NOT use localhost for the Vercel website.
-//
-// ======================================================
+// =======================================
 
-const API_URL = "";
+// IMPORTANT:
+// Your frontend is hosted on Vercel.
+// Your backend is hosted separately.
+//
+// DO NOT use localhost here.
+
+const API_URL =
+    "https://wood-shop-backend.vercel.app/api";
+
+
+// =======================================
+// ELEMENTS
+// =======================================
+
+const tableBody =
+    document.getElementById("tableBody");
+
+const searchBox =
+    document.getElementById("searchBox");
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+const refreshBtn =
+    document.getElementById("refreshBtn");
+
+const homeBtn =
+    document.getElementById("homeBtn");
+
+
+// =======================================
+// GLOBAL DATA
+// =======================================
 
 let allBills = [];
 
 
-// ======================================================
+// =======================================
 // LOAD PENDING BILLS
-// ======================================================
+// =======================================
 
 async function loadPendingBills() {
 
     try {
 
-        console.log("Loading pending bills...");
+        console.log("=================================");
+        console.log("Loading Pending Bills");
+        console.log("API:", `${API_URL}/pending-bills`);
+        console.log("=================================");
 
-        const response = await fetch(`${API_URL}/pending-bills`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
+
+        // Show loading
+
+        if (tableBody) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="noData">
+                        Loading pending bills...
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        // ===================================
+        // API REQUEST
+        // ===================================
+
+        const response = await fetch(
+            `${API_URL}/pending-bills`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Content-Type": "application/json"
+                }
             }
-        });
+        );
 
-        console.log("Response status:", response.status);
 
-        // Check HTTP status
+        console.log(
+            "Response status:",
+            response.status
+        );
+
+
+        // ===================================
+        // HTTP ERROR
+        // ===================================
+
         if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            console.error(
+                "Server response:",
+                errorText
+            );
 
             throw new Error(
                 `Server returned HTTP ${response.status}`
@@ -53,42 +114,66 @@ async function loadPendingBills() {
 
         }
 
-        const data = await response.json();
 
-        console.log("Pending bills response:", data);
+        // ===================================
+        // READ JSON
+        // ===================================
 
-        // ==================================================
-        // IMPORTANT
-        // Backend returns:
-        //
-        // {
-        //     success: true,
-        //     bills: [...]
-        // }
-        //
-        // So we MUST use data.bills
-        // ==================================================
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Pending bills response:",
+            data
+        );
+
+
+        // ===================================
+        // CHECK SUCCESS
+        // ===================================
 
         if (!data.success) {
 
             throw new Error(
-                data.message || "Unable to load pending bills"
+                data.message ||
+                "Unable to load pending bills"
             );
 
         }
 
-        allBills = Array.isArray(data.bills)
-            ? data.bills
-            : [];
+
+        // ===================================
+        // LOAD BILL ARRAY
+        // ===================================
+
+        if (Array.isArray(data.bills)) {
+
+            allBills = data.bills;
+
+        }
+        else {
+
+            allBills = [];
+
+        }
+
 
         console.log(
             "Pending bills loaded:",
             allBills
         );
 
+
+        // ===================================
+        // DISPLAY
+        // ===================================
+
         displayBills(allBills);
 
     }
+
+
     catch (error) {
 
         console.error(
@@ -96,15 +181,22 @@ async function loadPendingBills() {
             error
         );
 
+
         allBills = [];
 
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="10" class="noData">
-                    Unable to load pending bills
-                </td>
-            </tr>
-        `;
+
+        if (tableBody) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="noData">
+                        ❌ Unable to load pending bills
+                    </td>
+                </tr>
+            `;
+
+        }
+
 
         alert(
             "Unable to load pending bills.\n\n" +
@@ -116,15 +208,30 @@ async function loadPendingBills() {
 }
 
 
-// ======================================================
-// DISPLAY BILLS
-// ======================================================
+// =======================================
+// DISPLAY PENDING BILLS
+// =======================================
 
 function displayBills(bills) {
 
+    if (!tableBody) {
+
+        console.error(
+            "tableBody element not found"
+        );
+
+        return;
+
+    }
+
+
     tableBody.innerHTML = "";
 
-    // Make sure bills is an array
+
+    // ===================================
+    // SAFETY CHECK
+    // ===================================
+
     if (!Array.isArray(bills)) {
 
         bills = [];
@@ -132,9 +239,9 @@ function displayBills(bills) {
     }
 
 
-    // ==================================================
+    // ===================================
     // NO DATA
-    // ==================================================
+    // ===================================
 
     if (bills.length === 0) {
 
@@ -151,90 +258,134 @@ function displayBills(bills) {
     }
 
 
-    // ==================================================
+    // ===================================
     // DISPLAY EACH BILL
-    // ==================================================
+    // ===================================
 
-    bills.forEach((bill, index) => {
-
-        const customerId =
-            bill.customer_id ?? "";
-
-        const customerName =
-            bill.customer_name ?? "";
-
-        const customerPlace =
-            bill.customer_place ?? "";
-
-        const customerMobile =
-            bill.customer_mobile ?? "";
-
-        const billDate =
-            bill.bill_date ?? "";
-
-        const advanceAmount =
-            Number(bill.advance_amount) || 0;
-
-        const balanceAmount =
-            Number(bill.balance_amount) || 0;
-
-        const remark =
-            bill.remark ?? "";
+    bills.forEach(
+        function (bill, index) {
 
 
-        tableBody.innerHTML += `
+            // ===================================
+            // CUSTOMER DETAILS
+            // ===================================
 
-            <tr>
+            const customerId =
+                bill.customer_id ?? "-";
+
+
+            const customerName =
+                bill.customer_name ?? "-";
+
+
+            const customerPlace =
+                bill.customer_place ?? "-";
+
+
+            const customerMobile =
+                bill.customer_mobile ?? "-";
+
+
+            // ===================================
+            // BILL DATE
+            // ===================================
+
+            const billDate =
+                bill.bill_date ?? "-";
+
+
+            // ===================================
+            // AMOUNTS
+            // ===================================
+
+            const advanceAmount =
+                Number(
+                    bill.advance_amount
+                ) || 0;
+
+
+            const balanceAmount =
+                Number(
+                    bill.balance_amount
+                ) || 0;
+
+
+            // ===================================
+            // REMARK
+            // ===================================
+
+            const remark =
+                bill.remark ?? "";
+
+
+            // ===================================
+            // CREATE ROW
+            // ===================================
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
 
                 <!-- S.NO -->
+
                 <td>
                     ${index + 1}
                 </td>
 
 
                 <!-- CUSTOMER ID -->
+
                 <td>
-                    ${customerId}
+                    ${escapeHtml(customerId)}
                 </td>
 
 
                 <!-- CUSTOMER NAME -->
+
                 <td>
-                    ${customerName}
+                    ${escapeHtml(customerName)}
                 </td>
 
 
                 <!-- PLACE -->
+
                 <td>
-                    ${customerPlace}
+                    ${escapeHtml(customerPlace)}
                 </td>
 
 
                 <!-- MOBILE -->
+
                 <td>
-                    ${customerMobile}
+                    ${escapeHtml(customerMobile)}
                 </td>
 
 
                 <!-- BILL DATE -->
+
                 <td>
-                    ${billDate}
+                    ${escapeHtml(billDate)}
                 </td>
 
 
                 <!-- ADVANCE -->
+
                 <td class="advanceAmount">
                     ₹${advanceAmount.toFixed(2)}
                 </td>
 
 
                 <!-- PENDING -->
+
                 <td class="pendingAmount">
                     ₹${balanceAmount.toFixed(2)}
                 </td>
 
 
                 <!-- REMARK -->
+
                 <td>
 
                     <div class="remarkBox">
@@ -261,6 +412,7 @@ function displayBills(bills) {
 
 
                 <!-- UPDATE -->
+
                 <td>
 
                     <button
@@ -272,73 +424,111 @@ function displayBills(bills) {
 
                 </td>
 
-            </tr>
+            `;
 
-        `;
 
-    });
+            tableBody.appendChild(row);
+
+        }
+    );
 
 }
 
 
-// ======================================================
+// =======================================
 // ESCAPE HTML
-// ======================================================
-//
-// Prevents customer remarks from breaking HTML
-//
-// ======================================================
+// =======================================
 
 function escapeHtml(value) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
-// ======================================================
+// =======================================
 // SEARCH
-// ======================================================
+// =======================================
 
-if (searchBtn) {
+function searchBills() {
 
-    searchBtn.addEventListener("click", () => {
+    if (!searchBox) {
 
-        const text =
-            searchBox.value
-                .trim()
-                .toLowerCase();
+        return;
 
-
-        // If search box is empty,
-        // show all bills
-
-        if (text === "") {
-
-            displayBills(allBills);
-
-            return;
-
-        }
+    }
 
 
-        const result =
-            allBills.filter((bill) => {
+    const text =
+        searchBox.value
+            .trim()
+            .toLowerCase();
+
+
+    // ===================================
+    // EMPTY SEARCH
+    // ===================================
+
+    if (text === "") {
+
+        displayBills(allBills);
+
+        return;
+
+    }
+
+
+    // ===================================
+    // FILTER
+    // ===================================
+
+    const result =
+        allBills.filter(
+            function (bill) {
+
+
+                const billNo =
+                    String(
+                        bill.bill_no ?? ""
+                    ).toLowerCase();
+
 
                 const customerId =
                     String(
                         bill.customer_id ?? ""
                     ).toLowerCase();
 
+
                 const customerName =
                     String(
                         bill.customer_name ?? ""
                     ).toLowerCase();
+
 
                 const customerMobile =
                     String(
@@ -346,65 +536,112 @@ if (searchBtn) {
                     ).toLowerCase();
 
 
+                const customerPlace =
+                    String(
+                        bill.customer_place ?? ""
+                    ).toLowerCase();
+
+
                 return (
+
+                    billNo.includes(text) ||
 
                     customerId.includes(text) ||
 
                     customerName.includes(text) ||
 
-                    customerMobile.includes(text)
+                    customerMobile.includes(text) ||
+
+                    customerPlace.includes(text)
 
                 );
 
-            });
+            }
+        );
 
 
-        displayBills(result);
-
-    });
+    displayBills(result);
 
 }
 
 
-// ======================================================
-// SEARCH USING ENTER KEY
-// ======================================================
+// =======================================
+// SEARCH BUTTON
+// =======================================
+
+if (searchBtn) {
+
+    searchBtn.addEventListener(
+        "click",
+        searchBills
+    );
+
+}
+
+
+// =======================================
+// SEARCH USING ENTER
+// =======================================
 
 if (searchBox) {
 
-    searchBox.addEventListener("keypress", (event) => {
+    searchBox.addEventListener(
+        "keypress",
+        function (event) {
 
-        if (event.key === "Enter") {
+            if (event.key === "Enter") {
 
-            searchBtn.click();
+                searchBills();
+
+            }
 
         }
-
-    });
+    );
 
 }
 
 
-// ======================================================
+// =======================================
+// LIVE SEARCH
+// =======================================
+
+if (searchBox) {
+
+    searchBox.addEventListener(
+        "input",
+        searchBills
+    );
+
+}
+
+
+// =======================================
 // REFRESH
-// ======================================================
+// =======================================
 
 if (refreshBtn) {
 
-    refreshBtn.addEventListener("click", () => {
+    refreshBtn.addEventListener(
+        "click",
+        function () {
 
-        searchBox.value = "";
+            if (searchBox) {
 
-        loadPendingBills();
+                searchBox.value = "";
 
-    });
+            }
+
+            loadPendingBills();
+
+        }
+    );
 
 }
 
 
-// ======================================================
+// =======================================
 // UPDATE PENDING BILL
-// ======================================================
+// =======================================
 
 function updatePending(id) {
 
@@ -413,15 +650,16 @@ function updatePending(id) {
         id
     );
 
+
     window.location.href =
         `update.html?id=${encodeURIComponent(id)}`;
 
 }
 
 
-// ======================================================
+// =======================================
 // SAVE REMARK
-// ======================================================
+// =======================================
 
 async function saveRemark(id) {
 
@@ -433,7 +671,9 @@ async function saveRemark(id) {
 
     if (!remarkInput) {
 
-        alert("Remark input not found.");
+        alert(
+            "Remark input not found."
+        );
 
         return;
 
@@ -452,29 +692,44 @@ async function saveRemark(id) {
         );
 
 
-        const response = await fetch(
-            `${API_URL}/update-remark`,
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                `${API_URL}/update-remark`,
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    id: id,
+                        id: id,
 
-                    remark: remark
+                        remark: remark
 
-                })
+                    })
 
-            }
+                }
+            );
+
+
+        console.log(
+            "Remark response status:",
+            response.status
         );
 
 
         if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            console.error(
+                "Remark server response:",
+                errorText
+            );
 
             throw new Error(
                 `Server returned HTTP ${response.status}`
@@ -488,10 +743,14 @@ async function saveRemark(id) {
 
 
         console.log(
-            "Remark response:",
+            "Remark API response:",
             result
         );
 
+
+        // ===================================
+        // SUCCESS
+        // ===================================
 
         if (result.success) {
 
@@ -499,12 +758,13 @@ async function saveRemark(id) {
                 "Remark Saved Successfully"
             );
 
-            // Reload data so the saved remark
-            // is displayed from the database
+
+            // Reload from database
 
             loadPendingBills();
 
         }
+
         else {
 
             alert(
@@ -515,12 +775,15 @@ async function saveRemark(id) {
         }
 
     }
+
+
     catch (error) {
 
         console.error(
             "SAVE REMARK ERROR:",
             error
         );
+
 
         alert(
             "Server Error while saving remark."
@@ -531,19 +794,15 @@ async function saveRemark(id) {
 }
 
 
-// ======================================================
+// =======================================
 // HOME BUTTON
-// ======================================================
-
-const homeBtn =
-    document.getElementById("homeBtn");
-
+// =======================================
 
 if (homeBtn) {
 
     homeBtn.addEventListener(
         "click",
-        () => {
+        function () {
 
             window.location.href =
                 "index.html";
@@ -554,13 +813,13 @@ if (homeBtn) {
 }
 
 
-// ======================================================
+// =======================================
 // PAGE LOAD
-// ======================================================
+// =======================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function () {
 
         loadPendingBills();
 

@@ -1,124 +1,255 @@
 // =======================================
-// WOODSHOP FORM PERSISTENCE
-// Keeps entered values while moving
-// between pages.
+// WOOD PAGE ONLY PERSISTENCE
+// =======================================
+//
+// Values are saved ONLY for the Wood page.
+//
+// They remain while the user moves through:
+// Wood → Labour → Advance → Bill → Confirm
+//
+// They are cleared ONLY when:
+// 1. Bill is confirmed/saved
+// 2. User goes Home
 // =======================================
 
-const STORAGE_KEY = "woodshop_bill_data";
+
+const WOOD_STORAGE_KEY = "wood_page_data";
 
 
 // =======================================
-// SAVE CURRENT PAGE VALUES
+// CHECK IF CURRENT PAGE IS WOOD PAGE
 // =======================================
 
-function savePageData() {
+function isWoodPage() {
 
-    const data = JSON.parse(
-        sessionStorage.getItem(STORAGE_KEY) || "{}"
+    const path =
+        window.location.pathname.toLowerCase();
+
+    return (
+        path.endsWith("/wood.html") ||
+        path.endsWith("/wood") ||
+        path.endsWith("/wood-calculation.html")
     );
 
-    document.querySelectorAll("input, select, textarea").forEach(input => {
+}
 
-        if (!input.id && !input.name) return;
 
-        const key = input.id || input.name;
+// =======================================
+// SAVE WOOD PAGE VALUES
+// =======================================
 
-        if (input.type === "checkbox") {
-            data[key] = input.checked;
-        }
-        else if (input.type === "radio") {
+function saveWoodPageData() {
 
-            if (input.checked) {
-                data[key] = input.value;
+    // Do nothing on other pages
+    if (!isWoodPage()) {
+        return;
+    }
+
+
+    const data = {};
+
+
+    document
+        .querySelectorAll("input, select, textarea")
+        .forEach(function(input) {
+
+            if (!input.id && !input.name) {
+                return;
             }
 
-        }
-        else {
-            data[key] = input.value;
-        }
 
-    });
+            const key =
+                input.id || input.name;
+
+
+            // Checkbox
+            if (input.type === "checkbox") {
+
+                data[key] =
+                    input.checked;
+
+            }
+
+
+            // Radio
+            else if (input.type === "radio") {
+
+                if (input.checked) {
+
+                    data[key] =
+                        input.value;
+
+                }
+
+            }
+
+
+            // Normal input/select/textarea
+            else {
+
+                data[key] =
+                    input.value;
+
+            }
+
+        });
+
 
     sessionStorage.setItem(
-        STORAGE_KEY,
+        WOOD_STORAGE_KEY,
         JSON.stringify(data)
     );
+
 }
 
 
 // =======================================
-// LOAD PREVIOUS VALUES
+// LOAD WOOD PAGE VALUES
 // =======================================
 
-function loadPageData() {
+function loadWoodPageData() {
 
-    const data = JSON.parse(
-        sessionStorage.getItem(STORAGE_KEY) || "{}"
+    // Do nothing on other pages
+    if (!isWoodPage()) {
+        return;
+    }
+
+
+    const saved =
+        sessionStorage.getItem(
+            WOOD_STORAGE_KEY
+        );
+
+
+    if (!saved) {
+        return;
+    }
+
+
+    let data = {};
+
+    try {
+
+        data =
+            JSON.parse(saved);
+
+    }
+    catch (error) {
+
+        console.error(
+            "Wood storage error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    document
+        .querySelectorAll("input, select, textarea")
+        .forEach(function(input) {
+
+            if (!input.id && !input.name) {
+                return;
+            }
+
+
+            const key =
+                input.id || input.name;
+
+
+            if (!(key in data)) {
+                return;
+            }
+
+
+            // Checkbox
+            if (input.type === "checkbox") {
+
+                input.checked =
+                    data[key];
+
+            }
+
+
+            // Radio
+            else if (input.type === "radio") {
+
+                input.checked =
+                    input.value === data[key];
+
+            }
+
+
+            // Normal input
+            else {
+
+                input.value =
+                    data[key];
+
+            }
+
+        });
+
+}
+
+
+// =======================================
+// CLEAR WOOD PAGE VALUES
+// =======================================
+
+function clearWoodPageData() {
+
+    sessionStorage.removeItem(
+        WOOD_STORAGE_KEY
     );
 
-    document.querySelectorAll("input, select, textarea").forEach(input => {
 
-        if (!input.id && !input.name) return;
-
-        const key = input.id || input.name;
-
-        if (!(key in data)) return;
-
-        if (input.type === "checkbox") {
-            input.checked = data[key];
-        }
-        else if (input.type === "radio") {
-
-            input.checked = input.value === data[key];
-
-        }
-        else {
-            input.value = data[key];
-        }
-
-    });
-}
-
-
-// =======================================
-// LOAD WHEN PAGE OPENS
-// =======================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    loadPageData();
-
-});
-
-
-// =======================================
-// SAVE WHEN USER TYPES
-// =======================================
-
-document.addEventListener("input", () => {
-
-    savePageData();
-
-});
-
-
-// =======================================
-// SAVE WHEN SELECT CHANGES
-// =======================================
-
-document.addEventListener("change", () => {
-
-    savePageData();
-
-});
-
-
-// =======================================
-// CLEAR ONLY AFTER SAVE BILL
-// =======================================
-
-function clearBillData() {
-
-    sessionStorage.removeItem(STORAGE_KEY);
+    console.log(
+        "Wood page data cleared."
+    );
 
 }
+
+
+// =======================================
+// PAGE LOAD
+// =======================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadWoodPageData();
+
+    }
+);
+
+
+// =======================================
+// SAVE WHILE USER TYPES
+// =======================================
+
+document.addEventListener(
+    "input",
+    function() {
+
+        saveWoodPageData();
+
+    }
+);
+
+
+// =======================================
+// SAVE SELECT / CHECKBOX / RADIO
+// =======================================
+
+document.addEventListener(
+    "change",
+    function() {
+
+        saveWoodPageData();
+
+    }
+);

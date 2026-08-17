@@ -851,8 +851,10 @@ if (cancelBtn) {
             clearBillData();
 
 
-            window.location.href =
-                "../html/bill.html";
+            window.open(
+    "../html/cbill.html",
+    "_blank"
+);
 
         }
     );

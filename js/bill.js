@@ -4,49 +4,174 @@
 
 
 // =========================================
+// API URL
+// =========================================
+
+const API_URL =
+    "https://wood-shop-backend.vercel.app/api";
+
+
+// =========================================
 // BILL NUMBER + CUSTOMER ID
 // =========================================
 
 // IMPORTANT:
-// bill.js does NOT generate the bill number.
-// It only displays the number saved by confirm.js
-// after the backend successfully saves the bill.
+// Do NOT directly use old savedBillNo.
+//
+// We first get the exact database ID
+// of the bill that was just saved.
 
-const savedBillNo =
-    localStorage.getItem("savedBillNo");
+const savedBillId =
+    localStorage.getItem("savedBillId");
 
-const savedCustomerId =
-    localStorage.getItem("savedCustomerId");
-
-
-// -----------------------------------------
-// Bill Number
-// -----------------------------------------
 
 const billNoElement =
     document.getElementById("billNo");
 
-if (billNoElement) {
-
-    billNoElement.textContent =
-        savedBillNo || "---";
-
-}
-
-
-// -----------------------------------------
-// Customer ID
-// -----------------------------------------
 
 const customerIdElement =
     document.getElementById("customerId");
 
-if (customerIdElement) {
 
-    customerIdElement.textContent =
-        savedCustomerId || "---";
+// =========================================
+// LOAD EXACT BILL NUMBER
+// =========================================
+
+async function loadBillNumber() {
+
+    try {
+
+        if (!savedBillId) {
+
+            console.error(
+                "savedBillId not found in localStorage"
+            );
+
+            if (billNoElement) {
+
+                billNoElement.textContent =
+                    "---";
+
+            }
+
+            return;
+        }
+
+
+        console.log(
+            "Loading bill ID:",
+            savedBillId
+        );
+
+
+        const response =
+            await fetch(
+                `${API_URL}/bill/${savedBillId}`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Current bill from database:",
+            data
+        );
+
+
+        // =====================================
+        // DISPLAY EXACT DATABASE BILL NUMBER
+        // =====================================
+
+        if (billNoElement) {
+
+            billNoElement.textContent =
+                data.bill_no || "---";
+
+        }
+
+
+        // =====================================
+        // DISPLAY EXACT CUSTOMER ID
+        // =====================================
+
+        if (customerIdElement) {
+
+            customerIdElement.textContent =
+                data.customer_id || "---";
+
+        }
+
+
+        // =====================================
+        // UPDATE LOCAL STORAGE
+        // =====================================
+
+        if (data.bill_no) {
+
+            localStorage.setItem(
+                "savedBillNo",
+                data.bill_no
+            );
+
+        }
+
+
+        if (data.customer_id) {
+
+            localStorage.setItem(
+                "savedCustomerId",
+                data.customer_id
+            );
+
+        }
+
+
+        // =====================================
+        // SAVE EXACT BILL ID AGAIN
+        // =====================================
+
+        localStorage.setItem(
+            "savedBillId",
+            data.id
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "BILL NUMBER ERROR:",
+            error
+        );
+
+
+        if (billNoElement) {
+
+            billNoElement.textContent =
+                "---";
+
+        }
+
+    }
 
 }
+
+
+// Start loading bill number
+
+loadBillNumber();
 
 
 // =========================================
@@ -56,11 +181,13 @@ if (customerIdElement) {
 const billDate =
     document.getElementById("billDate");
 
+
 let savedDate =
     localStorage.getItem("billDate");
 
 
 const days = [
+
     "Sunday",
     "Monday",
     "Tuesday",
@@ -68,24 +195,44 @@ const days = [
     "Thursday",
     "Friday",
     "Saturday"
+
 ];
 
 
+// =========================================
+// DATE ALREADY EXISTS
+// =========================================
+
 if (savedDate) {
 
-    const now = new Date();
+    const now =
+        new Date();
+
 
     const time =
-        now.toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        });
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }
+        );
 
 
     const billDayTime =
-        document.getElementById("billDayTime");
+        document.getElementById(
+            "billDayTime"
+        );
+
+
+    if (billDate) {
+
+        billDate.textContent =
+            savedDate;
+
+    }
 
 
     if (billDayTime) {
@@ -97,18 +244,17 @@ if (savedDate) {
 
     }
 
-
-    if (billDate) {
-
-        billDate.textContent =
-            savedDate;
-
-    }
-
 }
+
+
+// =========================================
+// CREATE NEW DATE
+// =========================================
+
 else {
 
-    const today = new Date();
+    const today =
+        new Date();
 
 
     savedDate =
@@ -132,16 +278,21 @@ else {
 
 
     const time =
-        today.toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        });
+        today.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }
+        );
 
 
     const billDayTime =
-        document.getElementById("billDayTime");
+        document.getElementById(
+            "billDayTime"
+        );
 
 
     if (billDayTime) {
@@ -167,34 +318,49 @@ else {
 // =========================================
 
 const customerName =
-    document.getElementById("customerName");
+    document.getElementById(
+        "customerName"
+    );
+
 
 if (customerName) {
 
     customerName.textContent =
-        localStorage.getItem("customerName") || "-";
+        localStorage.getItem(
+            "customerName"
+        ) || "-";
 
 }
 
 
 const customerMobile =
-    document.getElementById("customerMobile");
+    document.getElementById(
+        "customerMobile"
+    );
+
 
 if (customerMobile) {
 
     customerMobile.textContent =
-        localStorage.getItem("customerMobile") || "-";
+        localStorage.getItem(
+            "customerMobile"
+        ) || "-";
 
 }
 
 
 const customerPlace =
-    document.getElementById("customerPlace");
+    document.getElementById(
+        "customerPlace"
+    );
+
 
 if (customerPlace) {
 
     customerPlace.textContent =
-        localStorage.getItem("customerPlace") || "-";
+        localStorage.getItem(
+            "customerPlace"
+        ) || "-";
 
 }
 
@@ -205,28 +371,37 @@ if (customerPlace) {
 
 const woodTotal =
     Number(
-        localStorage.getItem("woodTotal")
+        localStorage.getItem(
+            "woodTotal"
+        )
     ) || 0;
 
 
 const othersTotal =
     Number(
-        localStorage.getItem("othersTotal")
+        localStorage.getItem(
+            "othersTotal"
+        )
     ) || 0;
 
 
 const grandTotal =
     Number(
-        localStorage.getItem("finalTotal")
+        localStorage.getItem(
+            "finalTotal"
+        )
     ) || 0;
 
 
-// -----------------------------------------
-// Wood Total
-// -----------------------------------------
+// =========================================
+// WOOD TOTAL
+// =========================================
 
 const woodTotalElement =
-    document.getElementById("woodTotal");
+    document.getElementById(
+        "woodTotal"
+    );
+
 
 if (woodTotalElement) {
 
@@ -237,12 +412,15 @@ if (woodTotalElement) {
 }
 
 
-// -----------------------------------------
-// Others Total
-// -----------------------------------------
+// =========================================
+// OTHERS TOTAL
+// =========================================
 
 const othersTotalElement =
-    document.getElementById("othersTotal");
+    document.getElementById(
+        "othersTotal"
+    );
+
 
 if (othersTotalElement) {
 
@@ -253,12 +431,15 @@ if (othersTotalElement) {
 }
 
 
-// -----------------------------------------
-// Grand Total
-// -----------------------------------------
+// =========================================
+// GRAND TOTAL
+// =========================================
 
 const grandTotalElement =
-    document.getElementById("grandTotal");
+    document.getElementById(
+        "grandTotal"
+    );
+
 
 if (grandTotalElement) {
 
@@ -275,22 +456,29 @@ if (grandTotalElement) {
 
 const advanceAmount =
     Number(
-        localStorage.getItem("advanceAmount")
+        localStorage.getItem(
+            "advanceAmount"
+        )
     ) || 0;
 
 
 const balanceAmount =
     Number(
-        localStorage.getItem("balanceAmount")
+        localStorage.getItem(
+            "balanceAmount"
+        )
     ) || 0;
 
 
-// -----------------------------------------
-// Advance
-// -----------------------------------------
+// =========================================
+// ADVANCE DISPLAY
+// =========================================
 
 const advanceElement =
-    document.getElementById("advanceAmount");
+    document.getElementById(
+        "advanceAmount"
+    );
+
 
 if (advanceElement) {
 
@@ -301,12 +489,15 @@ if (advanceElement) {
 }
 
 
-// -----------------------------------------
-// Balance
-// -----------------------------------------
+// =========================================
+// BALANCE DISPLAY
+// =========================================
 
 const balanceElement =
-    document.getElementById("balanceAmount");
+    document.getElementById(
+        "balanceAmount"
+    );
+
 
 if (balanceElement) {
 
@@ -322,11 +513,15 @@ if (balanceElement) {
 // =========================================
 
 const woodTable =
-    document.getElementById("woodTable");
+    document.getElementById(
+        "woodTable"
+    );
 
 
 const chargeTable =
-    document.getElementById("chargeTable");
+    document.getElementById(
+        "chargeTable"
+    );
 
 
 // =========================================
@@ -335,14 +530,18 @@ const chargeTable =
 
 let woodData = [];
 
+
 try {
 
     woodData =
         JSON.parse(
-            localStorage.getItem("woodData")
+            localStorage.getItem(
+                "woodData"
+            )
         ) || [];
 
 }
+
 catch (error) {
 
     console.error(
@@ -364,228 +563,242 @@ let sno = 1;
 
 if (woodTable) {
 
-    woodData.forEach(function (item) {
+    woodData.forEach(
+        function (item) {
 
 
-        // =================================
-        // NO PIECES
-        // =================================
+            // =================================
+            // NO PIECES
+            // =================================
 
-        if (
-            !item.pieces ||
-            item.pieces.length === 0
-        ) {
+            if (
+                !item.pieces ||
+                item.pieces.length === 0
+            ) {
 
-            const row =
-                document.createElement("tr");
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
 
 
-            row.innerHTML = `
+                row.innerHTML = `
 
-                <td>${sno}</td>
+                    <td>
+                        ${sno}
+                    </td>
 
-                <td>
-                    ${
-                        item.woodType === "Other"
-                            ? item.otherWood || "-"
-                            : item.woodType || "-"
+                    <td>
+                        ${
+                            item.woodType === "Other"
+                                ? item.otherWood || "-"
+                                : item.woodType || "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${item.breadth || "-"}
+                        ×
+                        ${item.thickness || "-"}
+                    </td>
+
+                    <td>-</td>
+
+                    <td>-</td>
+
+                    <td>
+                        ${Number(
+                            item.totalLength || 0
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+                        ${Number(
+                            item.cubicFeet || 0
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+                        ₹ ${Number(
+                            item.rate || 0
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+                        ₹ ${Number(
+                            item.amount || 0
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+                        ${item.quality || "-"}
+                    </td>
+
+                `;
+
+
+                woodTable.appendChild(
+                    row
+                );
+
+
+                sno++;
+
+                return;
+
+            }
+
+
+            // =================================
+            // PIECES
+            // =================================
+
+            item.pieces.forEach(
+                function (piece, index) {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    const length =
+                        Number(
+                            piece.length
+                        ) || 0;
+
+
+                    const extraLength =
+                        Number(
+                            piece.extraLength
+                        ) || 0;
+
+
+                    const lengthText =
+                        length +
+                        extraLength;
+
+
+                    // =================================
+                    // FIRST PIECE
+                    // =================================
+
+                    if (index === 0) {
+
+                        row.innerHTML = `
+
+                            <td>
+                                ${sno}
+                            </td>
+
+                            <td>
+                                ${
+                                    item.woodType === "Other"
+                                        ? item.otherWood || "-"
+                                        : item.woodType || "-"
+                                }
+                            </td>
+
+                            <td>
+                                ${item.breadth || "-"}
+                                ×
+                                ${item.thickness || "-"}
+                            </td>
+
+                            <td>
+                                ${lengthText}
+                            </td>
+
+                            <td>
+                                ${piece.qty || 0}
+                            </td>
+
+                            <td>
+                                ${Number(
+                                    piece.totalLength || 0
+                                ).toFixed(2)}
+                            </td>
+
+                            <td>
+                                ${Number(
+                                    item.cubicFeet || 0
+                                ).toFixed(2)}
+                            </td>
+
+                            <td>
+                                ₹ ${Number(
+                                    item.rate || 0
+                                ).toFixed(2)}
+                            </td>
+
+                            <td>
+                                ₹ ${Number(
+                                    item.amount || 0
+                                ).toFixed(2)}
+                            </td>
+
+                            <td>
+                                ${item.quality || "-"}
+                            </td>
+
+                        `;
+
                     }
-                </td>
-
-                <td>
-                    ${item.breadth || "-"}
-                    ×
-                    ${item.thickness || "-"}
-                </td>
-
-                <td>-</td>
-
-                <td>-</td>
-
-                <td>
-                    ${Number(
-                        item.totalLength || 0
-                    ).toFixed(2)}
-                </td>
-
-                <td>
-                    ${Number(
-                        item.cubicFeet || 0
-                    ).toFixed(2)}
-                </td>
-
-                <td>
-                    ₹ ${Number(
-                        item.rate || 0
-                    ).toFixed(2)}
-                </td>
-
-                <td>
-                    ₹ ${Number(
-                        item.amount || 0
-                    ).toFixed(2)}
-                </td>
-
-                <td>
-                    ${item.quality || "-"}
-                </td>
-
-            `;
 
 
-            woodTable.appendChild(row);
+                    // =================================
+                    // ADDITIONAL PIECES
+                    // =================================
+
+                    else {
+
+                        row.innerHTML = `
+
+                            <td></td>
+
+                            <td></td>
+
+                            <td></td>
+
+                            <td>
+                                ${lengthText}
+                            </td>
+
+                            <td>
+                                ${piece.qty || 0}
+                            </td>
+
+                            <td>
+                                ${Number(
+                                    piece.totalLength || 0
+                                ).toFixed(2)}
+                            </td>
+
+                            <td></td>
+
+                            <td></td>
+
+                            <td></td>
+
+                            <td></td>
+
+                        `;
+
+                    }
+
+
+                    woodTable.appendChild(
+                        row
+                    );
+
+                }
+            );
+
 
             sno++;
 
-            return;
-
         }
-
-
-        // =================================
-        // PIECES
-        // =================================
-
-        item.pieces.forEach(
-            function (piece, index) {
-
-
-                const row =
-                    document.createElement("tr");
-
-
-                const length =
-                    Number(piece.length) || 0;
-
-
-                const extraLength =
-                    Number(
-                        piece.extraLength
-                    ) || 0;
-
-
-                const lengthText =
-                    length +
-                    extraLength;
-
-
-                // =================================
-                // FIRST PIECE
-                // =================================
-
-                if (index === 0) {
-
-                    row.innerHTML = `
-
-                        <td>
-                            ${sno}
-                        </td>
-
-                        <td>
-                            ${
-                                item.woodType === "Other"
-                                    ? item.otherWood || "-"
-                                    : item.woodType || "-"
-                            }
-                        </td>
-
-                        <td>
-                            ${item.breadth || "-"}
-                            ×
-                            ${item.thickness || "-"}
-                        </td>
-
-                        <td>
-                            ${lengthText}
-                        </td>
-
-                        <td>
-                            ${piece.qty || 0}
-                        </td>
-
-                        <td>
-                            ${Number(
-                                piece.totalLength || 0
-                            ).toFixed(2)}
-                        </td>
-
-                        <td>
-                            ${Number(
-                                item.cubicFeet || 0
-                            ).toFixed(2)}
-                        </td>
-
-                        <td>
-                            ₹ ${Number(
-                                item.rate || 0
-                            ).toFixed(2)}
-                        </td>
-
-                        <td>
-                            ₹ ${Number(
-                                item.amount || 0
-                            ).toFixed(2)}
-                        </td>
-
-                        <td>
-                            ${item.quality || "-"}
-                        </td>
-
-                    `;
-
-                }
-
-
-                // =================================
-                // ADDITIONAL PIECES
-                // =================================
-
-                else {
-
-                    row.innerHTML = `
-
-                        <td></td>
-
-                        <td></td>
-
-                        <td></td>
-
-                        <td>
-                            ${lengthText}
-                        </td>
-
-                        <td>
-                            ${piece.qty || 0}
-                        </td>
-
-                        <td>
-                            ${Number(
-                                piece.totalLength || 0
-                            ).toFixed(2)}
-                        </td>
-
-                        <td></td>
-
-                        <td></td>
-
-                        <td></td>
-
-                        <td></td>
-
-                    `;
-
-                }
-
-
-                woodTable.appendChild(row);
-
-            }
-        );
-
-
-        sno++;
-
-    });
+    );
 
 }
 
@@ -599,26 +812,34 @@ let chargeSno = 1;
 
 const labourCharge =
     Number(
-        localStorage.getItem("labourCharge")
+        localStorage.getItem(
+            "labourCharge"
+        )
     ) || 0;
 
 
 const otherCharge =
     Number(
-        localStorage.getItem("otherCharge")
+        localStorage.getItem(
+            "otherCharge"
+        )
     ) || 0;
 
 
 let othersData = [];
 
+
 try {
 
     othersData =
         JSON.parse(
-            localStorage.getItem("othersData")
+            localStorage.getItem(
+                "othersData"
+            )
         ) || [];
 
 }
+
 catch (error) {
 
     console.error(
@@ -647,7 +868,9 @@ if (
 
 
     const row =
-        document.createElement("tr");
+        document.createElement(
+            "tr"
+        );
 
 
     row.innerHTML = `
@@ -667,7 +890,9 @@ if (
     `;
 
 
-    chargeTable.appendChild(row);
+    chargeTable.appendChild(
+        row
+    );
 
 }
 
@@ -685,7 +910,9 @@ if (
 
 
     const row =
-        document.createElement("tr");
+        document.createElement(
+            "tr"
+        );
 
 
     row.innerHTML = `
@@ -705,7 +932,9 @@ if (
     `;
 
 
-    chargeTable.appendChild(row);
+    chargeTable.appendChild(
+        row
+    );
 
 }
 
@@ -723,7 +952,9 @@ if (chargeTable) {
 
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             row.innerHTML = `
@@ -745,7 +976,9 @@ if (chargeTable) {
             `;
 
 
-            chargeTable.appendChild(row);
+            chargeTable.appendChild(
+                row
+            );
 
         }
     );
@@ -763,7 +996,9 @@ if (
 ) {
 
     const row =
-        document.createElement("tr");
+        document.createElement(
+            "tr"
+        );
 
 
     row.innerHTML = `
@@ -777,7 +1012,9 @@ if (
     `;
 
 
-    chargeTable.appendChild(row);
+    chargeTable.appendChild(
+        row
+    );
 
 }
 
@@ -787,7 +1024,9 @@ if (
 // =========================================
 
 const printBtn =
-    document.getElementById("printBtn");
+    document.getElementById(
+        "printBtn"
+    );
 
 
 if (printBtn) {
@@ -859,7 +1098,8 @@ woodData.forEach(
     function (item) {
 
         let name =
-            item.woodType || "Unknown";
+            item.woodType ||
+            "Unknown";
 
 
         if (
@@ -883,18 +1123,25 @@ woodData.forEach(
             cftSummary[name]
         ) {
 
-            cftSummary[name] += cft;
+            cftSummary[name] +=
+                cft;
 
         }
+
         else {
 
-            cftSummary[name] = cft;
+            cftSummary[name] =
+                cft;
 
         }
 
     }
 );
 
+
+// =========================================
+// DISPLAY CFT SUMMARY
+// =========================================
 
 const cftDiv =
     document.getElementById(
@@ -921,7 +1168,10 @@ if (cftDiv) {
 
                 :
 
-                ${cftSummary[wood].toFixed(2)}
+                ${cftSummary[
+                    wood
+                ].toFixed(2)}
+
                 CFT
 
             </p>

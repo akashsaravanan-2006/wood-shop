@@ -1,12 +1,12 @@
-// =========================================
+// =====================================================
 // CBILL.JS
 // FINAL CONFIRMED BILL
-// =========================================
+// =====================================================
 
 
-// =========================================
-// GET SAVED BILL VALUES
-// =========================================
+// =====================================================
+// GET SAVED BILL INFORMATION
+// =====================================================
 
 const savedBillNo =
     localStorage.getItem(
@@ -20,25 +20,15 @@ const savedCustomerId =
     );
 
 
-// =========================================
-// ELEMENTS
-// =========================================
+// =====================================================
+// BILL NUMBER
+// =====================================================
 
 const billNoElement =
     document.getElementById(
         "billNo"
     );
 
-
-const customerIdElement =
-    document.getElementById(
-        "customerId"
-    );
-
-
-// =========================================
-// DISPLAY EXACT BILL NUMBER
-// =========================================
 
 if (billNoElement) {
 
@@ -48,9 +38,15 @@ if (billNoElement) {
 }
 
 
-// =========================================
-// DISPLAY EXACT CUSTOMER ID
-// =========================================
+// =====================================================
+// CUSTOMER ID
+// =====================================================
+
+const customerIdElement =
+    document.getElementById(
+        "customerId"
+    );
+
 
 if (customerIdElement) {
 
@@ -60,20 +56,36 @@ if (customerIdElement) {
 }
 
 
-// =========================================
+// =====================================================
 // DATE
-// =========================================
+// =====================================================
 
-const billDate =
+const billDateElement =
     document.getElementById(
         "billDate"
     );
 
 
-let savedDate =
+const savedDate =
     localStorage.getItem(
         "billDate"
     );
+
+
+if (billDateElement) {
+
+    billDateElement.textContent =
+        savedDate || "---";
+
+}
+
+
+// =====================================================
+// DAY + TIME
+// =====================================================
+
+const now =
+    new Date();
 
 
 const days = [
@@ -89,54 +101,6 @@ const days = [
 ];
 
 
-if (savedDate) {
-
-    if (billDate) {
-
-        billDate.textContent =
-            savedDate;
-
-    }
-
-}
-
-
-else {
-
-    const today =
-        new Date();
-
-
-    savedDate =
-        today.getDate()
-            .toString()
-            .padStart(2, "0")
-        + "/" +
-        (today.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")
-        + "/" +
-        today.getFullYear();
-
-
-    if (billDate) {
-
-        billDate.textContent =
-            savedDate;
-
-    }
-
-}
-
-
-// =========================================
-// DAY + TIME
-// =========================================
-
-const now =
-    new Date();
-
-
 const time =
     now.toLocaleTimeString(
         "en-IN",
@@ -149,15 +113,15 @@ const time =
     );
 
 
-const billDayTime =
+const billDayTimeElement =
     document.getElementById(
         "billDayTime"
     );
 
 
-if (billDayTime) {
+if (billDayTimeElement) {
 
-    billDayTime.textContent =
+    billDayTimeElement.textContent =
         days[now.getDay()] +
         " | " +
         time;
@@ -165,19 +129,19 @@ if (billDayTime) {
 }
 
 
-// =========================================
+// =====================================================
 // CUSTOMER DETAILS
-// =========================================
+// =====================================================
 
-const customerName =
+const customerNameElement =
     document.getElementById(
         "customerName"
     );
 
 
-if (customerName) {
+if (customerNameElement) {
 
-    customerName.textContent =
+    customerNameElement.textContent =
         localStorage.getItem(
             "customerName"
         ) || "-";
@@ -185,15 +149,15 @@ if (customerName) {
 }
 
 
-const customerMobile =
+const customerMobileElement =
     document.getElementById(
         "customerMobile"
     );
 
 
-if (customerMobile) {
+if (customerMobileElement) {
 
-    customerMobile.textContent =
+    customerMobileElement.textContent =
         localStorage.getItem(
             "customerMobile"
         ) || "-";
@@ -201,15 +165,15 @@ if (customerMobile) {
 }
 
 
-const customerPlace =
+const customerPlaceElement =
     document.getElementById(
         "customerPlace"
     );
 
 
-if (customerPlace) {
+if (customerPlaceElement) {
 
-    customerPlace.textContent =
+    customerPlaceElement.textContent =
         localStorage.getItem(
             "customerPlace"
         ) || "-";
@@ -217,9 +181,9 @@ if (customerPlace) {
 }
 
 
-// =========================================
+// =====================================================
 // TOTALS
-// =========================================
+// =====================================================
 
 const woodTotal =
     Number(
@@ -242,7 +206,13 @@ const grandTotal =
         localStorage.getItem(
             "finalTotal"
         )
-    ) || 0;
+    ) ||
+    Number(
+        localStorage.getItem(
+            "grandTotal"
+        )
+    ) ||
+    0;
 
 
 const advanceAmount =
@@ -261,9 +231,9 @@ const balanceAmount =
     ) || 0;
 
 
-// =========================================
+// =====================================================
 // DISPLAY TOTALS
-// =========================================
+// =====================================================
 
 const woodTotalElement =
     document.getElementById(
@@ -350,9 +320,9 @@ if (balanceElement) {
 }
 
 
-// =========================================
-// WOOD DATA
-// =========================================
+// =====================================================
+// LOAD WOOD DATA
+// =====================================================
 
 let woodData = [];
 
@@ -371,7 +341,7 @@ try {
 catch (error) {
 
     console.error(
-        "Unable to read woodData:",
+        "WOOD DATA ERROR:",
         error
     );
 
@@ -389,9 +359,9 @@ const woodTable =
 let sno = 1;
 
 
-// =========================================
-// WOOD TABLE
-// =========================================
+// =====================================================
+// DISPLAY WOOD
+// =====================================================
 
 if (woodTable) {
 
@@ -399,9 +369,9 @@ if (woodTable) {
         function (item) {
 
 
-            // =================================
+            // =========================================
             // NO PIECES
-            // =================================
+            // =========================================
 
             if (
                 !item.pieces ||
@@ -416,7 +386,9 @@ if (woodTable) {
 
                 row.innerHTML = `
 
-                    <td>${sno}</td>
+                    <td>
+                        ${sno}
+                    </td>
 
                     <td>
                         ${
@@ -432,9 +404,13 @@ if (woodTable) {
                         ${item.thickness || "-"}
                     </td>
 
-                    <td>-</td>
+                    <td>
+                        -
+                    </td>
 
-                    <td>-</td>
+                    <td>
+                        -
+                    </td>
 
                     <td>
                         ${Math.round(
@@ -485,12 +461,16 @@ if (woodTable) {
             }
 
 
-            // =================================
+            // =========================================
             // PIECES
-            // =================================
+            // =========================================
 
             item.pieces.forEach(
-                function (piece, index) {
+                function (
+                    piece,
+                    index
+                ) {
+
 
                     const row =
                         document.createElement(
@@ -515,15 +495,19 @@ if (woodTable) {
                         extraLength;
 
 
-                    // =================================
+                    // =====================================
                     // FIRST PIECE
-                    // =================================
+                    // =====================================
 
-                    if (index === 0) {
+                    if (
+                        index === 0
+                    ) {
 
                         row.innerHTML = `
 
-                            <td>${sno}</td>
+                            <td>
+                                ${sno}
+                            </td>
 
                             <td>
                                 ${
@@ -586,9 +570,9 @@ if (woodTable) {
                     }
 
 
-                    // =================================
+                    // =====================================
                     // ADDITIONAL PIECES
-                    // =================================
+                    // =====================================
 
                     else {
 
@@ -645,9 +629,9 @@ if (woodTable) {
 }
 
 
-// =========================================
+// =====================================================
 // OTHER CHARGES
-// =========================================
+// =====================================================
 
 const chargeTable =
     document.getElementById(
@@ -687,6 +671,11 @@ try {
 
 catch (error) {
 
+    console.error(
+        "OTHER DATA ERROR:",
+        error
+    );
+
     othersData = [];
 
 }
@@ -697,9 +686,9 @@ let chargeSno = 1;
 let hasCharge = false;
 
 
-// =========================================
-// LABOUR
-// =========================================
+// =====================================================
+// LABOUR CHARGE
+// =====================================================
 
 if (
     chargeTable &&
@@ -741,9 +730,9 @@ if (
 }
 
 
-// =========================================
+// =====================================================
 // OTHER CHARGE
-// =========================================
+// =====================================================
 
 if (
     chargeTable &&
@@ -785,9 +774,9 @@ if (
 }
 
 
-// =========================================
+// =====================================================
 // ADDITIONAL CHARGES
-// =========================================
+// =====================================================
 
 if (chargeTable) {
 
@@ -834,9 +823,9 @@ if (chargeTable) {
 }
 
 
-// =========================================
+// =====================================================
 // NO CHARGES
-// =========================================
+// =====================================================
 
 if (
     chargeTable &&
@@ -867,9 +856,9 @@ if (
 }
 
 
-// =========================================
+// =====================================================
 // CFT SUMMARY
-// =========================================
+// =====================================================
 
 const cftSummary = {};
 
@@ -957,9 +946,9 @@ if (cftDiv) {
 }
 
 
-// =========================================
+// =====================================================
 // REMARK
-// =========================================
+// =====================================================
 
 const remarkElement =
     document.getElementById(
@@ -977,9 +966,9 @@ if (remarkElement) {
 }
 
 
-// =========================================
+// =====================================================
 // PRINT BUTTON
-// =========================================
+// =====================================================
 
 const printBtn =
     document.getElementById(
@@ -1001,9 +990,9 @@ if (printBtn) {
 }
 
 
-// =========================================
+// =====================================================
 // HOME BUTTON
-// =========================================
+// =====================================================
 
 const homeBtn =
     document.getElementById(
@@ -1024,17 +1013,3 @@ if (homeBtn) {
     );
 
 }
-
-
-// =========================================
-// PRINT CALLBACK
-// =========================================
-
-window.onafterprint =
-    function () {
-
-        console.log(
-            "Final Bill Printed Successfully"
-        );
-
-    };

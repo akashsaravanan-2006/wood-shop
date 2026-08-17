@@ -47,8 +47,13 @@ const printCustomerId =
 // INITIAL STATE
 // =====================================================
 
+// Print must be disabled until
+// the bill is successfully saved.
+
 if (printBtn) {
+
     printBtn.disabled = true;
+
 }
 
 
@@ -57,6 +62,7 @@ if (printBtn) {
 // =====================================================
 
 let billData = null;
+
 let isSaving = false;
 
 
@@ -64,16 +70,30 @@ let isSaving = false;
 // INITIAL DISPLAY
 // =====================================================
 
+// Before saving, do NOT show the real
+// Bill Number or Customer ID.
+
 if (billNoText) {
-    billNoText.textContent = "BILL-NEW";
+
+    billNoText.textContent =
+        "BILL-NEW";
+
 }
+
 
 if (customerIdText) {
-    customerIdText.textContent = "CUST-NEW";
+
+    customerIdText.textContent =
+        "CUST-NEW";
+
 }
 
+
 if (printCustomerId) {
-    printCustomerId.textContent = "CUST-NEW";
+
+    printCustomerId.textContent =
+        "CUST-NEW";
+
 }
 
 
@@ -83,7 +103,8 @@ if (printCustomerId) {
 
 function getCurrentDate() {
 
-    const now = new Date();
+    const now =
+        new Date();
 
     const year =
         now.getFullYear();
@@ -105,6 +126,7 @@ function getCurrentDate() {
         "-" +
         day
     );
+
 }
 
 
@@ -114,7 +136,8 @@ function getCurrentDate() {
 
 function getCurrentTime() {
 
-    const now = new Date();
+    const now =
+        new Date();
 
     const hours =
         String(
@@ -138,6 +161,7 @@ function getCurrentTime() {
         ":" +
         seconds
     );
+
 }
 
 
@@ -180,18 +204,25 @@ function createBillData() {
 
     return {
 
-        // Backend generates these
+        // IMPORTANT:
+        // Backend generates these.
+
         billNo: null,
+
         customerId: null,
 
+
         // Date / Time
+
         billDate:
             getCurrentDate(),
 
         billTime:
             getCurrentTime(),
 
+
         // Customer
+
         customerName:
             localStorage.getItem(
                 "customerName"
@@ -207,7 +238,9 @@ function createBillData() {
                 "customerPlace"
             ) || "",
 
+
         // Payment
+
         paymentType:
             localStorage.getItem(
                 "paymentType"
@@ -227,7 +260,9 @@ function createBillData() {
                 )
             ) || 0,
 
+
         // Totals
+
         totalCFT:
             Number(
                 localStorage.getItem(
@@ -276,15 +311,25 @@ function createBillData() {
             ) ||
             0,
 
+
         // Wood
+
         woodData:
-            getJSON("woodData"),
+            getJSON(
+                "woodData"
+            ),
+
 
         // Other charges
+
         othersData:
-            getJSON("othersData"),
+            getJSON(
+                "othersData"
+            ),
+
 
         // Remark
+
         remark:
             localStorage.getItem(
                 "remark"
@@ -305,18 +350,28 @@ if (saveBtn) {
         "click",
         async function () {
 
-            // Prevent double click
+
+            // =========================================
+            // PREVENT DOUBLE CLICK
+            // =========================================
+
             if (isSaving) {
+
                 return;
+
             }
 
 
-            // Check YES
+            // =========================================
+            // CHECK YES
+            // =========================================
+
             if (
                 !confirmInput ||
                 confirmInput.value
                     .trim()
-                    .toUpperCase() !== "YES"
+                    .toUpperCase() !==
+                    "YES"
             ) {
 
                 if (message) {
@@ -334,7 +389,10 @@ if (saveBtn) {
             }
 
 
-            // Start saving
+            // =========================================
+            // START SAVING
+            // =========================================
+
             isSaving = true;
 
             saveBtn.disabled = true;
@@ -351,7 +409,10 @@ if (saveBtn) {
             }
 
 
-            // Create bill
+            // =========================================
+            // CREATE BILL
+            // =========================================
+
             billData =
                 createBillData();
 
@@ -364,9 +425,10 @@ if (saveBtn) {
 
             try {
 
-                // =================================================
+
+                // =====================================
                 // SEND TO BACKEND
-                // =================================================
+                // =====================================
 
                 const response =
                     await fetch(
@@ -374,7 +436,8 @@ if (saveBtn) {
                         "/save-bill",
                         {
 
-                            method: "POST",
+                            method:
+                                "POST",
 
                             headers: {
 
@@ -392,9 +455,9 @@ if (saveBtn) {
                     );
 
 
-                // =================================================
+                // =====================================
                 // BACKEND RESPONSE
-                // =================================================
+                // =====================================
 
                 const data =
                     await response.json();
@@ -406,7 +469,10 @@ if (saveBtn) {
                 );
 
 
+                // =====================================
                 // HTTP ERROR
+                // =====================================
+
                 if (!response.ok) {
 
                     throw new Error(
@@ -420,7 +486,10 @@ if (saveBtn) {
                 }
 
 
+                // =====================================
                 // DATABASE ERROR
+                // =====================================
+
                 if (!data.success) {
 
                     throw new Error(
@@ -434,27 +503,27 @@ if (saveBtn) {
                 }
 
 
-                // =================================================
+                // =====================================
                 // GET GENERATED BILL NUMBER
-                // =================================================
+                // =====================================
 
                 const savedBillNo =
                     data.billNo ||
                     data.bill_no;
 
 
-                // =================================================
+                // =====================================
                 // GET GENERATED CUSTOMER ID
-                // =================================================
+                // =====================================
 
                 const savedCustomerId =
                     data.customerId ||
                     data.customer_id;
 
 
-                // =================================================
+                // =====================================
                 // GET DATABASE ID
-                // =================================================
+                // =====================================
 
                 const savedBillId =
                     data.billId ||
@@ -463,6 +532,10 @@ if (saveBtn) {
                     data.insertId ||
                     data.insert_id;
 
+
+                // =====================================
+                // CONSOLE
+                // =====================================
 
                 console.log(
                     "================================"
@@ -488,9 +561,9 @@ if (saveBtn) {
                 );
 
 
-                // =================================================
+                // =====================================
                 // VALIDATION
-                // =================================================
+                // =====================================
 
                 if (!savedBillId) {
 
@@ -519,13 +592,15 @@ if (saveBtn) {
                 }
 
 
-                // =================================================
+                // =====================================
                 // SAVE EXACT VALUES
-                // =================================================
+                // =====================================
 
                 localStorage.setItem(
                     "savedBillId",
-                    String(savedBillId)
+                    String(
+                        savedBillId
+                    )
                 );
 
 
@@ -541,7 +616,8 @@ if (saveBtn) {
                 );
 
 
-                // Keep compatibility
+                // Compatibility
+
                 localStorage.setItem(
                     "customerId",
                     savedCustomerId
@@ -560,9 +636,9 @@ if (saveBtn) {
                 );
 
 
-                // =================================================
+                // =====================================
                 // UPDATE BILL DATA
-                // =================================================
+                // =====================================
 
                 billData.billNo =
                     savedBillNo;
@@ -574,9 +650,9 @@ if (saveBtn) {
                     savedBillId;
 
 
-                // =================================================
+                // =====================================
                 // UPDATE SCREEN
-                // =================================================
+                // =====================================
 
                 if (billNoText) {
 
@@ -602,9 +678,9 @@ if (saveBtn) {
                 }
 
 
-                // =================================================
-                // SUCCESS
-                // =================================================
+                // =====================================
+                // SUCCESS MESSAGE
+                // =====================================
 
                 if (message) {
 
@@ -617,9 +693,17 @@ if (saveBtn) {
                 }
 
 
+                // =====================================
+                // DISABLE SAVE
+                // =====================================
+
                 saveBtn.disabled =
                     true;
 
+
+                // =====================================
+                // ENABLE PRINT
+                // =====================================
 
                 if (printBtn) {
 
@@ -658,6 +742,7 @@ if (saveBtn) {
                 isSaving =
                     false;
 
+
                 saveBtn.disabled =
                     false;
 
@@ -670,7 +755,7 @@ if (saveBtn) {
 
 
 // =====================================================
-// PRINT BILL
+// PRINT FINAL BILL
 // =====================================================
 
 if (printBtn) {
@@ -678,6 +763,11 @@ if (printBtn) {
     printBtn.addEventListener(
         "click",
         function () {
+
+
+            // =========================================
+            // CHECK SAVED
+            // =========================================
 
             if (
                 printBtn.disabled ||
@@ -693,19 +783,26 @@ if (printBtn) {
             }
 
 
-            // Print status
+            // =========================================
+            // PRINT STATUS
+            // =========================================
+
             localStorage.setItem(
                 "printStatus",
                 "Printed"
             );
 
 
+            // =========================================
+            // CONSOLE
+            // =========================================
+
             console.log(
                 "================================"
             );
 
             console.log(
-                "PRINTING BILL"
+                "PRINTING FINAL BILL"
             );
 
             console.log(
@@ -728,16 +825,20 @@ if (printBtn) {
             );
 
 
-            // =================================================
-            // OPEN BILL PAGE
-            // =================================================
+            // =========================================
+            // OPEN FINAL BILL PAGE
+            // =========================================
 
             const printWindow =
                 window.open(
-                    "../html/bill.html",
+                    "../html/cbill.html",
                     "_blank"
                 );
 
+
+            // =========================================
+            // POPUP BLOCKED
+            // =========================================
 
             if (!printWindow) {
 
@@ -749,6 +850,10 @@ if (printBtn) {
 
             }
 
+
+            // =========================================
+            // AUTO PRINT
+            // =========================================
 
             printWindow.onload =
                 function () {
@@ -778,52 +883,93 @@ if (printBtn) {
 
 function clearBillData() {
 
-    localStorage.removeItem("woodData");
+    localStorage.removeItem(
+        "woodData"
+    );
 
-    localStorage.removeItem("othersData");
+    localStorage.removeItem(
+        "othersData"
+    );
 
-    localStorage.removeItem("customerName");
+    localStorage.removeItem(
+        "customerName"
+    );
 
-    localStorage.removeItem("customerMobile");
+    localStorage.removeItem(
+        "customerMobile"
+    );
 
-    localStorage.removeItem("customerPlace");
+    localStorage.removeItem(
+        "customerPlace"
+    );
 
-    localStorage.removeItem("paymentType");
+    localStorage.removeItem(
+        "paymentType"
+    );
 
-    localStorage.removeItem("advanceAmount");
+    localStorage.removeItem(
+        "advanceAmount"
+    );
 
-    localStorage.removeItem("balanceAmount");
+    localStorage.removeItem(
+        "balanceAmount"
+    );
 
-    localStorage.removeItem("totalCFT");
+    localStorage.removeItem(
+        "totalCFT"
+    );
 
-    localStorage.removeItem("woodTotal");
+    localStorage.removeItem(
+        "woodTotal"
+    );
 
-    localStorage.removeItem("labourCharge");
+    localStorage.removeItem(
+        "labourCharge"
+    );
 
-    localStorage.removeItem("otherCharge");
+    localStorage.removeItem(
+        "otherCharge"
+    );
 
-    localStorage.removeItem("othersTotal");
+    localStorage.removeItem(
+        "othersTotal"
+    );
 
-    localStorage.removeItem("grandTotal");
+    localStorage.removeItem(
+        "grandTotal"
+    );
 
-    localStorage.removeItem("finalTotal");
+    localStorage.removeItem(
+        "finalTotal"
+    );
 
-    localStorage.removeItem("remark");
+    localStorage.removeItem(
+        "remark"
+    );
 
-    localStorage.removeItem("billDate");
+    localStorage.removeItem(
+        "billDate"
+    );
 
-    localStorage.removeItem("billTime");
+    localStorage.removeItem(
+        "billTime"
+    );
 
-    localStorage.removeItem("printStatus");
+    localStorage.removeItem(
+        "printStatus"
+    );
+
 
     // IMPORTANT:
+    //
     // Do NOT remove:
     //
     // savedBillId
     // savedBillNo
     // savedCustomerId
     //
-    // These identify the bill that was just saved.
+    // These are needed by cbill.html
+    // to display the final bill.
 }
 
 
@@ -837,6 +983,7 @@ if (cancelBtn) {
         "click",
         function () {
 
+
             const result =
                 confirm(
                     "Are you sure you want to cancel?"
@@ -844,17 +991,19 @@ if (cancelBtn) {
 
 
             if (!result) {
+
                 return;
+
             }
 
 
             clearBillData();
 
 
-            window.open(
-    "../html/cbill.html",
-    "_blank"
-);
+            // Go to Home
+
+            window.location.href =
+                "../html/index.html";
 
         }
     );
@@ -872,6 +1021,7 @@ if (homeBtn) {
         "click",
         function () {
 
+
             const result =
                 confirm(
                     "Are you sure you want to go Home?"
@@ -879,15 +1029,19 @@ if (homeBtn) {
 
 
             if (!result) {
+
                 return;
+
             }
 
 
-            // Clear current temporary bill data
+            // Clear temporary data
+
             clearBillData();
 
 
-            // ALWAYS GO TO HOME
+            // Go Home
+
             window.location.href =
                 "../html/index.html";
 

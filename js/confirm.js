@@ -57,26 +57,7 @@ if (printBtn) {
 // =====================================================
 
 let billData = null;
-
 let isSaving = false;
-
-
-// =====================================================
-// IMPORTANT
-// =====================================================
-// DO NOT GENERATE BILL NUMBER HERE.
-// DO NOT GENERATE CUSTOMER ID HERE.
-//
-// Backend will generate:
-//
-// BILL-0001
-// CUST-0001
-//
-// BILL-0002
-// CUST-0002
-//
-// etc.
-// =====================================================
 
 
 // =====================================================
@@ -84,26 +65,15 @@ let isSaving = false;
 // =====================================================
 
 if (billNoText) {
-
-    billNoText.textContent =
-        "BILL-NEW";
-
+    billNoText.textContent = "BILL-NEW";
 }
-
 
 if (customerIdText) {
-
-    customerIdText.textContent =
-        "CUST-NEW";
-
+    customerIdText.textContent = "CUST-NEW";
 }
 
-
 if (printCustomerId) {
-
-    printCustomerId.textContent =
-        "CUST-NEW";
-
+    printCustomerId.textContent = "CUST-NEW";
 }
 
 
@@ -113,25 +83,20 @@ if (printCustomerId) {
 
 function getCurrentDate() {
 
-    const now =
-        new Date();
-
+    const now = new Date();
 
     const year =
         now.getFullYear();
-
 
     const month =
         String(
             now.getMonth() + 1
         ).padStart(2, "0");
 
-
     const day =
         String(
             now.getDate()
         ).padStart(2, "0");
-
 
     return (
         year +
@@ -140,7 +105,6 @@ function getCurrentDate() {
         "-" +
         day
     );
-
 }
 
 
@@ -150,27 +114,22 @@ function getCurrentDate() {
 
 function getCurrentTime() {
 
-    const now =
-        new Date();
-
+    const now = new Date();
 
     const hours =
         String(
             now.getHours()
         ).padStart(2, "0");
 
-
     const minutes =
         String(
             now.getMinutes()
         ).padStart(2, "0");
 
-
     const seconds =
         String(
             now.getSeconds()
         ).padStart(2, "0");
-
 
     return (
         hours +
@@ -179,7 +138,6 @@ function getCurrentTime() {
         ":" +
         seconds
     );
-
 }
 
 
@@ -222,65 +180,38 @@ function createBillData() {
 
     return {
 
-        // =============================================
-        // IMPORTANT
-        // Backend generates bill number
-        // =============================================
-
+        // Backend generates these
         billNo: null,
-
-
-        // =============================================
-        // IMPORTANT
-        // Backend generates customer ID
-        // =============================================
-
         customerId: null,
 
-
-        // =============================================
-        // DATE / TIME
-        // =============================================
-
+        // Date / Time
         billDate:
             getCurrentDate(),
-
 
         billTime:
             getCurrentTime(),
 
-
-        // =============================================
-        // CUSTOMER
-        // =============================================
-
+        // Customer
         customerName:
             localStorage.getItem(
                 "customerName"
             ) || "",
-
 
         customerMobile:
             localStorage.getItem(
                 "customerMobile"
             ) || "",
 
-
         customerPlace:
             localStorage.getItem(
                 "customerPlace"
             ) || "",
 
-
-        // =============================================
-        // PAYMENT
-        // =============================================
-
+        // Payment
         paymentType:
             localStorage.getItem(
                 "paymentType"
             ) || "",
-
 
         advanceAmount:
             Number(
@@ -289,7 +220,6 @@ function createBillData() {
                 )
             ) || 0,
 
-
         balanceAmount:
             Number(
                 localStorage.getItem(
@@ -297,18 +227,13 @@ function createBillData() {
                 )
             ) || 0,
 
-
-        // =============================================
-        // TOTALS
-        // =============================================
-
+        // Totals
         totalCFT:
             Number(
                 localStorage.getItem(
                     "totalCFT"
                 )
             ) || 0,
-
 
         woodTotal:
             Number(
@@ -317,14 +242,12 @@ function createBillData() {
                 )
             ) || 0,
 
-
         labourCharge:
             Number(
                 localStorage.getItem(
                     "labourCharge"
                 )
             ) || 0,
-
 
         otherCharge:
             Number(
@@ -333,19 +256,12 @@ function createBillData() {
                 )
             ) || 0,
 
-
         othersTotal:
             Number(
                 localStorage.getItem(
                     "othersTotal"
                 )
             ) || 0,
-
-
-        // =============================================
-        // IMPORTANT
-        // Support both finalTotal and grandTotal
-        // =============================================
 
         grandTotal:
             Number(
@@ -360,31 +276,15 @@ function createBillData() {
             ) ||
             0,
 
-
-        // =============================================
-        // WOOD DATA
-        // =============================================
-
+        // Wood
         woodData:
-            getJSON(
-                "woodData"
-            ),
+            getJSON("woodData"),
 
-
-        // =============================================
-        // OTHER DATA
-        // =============================================
-
+        // Other charges
         othersData:
-            getJSON(
-                "othersData"
-            ),
+            getJSON("othersData"),
 
-
-        // =============================================
-        // REMARK
-        // =============================================
-
+        // Remark
         remark:
             localStorage.getItem(
                 "remark"
@@ -405,22 +305,13 @@ if (saveBtn) {
         "click",
         async function () {
 
-
-            // =========================================
-            // PREVENT DOUBLE CLICK
-            // =========================================
-
+            // Prevent double click
             if (isSaving) {
-
                 return;
-
             }
 
 
-            // =========================================
-            // CHECK YES
-            // =========================================
-
+            // Check YES
             if (
                 !confirmInput ||
                 confirmInput.value
@@ -443,10 +334,7 @@ if (saveBtn) {
             }
 
 
-            // =========================================
-            // START SAVING
-            // =========================================
-
+            // Start saving
             isSaving = true;
 
             saveBtn.disabled = true;
@@ -463,10 +351,7 @@ if (saveBtn) {
             }
 
 
-            // =========================================
-            // CREATE BILL DATA
-            // =========================================
-
+            // Create bill
             billData =
                 createBillData();
 
@@ -477,11 +362,11 @@ if (saveBtn) {
             );
 
 
-            // =========================================
-            // SEND TO BACKEND
-            // =========================================
-
             try {
+
+                // =================================================
+                // SEND TO BACKEND
+                // =================================================
 
                 const response =
                     await fetch(
@@ -507,9 +392,9 @@ if (saveBtn) {
                     );
 
 
-                // =====================================
-                // GET BACKEND RESPONSE
-                // =====================================
+                // =================================================
+                // BACKEND RESPONSE
+                // =================================================
 
                 const data =
                     await response.json();
@@ -521,10 +406,7 @@ if (saveBtn) {
                 );
 
 
-                // =====================================
                 // HTTP ERROR
-                // =====================================
-
                 if (!response.ok) {
 
                     throw new Error(
@@ -538,10 +420,7 @@ if (saveBtn) {
                 }
 
 
-                // =====================================
                 // DATABASE ERROR
-                // =====================================
-
                 if (!data.success) {
 
                     throw new Error(
@@ -556,7 +435,7 @@ if (saveBtn) {
 
 
                 // =================================================
-                // GET VALUES GENERATED BY DATABASE/BACKEND
+                // GET GENERATED BILL NUMBER
                 // =================================================
 
                 const savedBillNo =
@@ -564,21 +443,17 @@ if (saveBtn) {
                     data.bill_no;
 
 
+                // =================================================
+                // GET GENERATED CUSTOMER ID
+                // =================================================
+
                 const savedCustomerId =
                     data.customerId ||
                     data.customer_id;
 
 
                 // =================================================
-                // VERY IMPORTANT
-                //
-                // Get the actual DATABASE ID
-                //
-                // Example:
-                //
-                // id = 30001
-                // bill_no = BILL-0003
-                // customer_id = CUST-0003
+                // GET DATABASE ID
                 // =================================================
 
                 const savedBillId =
@@ -593,24 +468,20 @@ if (saveBtn) {
                     "================================"
                 );
 
-
                 console.log(
-                    "Saved Database ID:",
+                    "Database ID:",
                     savedBillId
                 );
 
-
                 console.log(
-                    "Saved Bill Number:",
+                    "Bill Number:",
                     savedBillNo
                 );
 
-
                 console.log(
-                    "Saved Customer ID:",
+                    "Customer ID:",
                     savedCustomerId
                 );
-
 
                 console.log(
                     "================================"
@@ -618,7 +489,7 @@ if (saveBtn) {
 
 
                 // =================================================
-                // CHECK REQUIRED VALUES
+                // VALIDATION
                 // =================================================
 
                 if (!savedBillId) {
@@ -649,7 +520,7 @@ if (saveBtn) {
 
 
                 // =================================================
-                // SAVE EXACT VALUES TO LOCAL STORAGE
+                // SAVE EXACT VALUES
                 // =================================================
 
                 localStorage.setItem(
@@ -670,8 +541,7 @@ if (saveBtn) {
                 );
 
 
-                // Keep old key also if another page uses it
-
+                // Keep compatibility
                 localStorage.setItem(
                     "customerId",
                     savedCustomerId
@@ -697,10 +567,8 @@ if (saveBtn) {
                 billData.billNo =
                     savedBillNo;
 
-
                 billData.customerId =
                     savedCustomerId;
-
 
                 billData.id =
                     savedBillId;
@@ -735,7 +603,7 @@ if (saveBtn) {
 
 
                 // =================================================
-                // SUCCESS MESSAGE
+                // SUCCESS
                 // =================================================
 
                 if (message) {
@@ -748,10 +616,6 @@ if (saveBtn) {
 
                 }
 
-
-                // =================================================
-                // BUTTONS
-                // =================================================
 
                 saveBtn.disabled =
                     true;
@@ -770,10 +634,6 @@ if (saveBtn) {
 
             }
 
-
-            // =====================================================
-            // ERROR
-            // =====================================================
 
             catch (error) {
 
@@ -795,11 +655,8 @@ if (saveBtn) {
                 }
 
 
-                // Allow retry
-
                 isSaving =
                     false;
-
 
                 saveBtn.disabled =
                     false;
@@ -822,7 +679,6 @@ if (printBtn) {
         "click",
         function () {
 
-
             if (
                 printBtn.disabled ||
                 !billData
@@ -837,10 +693,7 @@ if (printBtn) {
             }
 
 
-            // =============================================
-            // PRINT STATUS
-            // =============================================
-
+            // Print status
             localStorage.setItem(
                 "printStatus",
                 "Printed"
@@ -851,38 +704,33 @@ if (printBtn) {
                 "================================"
             );
 
-
             console.log(
-                "PRINTING BILL..."
+                "PRINTING BILL"
             );
-
 
             console.log(
                 "Database ID:",
                 billData.id
             );
 
-
             console.log(
                 "Bill No:",
                 billData.billNo
             );
-
 
             console.log(
                 "Customer ID:",
                 billData.customerId
             );
 
-
             console.log(
                 "================================"
             );
 
 
-            // =============================================
+            // =================================================
             // OPEN BILL PAGE
-            // =============================================
+            // =================================================
 
             const printWindow =
                 window.open(
@@ -930,117 +778,57 @@ if (printBtn) {
 
 function clearBillData() {
 
-    localStorage.removeItem(
-        "woodData"
-    );
+    localStorage.removeItem("woodData");
 
+    localStorage.removeItem("othersData");
 
-    localStorage.removeItem(
-        "othersData"
-    );
+    localStorage.removeItem("customerName");
 
+    localStorage.removeItem("customerMobile");
 
-    localStorage.removeItem(
-        "customerName"
-    );
+    localStorage.removeItem("customerPlace");
 
+    localStorage.removeItem("paymentType");
 
-    localStorage.removeItem(
-        "customerMobile"
-    );
+    localStorage.removeItem("advanceAmount");
 
+    localStorage.removeItem("balanceAmount");
 
-    localStorage.removeItem(
-        "customerPlace"
-    );
+    localStorage.removeItem("totalCFT");
 
+    localStorage.removeItem("woodTotal");
 
-    localStorage.removeItem(
-        "paymentType"
-    );
+    localStorage.removeItem("labourCharge");
 
+    localStorage.removeItem("otherCharge");
 
-    localStorage.removeItem(
-        "advanceAmount"
-    );
+    localStorage.removeItem("othersTotal");
 
+    localStorage.removeItem("grandTotal");
 
-    localStorage.removeItem(
-        "balanceAmount"
-    );
+    localStorage.removeItem("finalTotal");
 
+    localStorage.removeItem("remark");
 
-    localStorage.removeItem(
-        "totalCFT"
-    );
+    localStorage.removeItem("billDate");
 
+    localStorage.removeItem("billTime");
 
-    localStorage.removeItem(
-        "woodTotal"
-    );
+    localStorage.removeItem("printStatus");
 
-
-    localStorage.removeItem(
-        "labourCharge"
-    );
-
-
-    localStorage.removeItem(
-        "otherCharge"
-    );
-
-
-    localStorage.removeItem(
-        "othersTotal"
-    );
-
-
-    localStorage.removeItem(
-        "grandTotal"
-    );
-
-
-    localStorage.removeItem(
-        "finalTotal"
-    );
-
-
-    localStorage.removeItem(
-        "remark"
-    );
-
-
-    localStorage.removeItem(
-        "billDate"
-    );
-
-
-    localStorage.removeItem(
-        "billTime"
-    );
-
-
-    localStorage.removeItem(
-        "printStatus"
-    );
-
-
-
-    // =================================================
-    // DO NOT REMOVE THESE
+    // IMPORTANT:
+    // Do NOT remove:
     //
     // savedBillId
     // savedBillNo
     // savedCustomerId
     //
-    // They identify the bill that was just saved.
-    // =================================================
-
+    // These identify the bill that was just saved.
 }
 
 
 // =====================================================
-// CANCEL
+// CANCEL BUTTON
 // =====================================================
 
 if (cancelBtn) {
@@ -1049,7 +837,6 @@ if (cancelBtn) {
         "click",
         function () {
 
-
             const result =
                 confirm(
                     "Are you sure you want to cancel?"
@@ -1057,9 +844,7 @@ if (cancelBtn) {
 
 
             if (!result) {
-
                 return;
-
             }
 
 
@@ -1076,7 +861,7 @@ if (cancelBtn) {
 
 
 // =====================================================
-// HOME
+// HOME BUTTON
 // =====================================================
 
 if (homeBtn) {
@@ -1085,7 +870,6 @@ if (homeBtn) {
         "click",
         function () {
 
-
             const result =
                 confirm(
                     "Are you sure you want to go Home?"
@@ -1093,17 +877,17 @@ if (homeBtn) {
 
 
             if (!result) {
-
                 return;
-
             }
 
 
+            // Clear current temporary bill data
             clearBillData();
 
 
+            // ALWAYS GO TO HOME
             window.location.href =
-                "index.html";
+                "../html/index.html";
 
         }
     );
@@ -1123,16 +907,13 @@ window.addEventListener(
             "================================"
         );
 
-
         console.log(
             "CONFIRM PAGE LOADED"
         );
 
-
         console.log(
             "Waiting for backend Bill No + Customer ID..."
         );
-
 
         console.log(
             "================================"

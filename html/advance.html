@@ -21,13 +21,17 @@
 
     <div class="card">
 
+        <!-- =========================
+             TITLE
+        ========================== -->
+
         <h1>Advance Payment</h1>
 
         <hr>
 
 
         <!-- =========================
-             GRAND TOTAL
+             ORIGINAL GRAND TOTAL
         ========================== -->
 
         <div class="row">
@@ -38,7 +42,7 @@
 
             <input
                 type="text"
-                id="grandTotal"
+                id="originalGrandTotal"
                 class="totalDisplay"
                 readonly>
 
@@ -53,11 +57,7 @@
 
             <label>
                 Discount Amount
-                <span style="
-                    font-size:12px;
-                    font-weight:400;
-                    color:#888;
-                ">
+                <span class="optional">
                     (Optional)
                 </span>
             </label>
@@ -68,6 +68,25 @@
                 min="0"
                 step="1"
                 placeholder="Enter Discount Amount">
+
+        </div>
+
+
+        <!-- =========================
+             FINAL TOTAL
+        ========================== -->
+
+        <div class="row">
+
+            <label>
+                Final Grand Total
+            </label>
+
+            <input
+                type="text"
+                id="grandTotal"
+                class="totalDisplay finalTotal"
+                readonly>
 
         </div>
 
@@ -84,8 +103,6 @@
 
             <div class="paymentType">
 
-                <!-- READY CASH -->
-
                 <label class="radioLabel">
 
                     <input
@@ -98,8 +115,6 @@
 
                 </label>
 
-
-                <!-- ADVANCE -->
 
                 <label class="radioLabel">
 
@@ -129,8 +144,6 @@
 
             <div class="paymentType">
 
-                <!-- CASH -->
-
                 <label class="radioLabel">
 
                     <input
@@ -143,8 +156,6 @@
 
                 </label>
 
-
-                <!-- UPI -->
 
                 <label class="radioLabel">
 
@@ -186,7 +197,7 @@
             </div>
 
 
-            <!-- BALANCE -->
+            <!-- BALANCE AMOUNT -->
 
             <div class="row">
 
@@ -220,7 +231,7 @@
 
 
         <!-- =========================
-             NEXT
+             NEXT BUTTON
         ========================== -->
 
         <div class="buttonRow">
@@ -237,7 +248,7 @@
 
 
         <!-- =========================
-             BACK
+             BACK BUTTON
         ========================== -->
 
         <div class="button-container">
@@ -256,6 +267,10 @@
 
 </div>
 
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
 
 <script src="../js/advance.js"></script>
 

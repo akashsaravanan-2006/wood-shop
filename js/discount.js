@@ -1,8 +1,12 @@
+// =========================================
+// DISCOUNT.JS
+// =========================================
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* =========================================
-       ELEMENTS
-    ========================================= */
+    // =========================================
+    // ELEMENTS
+    // =========================================
 
     const currentTotalElement =
         document.getElementById("currentTotal");
@@ -26,36 +30,92 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("backBtn");
 
 
-    /* =========================================
-       GET GRAND TOTAL
-    ========================================= */
+    // =========================================
+    // GET ORIGINAL GRAND TOTAL
+    // =========================================
+    //
+    // IMPORTANT:
+    // Do NOT use finalGrandTotal here.
+    // Do NOT use old discount value.
+    //
+    // First priority:
+    // originalGrandTotal
+    //
+    // =========================================
 
-    let grandTotal = parseInt(
-        localStorage.getItem("grandTotal") || "0",
-        10
-    );
+    let grandTotal =
+        Number(
+            localStorage.getItem("originalGrandTotal")
+        );
 
-    if (isNaN(grandTotal)) {
 
-        grandTotal = 0;
+    // =========================================
+    // FALLBACK
+    // =========================================
 
+    if (
+        !Number.isFinite(grandTotal) ||
+        grandTotal <= 0
+    ) {
+
+        grandTotal =
+            Number(
+                localStorage.getItem("grandTotal")
+            ) || 0;
     }
 
 
-    /* =========================================
-       DISPLAY CURRENT TOTAL
-    ========================================= */
+    // =========================================
+    // ROUND
+    // =========================================
 
-    currentTotalElement.textContent =
-        "₹ " + grandTotal;
+    grandTotal =
+        Math.round(
+            (grandTotal + Number.EPSILON) * 100
+        ) / 100;
 
-    newGrandTotalElement.textContent =
-        "₹ " + grandTotal;
+
+    // =========================================
+    // VALIDATE
+    // =========================================
+
+    if (grandTotal <= 0) {
+
+        alert(
+            "Grand Total not found. Please go back and create the bill again."
+        );
+
+        return;
+    }
 
 
-    /* =========================================
-       DISCOUNT OPTION
-    ========================================= */
+    // =========================================
+    // DISPLAY CURRENT GRAND TOTAL
+    // =========================================
+
+    if (currentTotalElement) {
+
+        currentTotalElement.textContent =
+            "₹ " +
+            grandTotal.toFixed(2);
+    }
+
+
+    // =========================================
+    // INITIAL NEW GRAND TOTAL
+    // =========================================
+
+    if (newGrandTotalElement) {
+
+        newGrandTotalElement.textContent =
+            "₹ " +
+            grandTotal.toFixed(2);
+    }
+
+
+    // =========================================
+    // DISCOUNT OPTIONS
+    // =========================================
 
     const discountOptions =
         document.querySelectorAll(
@@ -65,198 +125,112 @@ document.addEventListener("DOMContentLoaded", function () {
 
     discountOptions.forEach(function (option) {
 
-        option.addEventListener("change", function () {
+        option.addEventListener(
+            "change",
+            function () {
 
-            if (this.value === "yes") {
+                // =================================
+                // NEED DISCOUNT
+                // =================================
 
-                /* SHOW DISCOUNT INPUT */
+                if (this.value === "yes") {
 
-                discountSection.style.display = "block";
+                    if (discountSection) {
 
-                discountAmountInput.focus();
+                        discountSection.style.display =
+                            "block";
+                    }
 
-            } else {
+                    if (discountAmountInput) {
 
-                /* HIDE DISCOUNT INPUT */
+                        discountAmountInput.focus();
+                    }
 
-                discountSection.style.display = "none";
+                    return;
+                }
 
-                discountAmountInput.value = "";
 
-                /* RESTORE ORIGINAL TOTAL */
+                // =================================
+                // NO DISCOUNT
+                // =================================
 
-                newGrandTotalElement.textContent =
-                    "₹ " + grandTotal;
+                if (this.value === "no") {
 
-                localStorage.setItem(
-                    "discountAmount",
-                    "0"
-                );
+                    if (discountSection) {
 
-                localStorage.setItem(
-                    "discountApplied",
-                    "false"
-                );
+                        discountSection.style.display =
+                            "none";
+                    }
 
-                localStorage.setItem(
-                    "finalGrandTotal",
-                    String(grandTotal)
-                );
+                    if (discountAmountInput) {
+
+                        discountAmountInput.value =
+                            "";
+                    }
+
+
+                    // Restore original total
+
+                    if (newGrandTotalElement) {
+
+                        newGrandTotalElement.textContent =
+                            "₹ " +
+                            grandTotal.toFixed(2);
+                    }
+
+
+                    // Save
+
+                    localStorage.setItem(
+                        "discountAmount",
+                        "0"
+                    );
+
+                    localStorage.setItem(
+                        "discountApplied",
+                        "false"
+                    );
+
+                    localStorage.setItem(
+                        "finalGrandTotal",
+                        String(grandTotal)
+                    );
+
+                }
 
             }
-
-        });
+        );
 
     });
 
 
-    /* =========================================
-       CALCULATE DISCOUNT
-    ========================================= */
+    // =========================================
+    // CALCULATE DISCOUNT
+    // =========================================
 
-    calculateDiscountBtn.addEventListener(
-        "click",
-        function () {
+    if (calculateDiscountBtn) {
 
-            let discount = parseInt(
-                discountAmountInput.value || "0",
-                10
-            );
+        calculateDiscountBtn.addEventListener(
+            "click",
+            function () {
 
-
-            if (isNaN(discount)) {
-
-                discount = 0;
-
-            }
+                let discount =
+                    Number(
+                        discountAmountInput.value
+                    ) || 0;
 
 
-            /* DISCOUNT CANNOT BE NEGATIVE */
-
-            if (discount < 0) {
-
-                discount = 0;
-
-            }
+                discount =
+                    Math.round(
+                        (discount + Number.EPSILON) * 100
+                    ) / 100;
 
 
-            /* DISCOUNT CANNOT BE GREATER
-               THAN GRAND TOTAL */
+                // =================================
+                // VALIDATION
+                // =================================
 
-            if (discount > grandTotal) {
-
-                alert(
-                    "Discount cannot be greater than Grand Total."
-                );
-
-                discountAmountInput.value =
-                    grandTotal;
-
-                discount = grandTotal;
-
-            }
-
-
-            /* CALCULATE NEW TOTAL */
-
-            const finalTotal =
-                grandTotal - discount;
-
-
-            /* DISPLAY */
-
-            newGrandTotalElement.textContent =
-                "₹ " + finalTotal;
-
-
-            /* SAVE */
-
-            localStorage.setItem(
-                "discountAmount",
-                String(discount)
-            );
-
-            localStorage.setItem(
-                "discountApplied",
-                discount > 0
-                    ? "true"
-                    : "false"
-            );
-
-            localStorage.setItem(
-                "finalGrandTotal",
-                String(finalTotal)
-            );
-
-        }
-    );
-
-
-    /* =========================================
-       NEXT BUTTON
-    ========================================= */
-
-    nextBtn.addEventListener(
-        "click",
-        function () {
-
-            const selectedOption =
-                document.querySelector(
-                    'input[name="discountOption"]:checked'
-                );
-
-
-            if (!selectedOption) {
-
-                alert(
-                    "Please select a discount option."
-                );
-
-                return;
-
-            }
-
-
-            /* =================================
-               NO DISCOUNT
-            ================================= */
-
-            if (selectedOption.value === "no") {
-
-                localStorage.setItem(
-                    "discountAmount",
-                    "0"
-                );
-
-                localStorage.setItem(
-                    "discountApplied",
-                    "false"
-                );
-
-                localStorage.setItem(
-                    "finalGrandTotal",
-                    String(grandTotal)
-                );
-
-            }
-
-
-            /* =================================
-               NEED DISCOUNT
-            ================================= */
-
-            if (selectedOption.value === "yes") {
-
-                let discount = parseInt(
-                    discountAmountInput.value || "0",
-                    10
-                );
-
-
-                if (
-                    isNaN(discount) ||
-                    discount <= 0
-                ) {
+                if (discount <= 0) {
 
                     alert(
                         "Please enter the discount amount."
@@ -265,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     discountAmountInput.focus();
 
                     return;
-
                 }
 
 
@@ -278,13 +251,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     discountAmountInput.focus();
 
                     return;
-
                 }
 
 
-                const finalTotal =
-                    grandTotal - discount;
+                // =================================
+                // CALCULATE
+                // =================================
 
+                const finalTotal =
+                    Math.round(
+                        (
+                            grandTotal -
+                            discount
+                        ) * 100
+                    ) / 100;
+
+
+                // =================================
+                // DISPLAY
+                // =================================
+
+                if (newGrandTotalElement) {
+
+                    newGrandTotalElement.textContent =
+                        "₹ " +
+                        finalTotal.toFixed(2);
+                }
+
+
+                // =================================
+                // SAVE DISCOUNT
+                // =================================
 
                 localStorage.setItem(
                     "discountAmount",
@@ -302,30 +299,175 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
             }
+        );
+    }
 
 
-            /* =================================
-               GO TO BILL PAGE
-            ================================= */
+    // =========================================
+    // NEXT BUTTON
+    // =========================================
 
-            window.location.href =
-                "bill.html";
+    if (nextBtn) {
 
-        }
-    );
+        nextBtn.addEventListener(
+            "click",
+            function () {
+
+                const selectedOption =
+                    document.querySelector(
+                        'input[name="discountOption"]:checked'
+                    );
 
 
-    /* =========================================
-       BACK BUTTON
-    ========================================= */
+                // =================================
+                // OPTION REQUIRED
+                // =================================
 
-    backBtn.addEventListener(
-        "click",
-        function () {
+                if (!selectedOption) {
 
-            window.history.back();
+                    alert(
+                        "Please select a discount option."
+                    );
 
-        }
-    );
+                    return;
+                }
+
+
+                // =================================
+                // NO DISCOUNT
+                // =================================
+
+                if (
+                    selectedOption.value === "no"
+                ) {
+
+                    localStorage.setItem(
+                        "discountAmount",
+                        "0"
+                    );
+
+                    localStorage.setItem(
+                        "discountApplied",
+                        "false"
+                    );
+
+                    localStorage.setItem(
+                        "finalGrandTotal",
+                        String(grandTotal)
+                    );
+                }
+
+
+                // =================================
+                // NEED DISCOUNT
+                // =================================
+
+                if (
+                    selectedOption.value === "yes"
+                ) {
+
+                    let discount =
+                        Number(
+                            discountAmountInput.value
+                        ) || 0;
+
+
+                    discount =
+                        Math.round(
+                            (discount + Number.EPSILON) * 100
+                        ) / 100;
+
+
+                    // =================================
+                    // VALIDATE
+                    // =================================
+
+                    if (discount <= 0) {
+
+                        alert(
+                            "Please enter the discount amount."
+                        );
+
+                        discountAmountInput.focus();
+
+                        return;
+                    }
+
+
+                    if (discount > grandTotal) {
+
+                        alert(
+                            "Discount cannot be greater than Grand Total."
+                        );
+
+                        discountAmountInput.focus();
+
+                        return;
+                    }
+
+
+                    // =================================
+                    // FINAL TOTAL
+                    // =================================
+
+                    const finalTotal =
+                        Math.round(
+                            (
+                                grandTotal -
+                                discount
+                            ) * 100
+                        ) / 100;
+
+
+                    // =================================
+                    // SAVE
+                    // =================================
+
+                    localStorage.setItem(
+                        "discountAmount",
+                        String(discount)
+                    );
+
+                    localStorage.setItem(
+                        "discountApplied",
+                        "true"
+                    );
+
+                    localStorage.setItem(
+                        "finalGrandTotal",
+                        String(finalTotal)
+                    );
+
+                }
+
+
+                // =================================
+                // GO TO BILL
+                // =================================
+
+                window.location.href =
+                    "bill.html";
+
+            }
+        );
+    }
+
+
+    // =========================================
+    // BACK BUTTON
+    // =========================================
+
+    if (backBtn) {
+
+        backBtn.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "advance.html";
+
+            }
+        );
+    }
 
 });

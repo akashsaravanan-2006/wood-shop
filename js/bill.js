@@ -159,44 +159,34 @@ const subtotal =
 // IMPORTANT:
 // Declare discount BEFORE using it
 // =========================================
+// =========================================
+// DISCOUNT
+// =========================================
 
 const discount =
-    Number(
-        localStorage.getItem("discountAmount")
-    ) || 0;
-
+    Number(localStorage.getItem("discountAmount")) || 0;
 
 const discountRow =
     document.getElementById("discountRow");
 
-
 const discountElement =
     document.getElementById("discountAmount");
-
 
 if (discount > 0) {
 
     if (discountRow) {
-
         discountRow.style.display = "flex";
-
     }
-
 
     if (discountElement) {
-
         discountElement.textContent =
             "- ₹ " + Math.round(discount);
-
     }
 
-}
-else {
+} else {
 
     if (discountRow) {
-
         discountRow.style.display = "none";
-
     }
 
 }

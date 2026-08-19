@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -11,15 +12,16 @@
 
     <link rel="stylesheet"
           href="../css/bill.css">
+
 </head>
 
 <body>
 
 <div class="bill-container">
 
-    <!-- =========================================
-         HEADER
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
 
     <div class="header">
 
@@ -62,25 +64,29 @@
     <hr>
 
 
-    <!-- =========================================
-         BILL INFORMATION
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- BILL INFORMATION -->
+    <!-- ================================= -->
 
     <div class="billInfo">
 
         <div>
+
             <b>Bill No :</b>
+
             <span id="billNo">---</span>
+
         </div>
 
         <div>
 
             <b>Date :</b>
-            <span id="billDate">---</span>
+
+            <span id="billDate"></span>
 
             <br>
 
-            <small id="billDayTime">---</small>
+            <small id="billDayTime"></small>
 
         </div>
 
@@ -90,25 +96,25 @@
     <hr>
 
 
-    <!-- =========================================
-         CUSTOMER
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- CUSTOMER -->
+    <!-- ================================= -->
 
     <div class="customer">
 
         <span>
             <b>Customer :</b>
-            <span id="customerName">---</span>
+            <span id="customerName"></span>
         </span>
 
         <span>
             <b>Mobile :</b>
-            <span id="customerMobile">---</span>
+            <span id="customerMobile"></span>
         </span>
 
         <span>
             <b>Place :</b>
-            <span id="customerPlace">---</span>
+            <span id="customerPlace"></span>
         </span>
 
     </div>
@@ -117,9 +123,9 @@
     <hr>
 
 
-    <!-- =========================================
-         WOOD DETAILS
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- WOOD DETAILS -->
+    <!-- ================================= -->
 
     <h2>Wood Details</h2>
 
@@ -149,9 +155,9 @@
     </table>
 
 
-    <!-- =========================================
-         OTHER CHARGES
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- OTHER CHARGES -->
+    <!-- ================================= -->
 
     <h2>Other Charges</h2>
 
@@ -174,14 +180,14 @@
     </table>
 
 
-    <!-- =========================================
-         TOTALS
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- TOTALS -->
+    <!-- ================================= -->
 
     <div class="totals">
 
 
-        <!-- CFT SUMMARY -->
+        <!-- CFT TOTAL -->
 
         <div class="cftTotal">
 
@@ -199,20 +205,20 @@
             <span>Wood Total</span>
 
             <span id="woodTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
 
 
-        <!-- OTHER CHARGES TOTAL -->
+        <!-- OTHERS TOTAL -->
 
         <p>
 
             <span>Others Total</span>
 
             <span id="othersTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
@@ -225,7 +231,7 @@
             <span>Subtotal</span>
 
             <span id="subtotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
@@ -241,7 +247,7 @@
             <span>Discount</span>
 
             <span id="discountAmount">
-                - ₹ 0
+                - ₹ 0.00
             </span>
 
         </p>
@@ -254,7 +260,7 @@
             <span>Grand Total</span>
 
             <span id="grandTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </h2>
@@ -270,15 +276,26 @@
             <span>Advance Amount</span>
 
             <span id="advanceAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
 
 
-        <!-- SEPARATOR BEFORE BALANCE -->
+        <!-- PAYMENT MODE -->
 
-        <div class="balance-separator"></div>
+        <p
+            id="paymentModeRow"
+            class="payment-mode-row"
+            style="display:none;">
+
+            <span>Payment Mode</span>
+
+            <span id="paymentMode">
+                -
+            </span>
+
+        </p>
 
 
         <!-- BALANCE -->
@@ -288,7 +305,7 @@
             <span>Balance Amount</span>
 
             <span id="balanceAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
@@ -297,9 +314,9 @@
     </div>
 
 
-    <!-- =========================================
-         SIGNATURE
-    ========================================== -->
+    <!-- ================================= -->
+    <!-- SIGNATURE -->
+    <!-- ================================= -->
 
     <div class="signature">
 
@@ -314,53 +331,62 @@
     </div>
 
 
-    <!-- =========================================
-         BUTTONS
-    ========================================== -->
+    <br>
+
+
+    <!-- ================================= -->
+    <!-- BUTTONS -->
+    <!-- ================================= -->
 
     <div class="buttons">
 
         <button
             id="editBtn"
             type="button">
+
             Edit Bill
+
         </button>
 
 
         <button
             id="confirmBill"
             type="button">
+
             Confirm
+
         </button>
 
 
         <button
             id="printBtn"
             type="button">
+
             Print Bill
+
         </button>
 
 
         <button
             id="backBtn"
             type="button">
+
             Back
+
         </button>
 
     </div>
 
+
 </div>
 
-
-<!-- =========================================
-     JAVASCRIPT
-========================================== -->
 
 <script src="../js/bill.js"></script>
 
 <script src="../js/inputControl.js"></script>
 
 <script src="../js/formPersistence.js"></script>
+
 
 </body>
 

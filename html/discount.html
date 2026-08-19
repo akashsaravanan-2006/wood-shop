@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Discount</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/discount.css">
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="card">
+
+
+        <!-- =====================================
+             TITLE
+        ====================================== -->
+
+        <h1>
+            Discount
+        </h1>
+
+        <hr>
+
+
+        <!-- =====================================
+             CURRENT GRAND TOTAL
+        ====================================== -->
+
+        <div class="amount-box">
+
+            <span>
+                Current Grand Total
+            </span>
+
+            <strong id="currentTotal">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <!-- =====================================
+             DISCOUNT OPTION
+        ====================================== -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                <h3>
+                    Discount
+                </h3>
+
+                <p>
+                    Do you want to give a discount?
+                </p>
+
+            </div>
+
+
+            <div class="discount-options">
+
+
+                <!-- =================================
+                     NO DISCOUNT
+                ================================== -->
+
+                <label class="discount-card">
+
+                    <input
+                        type="radio"
+                        name="discountOption"
+                        value="no"
+                        checked>
+
+                    <div class="discount-content">
+
+                        <div class="discount-icon no-icon">
+                            ×
+                        </div>
+
+                        <div class="discount-info">
+
+                            <strong>
+                                No Discount
+                            </strong>
+
+                            <span>
+                                Keep the current amount
+                            </span>
+
+                        </div>
+
+                        <div class="check-mark">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- =================================
+                     NEED DISCOUNT
+                ================================== -->
+
+                <label class="discount-card">
+
+                    <input
+                        type="radio"
+                        name="discountOption"
+                        value="yes">
+
+                    <div class="discount-content">
+
+                        <div class="discount-icon yes-icon">
+                            %
+                        </div>
+
+                        <div class="discount-info">
+
+                            <strong>
+                                Need Discount
+                            </strong>
+
+                            <span>
+                                Enter discount amount
+                            </span>
+
+                        </div>
+
+                        <div class="check-mark">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             DISCOUNT INPUT SECTION
+             HIDDEN BY DEFAULT
+        ====================================== -->
+
+        <div
+            id="discountSection"
+            class="discount-section">
+
+
+            <div class="row">
+
+                <label>
+                    Discount Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="discountAmount"
+                    min="0"
+                    step="1"
+                    placeholder="Enter Discount Amount">
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    type="button"
+                    id="calculateDiscountBtn">
+
+                    Calculate Discount
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             FINAL AMOUNT
+        ====================================== -->
+
+        <div class="final-box">
+
+            <span>
+                New Grand Total
+            </span>
+
+            <strong id="newGrandTotal">
+                ₹ 0
+            </strong>
+
+        </div>
+
+
+        <!-- =====================================
+             NEXT BUTTON
+        ====================================== -->
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                id="nextBtn">
+
+                Next
+
+            </button>
+
+        </div>
+
+
+        <!-- =====================================
+             BACK BUTTON
+        ====================================== -->
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                id="backBtn">
+
+                Back
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script src="../js/discount.js"></script>
+
+<script src="../js/inputControl.js"></script>
+
+
+</body>
+
+</html>

@@ -7,49 +7,47 @@
 // GET ELEMENTS
 // =========================================
 
-const grandTotalInput = document.getElementById("grandTotal");
+const grandTotalInput =
+    document.getElementById("grandTotal");
 
-const paymentTypes = document.querySelectorAll(
-    'input[name="paymentType"]'
-);
+const paymentTypes =
+    document.querySelectorAll(
+        'input[name="paymentType"]'
+    );
 
-const paymentModes = document.querySelectorAll(
-    'input[name="paymentMode"]'
-);
+const paymentModes =
+    document.querySelectorAll(
+        'input[name="paymentMode"]'
+    );
 
-const advanceSection = document.getElementById(
-    "advanceSection"
-);
+const advanceSection =
+    document.getElementById("advanceSection");
 
-const advanceAmountInput = document.getElementById(
-    "advanceAmount"
-);
+const advanceAmountInput =
+    document.getElementById("advanceAmount");
 
-const balanceAmountInput = document.getElementById(
-    "balanceAmount"
-);
+const balanceAmountInput =
+    document.getElementById("balanceAmount");
 
-const calculateBtn = document.getElementById(
-    "calculateBtn"
-);
+const calculateBtn =
+    document.getElementById("calculateBtn");
 
-const nextBtn = document.getElementById(
-    "nextBtn"
-);
+const nextBtn =
+    document.getElementById("nextBtn");
 
-const backBtn = document.getElementById(
-    "backBtn"
-);
+const backBtn =
+    document.getElementById("backBtn");
 
 
 // =========================================
 // GET GRAND TOTAL
 // =========================================
 
-// Get the total created on the previous page
-const grandTotal = Number(
-    localStorage.getItem("finalTotal")
-) || 0;
+// Grand total coming from previous page
+const grandTotal =
+    Number(
+        localStorage.getItem("finalTotal")
+    ) || 0;
 
 
 // =========================================
@@ -86,7 +84,9 @@ function updatePaymentType() {
     // READY CASH
     // =====================================
 
-    if (selectedPaymentType.value === "cash") {
+    if (
+        selectedPaymentType.value === "cash"
+    ) {
 
         // Hide advance section
 
@@ -98,7 +98,7 @@ function updatePaymentType() {
         }
 
 
-        // Clear advance inputs
+        // Clear advance fields
 
         if (advanceAmountInput) {
 
@@ -114,7 +114,7 @@ function updatePaymentType() {
         }
 
 
-        // Full amount paid
+        // Full payment
 
         localStorage.setItem(
             "advanceAmount",
@@ -129,6 +129,7 @@ function updatePaymentType() {
 
 
         return;
+
     }
 
 
@@ -136,7 +137,9 @@ function updatePaymentType() {
     // ADVANCE
     // =====================================
 
-    if (selectedPaymentType.value === "advance") {
+    if (
+        selectedPaymentType.value === "advance"
+    ) {
 
         // Show advance section
 
@@ -156,14 +159,16 @@ function updatePaymentType() {
 // PAYMENT TYPE EVENTS
 // =========================================
 
-paymentTypes.forEach(function (radio) {
+paymentTypes.forEach(
+    function (radio) {
 
-    radio.addEventListener(
-        "change",
-        updatePaymentType
-    );
+        radio.addEventListener(
+            "change",
+            updatePaymentType
+        );
 
-});
+    }
+);
 
 
 // =========================================
@@ -171,25 +176,27 @@ paymentTypes.forEach(function (radio) {
 // CASH / UPI
 // =========================================
 
-paymentModes.forEach(function (radio) {
+paymentModes.forEach(
+    function (radio) {
 
-    radio.addEventListener(
-        "change",
-        function () {
+        radio.addEventListener(
+            "change",
+            function () {
 
-            localStorage.setItem(
-                "paymentMode",
-                this.value
-            );
+                localStorage.setItem(
+                    "paymentMode",
+                    this.value
+                );
 
-        }
-    );
+            }
+        );
 
-});
+    }
+);
 
 
 // =========================================
-// CALCULATE BALANCE BUTTON
+// CALCULATE BALANCE
 // =========================================
 
 if (calculateBtn) {
@@ -197,7 +204,6 @@ if (calculateBtn) {
     calculateBtn.addEventListener(
         "click",
         function () {
-
 
             // =================================
             // CHECK PAYMENT TYPE
@@ -314,7 +320,6 @@ if (nextBtn) {
         "click",
         function () {
 
-
             // =================================
             // GET PAYMENT TYPE
             // =================================
@@ -369,7 +374,9 @@ if (nextBtn) {
             // READY CASH
             // =================================
 
-            if (paymentType === "cash") {
+            if (
+                paymentType === "cash"
+            ) {
 
                 localStorage.setItem(
                     "advanceAmount",
@@ -389,8 +396,9 @@ if (nextBtn) {
             // ADVANCE
             // =================================
 
-            if (paymentType === "advance") {
-
+            if (
+                paymentType === "advance"
+            ) {
 
                 const advance =
                     Number(
@@ -398,7 +406,7 @@ if (nextBtn) {
                     ) || 0;
 
 
-                // Check advance amount
+                // Check amount
 
                 if (advance <= 0) {
 
@@ -413,7 +421,7 @@ if (nextBtn) {
                 }
 
 
-                // Check maximum amount
+                // Check maximum
 
                 if (advance > grandTotal) {
 
@@ -482,6 +490,11 @@ if (nextBtn) {
             );
 
 
+            // =================================
+            // KEEP ORIGINAL TOTAL
+            // Discount page will modify this
+            // =================================
+
             localStorage.setItem(
                 "finalTotal",
                 String(grandTotal)
@@ -489,24 +502,19 @@ if (nextBtn) {
 
 
             // =================================
-            // INITIAL DISCOUNT VALUES
+            // REMOVE OLD DISCOUNT DATA
             // =================================
 
-            localStorage.setItem(
-                "discountAmount",
-                "0"
+            localStorage.removeItem(
+                "discountAmount"
             );
 
-
-            localStorage.setItem(
-                "discountApplied",
-                "false"
+            localStorage.removeItem(
+                "discountApplied"
             );
 
-
-            localStorage.setItem(
-                "finalGrandTotal",
-                String(grandTotal)
+            localStorage.removeItem(
+                "finalGrandTotal"
             );
 
 

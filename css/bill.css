@@ -28,15 +28,10 @@ body {
 .bill-container {
     width: 850px;
     max-width: calc(100% - 30px);
-
     margin: auto;
-
     background: #ffffff;
-
     padding: 28px;
-
     border: 1px solid #222222;
-
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.18);
 }
 
@@ -49,52 +44,41 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     min-height: 125px;
 }
 
-
 .logo {
     width: 30%;
-
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
 .logo img {
     width: 90px;
     height: 90px;
-
     object-fit: contain;
 }
 
-
 .company {
     width: 70%;
-
     text-align: right;
 }
-
 
 .company h1 {
     font-size: 28px;
     margin-bottom: 5px;
 }
 
-
 .company h4 {
     font-size: 15px;
     margin-bottom: 3px;
 }
 
-
 .company p {
     font-size: 14px;
     line-height: 1.35;
 }
-
 
 .company h3 {
     font-size: 15px;
@@ -108,9 +92,7 @@ body {
 
 hr {
     border: none;
-
     border-top: 1.5px solid #111111;
-
     margin: 12px 0;
 }
 
@@ -122,12 +104,9 @@ hr {
 .billInfo {
     display: flex;
     justify-content: space-between;
-
     font-size: 15px;
-
     line-height: 1.5;
 }
-
 
 .billInfo small {
     font-size: 13px;
@@ -140,18 +119,10 @@ hr {
 
 .customer {
     display: grid;
-
-    grid-template-columns:
-        1.5fr
-        1fr
-        1fr;
-
+    grid-template-columns: 1.5fr 1fr 1fr;
     gap: 15px;
-
     margin: 12px 0;
-
     font-size: 15px;
-
     font-weight: 600;
 }
 
@@ -162,10 +133,8 @@ hr {
 
 h2 {
     font-size: 20px;
-
     margin: 14px 0 9px;
 }
-
 
 h3 {
     font-size: 16px;
@@ -178,37 +147,24 @@ h3 {
 
 table {
     width: 100%;
-
     border-collapse: collapse;
-
     margin-bottom: 14px;
 }
 
-
 table th {
     background: #222222;
-
     color: #ffffff;
-
     border: 1px solid #000000;
-
     padding: 8px 5px;
-
     text-align: center;
-
     font-size: 12px;
-
     white-space: nowrap;
 }
 
-
 table td {
     border: 1px solid #222222;
-
     padding: 7px 5px;
-
     text-align: center;
-
     font-size: 12px;
 }
 
@@ -221,33 +177,23 @@ table td {
     margin-bottom: 10px;
 }
 
-
 .cftTotal h3 {
     font-size: 17px;
-
     margin-bottom: 5px;
 }
-
 
 #cftSummary {
     width: 100%;
 }
 
-
 #cftSummary p {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     padding: 3px 0;
-
     margin: 0;
-
     font-size: 14px;
 }
-
 
 #cftSummary p b {
     font-weight: 700;
@@ -260,27 +206,18 @@ table td {
 
 .totals {
     width: 350px;
-
     margin-left: auto;
-
     margin-top: 12px;
-
     font-size: 16px;
 }
 
-
 .totals p {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     padding: 5px 0;
-
     margin: 0;
 }
-
 
 .totals p span {
     font-weight: 600;
@@ -293,11 +230,8 @@ table td {
 
 .subtotal-row {
     border-top: 1px solid #999999;
-
     margin-top: 5px !important;
-
     padding-top: 8px !important;
-
     font-weight: 600;
 }
 
@@ -308,10 +242,8 @@ table td {
 
 .discount-row {
     color: #c62828;
-
     font-weight: 700;
 }
-
 
 .discount-row span {
     color: #c62828;
@@ -324,22 +256,17 @@ table td {
 
 .grand-total-row {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
 
     border-top: 2px solid #111111;
 
     padding-top: 9px;
-
     margin-top: 7px;
 
     font-size: 22px;
-
     font-weight: 800;
 }
-
 
 #grandTotal {
     font-weight: 800;
@@ -347,15 +274,13 @@ table td {
 
 
 /* =========================================
-   ADVANCE AMOUNT
+   ADVANCE
 ========================================= */
 
 .advance-row {
     color: #087443;
-
     font-weight: 700;
 }
-
 
 .advance-row span {
     color: #087443;
@@ -363,23 +288,11 @@ table td {
 
 
 /* =========================================
-   PAYMENT MODE
-========================================= */
-
-.payment-mode-row {
-    color: #555555;
-
-    font-weight: 600;
-}
-
-
-/* =========================================
-   SEPARATOR BEFORE BALANCE
+   BALANCE SEPARATOR
 ========================================= */
 
 .balance-separator {
     border-top: 1px solid #777777;
-
     margin: 5px 0 2px;
 }
 
@@ -390,10 +303,8 @@ table td {
 
 .balance-row {
     font-weight: 800;
-
     font-size: 17px;
 }
-
 
 .balance-row span {
     font-weight: 800;
@@ -406,13 +317,9 @@ table td {
 
 .signature {
     display: flex;
-
     justify-content: space-between;
-
     margin-top: 55px;
-
     font-size: 14px;
-
     font-weight: bold;
 }
 
@@ -423,37 +330,23 @@ table td {
 
 .buttons {
     display: flex;
-
     justify-content: center;
-
     align-items: center;
-
     gap: 12px;
-
     margin-top: 30px;
-
     flex-wrap: wrap;
 }
 
-
 .buttons button {
     border: none;
-
     border-radius: 6px;
-
     padding: 12px 24px;
-
     min-width: 120px;
-
     font-size: 15px;
-
     font-weight: bold;
-
     cursor: pointer;
-
     transition: 0.2s ease;
 }
-
 
 .buttons button:hover {
     transform: translateY(-1px);
@@ -466,10 +359,8 @@ table td {
 
 #editBtn {
     background: #f0a43c;
-
     color: #ffffff;
 }
-
 
 #editBtn:hover {
     background: #d98d27;
@@ -482,10 +373,8 @@ table td {
 
 #confirmBill {
     background: #ffc107;
-
     color: #111111;
 }
-
 
 #confirmBill:hover {
     background: #e0a800;
@@ -498,10 +387,8 @@ table td {
 
 #printBtn {
     background: #00a651;
-
     color: #ffffff;
 }
-
 
 #printBtn:hover {
     background: #008f45;
@@ -514,10 +401,8 @@ table td {
 
 #backBtn {
     background: #1680e8;
-
     color: #ffffff;
 }
-
 
 #backBtn:hover {
     background: #086ac5;
@@ -530,10 +415,8 @@ table td {
 
 #homeBtn {
     background: #555555;
-
     color: #ffffff;
 }
-
 
 #homeBtn:hover {
     background: #333333;
@@ -550,150 +433,127 @@ table td {
         padding: 10px 5px;
     }
 
-
     .bill-container {
         width: 100%;
-
         max-width: 100%;
-
         padding: 15px;
-
         box-shadow: none;
     }
 
-
     .header {
         flex-direction: column;
-
         gap: 10px;
     }
-
 
     .logo {
         width: 100%;
     }
 
-
     .company {
         width: 100%;
-
         text-align: center;
     }
-
 
     .company h1 {
         font-size: 23px;
     }
 
-
     .company h4 {
         font-size: 13px;
     }
-
 
     .company p {
         font-size: 12px;
     }
 
-
     .company h3 {
         font-size: 13px;
     }
-
 
     .billInfo {
         font-size: 13px;
     }
 
-
     .customer {
         grid-template-columns: 1fr;
-
         gap: 6px;
-
         font-size: 13px;
     }
-
 
     h2 {
         font-size: 18px;
     }
 
-
     table {
         display: block;
-
         overflow-x: auto;
-
         white-space: nowrap;
     }
-
 
     table th,
     table td {
         font-size: 10px;
-
         padding: 5px 4px;
     }
-
 
     .totals {
         width: 100%;
     }
 
-
     .signature {
         margin-top: 45px;
-
         font-size: 12px;
     }
 
-
     .buttons {
         flex-direction: column;
-
         gap: 10px;
     }
-
 
     .buttons button {
         width: 100%;
     }
-
 }
 
 
-/* =========================================
-   PRINT — A4 ONE PAGE
-========================================= */
-
-/* =========================================
-   PRINT - A4 ONE PAGE
-========================================= */
+/* =========================================================
+   PRINT
+   A4 LANDSCAPE - ONE PAGE
+========================================================= */
 
 @media print {
 
+    /* -----------------------------------------
+       A4 PAPER
+    ----------------------------------------- */
+
     @page {
-        size: A4 portrait;
-        margin: 8mm;
+        size: A4 landscape;
+        margin: 7mm;
+    }
+
+
+    /* -----------------------------------------
+       RESET PRINT
+    ----------------------------------------- */
+
+    html,
+    body {
+        width: 100%;
+        height: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
     }
 
     * {
         box-sizing: border-box;
     }
 
-    html,
-    body {
-        width: 100%;
-        height: auto;
-        margin: 0;
-        padding: 0;
-        background: #ffffff !important;
-    }
 
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-    }
+    /* -----------------------------------------
+       BILL
+    ----------------------------------------- */
 
     .bill-container {
         width: 100% !important;
@@ -701,113 +561,164 @@ table td {
 
         margin: 0 !important;
 
-        padding: 5mm !important;
+        padding: 4mm !important;
 
         border: none !important;
 
         box-shadow: none !important;
 
-        transform: none !important;
+        background: #ffffff !important;
     }
 
-    /* HEADER */
+
+    /* -----------------------------------------
+       HEADER
+    ----------------------------------------- */
 
     .header {
         display: flex !important;
+
+        flex-direction: row !important;
+
         align-items: center !important;
 
-        min-height: auto !important;
+        justify-content: space-between !important;
 
-        height: 28mm !important;
+        width: 100% !important;
+
+        height: 30mm !important;
+
+        min-height: 30mm !important;
     }
+
 
     .logo {
-        width: 25% !important;
+        width: 23% !important;
+
+        display: flex !important;
+
+        justify-content: center !important;
+
+        align-items: center !important;
     }
+
 
     .logo img {
-        width: 23mm !important;
-        height: 23mm !important;
+        width: 24mm !important;
+
+        height: 24mm !important;
     }
 
+
     .company {
-        width: 75% !important;
+        width: 77% !important;
 
         text-align: right !important;
     }
 
+
     .company h1 {
-        font-size: 18px !important;
+        font-size: 21px !important;
+
         margin-bottom: 3px !important;
     }
 
+
     .company h4 {
-        font-size: 9px !important;
-        margin: 2px 0 !important;
+        font-size: 11px !important;
+
+        margin-bottom: 2px !important;
     }
 
+
     .company p {
-        font-size: 8px !important;
+        font-size: 9.5px !important;
+
         line-height: 1.2 !important;
+
         margin: 1px 0 !important;
     }
 
+
     .company h3 {
-        font-size: 9px !important;
+        font-size: 10px !important;
+
         margin-top: 2px !important;
     }
 
 
-    /* HORIZONTAL LINES */
+    /* -----------------------------------------
+       LINES
+    ----------------------------------------- */
 
     hr {
         margin: 3mm 0 !important;
+
+        border: none !important;
+
         border-top: 1px solid #000 !important;
     }
 
 
-    /* BILL INFORMATION */
+    /* -----------------------------------------
+       BILL INFORMATION
+    ----------------------------------------- */
 
     .billInfo {
-        font-size: 10px !important;
+        font-size: 11px !important;
+
         line-height: 1.3 !important;
     }
 
+
     .billInfo small {
-        font-size: 8px !important;
+        font-size: 9px !important;
     }
 
 
-    /* CUSTOMER */
+    /* -----------------------------------------
+       CUSTOMER
+    ----------------------------------------- */
 
     .customer {
-        display: flex !important;
+        display: grid !important;
 
-        justify-content: space-between !important;
+        grid-template-columns: 1.5fr 1fr 1fr !important;
 
-        align-items: center !important;
+        gap: 10px !important;
 
         margin: 3mm 0 !important;
 
-        font-size: 9px !important;
+        font-size: 10px !important;
 
         line-height: 1.2 !important;
     }
 
 
-    /* HEADINGS */
+    /* -----------------------------------------
+       HEADINGS
+    ----------------------------------------- */
 
     h2 {
-        font-size: 13px !important;
+        font-size: 15px !important;
 
         margin: 3mm 0 2mm !important;
     }
 
 
-    /* TABLE */
+    h3 {
+        font-size: 12px !important;
+    }
+
+
+    /* -----------------------------------------
+       WOOD TABLE
+    ----------------------------------------- */
 
     table {
         width: 100% !important;
+
+        display: table !important;
 
         table-layout: fixed !important;
 
@@ -819,29 +730,33 @@ table td {
     }
 
 
-    th {
+    table th {
         background: #222 !important;
 
         color: #fff !important;
 
-        font-size: 7px !important;
-
-        padding: 2mm 1mm !important;
-
         border: 1px solid #000 !important;
 
+        font-size: 9px !important;
+
+        padding: 2.2mm 1.2mm !important;
+
         white-space: nowrap !important;
+
+        text-align: center !important;
     }
 
 
-    td {
-        font-size: 7px !important;
-
-        padding: 1.5mm 1mm !important;
-
+    table td {
         border: 1px solid #000 !important;
 
+        font-size: 9px !important;
+
+        padding: 2mm 1.2mm !important;
+
         white-space: nowrap !important;
+
+        text-align: center !important;
 
         overflow: hidden !important;
 
@@ -849,36 +764,9 @@ table td {
     }
 
 
-    /* TOTALS */
-
-    .totals {
-        width: 48% !important;
-
-        margin-left: auto !important;
-
-        margin-top: 3mm !important;
-
-        font-size: 9px !important;
-    }
-
-
-    .totals p {
-        font-size: 9px !important;
-
-        margin: 1.5mm 0 !important;
-
-        padding: 0 !important;
-    }
-
-
-    .totals h2 {
-        font-size: 13px !important;
-
-        margin: 2mm 0 !important;
-
-        padding-top: 2mm !important;
-    }
-
+    /* -----------------------------------------
+       CFT SUMMARY
+    ----------------------------------------- */
 
     .cftTotal {
         margin-bottom: 2mm !important;
@@ -886,285 +774,223 @@ table td {
 
 
     .cftTotal h3 {
-        font-size: 10px !important;
+        font-size: 12px !important;
 
         margin-bottom: 1mm !important;
     }
 
 
-    #cftSummary p {
-        font-size: 8px !important;
-
-        padding: 0.5mm 0 !important;
-
-        margin: 0 !important;
+    #cftSummary {
+        width: 100% !important;
     }
 
 
-    /* SIGNATURE */
+    #cftSummary p {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        padding: 0.8mm 0 !important;
+
+        margin: 0 !important;
+
+        font-size: 9px !important;
+    }
+
+
+    /* -----------------------------------------
+       TOTALS
+    ----------------------------------------- */
+
+    .totals {
+        width: 82mm !important;
+
+        margin-left: auto !important;
+
+        margin-top: 2mm !important;
+
+        font-size: 10px !important;
+    }
+
+
+    .totals p {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        padding: 1.2mm 0 !important;
+
+        margin: 0 !important;
+
+        font-size: 10px !important;
+    }
+
+
+    .totals p span {
+        font-size: 10px !important;
+    }
+
+
+    /* -----------------------------------------
+       SUBTOTAL
+    ----------------------------------------- */
+
+    .subtotal-row {
+        border-top: 1px solid #999 !important;
+
+        margin-top: 1mm !important;
+
+        padding-top: 2mm !important;
+
+        font-weight: 700 !important;
+    }
+
+
+    /* -----------------------------------------
+       DISCOUNT
+    ----------------------------------------- */
+
+    .discount-row {
+        color: #c62828 !important;
+
+        font-weight: 700 !important;
+    }
+
+
+    .discount-row span {
+        color: #c62828 !important;
+    }
+
+
+    /* -----------------------------------------
+       GRAND TOTAL
+    ----------------------------------------- */
+
+    .grand-total-row {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        border-top: 2px solid #000 !important;
+
+        padding-top: 2mm !important;
+
+        margin-top: 1mm !important;
+
+        font-size: 15px !important;
+
+        font-weight: 800 !important;
+    }
+
+
+    #grandTotal {
+        font-size: 15px !important;
+
+        font-weight: 800 !important;
+    }
+
+
+    /* -----------------------------------------
+       ADVANCE
+    ----------------------------------------- */
+
+    .advance-row {
+        color: #087443 !important;
+
+        font-weight: 700 !important;
+    }
+
+
+    .advance-row span {
+        color: #087443 !important;
+    }
+
+
+    /* -----------------------------------------
+       BALANCE SEPARATOR
+    ----------------------------------------- */
+
+    .balance-separator {
+        border-top: 1px solid #555 !important;
+
+        margin: 1.5mm 0 1mm !important;
+    }
+
+
+    /* -----------------------------------------
+       BALANCE
+    ----------------------------------------- */
+
+    .balance-row {
+        font-size: 11px !important;
+
+        font-weight: 800 !important;
+
+        padding-top: 1mm !important;
+    }
+
+
+    .balance-row span {
+        font-size: 11px !important;
+
+        font-weight: 800 !important;
+    }
+
+
+    /* -----------------------------------------
+       SIGNATURE
+    ----------------------------------------- */
 
     .signature {
         display: flex !important;
 
         justify-content: space-between !important;
 
-        margin-top: 18mm !important;
+        align-items: flex-end !important;
 
-        font-size: 9px !important;
+        margin-top: 14mm !important;
+
+        font-size: 10px !important;
 
         font-weight: bold !important;
     }
 
 
-    /* BUTTONS */
-
-    .buttons {
-        display: none !important;
-    }
-
-
-    /* KEEP THESE TOGETHER */
-
-    .totals,
-    .signature {
-        page-break-inside: avoid !important;
-    }
-
-
-    /* PREVENT TABLE FROM SPLITTING */
-
-    thead {
-        display: table-header-group;
-    }
-
-    tr {
-        page-break-inside: avoid !important;
-    }
-
-}
-
-    /* -------------------------------------
-       PRINT HEADER
-    ------------------------------------- */
-
-    .header {
-        min-height: 0;
-
-        height: 25mm;
-    }
-
-
-    .logo img {
-        width: 55px;
-
-        height: 55px;
-    }
-
-
-    .company h1 {
-        font-size: 19px;
-
-        margin-bottom: 2px;
-    }
-
-
-    .company h4 {
-        font-size: 9px;
-
-        margin-bottom: 1px;
-    }
-
-
-    .company p {
-        font-size: 8px;
-
-        line-height: 1.2;
-    }
-
-
-    .company h3 {
-        font-size: 9px;
-
-        margin-top: 2px;
-    }
-
-
-    /* -------------------------------------
-       LINES
-    ------------------------------------- */
-
-    hr {
-        margin: 4px 0;
-
-        border-top: 1px solid #000;
-    }
-
-
-    /* -------------------------------------
-       BILL INFO
-    ------------------------------------- */
-
-    .billInfo {
-        font-size: 9px;
-
-        line-height: 1.2;
-    }
-
-
-    .billInfo small {
-        font-size: 8px;
-    }
-
-
-    /* -------------------------------------
-       CUSTOMER
-    ------------------------------------- */
-
-    .customer {
-        margin: 4px 0;
-
-        font-size: 9px;
-
-        gap: 8px;
-    }
-
-
-    /* -------------------------------------
-       HEADINGS
-    ------------------------------------- */
-
-    h2 {
-        font-size: 12px;
-
-        margin: 5px 0 3px;
-    }
-
-
-    h3 {
-        font-size: 10px;
-    }
-
-
-    /* -------------------------------------
-       TABLE
-    ------------------------------------- */
-
-    table {
-        margin-bottom: 5px;
-    }
-
-
-    table th {
-        padding: 3px 2px;
-
-        font-size: 7px;
-    }
-
-
-    table td {
-        padding: 3px 2px;
-
-        font-size: 7px;
-    }
-
-
-    /* -------------------------------------
-       CFT
-    ------------------------------------- */
-
-    .cftTotal {
-        margin-bottom: 3px;
-    }
-
-
-    .cftTotal h3 {
-        font-size: 9px;
-
-        margin-bottom: 2px;
-    }
-
-
-    #cftSummary p {
-        padding: 1px 0;
-
-        font-size: 7.5px;
-    }
-
-
-    /* -------------------------------------
-       TOTALS
-    ------------------------------------- */
-
-    .totals {
-        width: 90mm;
-
-        margin-top: 3px;
-    }
-
-
-    .totals p {
-        padding: 2px 0;
-
-        font-size: 8.5px;
-    }
-
-
-    .subtotal-row {
-        padding-top: 3px !important;
-
-        margin-top: 2px !important;
-    }
-
-
-    .grand-total-row {
-        font-size: 12px;
-
-        padding-top: 3px;
-
-        margin-top: 3px;
-    }
-
-
-    .balance-row {
-        font-size: 9px;
-    }
-
-
-    .balance-separator {
-        margin: 2px 0 1px;
-    }
-
-
-    /* -------------------------------------
-       SIGNATURE
-    ------------------------------------- */
-
-    .signature {
-        margin-top: 22px;
-
-        font-size: 8px;
-    }
-
-
-    /* -------------------------------------
+    /* -----------------------------------------
        HIDE BUTTONS
-    ------------------------------------- */
+    ----------------------------------------- */
 
     .buttons {
         display: none !important;
     }
 
 
-    /* -------------------------------------
-       KEEP SECTIONS TOGETHER
-    ------------------------------------- */
+    /* -----------------------------------------
+       DON'T SPLIT SECTIONS
+    ----------------------------------------- */
 
     .header,
     .billInfo,
     .customer,
-    table,
     .totals,
     .signature {
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
     }
+
+
+    thead {
+        display: table-header-group !important;
+    }
+
+
+    tr {
+        page-break-inside: avoid !important;
+
+        page-break-after: auto !important;
+    }
+
 }

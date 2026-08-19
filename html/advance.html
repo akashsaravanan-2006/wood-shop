@@ -15,24 +15,13 @@
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
-
     <div class="card">
 
-
-        <!-- =========================
-             TITLE
-        ========================== -->
-
-        <h1>
-            Advance Payment
-        </h1>
-
+        <h1>Advance Payment</h1>
 
         <hr>
 
@@ -93,35 +82,19 @@
                 Payment Type
             </label>
 
-
             <div class="paymentType">
 
-
-                <!-- CASH -->
+                <!-- READY CASH -->
 
                 <label class="radioLabel">
 
                     <input
                         type="radio"
                         name="paymentType"
-                        value="cash"
+                        value="ready_cash"
                         checked>
 
-                    Cash
-
-                </label>
-
-
-                <!-- UPI -->
-
-                <label class="radioLabel">
-
-                    <input
-                        type="radio"
-                        name="paymentType"
-                        value="upi">
-
-                    UPI
+                    Ready Cash
 
                 </label>
 
@@ -139,6 +112,50 @@
 
                 </label>
 
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             PAYMENT MODE
+        ========================== -->
+
+        <div class="row">
+
+            <label>
+                Payment Mode
+            </label>
+
+            <div class="paymentType">
+
+                <!-- CASH -->
+
+                <label class="radioLabel">
+
+                    <input
+                        type="radio"
+                        name="paymentMode"
+                        value="cash"
+                        checked>
+
+                    Cash
+
+                </label>
+
+
+                <!-- UPI -->
+
+                <label class="radioLabel">
+
+                    <input
+                        type="radio"
+                        name="paymentMode"
+                        value="upi">
+
+                    UPI
+
+                </label>
 
             </div>
 
@@ -151,10 +168,7 @@
 
         <div id="advanceSection">
 
-
-            <!-- =========================
-                 ADVANCE AMOUNT
-            ========================== -->
+            <!-- ADVANCE AMOUNT -->
 
             <div class="row">
 
@@ -172,9 +186,7 @@
             </div>
 
 
-            <!-- =========================
-                 BALANCE AMOUNT
-            ========================== -->
+            <!-- BALANCE -->
 
             <div class="row">
 
@@ -190,9 +202,7 @@
             </div>
 
 
-            <!-- =========================
-                 CALCULATE
-            ========================== -->
+            <!-- CALCULATE -->
 
             <div class="buttonRow">
 
@@ -206,12 +216,11 @@
 
             </div>
 
-
         </div>
 
 
         <!-- =========================
-             NEXT BUTTON
+             NEXT
         ========================== -->
 
         <div class="buttonRow">
@@ -228,7 +237,7 @@
 
 
         <!-- =========================
-             BACK BUTTON
+             BACK
         ========================== -->
 
         <div class="button-container">
@@ -243,21 +252,14 @@
 
         </div>
 
-
     </div>
-
 
 </div>
 
 
-<!-- =========================
-     JAVASCRIPT
-========================== -->
-
 <script src="../js/advance.js"></script>
 
 <script src="../js/inputControl.js"></script>
-
 
 </body>
 

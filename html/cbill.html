@@ -15,16 +15,13 @@
 
 </head>
 
-
 <body>
-
 
 <div class="bill-container">
 
-
-    <!-- ========================= -->
-    <!-- Header -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
 
     <div class="header">
 
@@ -37,33 +34,27 @@
 
         </div>
 
-
         <div class="company">
 
             <h1>
                 ஸ்ரீ அம்மன் சாமில்
             </h1>
 
-
             <h4>
                 தேக்கு, வேம்பு, பூவரசு வியாபாரம்
             </h4>
-
 
             <p>
                 2/17,A, மணப்பாறை மெயின் ரோடு, சத்தியமங்கலம்
             </p>
 
-
             <p>
                 குளித்தலை வட்டம், கரூர் மாவட்டம் - 639 120
             </p>
 
-
             <h3>
                 Mobile : 9443076409 , 9715050908
             </h3>
-
 
             <h4>
                 GST : 33DLKPK5760D1Z5
@@ -77,18 +68,15 @@
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- Bill Information -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- BILL INFORMATION -->
+    <!-- ================================= -->
 
     <div class="billInfo">
 
-
         <div>
 
-            <b>
-                Bill No :
-            </b>
+            <b>Bill No :</b>
 
             <span id="billNo">
                 Loading...
@@ -99,9 +87,7 @@
 
         <div>
 
-            <b>
-                Date :
-            </b>
+            <b>Date :</b>
 
             <span id="billDate">
                 -
@@ -115,25 +101,21 @@
 
         </div>
 
-
     </div>
 
 
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- Customer -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- CUSTOMER -->
+    <!-- ================================= -->
 
     <div class="customer">
 
-
         <span>
 
-            <b>
-                Customer :
-            </b>
+            <b>Customer :</b>
 
             <span id="customerName">
                 -
@@ -144,9 +126,7 @@
 
         <span>
 
-            <b>
-                Mobile :
-            </b>
+            <b>Mobile :</b>
 
             <span id="customerMobile">
                 -
@@ -157,9 +137,7 @@
 
         <span>
 
-            <b>
-                Place :
-            </b>
+            <b>Place :</b>
 
             <span id="customerPlace">
                 -
@@ -167,16 +145,15 @@
 
         </span>
 
-
     </div>
 
 
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- Wood Details -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- WOOD DETAILS -->
+    <!-- ================================= -->
 
     <h2>
         Wood Details
@@ -189,45 +166,25 @@
 
             <tr>
 
-                <th>
-                    S.No
-                </th>
+                <th>S.No</th>
 
-                <th>
-                    Wood
-                </th>
+                <th>Wood</th>
 
-                <th>
-                    Size
-                </th>
+                <th>Size</th>
 
-                <th>
-                    Length
-                </th>
+                <th>Length</th>
 
-                <th>
-                    Qty
-                </th>
+                <th>Qty</th>
 
-                <th>
-                    Total Length
-                </th>
+                <th>Total Length</th>
 
-                <th>
-                    CFT
-                </th>
+                <th>CFT</th>
 
-                <th>
-                    Rate
-                </th>
+                <th>Rate</th>
 
-                <th>
-                    Amount
-                </th>
+                <th>Amount</th>
 
-                <th>
-                    Quality
-                </th>
+                <th>Quality</th>
 
             </tr>
 
@@ -241,9 +198,9 @@
     </table>
 
 
-    <!-- ========================= -->
-    <!-- Other Charges -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- OTHER CHARGES -->
+    <!-- ================================= -->
 
     <h2>
         Other Charges
@@ -256,17 +213,11 @@
 
             <tr>
 
-                <th>
-                    S.No
-                </th>
+                <th>S.No</th>
 
-                <th>
-                    Name
-                </th>
+                <th>Name</th>
 
-                <th>
-                    Amount
-                </th>
+                <th>Amount</th>
 
             </tr>
 
@@ -280,12 +231,14 @@
     </table>
 
 
-    <!-- ========================= -->
-    <!-- Totals -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- TOTALS -->
+    <!-- ================================= -->
 
     <div class="totals">
 
+
+        <!-- CFT TOTAL -->
 
         <div class="cftTotal">
 
@@ -293,13 +246,14 @@
                 CFT Total
             </h3>
 
-
             <div id="cftSummary">
 
             </div>
 
         </div>
 
+
+        <!-- WOOD TOTAL -->
 
         <p>
 
@@ -312,6 +266,8 @@
         </p>
 
 
+        <!-- OTHERS TOTAL -->
+
         <p>
 
             Others Total
@@ -323,7 +279,30 @@
         </p>
 
 
-        <h2>
+        <!-- ================================= -->
+        <!-- DISCOUNT -->
+        <!-- Hidden when discount is 0 -->
+        <!-- ================================= -->
+
+        <p
+            id="discountRow"
+            class="discount-row"
+            style="display:none;">
+
+            Discount
+
+            <span id="discountAmount">
+                - ₹ 0
+            </span>
+
+        </p>
+
+
+        <!-- ================================= -->
+        <!-- GRAND TOTAL -->
+        <!-- ================================= -->
+
+        <h2 class="grand-total-row">
 
             Grand Total
 
@@ -333,6 +312,10 @@
 
         </h2>
 
+
+        <!-- ================================= -->
+        <!-- BALANCE -->
+        <!-- ================================= -->
 
         <p>
 
@@ -348,16 +331,15 @@
     </div>
 
 
-    <!-- ========================= -->
-    <!-- Signature -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- SIGNATURE -->
+    <!-- ================================= -->
 
     <div class="signature">
 
         <p>
             Customer Signature
         </p>
-
 
         <p>
             Authorized Signature
@@ -369,26 +351,28 @@
     <br>
 
 
-    <!-- ========================= -->
-    <!-- Buttons -->
-    <!-- ========================= -->
+    <!-- ================================= -->
+    <!-- BUTTONS -->
+    <!-- ================================= -->
 
     <div class="buttons">
 
-
-        <button id="printBtn">
+        <button
+            id="printBtn"
+            type="button">
 
             Print Bill
 
         </button>
 
 
-        <button id="homeBtn">
+        <button
+            id="homeBtn"
+            type="button">
 
             Home
 
         </button>
-
 
     </div>
 
@@ -397,7 +381,6 @@
 
 
 <script src="../js/cbill.js"></script>
-
 
 </body>
 

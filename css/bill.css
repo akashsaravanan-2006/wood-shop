@@ -1,6 +1,6 @@
-/* =========================================
+/* =========================================================
    RESET
-========================================= */
+========================================================= */
 
 * {
     margin: 0;
@@ -10,101 +10,138 @@
 }
 
 
-/* =========================================
+/* =========================================================
    BODY
-========================================= */
+========================================================= */
 
 body {
-    background: #eeeeee;
-    padding: 25px 0;
-    color: #111111;
+    background: #ececec;
+    padding: 30px;
+    color: #111;
 }
 
 
-/* =========================================
+/* =========================================================
    BILL CONTAINER
-========================================= */
+========================================================= */
 
 .bill-container {
     width: 850px;
-    max-width: calc(100% - 30px);
+    max-width: 100%;
+
     margin: auto;
+
     background: #ffffff;
-    padding: 28px;
-    border: 1px solid #222222;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.18);
+
+    padding: 30px;
+
+    border: 1px solid #000;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.20);
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+========================================================= */
 
 .header {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
-    min-height: 125px;
+
+    min-height: 130px;
 }
+
+
+/* =========================================================
+   LOGO
+========================================================= */
 
 .logo {
     width: 30%;
+
     display: flex;
+
     justify-content: center;
+
     align-items: center;
 }
 
 .logo img {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+
+    height: 100px;
+
     object-fit: contain;
 }
 
+
+/* =========================================================
+   COMPANY
+========================================================= */
+
 .company {
     width: 70%;
+
     text-align: right;
 }
 
 .company h1 {
-    font-size: 28px;
-    margin-bottom: 5px;
+    font-size: 30px;
+
+    margin-bottom: 7px;
 }
 
 .company h4 {
-    font-size: 15px;
-    margin-bottom: 3px;
+    font-size: 16px;
+
+    margin: 3px 0;
 }
 
 .company p {
     font-size: 14px;
-    line-height: 1.35;
+
+    line-height: 1.4;
+
+    margin: 2px 0;
 }
 
 .company h3 {
     font-size: 15px;
-    margin-top: 4px;
+
+    margin-top: 5px;
 }
 
 
-/* =========================================
-   HORIZONTAL LINE
-========================================= */
+/* =========================================================
+   HR
+========================================================= */
 
 hr {
+    margin: 15px 0;
+
     border: none;
-    border-top: 1.5px solid #111111;
-    margin: 12px 0;
+
+    border-top: 2px solid #000;
 }
 
 
-/* =========================================
+/* =========================================================
    BILL INFORMATION
-========================================= */
+========================================================= */
 
 .billInfo {
     display: flex;
+
     justify-content: space-between;
-    font-size: 15px;
+
+    align-items: flex-start;
+
+    font-size: 16px;
+
     line-height: 1.5;
 }
 
@@ -113,86 +150,127 @@ hr {
 }
 
 
-/* =========================================
+/* =========================================================
    CUSTOMER
-========================================= */
+========================================================= */
 
 .customer {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
+
+    grid-template-columns:
+        1.5fr
+        1fr
+        1fr;
+
     gap: 15px;
-    margin: 12px 0;
-    font-size: 15px;
+
+    align-items: center;
+
+    margin: 15px 0;
+
+    font-size: 16px;
+
     font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADINGS
-========================================= */
+========================================================= */
 
 h2 {
-    font-size: 20px;
-    margin: 14px 0 9px;
+    font-size: 21px;
+
+    margin: 15px 0 10px;
 }
 
 h3 {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 
-/* =========================================
+/* =========================================================
    TABLE
-========================================= */
+========================================================= */
 
 table {
     width: 100%;
+
     border-collapse: collapse;
-    margin-bottom: 14px;
+
+    margin-bottom: 18px;
+
+    table-layout: fixed;
 }
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
 
 table th {
-    background: #222222;
-    color: #ffffff;
-    border: 1px solid #000000;
-    padding: 8px 5px;
+    background: #222;
+
+    color: #fff;
+
+    border: 1px solid #000;
+
+    padding: 9px 5px;
+
+    font-size: 13px;
+
     text-align: center;
-    font-size: 12px;
-    white-space: nowrap;
 }
+
+
+/* =========================================================
+   TABLE DATA
+========================================================= */
 
 table td {
-    border: 1px solid #222222;
-    padding: 7px 5px;
+    border: 1px solid #000;
+
+    padding: 8px 5px;
+
+    font-size: 13px;
+
     text-align: center;
-    font-size: 12px;
+
+    vertical-align: middle;
 }
 
 
-/* =========================================
-   CFT TOTAL SECTION
-========================================= */
+/* =========================================================
+   CFT TOTAL
+========================================================= */
 
 .cftTotal {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .cftTotal h3 {
-    font-size: 17px;
-    margin-bottom: 5px;
+    font-size: 18px;
+
+    margin-bottom: 8px;
 }
 
-#cftSummary {
-    width: 100%;
-}
+
+/* =========================================================
+   CFT SUMMARY
+========================================================= */
 
 #cftSummary p {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
-    padding: 3px 0;
+
+    padding: 4px 0;
+
     margin: 0;
-    font-size: 14px;
+
+    font-size: 16px;
 }
 
 #cftSummary p b {
@@ -200,48 +278,66 @@ table td {
 }
 
 
-/* =========================================
+/* =========================================================
    TOTALS
-========================================= */
+========================================================= */
 
 .totals {
     width: 350px;
+
+    max-width: 100%;
+
     margin-left: auto;
-    margin-top: 12px;
+
+    margin-top: 15px;
+
     font-size: 16px;
 }
 
+
+/* =========================================================
+   TOTAL ROWS
+========================================================= */
+
 .totals p {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
-    padding: 5px 0;
-    margin: 0;
+
+    margin: 7px 0;
+
+    font-size: 16px;
 }
 
-.totals p span {
+.totals p span:last-child {
     font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    SUBTOTAL
-========================================= */
+========================================================= */
 
 .subtotal-row {
-    border-top: 1px solid #999999;
-    margin-top: 5px !important;
+    border-top: 1px solid #999;
+
+    margin-top: 8px !important;
+
     padding-top: 8px !important;
+
     font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    DISCOUNT
-========================================= */
+========================================================= */
 
 .discount-row {
     color: #c62828;
+
     font-weight: 700;
 }
 
@@ -250,21 +346,25 @@ table td {
 }
 
 
-/* =========================================
+/* =========================================================
    GRAND TOTAL
-========================================= */
+========================================================= */
 
 .grand-total-row {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
 
-    border-top: 2px solid #111111;
+    border-top: 2px solid #000;
 
-    padding-top: 9px;
-    margin-top: 7px;
+    padding-top: 10px;
 
-    font-size: 22px;
+    margin-top: 8px !important;
+
+    font-size: 22px !important;
+
     font-weight: 800;
 }
 
@@ -273,12 +373,13 @@ table td {
 }
 
 
-/* =========================================
+/* =========================================================
    ADVANCE
-========================================= */
+========================================================= */
 
 .advance-row {
     color: #087443;
+
     font-weight: 700;
 }
 
@@ -287,23 +388,25 @@ table td {
 }
 
 
-/* =========================================
+/* =========================================================
    BALANCE SEPARATOR
-========================================= */
+========================================================= */
 
 .balance-separator {
-    border-top: 1px solid #777777;
-    margin: 5px 0 2px;
+    border-top: 1px solid #555;
+
+    margin: 8px 0;
 }
 
 
-/* =========================================
+/* =========================================================
    BALANCE
-========================================= */
+========================================================= */
 
 .balance-row {
-    font-weight: 800;
-    font-size: 17px;
+    font-weight: 800 !important;
+
+    font-size: 17px !important;
 }
 
 .balance-row span {
@@ -311,69 +414,82 @@ table td {
 }
 
 
-/* =========================================
+/* =========================================================
    SIGNATURE
-========================================= */
+========================================================= */
 
 .signature {
     display: flex;
+
     justify-content: space-between;
-    margin-top: 55px;
-    font-size: 14px;
+
+    align-items: center;
+
+    margin-top: 65px;
+
+    font-size: 15px;
+
     font-weight: bold;
 }
 
 
-/* =========================================
+/* =========================================================
    BUTTONS
-========================================= */
+========================================================= */
 
 .buttons {
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     gap: 12px;
-    margin-top: 30px;
+
+    margin-top: 35px;
+
     flex-wrap: wrap;
 }
 
+
 .buttons button {
     border: none;
+
     border-radius: 6px;
-    padding: 12px 24px;
-    min-width: 120px;
-    font-size: 15px;
+
+    padding: 12px 25px;
+
+    font-size: 16px;
+
     font-weight: bold;
+
     cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.buttons button:hover {
-    transform: translateY(-1px);
 }
 
 
-/* =========================================
-   EDIT BILL
-========================================= */
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
 
 #editBtn {
-    background: #f0a43c;
-    color: #ffffff;
+    background: #f0ad4e;
+
+    color: #fff;
 }
 
 #editBtn:hover {
-    background: #d98d27;
+    background: #d9912b;
 }
 
 
-/* =========================================
-   CONFIRM BILL
-========================================= */
+/* =========================================================
+   CONFIRM BUTTON
+========================================================= */
 
 #confirmBill {
     background: #ffc107;
-    color: #111111;
+
+    color: #111;
 }
 
 #confirmBill:hover {
@@ -381,13 +497,14 @@ table td {
 }
 
 
-/* =========================================
-   PRINT BILL
-========================================= */
+/* =========================================================
+   PRINT BUTTON
+========================================================= */
 
 #printBtn {
     background: #00a651;
-    color: #ffffff;
+
+    color: #fff;
 }
 
 #printBtn:hover {
@@ -395,13 +512,14 @@ table td {
 }
 
 
-/* =========================================
-   BACK
-========================================= */
+/* =========================================================
+   BACK BUTTON
+========================================================= */
 
 #backBtn {
     background: #1680e8;
-    color: #ffffff;
+
+    color: #fff;
 }
 
 #backBtn:hover {
@@ -409,40 +527,26 @@ table td {
 }
 
 
-/* =========================================
-   HOME
-========================================= */
-
-#homeBtn {
-    background: #555555;
-    color: #ffffff;
-}
-
-#homeBtn:hover {
-    background: #333333;
-}
-
-
-/* =========================================
+/* =========================================================
    MOBILE
-========================================= */
+========================================================= */
 
 @media (max-width: 700px) {
 
     body {
-        padding: 10px 5px;
+        padding: 10px;
     }
 
     .bill-container {
         width: 100%;
-        max-width: 100%;
+
         padding: 15px;
-        box-shadow: none;
     }
 
     .header {
         flex-direction: column;
-        gap: 10px;
+
+        gap: 15px;
     }
 
     .logo {
@@ -451,15 +555,12 @@ table td {
 
     .company {
         width: 100%;
+
         text-align: center;
     }
 
     .company h1 {
         font-size: 23px;
-    }
-
-    .company h4 {
-        font-size: 13px;
     }
 
     .company p {
@@ -470,30 +571,27 @@ table td {
         font-size: 13px;
     }
 
-    .billInfo {
-        font-size: 13px;
-    }
-
     .customer {
         grid-template-columns: 1fr;
-        gap: 6px;
-        font-size: 13px;
-    }
 
-    h2 {
-        font-size: 18px;
+        gap: 8px;
+
+        font-size: 14px;
     }
 
     table {
-        display: block;
         overflow-x: auto;
+
+        display: block;
+
         white-space: nowrap;
     }
 
     table th,
     table td {
-        font-size: 10px;
-        padding: 5px 4px;
+        font-size: 11px;
+
+        padding: 6px 4px;
     }
 
     .totals {
@@ -502,11 +600,13 @@ table td {
 
     .signature {
         margin-top: 45px;
-        font-size: 12px;
+
+        font-size: 13px;
     }
 
     .buttons {
         flex-direction: column;
+
         gap: 10px;
     }
 
@@ -518,36 +618,38 @@ table td {
 
 /* =========================================================
    PRINT
-   A4 LANDSCAPE - ONE PAGE
+   IMPORTANT:
+   DO NOT FORCE PORTRAIT OR LANDSCAPE
+   Chrome Print can choose the orientation.
 ========================================================= */
 
 @media print {
 
     /* -----------------------------------------
-       A4 PAPER
+       A4 PAGE
+       Chrome controls Portrait/Landscape
     ----------------------------------------- */
 
     @page {
-        size: A4 landscape;
-        margin: 7mm;
+        size: A4;
+
+        margin: 6mm;
     }
 
 
     /* -----------------------------------------
-       RESET PRINT
+       BODY
     ----------------------------------------- */
 
     html,
     body {
-        width: 100%;
-        height: auto;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-    }
+        width: 100% !important;
 
-    * {
-        box-sizing: border-box;
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        background: #fff !important;
     }
 
 
@@ -557,17 +659,18 @@ table td {
 
     .bill-container {
         width: 100% !important;
+
         max-width: none !important;
 
         margin: 0 !important;
 
-        padding: 4mm !important;
+        padding: 2mm !important;
 
         border: none !important;
 
         box-shadow: none !important;
 
-        background: #ffffff !important;
+        background: #fff !important;
     }
 
 
@@ -580,20 +683,18 @@ table td {
 
         flex-direction: row !important;
 
-        align-items: center !important;
-
         justify-content: space-between !important;
 
-        width: 100% !important;
+        align-items: center !important;
 
-        height: 30mm !important;
+        min-height: 0 !important;
 
-        min-height: 30mm !important;
+        height: 25mm !important;
     }
 
 
     .logo {
-        width: 23% !important;
+        width: 25% !important;
 
         display: flex !important;
 
@@ -604,44 +705,44 @@ table td {
 
 
     .logo img {
-        width: 24mm !important;
+        width: 20mm !important;
 
-        height: 24mm !important;
+        height: 20mm !important;
     }
 
 
     .company {
-        width: 77% !important;
+        width: 75% !important;
 
         text-align: right !important;
     }
 
 
     .company h1 {
-        font-size: 21px !important;
-
-        margin-bottom: 3px !important;
-    }
-
-
-    .company h4 {
-        font-size: 11px !important;
+        font-size: 18px !important;
 
         margin-bottom: 2px !important;
     }
 
 
-    .company p {
-        font-size: 9.5px !important;
+    .company h4 {
+        font-size: 8px !important;
 
-        line-height: 1.2 !important;
+        margin: 1px 0 !important;
+    }
+
+
+    .company p {
+        font-size: 7px !important;
+
+        line-height: 1.15 !important;
 
         margin: 1px 0 !important;
     }
 
 
     .company h3 {
-        font-size: 10px !important;
+        font-size: 8px !important;
 
         margin-top: 2px !important;
     }
@@ -652,7 +753,7 @@ table td {
     ----------------------------------------- */
 
     hr {
-        margin: 3mm 0 !important;
+        margin: 2mm 0 !important;
 
         border: none !important;
 
@@ -661,18 +762,18 @@ table td {
 
 
     /* -----------------------------------------
-       BILL INFORMATION
+       BILL INFO
     ----------------------------------------- */
 
     .billInfo {
-        font-size: 11px !important;
+        font-size: 8px !important;
 
-        line-height: 1.3 !important;
+        line-height: 1.2 !important;
     }
 
 
     .billInfo small {
-        font-size: 9px !important;
+        font-size: 7px !important;
     }
 
 
@@ -683,15 +784,16 @@ table td {
     .customer {
         display: grid !important;
 
-        grid-template-columns: 1.5fr 1fr 1fr !important;
+        grid-template-columns:
+            1.5fr
+            1fr
+            1fr !important;
 
-        gap: 10px !important;
+        gap: 5px !important;
 
-        margin: 3mm 0 !important;
+        margin: 2mm 0 !important;
 
-        font-size: 10px !important;
-
-        line-height: 1.2 !important;
+        font-size: 8px !important;
     }
 
 
@@ -700,19 +802,19 @@ table td {
     ----------------------------------------- */
 
     h2 {
-        font-size: 15px !important;
+        font-size: 11px !important;
 
-        margin: 3mm 0 2mm !important;
+        margin: 2mm 0 1mm !important;
     }
 
 
     h3 {
-        font-size: 12px !important;
+        font-size: 9px !important;
     }
 
 
     /* -----------------------------------------
-       WOOD TABLE
+       TABLE
     ----------------------------------------- */
 
     table {
@@ -724,7 +826,7 @@ table td {
 
         border-collapse: collapse !important;
 
-        margin-bottom: 3mm !important;
+        margin-bottom: 2mm !important;
 
         page-break-inside: avoid !important;
     }
@@ -737,26 +839,26 @@ table td {
 
         border: 1px solid #000 !important;
 
-        font-size: 9px !important;
+        padding: 1.2mm 0.5mm !important;
 
-        padding: 2.2mm 1.2mm !important;
-
-        white-space: nowrap !important;
+        font-size: 7px !important;
 
         text-align: center !important;
+
+        white-space: nowrap !important;
     }
 
 
     table td {
         border: 1px solid #000 !important;
 
-        font-size: 9px !important;
+        padding: 1.1mm 0.5mm !important;
 
-        padding: 2mm 1.2mm !important;
-
-        white-space: nowrap !important;
+        font-size: 7px !important;
 
         text-align: center !important;
+
+        white-space: nowrap !important;
 
         overflow: hidden !important;
 
@@ -769,19 +871,14 @@ table td {
     ----------------------------------------- */
 
     .cftTotal {
-        margin-bottom: 2mm !important;
-    }
-
-
-    .cftTotal h3 {
-        font-size: 12px !important;
-
         margin-bottom: 1mm !important;
     }
 
 
-    #cftSummary {
-        width: 100% !important;
+    .cftTotal h3 {
+        font-size: 9px !important;
+
+        margin-bottom: 1mm !important;
     }
 
 
@@ -790,11 +887,18 @@ table td {
 
         justify-content: space-between !important;
 
-        padding: 0.8mm 0 !important;
+        align-items: center !important;
+
+        padding: 0.4mm 0 !important;
 
         margin: 0 !important;
 
-        font-size: 9px !important;
+        font-size: 7.5px !important;
+    }
+
+
+    #cftSummary p b {
+        font-weight: 700 !important;
     }
 
 
@@ -803,13 +907,13 @@ table td {
     ----------------------------------------- */
 
     .totals {
-        width: 82mm !important;
+        width: 70mm !important;
 
         margin-left: auto !important;
 
-        margin-top: 2mm !important;
+        margin-top: 1mm !important;
 
-        font-size: 10px !important;
+        font-size: 8px !important;
     }
 
 
@@ -820,16 +924,16 @@ table td {
 
         align-items: center !important;
 
-        padding: 1.2mm 0 !important;
+        padding: 0.6mm 0 !important;
 
         margin: 0 !important;
 
-        font-size: 10px !important;
+        font-size: 8px !important;
     }
 
 
     .totals p span {
-        font-size: 10px !important;
+        font-size: 8px !important;
     }
 
 
@@ -842,7 +946,7 @@ table td {
 
         margin-top: 1mm !important;
 
-        padding-top: 2mm !important;
+        padding-top: 1mm !important;
 
         font-weight: 700 !important;
     }
@@ -877,18 +981,18 @@ table td {
 
         border-top: 2px solid #000 !important;
 
-        padding-top: 2mm !important;
+        padding-top: 1.2mm !important;
 
         margin-top: 1mm !important;
 
-        font-size: 15px !important;
+        font-size: 12px !important;
 
         font-weight: 800 !important;
     }
 
 
     #grandTotal {
-        font-size: 15px !important;
+        font-size: 12px !important;
 
         font-weight: 800 !important;
     }
@@ -917,7 +1021,7 @@ table td {
     .balance-separator {
         border-top: 1px solid #555 !important;
 
-        margin: 1.5mm 0 1mm !important;
+        margin: 1mm 0 !important;
     }
 
 
@@ -926,16 +1030,16 @@ table td {
     ----------------------------------------- */
 
     .balance-row {
-        font-size: 11px !important;
+        font-size: 9px !important;
 
         font-weight: 800 !important;
 
-        padding-top: 1mm !important;
+        padding-top: 0.5mm !important;
     }
 
 
     .balance-row span {
-        font-size: 11px !important;
+        font-size: 9px !important;
 
         font-weight: 800 !important;
     }
@@ -950,11 +1054,11 @@ table td {
 
         justify-content: space-between !important;
 
-        align-items: flex-end !important;
+        align-items: center !important;
 
-        margin-top: 14mm !important;
+        margin-top: 10mm !important;
 
-        font-size: 10px !important;
+        font-size: 8px !important;
 
         font-weight: bold !important;
     }
@@ -970,7 +1074,7 @@ table td {
 
 
     /* -----------------------------------------
-       DON'T SPLIT SECTIONS
+       PREVENT PAGE BREAKS
     ----------------------------------------- */
 
     .header,
@@ -982,15 +1086,269 @@ table td {
     }
 
 
-    thead {
-        display: table-header-group !important;
+    table {
+        page-break-inside: avoid !important;
     }
 
 
     tr {
         page-break-inside: avoid !important;
-
-        page-break-after: auto !important;
     }
 
+
+    thead {
+        display: table-header-group !important;
+    }
+}
+
+
+/* =========================================================
+   PRINT - LANDSCAPE
+   When Chrome is set to Landscape, give it more room.
+========================================================= */
+
+@media print and (orientation: landscape) {
+
+    .bill-container {
+        padding: 2mm 4mm !important;
+    }
+
+
+    .header {
+        height: 28mm !important;
+    }
+
+
+    .logo img {
+        width: 22mm !important;
+
+        height: 22mm !important;
+    }
+
+
+    .company h1 {
+        font-size: 21px !important;
+    }
+
+
+    .company h4 {
+        font-size: 9px !important;
+    }
+
+
+    .company p {
+        font-size: 8px !important;
+    }
+
+
+    .company h3 {
+        font-size: 9px !important;
+    }
+
+
+    .billInfo {
+        font-size: 9px !important;
+    }
+
+
+    .customer {
+        font-size: 9px !important;
+    }
+
+
+    h2 {
+        font-size: 13px !important;
+    }
+
+
+    table th {
+        font-size: 7.5px !important;
+
+        padding: 1.5mm 0.7mm !important;
+    }
+
+
+    table td {
+        font-size: 7.5px !important;
+
+        padding: 1.4mm 0.7mm !important;
+    }
+
+
+    #cftSummary p {
+        font-size: 8px !important;
+    }
+
+
+    .totals {
+        width: 75mm !important;
+    }
+
+
+    .totals p {
+        font-size: 9px !important;
+    }
+
+
+    .totals p span {
+        font-size: 9px !important;
+    }
+
+
+    .grand-total-row {
+        font-size: 14px !important;
+    }
+
+
+    #grandTotal {
+        font-size: 14px !important;
+    }
+
+
+    .balance-row,
+    .balance-row span {
+        font-size: 10px !important;
+    }
+
+
+    .signature {
+        margin-top: 12mm !important;
+
+        font-size: 9px !important;
+    }
+}
+
+
+/* =========================================================
+   PRINT - PORTRAIT
+   More compact because the page is narrower.
+========================================================= */
+
+@media print and (orientation: portrait) {
+
+    .bill-container {
+        padding: 1mm !important;
+    }
+
+
+    .header {
+        height: 22mm !important;
+    }
+
+
+    .logo img {
+        width: 17mm !important;
+
+        height: 17mm !important;
+    }
+
+
+    .company h1 {
+        font-size: 15px !important;
+    }
+
+
+    .company h4 {
+        font-size: 6.5px !important;
+    }
+
+
+    .company p {
+        font-size: 6px !important;
+
+        line-height: 1.05 !important;
+    }
+
+
+    .company h3 {
+        font-size: 6.5px !important;
+    }
+
+
+    .billInfo {
+        font-size: 7px !important;
+    }
+
+
+    .billInfo small {
+        font-size: 6px !important;
+    }
+
+
+    .customer {
+        font-size: 7px !important;
+
+        gap: 3px !important;
+    }
+
+
+    h2 {
+        font-size: 9px !important;
+
+        margin: 1.5mm 0 0.8mm !important;
+    }
+
+
+    table th {
+        font-size: 5.5px !important;
+
+        padding: 0.8mm 0.3mm !important;
+    }
+
+
+    table td {
+        font-size: 5.5px !important;
+
+        padding: 0.8mm 0.3mm !important;
+    }
+
+
+    .cftTotal h3 {
+        font-size: 7.5px !important;
+    }
+
+
+    #cftSummary p {
+        font-size: 6px !important;
+    }
+
+
+    .totals {
+        width: 62mm !important;
+    }
+
+
+    .totals p {
+        font-size: 6.5px !important;
+
+        padding: 0.4mm 0 !important;
+    }
+
+
+    .totals p span {
+        font-size: 6.5px !important;
+    }
+
+
+    .grand-total-row {
+        font-size: 9px !important;
+    }
+
+
+    #grandTotal {
+        font-size: 9px !important;
+    }
+
+
+    .balance-row,
+    .balance-row span {
+        font-size: 7px !important;
+    }
+
+
+    .signature {
+        margin-top: 7mm !important;
+
+        font-size: 6.5px !important;
+    }
 }

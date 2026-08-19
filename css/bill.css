@@ -1,269 +1,525 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
-    background:#ececec;
-    padding:30px;
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+    background: #ececec;
+    padding: 30px;
 }
 
-.bill-container{
-    width:850px;
-    margin:auto;
-    background:#fff;
-    padding:30px;
-    border:1px solid #000;
-    box-shadow:0 0 10px rgba(0,0,0,.2);
+
+/* =========================================================
+   BILL CONTAINER
+========================================================= */
+
+.bill-container {
+    width: 850px;
+    max-width: 100%;
+
+    margin: auto;
+
+    background: #ffffff;
+
+    padding: 30px;
+
+    border: 1px solid #000;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
 }
 
-.logo img{
-    width:100px;
-    height:100px;
-    object-fit:contain;
+
+.logo {
+    flex: 0 0 120px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
 }
 
-.company{
-    text-align:right;
+
+.logo img {
+    width: 100px;
+
+    height: 100px;
+
+    object-fit: contain;
 }
 
-.company h1{
-    font-size:30px;
-    margin-bottom:8px;
+
+.company {
+    flex: 1;
+
+    text-align: right;
 }
 
-.company p{
-    font-size:16px;
-    margin:2px 0;
+
+.company h1 {
+    font-size: 30px;
+
+    margin-bottom: 8px;
 }
 
-hr{
-    margin:18px 0;
-    border:1px solid #000;
-}
 
-.billInfo{
-    display:flex;
-    justify-content:space-between;
-    font-size:17px;
-    font-weight:bold;
-}
-
-.customer{
-    line-height:35px;
-    font-size:17px;
-}
-
-h2{
-    margin-bottom:15px;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-bottom:20px;
-}
-
-table th{
-    background:#222;
-    color:#fff;
-    padding:10px;
-    border:1px solid #000;
-    text-align:center;
-}
-
-table td{
-    padding:10px;
-    border:1px solid #000;
-    text-align:center;
-}
-
-.totals{
-    width:350px;
-    margin-left:auto;
-}
-
-.totals p{
-    display:flex;
-    justify-content:space-between;
-    margin:10px 0;
-    font-size:18px;
-}
-
-.totals h2{
-    display:flex;
-    justify-content:space-between;
-    border-top:2px solid #000;
-    padding-top:12px;
-}
-
-.signature{
-    display:flex;
-    justify-content:space-between;
-    margin-top:70px;
-    font-weight:bold;
-}
-
-.buttons{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    margin-top:30px;
-}
-
-.buttons button{
-    padding:12px 35px;
-    font-size:17px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    color:white;
-}
-
-#printBtn{
-    background:#28a745;
-}
-
-#printBtn:hover{
-    background:#218838;
-}
-
-.buttons button:last-child{
-    background:#007bff;
-}
-
-.buttons button:last-child:hover{
-    background:#0056b3;
-}
-
-@media print{
-
-    body{
-        background:white;
-        padding:0;
-    }
-
-    .bill-container{
-        width:100%;
-        box-shadow:none;
-        border:none;
-        padding:0;
-    }
-
-    .buttons{
-        display:none;
-    }
-
-}.customer{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:20px 0;
-    font-size:18px;
-    font-weight:bold;
-}
-
-.customer div{
-    display:flex;
-    gap:6px;
-    align-items:center;
-}#confirmBill{
-    background-color: #FFD700; /* Gold Yellow */
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+.company h4 {
     font-size: 16px;
+
+    margin: 3px 0;
+}
+
+
+.company h3 {
+    font-size: 17px;
+
+    margin: 5px 0;
+}
+
+
+.company p {
+    font-size: 16px;
+
+    margin: 2px 0;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   HR
+========================================================= */
+
+hr {
+    margin: 18px 0;
+
+    border: none;
+
+    border-top: 1px solid #000;
+}
+
+
+/* =========================================================
+   BILL INFORMATION
+========================================================= */
+
+.billInfo {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    font-size: 17px;
+
     font-weight: bold;
-    transition: 0.3s;
-}
-
-#confirmBill:hover{
-    background-color: #FFC107;
-}/* =========================================
-   SUBTOTAL
-========================================= */
-
-.subtotal-row {
-    border-top: 1px solid #999;
-    margin-top: 5px;
-    padding-top: 8px !important;
-    font-weight: 600;
 }
 
 
-/* =========================================
-   DISCOUNT
-========================================= */
-
-.discount-row {
-    color: #c62828;
-    font-weight: 600;
+.bill-date {
+    text-align: right;
 }
 
 
-/* =========================================
-   ADVANCE
-========================================= */
-
-.advance-row {
-    color: #155724;
-    font-weight: 600;
+.billInfo small {
+    font-size: 13px;
 }
 
 
-/* =========================================
-   PAYMENT MODE
-========================================= */
+/* =========================================================
+   CUSTOMER
+========================================================= */
 
-.payment-mode-row {
-    color: #444;
-    font-weight: 600;
+.customer {
+    display: grid;
+
+    grid-template-columns: 1.4fr 1fr 1fr;
+
+    gap: 15px;
+
+    align-items: center;
+
+    margin: 18px 0;
+
+    font-size: 17px;
+
+    font-weight: bold;
 }
 
 
-/* =========================================
-   BALANCE
-========================================= */
+/* =========================================================
+   HEADINGS
+========================================================= */
 
-.balance-row {
-    font-weight: 700;
+h2 {
+    font-size: 21px;
+
+    margin: 0 0 12px 0;
 }
 
 
-/* =========================================
+h3 {
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-bottom: 20px;
+
+    table-layout: fixed;
+}
+
+
+table th {
+    background: #222;
+
+    color: #fff;
+
+    padding: 9px 4px;
+
+    border: 1px solid #000;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+table td {
+    padding: 8px 4px;
+
+    border: 1px solid #000;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    height: 32px;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   WOOD TABLE COLUMN WIDTH
+========================================================= */
+
+.wood-table th:nth-child(1),
+.wood-table td:nth-child(1) {
+    width: 6%;
+}
+
+.wood-table th:nth-child(2),
+.wood-table td:nth-child(2) {
+    width: 11%;
+}
+
+.wood-table th:nth-child(3),
+.wood-table td:nth-child(3) {
+    width: 9%;
+}
+
+.wood-table th:nth-child(4),
+.wood-table td:nth-child(4) {
+    width: 9%;
+}
+
+.wood-table th:nth-child(5),
+.wood-table td:nth-child(5) {
+    width: 7%;
+}
+
+.wood-table th:nth-child(6),
+.wood-table td:nth-child(6) {
+    width: 12%;
+}
+
+.wood-table th:nth-child(7),
+.wood-table td:nth-child(7) {
+    width: 9%;
+}
+
+.wood-table th:nth-child(8),
+.wood-table td:nth-child(8) {
+    width: 10%;
+}
+
+.wood-table th:nth-child(9),
+.wood-table td:nth-child(9) {
+    width: 13%;
+}
+
+.wood-table th:nth-child(10),
+.wood-table td:nth-child(10) {
+    width: 8%;
+}
+
+
+/* =========================================================
+   OTHER CHARGES
+========================================================= */
+
+.charge-table th:nth-child(1),
+.charge-table td:nth-child(1) {
+    width: 20%;
+}
+
+.charge-table th:nth-child(2),
+.charge-table td:nth-child(2) {
+    width: 50%;
+}
+
+.charge-table th:nth-child(3),
+.charge-table td:nth-child(3) {
+    width: 30%;
+}
+
+
+/* =========================================================
+   TOTALS
+========================================================= */
+
+.totals {
+    width: 360px;
+
+    max-width: 100%;
+
+    margin-left: auto;
+
+    margin-top: 10px;
+}
+
+
+.totals p {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin: 9px 0;
+
+    font-size: 18px;
+}
+
+
+/* =========================================================
    CFT SUMMARY
-========================================= */
+========================================================= */
+
+.cftTotal {
+    margin-bottom: 10px;
+}
+
+
+.cftTotal h3 {
+    margin-bottom: 5px;
+}
+
 
 #cftSummary p {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
-    padding: 5px 0;
+
+    padding: 4px 0;
+
     margin: 0;
+
+    font-size: 16px;
 }
+
 
 #cftSummary p b {
     font-weight: 700;
 }
 
 
-/* =========================================
+/* =========================================================
+   SUBTOTAL
+========================================================= */
+
+.subtotal-row {
+    border-top: 1px solid #999;
+
+    margin-top: 8px !important;
+
+    padding-top: 8px !important;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   DISCOUNT
+========================================================= */
+
+.discount-row {
+    color: #c62828;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   GRAND TOTAL
+========================================================= */
+
+.grand-total-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    border-top: 2px solid #000;
+
+    padding-top: 10px;
+
+    margin-top: 8px;
+
+    font-size: 23px !important;
+
+    font-weight: 800;
+}
+
+
+#grandTotal {
+    font-size: 23px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ADVANCE
+========================================================= */
+
+.advance-row {
+    color: #087443;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PAYMENT MODE
+========================================================= */
+
+.payment-mode-row {
+    color: #444;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BALANCE
+========================================================= */
+
+.balance-row {
+    font-weight: 800 !important;
+
+    font-size: 19px !important;
+}
+
+
+/* =========================================================
+   SIGNATURE
+========================================================= */
+
+.signature {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 65px;
+
+    font-weight: bold;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
    BUTTONS
-========================================= */
+========================================================= */
+
+.buttons {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 40px;
+
+    flex-wrap: wrap;
+}
+
+
+.buttons button {
+    border: none;
+
+    border-radius: 6px;
+
+    padding: 13px 25px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    color: white;
+}
+
+
+/* EDIT */
 
 #editBtn {
     background: #f0ad4e;
-    color: #ffffff;
+
+    color: #fff;
 }
 
 #editBtn:hover {
@@ -271,9 +527,12 @@ table td{
 }
 
 
+/* CONFIRM */
+
 #confirmBill {
     background: #ffc107;
-    color: #111111;
+
+    color: #111;
 }
 
 #confirmBill:hover {
@@ -281,8 +540,11 @@ table td{
 }
 
 
+/* PRINT */
+
 #printBtn {
     background: #00a651;
+
     color: white;
 }
 
@@ -291,8 +553,11 @@ table td{
 }
 
 
+/* BACK */
+
 #backBtn {
     background: #1680e8;
+
     color: white;
 }
 
@@ -301,42 +566,426 @@ table td{
 }
 
 
-/* =========================================
-   BUTTON SPACING
-========================================= */
-
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 40px;
-    flex-wrap: wrap;
-}
-
-
-.buttons button {
-    border: none;
-    border-radius: 6px;
-    padding: 13px 25px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-
-/* =========================================
+/* =========================================================
    MOBILE
-========================================= */
+========================================================= */
 
 @media (max-width: 700px) {
 
+    body {
+        padding: 10px;
+    }
+
+    .bill-container {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .company {
+        text-align: center;
+    }
+
+    .customer {
+        grid-template-columns: 1fr;
+
+        gap: 8px;
+    }
+
+    .totals {
+        width: 100%;
+    }
+
     .buttons {
         flex-direction: column;
+
         gap: 10px;
     }
 
     .buttons button {
         width: 100%;
     }
+}
 
+
+/* =========================================================
+   PRINT - A4 PORTRAIT
+========================================================= */
+
+@media print {
+
+    @page {
+        size: A4 portrait;
+
+        margin: 7mm;
+    }
+
+
+    html,
+    body {
+        width: 100% !important;
+
+        height: auto !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        background: #fff !important;
+    }
+
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+    }
+
+
+    .bill-container {
+        width: 100% !important;
+
+        max-width: none !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        border: none !important;
+
+        box-shadow: none !important;
+    }
+
+
+    /* HEADER */
+
+    .header {
+        display: flex !important;
+
+        flex-direction: row !important;
+
+        justify-content: space-between !important;
+
+        align-items: center !important;
+
+        height: 28mm !important;
+
+        gap: 5mm !important;
+    }
+
+
+    .logo {
+        width: 25% !important;
+
+        flex: none !important;
+    }
+
+
+    .logo img {
+        width: 22mm !important;
+
+        height: 22mm !important;
+    }
+
+
+    .company {
+        width: 75% !important;
+
+        text-align: right !important;
+    }
+
+
+    .company h1 {
+        font-size: 18px !important;
+
+        margin-bottom: 2px !important;
+    }
+
+
+    .company h4 {
+        font-size: 8px !important;
+
+        margin: 1px 0 !important;
+    }
+
+
+    .company h3 {
+        font-size: 9px !important;
+
+        margin: 2px 0 !important;
+    }
+
+
+    .company p {
+        font-size: 7px !important;
+
+        margin: 1px 0 !important;
+
+        line-height: 1.15 !important;
+    }
+
+
+    /* LINES */
+
+    hr {
+        margin: 2mm 0 !important;
+
+        border: none !important;
+
+        border-top: 1px solid #000 !important;
+    }
+
+
+    /* BILL INFO */
+
+    .billInfo {
+        font-size: 9px !important;
+
+        line-height: 1.2 !important;
+    }
+
+
+    .billInfo small {
+        font-size: 7.5px !important;
+    }
+
+
+    /* CUSTOMER */
+
+    .customer {
+        display: grid !important;
+
+        grid-template-columns: 1.4fr 1fr 1fr !important;
+
+        gap: 4mm !important;
+
+        margin: 2mm 0 !important;
+
+        font-size: 9px !important;
+
+        line-height: 1.2 !important;
+    }
+
+
+    /* HEADINGS */
+
+    h2 {
+        font-size: 12px !important;
+
+        margin: 2mm 0 1mm !important;
+    }
+
+
+    /* TABLE */
+
+    table {
+        width: 100% !important;
+
+        table-layout: fixed !important;
+
+        border-collapse: collapse !important;
+
+        margin-bottom: 2mm !important;
+
+        page-break-inside: avoid !important;
+    }
+
+
+    table th {
+        background: #222 !important;
+
+        color: #fff !important;
+
+        border: 1px solid #000 !important;
+
+        padding: 1.7mm 0.5mm !important;
+
+        font-size: 7px !important;
+
+        line-height: 1.1 !important;
+
+        white-space: nowrap !important;
+    }
+
+
+    table td {
+        border: 1px solid #000 !important;
+
+        padding: 1.8mm 0.5mm !important;
+
+        font-size: 8px !important;
+
+        line-height: 1.1 !important;
+
+        height: 7mm !important;
+
+        text-align: center !important;
+
+        white-space: nowrap !important;
+
+        overflow: visible !important;
+    }
+
+
+    /* CFT */
+
+    .cftTotal {
+        margin-bottom: 1mm !important;
+    }
+
+
+    .cftTotal h3 {
+        font-size: 10px !important;
+
+        margin-bottom: 1mm !important;
+    }
+
+
+    #cftSummary p {
+        font-size: 8px !important;
+
+        padding: 0.5mm 0 !important;
+
+        margin: 0 !important;
+    }
+
+
+    /* TOTALS */
+
+    .totals {
+        width: 72mm !important;
+
+        margin-left: auto !important;
+
+        margin-top: 1mm !important;
+    }
+
+
+    .totals p {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        margin: 1mm 0 !important;
+
+        font-size: 8.5px !important;
+    }
+
+
+    .totals p span {
+        font-size: 8.5px !important;
+    }
+
+
+    /* SUBTOTAL */
+
+    .subtotal-row {
+        border-top: 1px solid #999 !important;
+
+        margin-top: 1mm !important;
+
+        padding-top: 1mm !important;
+    }
+
+
+    /* DISCOUNT */
+
+    .discount-row {
+        color: #c62828 !important;
+    }
+
+
+    /* GRAND TOTAL */
+
+    .grand-total-row {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        border-top: 2px solid #000 !important;
+
+        padding-top: 1.5mm !important;
+
+        margin-top: 1mm !important;
+
+        font-size: 13px !important;
+    }
+
+
+    #grandTotal {
+        font-size: 13px !important;
+    }
+
+
+    /* ADVANCE */
+
+    .advance-row {
+        color: #087443 !important;
+    }
+
+
+    /* PAYMENT */
+
+    .payment-mode-row {
+        font-size: 8px !important;
+    }
+
+
+    /* BALANCE */
+
+    .balance-row {
+        font-size: 9px !important;
+
+        font-weight: 800 !important;
+
+        border-top: 1px solid #555 !important;
+
+        padding-top: 1mm !important;
+    }
+
+
+    .balance-row span {
+        font-size: 9px !important;
+
+        font-weight: 800 !important;
+    }
+
+
+    /* SIGNATURE */
+
+    .signature {
+        display: flex !important;
+
+        justify-content: space-between !important;
+
+        margin-top: 12mm !important;
+
+        font-size: 8px !important;
+    }
+
+
+    /* HIDE BUTTONS */
+
+    .buttons {
+        display: none !important;
+    }
+
+
+    /* PREVENT BREAK */
+
+    .header,
+    .billInfo,
+    .customer,
+    .totals,
+    .signature,
+    table {
+        page-break-inside: avoid !important;
+    }
+
+
+    tr {
+        page-break-inside: avoid !important;
+    }
 }

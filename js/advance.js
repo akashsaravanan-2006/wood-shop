@@ -1,140 +1,518 @@
 // =========================================
-// Grand Total
+// ADVANCE.JS
+// Discount + Payment Type + Advance
 // =========================================
 
-const grand =
-    Number(localStorage.getItem("finalTotal")) || 0;
-
-document.getElementById("grandTotal").value =
-    grand.toFixed(2);
 
 // =========================================
-// Payment Type
+// GRAND TOTAL
 // =========================================
 
-const paymentType =
-    document.getElementsByName("paymentType");
+const originalGrandTotal =
+    Number(
+        localStorage.getItem("finalTotal")
+    ) || 0;
+
+
+const grandTotalInput =
+    document.getElementById("grandTotal");
+
+
+const discountInput =
+    document.getElementById("discountAmount");
+
+
+const advanceInput =
+    document.getElementById("advanceAmount");
+
+
+const balanceInput =
+    document.getElementById("balanceAmount");
+
 
 const advanceSection =
     document.getElementById("advanceSection");
 
-// Default (Ready Cash)
-advanceSection.style.display = "none";
 
-localStorage.setItem(
-    "advanceAmount",
-    grand.toFixed(2)
-);
+const calculateBtn =
+    document.getElementById("calculateBtn");
 
-localStorage.setItem(
-    "balanceAmount",
-    "0.00"
-);
 
-paymentType.forEach(function (radio) {
+const nextBtn =
+    document.getElementById("nextBtn");
 
-    radio.addEventListener("change", function () {
 
-        if (this.value === "advance") {
+const paymentType =
+    document.getElementsByName("paymentType");
 
-            advanceSection.style.display = "block";
 
-            document.getElementById("advanceAmount").value = "";
-            document.getElementById("balanceAmount").value = "";
+const backBtn =
+    document.getElementById("backBtn");
 
-        } else {
-
-            advanceSection.style.display = "none";
-
-            localStorage.setItem(
-                "advanceAmount",
-                grand.toFixed(2)
-            );
-
-            localStorage.setItem(
-                "balanceAmount",
-                "0.00"
-            );
-        }
-
-    });
-
-});
 
 // =========================================
-// Calculate
+// INITIAL GRAND TOTAL
 // =========================================
 
-document.getElementById("calculateBtn").onclick = function () {
+grandTotalInput.value =
+    originalGrandTotal.toFixed(0);
 
-    let advance =
-        Number(document.getElementById("advanceAmount").value) || 0;
 
-    if (advance > grand) {
+// =========================================
+// LOAD SAVED DISCOUNT
+// =========================================
 
-        alert("Advance cannot be greater than Grand Total");
-        return;
+const savedDiscount =
+    Number(
+        localStorage.getItem("discountAmount")
+    ) || 0;
+
+
+if (savedDiscount > 0) {
+
+    discountInput.value =
+        savedDiscount;
+
+}
+
+
+// =========================================
+// CALCULATE FINAL TOTAL
+// =========================================
+
+function calculateFinalTotal() {
+
+    let discount =
+        Number(
+            discountInput.value
+        ) || 0;
+
+
+    // Discount cannot exceed total
+
+    if (discount > originalGrandTotal) {
+
+        alert(
+            "Discount cannot be greater than Grand Total"
+        );
+
+        discountInput.value = "";
+
+        discount = 0;
 
     }
 
-    let balance = grand - advance;
 
-    document.getElementById("balanceAmount").value =
-        balance.toFixed(2);
+    const finalTotal =
+        originalGrandTotal - discount;
+
+
+    // Display discounted total
+
+    grandTotalInput.value =
+        finalTotal.toFixed(0);
+
+
+    // Save discount
 
     localStorage.setItem(
-        "advanceAmount",
-        advance.toFixed(2)
+        "discountAmount",
+        String(discount)
     );
+
+
+    // Save final total
 
     localStorage.setItem(
-        "balanceAmount",
-        balance.toFixed(2)
+        "grandTotal",
+        String(finalTotal)
     );
 
-};
+
+    localStorage.setItem(
+        "finalTotal",
+        String(finalTotal)
+    );
+
+
+    return finalTotal;
+
+}
+
 
 // =========================================
-// Next
+// DISCOUNT LIVE CALCULATION
 // =========================================
 
-document.getElementById("nextBtn").onclick = function () {
+discountInput.addEventListener(
+    "input",
+    function() {
+
+        calculateFinalTotal();
+
+    }
+);
+
+
+// =========================================
+// PAYMENT TYPE
+// =========================================
+
+function updatePaymentSection() {
 
     const selected =
-        document.querySelector('input[name="paymentType"]:checked').value;
+        document.querySelector(
+            'input[name="paymentType"]:checked'
+        );
 
-    if (selected === "advance") {
 
-        if (document.getElementById("balanceAmount").value === "") {
+    if (!selected) {
+        return;
+    }
 
-            alert("Please calculate the balance amount.");
+
+    if (selected.value === "advance") {
+
+        advanceSection.style.display =
+            "block";
+
+
+        advanceInput.value = "";
+
+        balanceInput.value = "";
+
+    }
+
+    else {
+
+        advanceSection.style.display =
+            "none";
+
+
+        const finalTotal =
+            calculateFinalTotal();
+
+
+        // Cash / UPI means full payment
+
+        advanceInput.value =
+            finalTotal.toFixed(0);
+
+
+        balanceInput.value =
+            "0";
+
+
+        localStorage.setItem(
+            "advanceAmount",
+            String(finalTotal)
+        );
+
+
+        localStorage.setItem(
+            "balanceAmount",
+            "0"
+        );
+
+    }
+
+}
+
+
+paymentType.forEach(
+    function(radio) {
+
+        radio.addEventListener(
+            "change",
+            updatePaymentSection
+        );
+
+    }
+);
+
+
+// =========================================
+// CALCULATE ADVANCE
+// =========================================
+
+calculateBtn.addEventListener(
+    "click",
+    function() {
+
+        const finalTotal =
+            calculateFinalTotal();
+
+
+        let advance =
+            Number(
+                advanceInput.value
+            ) || 0;
+
+
+        if (advance < 0) {
+
+            alert(
+                "Advance cannot be negative"
+            );
+
             return;
 
         }
 
+
+        if (advance > finalTotal) {
+
+            alert(
+                "Advance cannot be greater than Grand Total"
+            );
+
+            advanceInput.value = "";
+
+            balanceInput.value = "";
+
+            return;
+
+        }
+
+
+        const balance =
+            finalTotal - advance;
+
+
+        advanceInput.value =
+            advance.toFixed(0);
+
+
+        balanceInput.value =
+            balance.toFixed(0);
+
+
+        localStorage.setItem(
+            "advanceAmount",
+            String(advance)
+        );
+
+
+        localStorage.setItem(
+            "balanceAmount",
+            String(balance)
+        );
+
     }
+);
 
-    const advanceAmount =
-        document.getElementById("advanceAmount").value || grand.toFixed(2);
 
-    const balanceAmount =
-        document.getElementById("balanceAmount").value || "0.00";
+// =========================================
+// NEXT
+// =========================================
 
-    localStorage.setItem("paymentType", selected);
-    localStorage.setItem("advanceAmount", advanceAmount);
-    localStorage.setItem("balanceAmount", balanceAmount);
-    localStorage.setItem("grandTotal", grand.toFixed(2));
+nextBtn.addEventListener(
+    "click",
+    function() {
 
-    window.location.href = "bill.html";
+        const selected =
+            document.querySelector(
+                'input[name="paymentType"]:checked'
+            );
 
-};// =======================================
+
+        if (!selected) {
+
+            alert(
+                "Please select Payment Type"
+            );
+
+            return;
+
+        }
+
+
+        const finalTotal =
+            calculateFinalTotal();
+
+
+        const discount =
+            Number(
+                discountInput.value
+            ) || 0;
+
+
+        let advance = 0;
+
+        let balance = 0;
+
+
+        // =====================================
+        // ADVANCE PAYMENT
+        // =====================================
+
+        if (selected.value === "advance") {
+
+            advance =
+                Number(
+                    advanceInput.value
+                ) || 0;
+
+
+            if (
+                balanceInput.value === ""
+            ) {
+
+                alert(
+                    "Please calculate the balance amount."
+                );
+
+                return;
+
+            }
+
+
+            if (advance > finalTotal) {
+
+                alert(
+                    "Advance cannot be greater than Grand Total"
+                );
+
+                return;
+
+            }
+
+
+            balance =
+                finalTotal - advance;
+
+        }
+
+
+        // =====================================
+        // CASH / UPI
+        // =====================================
+
+        else {
+
+            advance =
+                finalTotal;
+
+            balance = 0;
+
+        }
+
+
+        // =====================================
+        // SAVE PAYMENT DATA
+        // =====================================
+
+        localStorage.setItem(
+            "paymentType",
+            selected.value
+        );
+
+
+        localStorage.setItem(
+            "discountAmount",
+            String(discount)
+        );
+
+
+        localStorage.setItem(
+            "grandTotal",
+            String(finalTotal)
+        );
+
+
+        localStorage.setItem(
+            "finalTotal",
+            String(finalTotal)
+        );
+
+
+        localStorage.setItem(
+            "advanceAmount",
+            String(advance)
+        );
+
+
+        localStorage.setItem(
+            "balanceAmount",
+            String(balance)
+        );
+
+
+        // =====================================
+        // DEBUG
+        // =====================================
+
+        console.log(
+            "=============================="
+        );
+
+        console.log(
+            "Payment Type:",
+            selected.value
+        );
+
+        console.log(
+            "Original Total:",
+            originalGrandTotal
+        );
+
+        console.log(
+            "Discount:",
+            discount
+        );
+
+        console.log(
+            "Final Total:",
+            finalTotal
+        );
+
+        console.log(
+            "Advance:",
+            advance
+        );
+
+        console.log(
+            "Balance:",
+            balance
+        );
+
+        console.log(
+            "=============================="
+        );
+
+
+        // =====================================
+        // GO TO BILL
+        // =====================================
+
+        window.location.href =
+            "bill.html";
+
+    }
+);
+
+
+// =========================================
 // BACK BUTTON
-// =======================================
-
-const backBtn = document.getElementById("backBtn");
+// =========================================
 
 if (backBtn) {
-    backBtn.addEventListener("click", () => {
-        window.location.href = "personal.html";
-    });
+
+    backBtn.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "personal.html";
+
+        }
+    );
+
 }
+
+
+// =========================================
+// INITIAL STATE
+// =========================================
+
+updatePaymentSection();

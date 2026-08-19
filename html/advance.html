@@ -21,45 +21,36 @@
 
     <div class="card">
 
-        <!-- =========================
-             TITLE
-        ========================== -->
-
         <h1>Advance Payment</h1>
 
         <hr>
 
 
-        <!-- =========================
-             ORIGINAL GRAND TOTAL
-        ========================== -->
+        <!-- =========================================
+             GRAND TOTAL
+        ========================================== -->
 
         <div class="row">
 
-            <label>
-                Grand Total
-            </label>
+            <label>Grand Total</label>
 
             <input
                 type="text"
-                id="originalGrandTotal"
-                class="totalDisplay"
+                id="grandTotal"
                 readonly>
 
         </div>
 
 
-        <!-- =========================
+        <!-- =========================================
              DISCOUNT
-        ========================== -->
+        ========================================== -->
 
         <div class="row">
 
             <label>
                 Discount Amount
-                <span class="optional">
-                    (Optional)
-                </span>
+                <span class="optional">(Optional)</span>
             </label>
 
             <input
@@ -72,216 +63,241 @@
         </div>
 
 
-        <!-- =========================
-             FINAL TOTAL
-        ========================== -->
+        <!-- =========================================
+             FINAL GRAND TOTAL
+        ========================================== -->
 
         <div class="row">
 
-            <label>
-                Final Grand Total
-            </label>
+            <label>Final Grand Total</label>
 
             <input
                 type="text"
-                id="grandTotal"
-                class="totalDisplay finalTotal"
+                id="finalGrandTotal"
                 readonly>
 
         </div>
 
 
-       <!-- =========================================
-     PAYMENT TYPE
-========================================= -->
+        <!-- =========================================
+             PAYMENT TYPE
+             READY CASH / ADVANCE
+        ========================================== -->
 
-<div class="payment-section">
+        <div class="payment-section">
 
-    <div class="section-title">
-        <span class="section-icon"></span>
+            <div class="section-title">
 
-        <div>
-            <h3>Payment Type</h3>
-            <p>Choose how the customer is paying</p>
-        </div>
-    </div>
-
-    <div class="payment-cards">
-
-        <!-- READY CASH -->
-
-        <label class="payment-card type-card">
-
-            <input
-                type="radio"
-                name="paymentType"
-                value="cash"
-                checked>
-
-            <div class="card-content">
-
-                <div class="payment-icon cash-icon">
-                    ₹
+                <div class="section-icon">
+                    💳
                 </div>
 
-                <div class="payment-info">
+                <div>
 
-                    <strong>Ready Cash</strong>
+                    <h3>Payment Type</h3>
 
-                    <span>
-                        Full payment now
-                    </span>
+                    <p>
+                        Choose payment type
+                    </p>
 
-                </div>
-
-                <div class="check-mark">
-                    ✓
                 </div>
 
             </div>
 
-        </label>
+
+            <div class="payment-cards">
 
 
-        <!-- ADVANCE -->
+                <!-- READY CASH -->
 
-        <label class="payment-card type-card">
+                <label class="payment-card">
 
-            <input
-                type="radio"
-                name="paymentType"
-                value="advance">
+                    <input
+                        type="radio"
+                        name="paymentType"
+                        value="cash"
+                        checked>
 
-            <div class="card-content">
+                    <div class="card-content">
 
-                <div class="payment-icon advance-icon">
-                    %
-                </div>
+                        <div class="payment-icon cash-icon">
+                            ₹
+                        </div>
 
-                <div class="payment-info">
+                        <div class="payment-info">
 
-                    <strong>Advance</strong>
+                            <strong>
+                                Ready Cash
+                            </strong>
 
-                    <span>
-                        Pay partially now
-                    </span>
+                            <span>
+                                Full payment now
+                            </span>
 
-                </div>
+                        </div>
 
-                <div class="check-mark">
-                    ✓
-                </div>
+                        <div class="check-mark">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- ADVANCE -->
+
+                <label class="payment-card">
+
+                    <input
+                        type="radio"
+                        name="paymentType"
+                        value="advance">
+
+                    <div class="card-content">
+
+                        <div class="payment-icon advance-icon">
+                            %
+                        </div>
+
+                        <div class="payment-info">
+
+                            <strong>
+                                Advance
+                            </strong>
+
+                            <span>
+                                Pay partially now
+                            </span>
+
+                        </div>
+
+                        <div class="check-mark">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
 
             </div>
-
-        </label>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================
-     PAYMENT MODE
-========================================= -->
-
-<div class="payment-section">
-
-    <div class="section-title">
-
-        <span class="section-icon"></span>
-
-        <div>
-
-            <h3>Payment Mode</h3>
-
-            <p>Select the payment method</p>
 
         </div>
 
-    </div>
 
+        <!-- =========================================
+             PAYMENT MODE
+             CASH / UPI
+        ========================================== -->
 
-    <div class="mode-cards">
+        <div class="payment-section">
 
-        <!-- CASH -->
+            <div class="section-title">
 
-        <label class="mode-card">
-
-            <input
-                type="radio"
-                name="paymentMode"
-                value="cash"
-                checked>
-
-            <div class="mode-content">
-
-                <div class="mode-icon cash-mode">
-                 C
+                <div class="section-icon">
+                    💰
                 </div>
 
-                <div class="mode-info">
+                <div>
 
-                    <strong>Cash</strong>
+                    <h3>Payment Mode</h3>
 
-                    <span>
-                        Physical payment
-                    </span>
+                    <p>
+                        Select payment method
+                    </p>
 
-                </div>
-
-                <div class="mode-check">
-                    ✓
                 </div>
 
             </div>
 
-        </label>
+
+            <div class="mode-cards">
 
 
-        <!-- UPI -->
+                <!-- CASH -->
 
-        <label class="mode-card">
+                <label class="mode-card">
 
-            <input
-                type="radio"
-                name="paymentMode"
-                value="upi">
+                    <input
+                        type="radio"
+                        name="paymentMode"
+                        value="cash"
+                        checked>
 
-            <div class="mode-content">
+                    <div class="mode-content">
 
-                <div class="mode-icon upi-mode">
-                    UPI
-                </div>
+                        <div class="mode-icon cash-mode">
+                            💵
+                        </div>
 
-                <div class="mode-info">
+                        <div class="mode-info">
 
-                    <strong>UPI</strong>
+                            <strong>
+                                Cash
+                            </strong>
 
-                    <span>
-                        Digital payment
-                    </span>
+                            <span>
+                                Physical payment
+                            </span>
 
-                </div>
+                        </div>
 
-                <div class="mode-check">
-                    ✓
-                </div>
+                        <div class="mode-check">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- UPI -->
+
+                <label class="mode-card">
+
+                    <input
+                        type="radio"
+                        name="paymentMode"
+                        value="upi">
+
+                    <div class="mode-content">
+
+                        <div class="mode-icon upi-mode">
+                            UPI
+                        </div>
+
+                        <div class="mode-info">
+
+                            <strong>
+                                UPI
+                            </strong>
+
+                            <span>
+                                Digital payment
+                            </span>
+
+                        </div>
+
+                        <div class="mode-check">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </label>
 
             </div>
 
-        </label>
-
-    </div>
-
-</div>
+        </div>
 
 
-        <!-- =========================
+        <!-- =========================================
              ADVANCE SECTION
-        ========================== -->
+             ONLY SHOWS WHEN ADVANCE IS SELECTED
+        ========================================== -->
 
         <div id="advanceSection">
+
 
             <!-- ADVANCE AMOUNT -->
 
@@ -301,7 +317,7 @@
             </div>
 
 
-            <!-- BALANCE AMOUNT -->
+            <!-- BALANCE -->
 
             <div class="row">
 
@@ -325,7 +341,7 @@
                     type="button"
                     id="calculateBtn">
 
-                    Calculate
+                    Calculate Balance
 
                 </button>
 
@@ -334,9 +350,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =========================================
              NEXT BUTTON
-        ========================== -->
+        ========================================== -->
 
         <div class="buttonRow">
 
@@ -351,9 +367,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =========================================
              BACK BUTTON
-        ========================== -->
+        ========================================== -->
 
         <div class="button-container">
 
@@ -372,9 +388,9 @@
 </div>
 
 
-<!-- =========================
+<!-- =========================================
      JAVASCRIPT
-========================== -->
+========================================== -->
 
 <script src="../js/advance.js"></script>
 

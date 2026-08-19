@@ -5,13 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Advance Payment</title>
 
-    <link rel="stylesheet"
-          href="../css/advance.css">
+    <link rel="stylesheet" href="../css/advance.css">
 
 </head>
 
@@ -37,7 +35,8 @@
             <input
                 type="text"
                 id="grandTotal"
-                readonly>
+                readonly
+            >
 
         </div>
 
@@ -58,7 +57,8 @@
                 id="discountAmount"
                 min="0"
                 step="1"
-                placeholder="Enter Discount Amount">
+                placeholder="Enter Discount Amount"
+            >
 
         </div>
 
@@ -74,37 +74,28 @@
             <input
                 type="text"
                 id="finalGrandTotal"
-                readonly>
+                readonly
+            >
 
         </div>
 
 
         <!-- =========================================
              PAYMENT TYPE
-             READY CASH / ADVANCE
         ========================================== -->
 
         <div class="payment-section">
 
             <div class="section-title">
 
-                
+                <h3>Payment Type</h3>
 
-                <div>
-
-                    <h3>Payment Type</h3>
-
-                    <p>
-                        Choose payment type
-                    </p>
-
-                </div>
+                <p>Choose payment type</p>
 
             </div>
 
 
             <div class="payment-cards">
-
 
                 <!-- READY CASH -->
 
@@ -114,7 +105,8 @@
                         type="radio"
                         name="paymentType"
                         value="cash"
-                        checked>
+                        checked
+                    >
 
                     <div class="card-content">
 
@@ -124,13 +116,9 @@
 
                         <div class="payment-info">
 
-                            <strong>
-                                Ready Cash
-                            </strong>
+                            <strong>Ready Cash</strong>
 
-                            <span>
-                                Full payment now
-                            </span>
+                            <span>Full payment now</span>
 
                         </div>
 
@@ -150,7 +138,8 @@
                     <input
                         type="radio"
                         name="paymentType"
-                        value="advance">
+                        value="advance"
+                    >
 
                     <div class="card-content">
 
@@ -160,13 +149,9 @@
 
                         <div class="payment-info">
 
-                            <strong>
-                                Advance
-                            </strong>
+                            <strong>Advance</strong>
 
-                            <span>
-                                Pay partially now
-                            </span>
+                            <span>Pay partially now</span>
 
                         </div>
 
@@ -185,30 +170,20 @@
 
         <!-- =========================================
              PAYMENT MODE
-             CASH / UPI
         ========================================== -->
 
         <div class="payment-section">
 
             <div class="section-title">
 
-               
+                <h3>Payment Mode</h3>
 
-                <div>
-
-                    <h3>Payment Mode</h3>
-
-                    <p>
-                        Select payment method
-                    </p>
-
-                </div>
+                <p>Select payment method</p>
 
             </div>
 
 
             <div class="mode-cards">
-
 
                 <!-- CASH -->
 
@@ -218,7 +193,8 @@
                         type="radio"
                         name="paymentMode"
                         value="cash"
-                        checked>
+                        checked
+                    >
 
                     <div class="mode-content">
 
@@ -228,13 +204,9 @@
 
                         <div class="mode-info">
 
-                            <strong>
-                                Cash
-                            </strong>
+                            <strong>Cash</strong>
 
-                            <span>
-                                Physical payment
-                            </span>
+                            <span>Physical payment</span>
 
                         </div>
 
@@ -254,7 +226,8 @@
                     <input
                         type="radio"
                         name="paymentMode"
-                        value="upi">
+                        value="upi"
+                    >
 
                     <div class="mode-content">
 
@@ -264,13 +237,9 @@
 
                         <div class="mode-info">
 
-                            <strong>
-                                UPI
-                            </strong>
+                            <strong>UPI</strong>
 
-                            <span>
-                                Digital payment
-                            </span>
+                            <span>Digital payment</span>
 
                         </div>
 
@@ -289,56 +258,46 @@
 
         <!-- =========================================
              ADVANCE SECTION
-             ONLY SHOWS WHEN ADVANCE IS SELECTED
+             ONLY SHOW WHEN ADVANCE SELECTED
         ========================================== -->
 
         <div id="advanceSection">
 
-
-            <!-- ADVANCE AMOUNT -->
-
             <div class="row">
 
-                <label>
-                    Advance Amount
-                </label>
+                <label>Advance Amount</label>
 
                 <input
                     type="number"
                     id="advanceAmount"
                     min="0"
                     step="1"
-                    placeholder="Enter Advance Amount">
+                    placeholder="Enter Advance Amount"
+                >
 
             </div>
 
 
-            <!-- BALANCE -->
-
             <div class="row">
 
-                <label>
-                    Balance Amount
-                </label>
+                <label>Balance Amount</label>
 
                 <input
                     type="text"
                     id="balanceAmount"
-                    readonly>
+                    readonly
+                >
 
             </div>
 
-
-            <!-- CALCULATE -->
 
             <div class="buttonRow">
 
                 <button
                     type="button"
-                    id="calculateBtn">
-
+                    id="calculateBtn"
+                >
                     Calculate Balance
-
                 </button>
 
             </div>
@@ -347,34 +306,32 @@
 
 
         <!-- =========================================
-             NEXT BUTTON
+             NEXT
         ========================================== -->
 
         <div class="buttonRow">
 
             <button
                 type="button"
-                id="nextBtn">
-
+                id="nextBtn"
+            >
                 Next
-
             </button>
 
         </div>
 
 
         <!-- =========================================
-             BACK BUTTON
+             BACK
         ========================================== -->
 
         <div class="button-container">
 
             <button
                 type="button"
-                id="backBtn">
-
+                id="backBtn"
+            >
                 Back
-
             </button>
 
         </div>
@@ -383,10 +340,6 @@
 
 </div>
 
-
-<!-- =========================================
-     JAVASCRIPT
-========================================== -->
 
 <script src="../js/advance.js"></script>
 

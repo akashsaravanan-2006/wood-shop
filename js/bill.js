@@ -1,45 +1,20 @@
 // =========================================
 // BILL.JS
-// QUOTATION PAGE
+// QUOTATION / BILL PREVIEW PAGE
 // =========================================
 
 
 // =========================================
-// BILL NUMBER + CUSTOMER ID
-// =========================================
-// IMPORTANT:
-//
-// bill.html is ONLY the quotation page.
-//
-// Bill No      = ---
-// Customer ID  = ---
-//
-// The actual Bill No and Customer ID
-// will be displayed later in cbill.html
-// after the bill is confirmed and saved.
-//
+// BILL NUMBER
 // =========================================
 
 const billNoElement =
     document.getElementById("billNo");
 
-const customerIdElement =
-    document.getElementById("customerId");
-
-
-// =========================================
-// ALWAYS SHOW ---
-// =========================================
-
 if (billNoElement) {
 
-    billNoElement.textContent = "---";
-
-}
-
-if (customerIdElement) {
-
-    customerIdElement.textContent = "---";
+    billNoElement.textContent =
+        localStorage.getItem("billNo") || "---";
 
 }
 
@@ -48,14 +23,16 @@ if (customerIdElement) {
 // BILL DATE
 // =========================================
 
-const billDate =
+const billDateElement =
     document.getElementById("billDate");
+
+const billDayTimeElement =
+    document.getElementById("billDayTime");
 
 let savedDate =
     localStorage.getItem("billDate");
 
 const days = [
-
     "Sunday",
     "Monday",
     "Tuesday",
@@ -63,115 +40,19 @@ const days = [
     "Thursday",
     "Friday",
     "Saturday"
-
 ];
 
 
-// =========================================
-// DATE ALREADY EXISTS
-// =========================================
+if (!savedDate) {
 
-if (savedDate) {
-
-    const now =
-        new Date();
-
-
-    const time =
-        now.toLocaleTimeString(
-            "en-IN",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: true
-            }
-        );
-
-
-    if (billDate) {
-
-        billDate.textContent =
-            savedDate;
-
-    }
-
-
-    const billDayTime =
-        document.getElementById(
-            "billDayTime"
-        );
-
-
-    if (billDayTime) {
-
-        billDayTime.textContent =
-            days[now.getDay()] +
-            " | " +
-            time;
-
-    }
-
-}
-
-
-// =========================================
-// CREATE NEW DATE
-// =========================================
-
-else {
-
-    const today =
-        new Date();
-
+    const today = new Date();
 
     savedDate =
-        today.getDate()
-            .toString()
-            .padStart(2, "0")
+        today.getDate().toString().padStart(2, "0")
         + "/" +
-        (today.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")
+        (today.getMonth() + 1).toString().padStart(2, "0")
         + "/" +
         today.getFullYear();
-
-
-    if (billDate) {
-
-        billDate.textContent =
-            savedDate;
-
-    }
-
-
-    const time =
-        today.toLocaleTimeString(
-            "en-IN",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: true
-            }
-        );
-
-
-    const billDayTime =
-        document.getElementById(
-            "billDayTime"
-        );
-
-
-    if (billDayTime) {
-
-        billDayTime.textContent =
-            days[today.getDay()] +
-            " | " +
-            time;
-
-    }
-
 
     localStorage.setItem(
         "billDate",
@@ -181,225 +62,339 @@ else {
 }
 
 
+if (billDateElement) {
+
+    billDateElement.textContent =
+        savedDate;
+
+}
+
+
+const now = new Date();
+
+if (billDayTimeElement) {
+
+    billDayTimeElement.textContent =
+        days[now.getDay()]
+        + " | "
+        + now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }
+        );
+
+}
+
+
 // =========================================
 // CUSTOMER DETAILS
 // =========================================
 
 const customerName =
-    document.getElementById(
-        "customerName"
-    );
+    document.getElementById("customerName");
+
+const customerMobile =
+    document.getElementById("customerMobile");
+
+const customerPlace =
+    document.getElementById("customerPlace");
 
 
 if (customerName) {
 
     customerName.textContent =
-        localStorage.getItem(
-            "customerName"
-        ) || "-";
+        localStorage.getItem("customerName") || "-";
 
 }
-
-
-const customerMobile =
-    document.getElementById(
-        "customerMobile"
-    );
 
 
 if (customerMobile) {
 
     customerMobile.textContent =
-        localStorage.getItem(
-            "customerMobile"
-        ) || "-";
+        localStorage.getItem("customerMobile") || "-";
 
 }
-
-
-const customerPlace =
-    document.getElementById(
-        "customerPlace"
-    );
 
 
 if (customerPlace) {
 
     customerPlace.textContent =
-        localStorage.getItem(
-            "customerPlace"
-        ) || "-";
+        localStorage.getItem("customerPlace") || "-";
 
 }
 
 
 // =========================================
-// TOTALS
+// LOAD TOTALS
 // =========================================
 
 const woodTotal =
     Number(
-        localStorage.getItem(
-            "woodTotal"
-        )
+        localStorage.getItem("woodTotal")
     ) || 0;
 
 
 const othersTotal =
     Number(
-        localStorage.getItem(
-            "othersTotal"
-        )
+        localStorage.getItem("othersTotal")
     ) || 0;
 
 
-const grandTotal =
+// =========================================
+// SUBTOTAL
+// =========================================
+
+const subtotal =
+    woodTotal + othersTotal;
+
+
+// =========================================
+// DISCOUNT
+// =========================================
+
+const discount =
     Number(
-        localStorage.getItem(
-            "finalTotal"
-        )
+        localStorage.getItem("discountAmount")
     ) || 0;
 
 
 // =========================================
-// WOOD TOTAL
+// FINAL GRAND TOTAL
 // =========================================
 
-const woodTotalElement =
-    document.getElementById(
-        "woodTotal"
+let finalGrandTotal =
+    Number(
+        localStorage.getItem("finalTotal")
     );
 
 
-if (woodTotalElement) {
+/*
+    If finalTotal does not exist,
+    calculate it here.
+*/
 
-    woodTotalElement.textContent =
-        "₹ " +
-        Math.round(
-            woodTotal
+if (isNaN(finalGrandTotal)) {
+
+    finalGrandTotal =
+        Math.max(
+            0,
+            subtotal - discount
         );
 
 }
 
 
 // =========================================
-// OTHERS TOTAL
-// =========================================
-
-const othersTotalElement =
-    document.getElementById(
-        "othersTotal"
-    );
-
-
-if (othersTotalElement) {
-
-    othersTotalElement.textContent =
-        "₹ " +
-        Math.round(
-            othersTotal
-        );
-
-}
-
-
-// =========================================
-// GRAND TOTAL
-// =========================================
-
-const grandTotalElement =
-    document.getElementById(
-        "grandTotal"
-    );
-
-
-if (grandTotalElement) {
-
-    grandTotalElement.textContent =
-        "₹ " +
-        Math.round(
-            grandTotal
-        );
-
-}
-
-
-// =========================================
-// ADVANCE & BALANCE
+// ADVANCE
 // =========================================
 
 const advanceAmount =
     Number(
-        localStorage.getItem(
-            "advanceAmount"
-        )
+        localStorage.getItem("advanceAmount")
     ) || 0;
 
+
+// =========================================
+// BALANCE
+// =========================================
 
 const balanceAmount =
     Number(
-        localStorage.getItem(
-            "balanceAmount"
-        )
+        localStorage.getItem("balanceAmount")
     ) || 0;
 
 
 // =========================================
-// ADVANCE DISPLAY
+// DISPLAY WOOD TOTAL
 // =========================================
 
-const advanceElement =
-    document.getElementById(
-        "advanceAmount"
-    );
+const woodTotalElement =
+    document.getElementById("woodTotal");
 
+if (woodTotalElement) {
 
-if (advanceElement) {
-
-    advanceElement.textContent =
-        "₹ " +
-        Math.round(
-            advanceAmount
-        );
+    woodTotalElement.textContent =
+        "₹ " + woodTotal.toFixed(2);
 
 }
 
 
 // =========================================
-// BALANCE DISPLAY
+// DISPLAY OTHERS TOTAL
+// =========================================
+
+const othersTotalElement =
+    document.getElementById("othersTotal");
+
+if (othersTotalElement) {
+
+    othersTotalElement.textContent =
+        "₹ " + othersTotal.toFixed(2);
+
+}
+
+
+// =========================================
+// DISPLAY SUBTOTAL
+// =========================================
+
+const subtotalElement =
+    document.getElementById("subtotal");
+
+if (subtotalElement) {
+
+    subtotalElement.textContent =
+        "₹ " + subtotal.toFixed(2);
+
+}
+
+
+// =========================================
+// DISPLAY DISCOUNT
+// =========================================
+
+const discountRow =
+    document.getElementById("discountRow");
+
+const discountElement =
+    document.getElementById("discountAmount");
+
+
+if (discount > 0) {
+
+    if (discountRow) {
+
+        discountRow.style.display = "flex";
+
+    }
+
+    if (discountElement) {
+
+        discountElement.textContent =
+            "- ₹ " + discount.toFixed(2);
+
+    }
+
+} else {
+
+    if (discountRow) {
+
+        discountRow.style.display = "none";
+
+    }
+
+}
+
+
+// =========================================
+// DISPLAY GRAND TOTAL
+// =========================================
+
+const grandTotalElement =
+    document.getElementById("grandTotal");
+
+if (grandTotalElement) {
+
+    grandTotalElement.textContent =
+        "₹ " + finalGrandTotal.toFixed(2);
+
+}
+
+
+// =========================================
+// DISPLAY ADVANCE
+// =========================================
+
+const advanceRow =
+    document.getElementById("advanceRow");
+
+const advanceElement =
+    document.getElementById("advanceAmount");
+
+
+const paymentType =
+    localStorage.getItem("paymentType") || "cash";
+
+
+if (
+    paymentType === "advance"
+    && advanceAmount > 0
+) {
+
+    if (advanceRow) {
+
+        advanceRow.style.display = "flex";
+
+    }
+
+    if (advanceElement) {
+
+        advanceElement.textContent =
+            "₹ " + advanceAmount.toFixed(2);
+
+    }
+
+} else {
+
+    if (advanceRow) {
+
+        advanceRow.style.display = "none";
+
+    }
+
+}
+
+
+// =========================================
+// PAYMENT MODE
+// =========================================
+
+const paymentMode =
+    localStorage.getItem("paymentMode") || "";
+
+
+const paymentModeRow =
+    document.getElementById("paymentModeRow");
+
+const paymentModeElement =
+    document.getElementById("paymentMode");
+
+
+if (paymentMode) {
+
+    if (paymentModeRow) {
+
+        paymentModeRow.style.display = "flex";
+
+    }
+
+    if (paymentModeElement) {
+
+        paymentModeElement.textContent =
+            paymentMode.toUpperCase();
+
+    }
+
+}
+
+
+// =========================================
+// DISPLAY BALANCE
 // =========================================
 
 const balanceElement =
-    document.getElementById(
-        "balanceAmount"
-    );
-
+    document.getElementById("balanceAmount");
 
 if (balanceElement) {
 
     balanceElement.textContent =
-        "₹ " +
-        Math.round(
-            balanceAmount
-        );
+        "₹ " + balanceAmount.toFixed(2);
 
 }
-
-
-// =========================================
-// TABLE REFERENCES
-// =========================================
-
-const woodTable =
-    document.getElementById(
-        "woodTable"
-    );
-
-
-const chargeTable =
-    document.getElementById(
-        "chargeTable"
-    );
 
 
 // =========================================
@@ -408,18 +403,14 @@ const chargeTable =
 
 let woodData = [];
 
-
 try {
 
     woodData =
         JSON.parse(
-            localStorage.getItem(
-                "woodData"
-            )
+            localStorage.getItem("woodData")
         ) || [];
 
 }
-
 catch (error) {
 
     console.error(
@@ -432,47 +423,124 @@ catch (error) {
 }
 
 
+// =========================================
+// WOOD TABLE
+// =========================================
+
+const woodTable =
+    document.getElementById("woodTable");
+
+
 let sno = 1;
 
 
-// =========================================
-// PRINT WOOD DETAILS
-// =========================================
-
 if (woodTable) {
 
-    woodData.forEach(
-        function (item) {
+    woodData.forEach(function (item) {
+
+        /*
+            If there are no pieces
+        */
+
+        if (
+            !item.pieces ||
+            item.pieces.length === 0
+        ) {
+
+            const row =
+                document.createElement("tr");
+
+            const woodName =
+                item.woodType === "Other"
+                    ? item.otherWood || "-"
+                    : item.woodType || "-";
+
+
+            row.innerHTML = `
+
+                <td>${sno}</td>
+
+                <td>${woodName}</td>
+
+                <td>
+                    ${item.breadth || "-"}
+                    ×
+                    ${item.thickness || "-"}
+                </td>
+
+                <td>-</td>
+
+                <td>-</td>
+
+                <td>
+                    ${Number(item.totalLength || 0).toFixed(2)}
+                </td>
+
+                <td>
+                    ${Number(item.cubicFeet || 0).toFixed(2)}
+                </td>
+
+                <td>
+                    ₹ ${Number(item.rate || 0).toFixed(2)}
+                </td>
+
+                <td>
+                    ₹ ${Number(item.amount || 0).toFixed(2)}
+                </td>
+
+                <td>
+                    ${item.quality || "-"}
+                </td>
+
+            `;
+
+            woodTable.appendChild(row);
+
+            sno++;
+
+            return;
+        }
+
+
+        // =====================================
+        // PIECES
+        // =====================================
+
+        item.pieces.forEach(function (piece, index) {
+
+            const row =
+                document.createElement("tr");
+
+
+            const length =
+                Number(piece.length) || 0;
+
+
+            const extraLength =
+                Number(piece.extraLength) || 0;
+
+
+            const lengthText =
+                length + extraLength;
+
+
+            const woodName =
+                item.woodType === "Other"
+                    ? item.otherWood || "-"
+                    : item.woodType || "-";
 
 
             // =================================
-            // NO PIECES
+            // FIRST PIECE
             // =================================
 
-            if (
-                !item.pieces ||
-                item.pieces.length === 0
-            ) {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
+            if (index === 0) {
 
                 row.innerHTML = `
 
-                    <td>
-                        ${sno}
-                    </td>
+                    <td>${sno}</td>
 
-                    <td>
-                        ${
-                            item.woodType === "Other"
-                                ? item.otherWood || "-"
-                                : item.woodType || "-"
-                        }
-                    </td>
+                    <td>${woodName}</td>
 
                     <td>
                         ${item.breadth || "-"}
@@ -480,16 +548,18 @@ if (woodTable) {
                         ${item.thickness || "-"}
                     </td>
 
-                    <td>-</td>
-
-                    <td>-</td>
+                    <td>
+                        ${lengthText}
+                    </td>
 
                     <td>
-                        ${Math.round(
-                            Number(
-                                item.totalLength || 0
-                            )
-                        )}
+                        ${piece.qty || 0}
+                    </td>
+
+                    <td>
+                        ${Number(
+                            piece.totalLength || 0
+                        ).toFixed(2)}
                     </td>
 
                     <td>
@@ -499,19 +569,15 @@ if (woodTable) {
                     </td>
 
                     <td>
-                        ₹ ${Math.round(
-                            Number(
-                                item.rate || 0
-                            )
-                        )}
+                        ₹ ${Number(
+                            item.rate || 0
+                        ).toFixed(2)}
                     </td>
 
                     <td>
-                        ₹ ${Math.round(
-                            Number(
-                                item.amount || 0
-                            )
-                        )}
+                        ₹ ${Number(
+                            item.amount || 0
+                        ).toFixed(2)}
                     </td>
 
                     <td>
@@ -520,218 +586,97 @@ if (woodTable) {
 
                 `;
 
-
-                woodTable.appendChild(
-                    row
-                );
-
-
-                sno++;
-
-                return;
-
             }
 
 
             // =================================
-            // PIECES
+            // ADDITIONAL PIECES
             // =================================
 
-            item.pieces.forEach(
-                function (piece, index) {
+            else {
 
-                    const row =
-                        document.createElement(
-                            "tr"
-                        );
+                row.innerHTML = `
 
+                    <td></td>
 
-                    const length =
-                        Number(
-                            piece.length
-                        ) || 0;
+                    <td></td>
 
+                    <td></td>
 
-                    const extraLength =
-                        Number(
-                            piece.extraLength
-                        ) || 0;
+                    <td>
+                        ${lengthText}
+                    </td>
 
+                    <td>
+                        ${piece.qty || 0}
+                    </td>
 
-                    const lengthText =
-                        length +
-                        extraLength;
+                    <td>
+                        ${Number(
+                            piece.totalLength || 0
+                        ).toFixed(2)}
+                    </td>
 
+                    <td></td>
 
-                    // =================================
-                    // FIRST PIECE
-                    // =================================
+                    <td></td>
 
-                    if (index === 0) {
+                    <td></td>
 
-                        row.innerHTML = `
+                    <td></td>
 
-                            <td>
-                                ${sno}
-                            </td>
+                `;
 
-                            <td>
-                                ${
-                                    item.woodType === "Other"
-                                        ? item.otherWood || "-"
-                                        : item.woodType || "-"
-                                }
-                            </td>
-
-                            <td>
-                                ${item.breadth || "-"}
-                                ×
-                                ${item.thickness || "-"}
-                            </td>
-
-                            <td>
-                                ${lengthText}
-                            </td>
-
-                            <td>
-                                ${piece.qty || 0}
-                            </td>
-
-                            <td>
-                                ${Math.round(
-                                    Number(
-                                        piece.totalLength || 0
-                                    )
-                                )}
-                            </td>
-
-                            <td>
-                                ${Number(
-                                    item.cubicFeet || 0
-                                ).toFixed(2)}
-                            </td>
-
-                            <td>
-                                ₹ ${Math.round(
-                                    Number(
-                                        item.rate || 0
-                                    )
-                                )}
-                            </td>
-
-                            <td>
-                                ₹ ${Math.round(
-                                    Number(
-                                        item.amount || 0
-                                    )
-                                )}
-                            </td>
-
-                            <td>
-                                ${item.quality || "-"}
-                            </td>
-
-                        `;
-
-                    }
+            }
 
 
-                    // =================================
-                    // ADDITIONAL PIECES
-                    // =================================
+            woodTable.appendChild(row);
 
-                    else {
-
-                        row.innerHTML = `
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td>
-                                ${lengthText}
-                            </td>
-
-                            <td>
-                                ${piece.qty || 0}
-                            </td>
-
-                            <td>
-                                ${Math.round(
-                                    Number(
-                                        piece.totalLength || 0
-                                    )
-                                )}
-                            </td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                        `;
-
-                    }
+        });
 
 
-                    woodTable.appendChild(
-                        row
-                    );
+        sno++;
 
-                }
-            );
-
-
-            sno++;
-
-        }
-    );
+    });
 
 }
 
 
 // =========================================
-// LOAD OTHER CHARGES
+// OTHER CHARGES
 // =========================================
 
+const chargeTable =
+    document.getElementById("chargeTable");
+
+
 let chargeSno = 1;
+
+let hasCharge = false;
 
 
 const labourCharge =
     Number(
-        localStorage.getItem(
-            "labourCharge"
-        )
+        localStorage.getItem("labourCharge")
     ) || 0;
 
 
 const otherCharge =
     Number(
-        localStorage.getItem(
-            "otherCharge"
-        )
+        localStorage.getItem("otherCharge")
     ) || 0;
 
 
 let othersData = [];
 
-
 try {
 
     othersData =
         JSON.parse(
-            localStorage.getItem(
-                "othersData"
-            )
+            localStorage.getItem("othersData")
         ) || [];
 
 }
-
 catch (error) {
 
     console.error(
@@ -744,11 +689,8 @@ catch (error) {
 }
 
 
-let hasCharge = false;
-
-
 // =========================================
-// LABOUR CHARGE
+// LABOUR
 // =========================================
 
 if (
@@ -758,35 +700,22 @@ if (
 
     hasCharge = true;
 
-
     const row =
-        document.createElement(
-            "tr"
-        );
-
+        document.createElement("tr");
 
     row.innerHTML = `
 
-        <td>
-            ${chargeSno++}
-        </td>
+        <td>${chargeSno++}</td>
+
+        <td>Labour Charge</td>
 
         <td>
-            Labour Charge
-        </td>
-
-        <td>
-            ₹ ${Math.round(
-                labourCharge
-            )}
+            ₹ ${labourCharge.toFixed(2)}
         </td>
 
     `;
 
-
-    chargeTable.appendChild(
-        row
-    );
+    chargeTable.appendChild(row);
 
 }
 
@@ -802,84 +731,56 @@ if (
 
     hasCharge = true;
 
-
     const row =
-        document.createElement(
-            "tr"
-        );
-
+        document.createElement("tr");
 
     row.innerHTML = `
 
-        <td>
-            ${chargeSno++}
-        </td>
+        <td>${chargeSno++}</td>
+
+        <td>Other Charge</td>
 
         <td>
-            Other Charge
-        </td>
-
-        <td>
-            ₹ ${Math.round(
-                otherCharge
-            )}
+            ₹ ${otherCharge.toFixed(2)}
         </td>
 
     `;
 
-
-    chargeTable.appendChild(
-        row
-    );
+    chargeTable.appendChild(row);
 
 }
 
 
 // =========================================
-// ADDITIONAL OTHER CHARGES
+// ADDITIONAL CHARGES
 // =========================================
 
 if (chargeTable) {
 
-    othersData.forEach(
-        function (item) {
+    othersData.forEach(function (item) {
 
-            hasCharge = true;
+        hasCharge = true;
 
+        const row =
+            document.createElement("tr");
 
-            const row =
-                document.createElement(
-                    "tr"
-                );
+        row.innerHTML = `
 
+            <td>${chargeSno++}</td>
 
-            row.innerHTML = `
+            <td>${item.name || "-"}</td>
 
-                <td>
-                    ${chargeSno++}
-                </td>
+            <td>
+                ₹ ${Number(
+                    item.amount || 0
+                ).toFixed(2)}
+            </td>
 
-                <td>
-                    ${item.name || "-"}
-                </td>
+        `;
 
-                <td>
-                    ₹ ${Math.round(
-                        Number(
-                            item.amount || 0
-                        )
-                    )}
-                </td>
+        chargeTable.appendChild(row);
 
-            `;
-
-
-            chargeTable.appendChild(
-                row
-            );
-
-        }
-    );
+    });
 
 }
 
@@ -894,46 +795,198 @@ if (
 ) {
 
     const row =
-        document.createElement(
-            "tr"
-        );
-
+        document.createElement("tr");
 
     row.innerHTML = `
 
         <td>-</td>
-
         <td>-</td>
-
         <td>-</td>
 
     `;
 
+    chargeTable.appendChild(row);
 
-    chargeTable.appendChild(
-        row
+}
+
+
+// =========================================
+// CFT SUMMARY
+// WOOD + QUALITY
+// =========================================
+
+const cftSummary = {};
+
+woodData.forEach(function (item) {
+
+    let woodName =
+        item.woodType || "Unknown";
+
+
+    if (
+        woodName === "Other"
+    ) {
+
+        woodName =
+            item.otherWood || "Other";
+
+    }
+
+
+    const quality =
+        item.quality || "1";
+
+
+    /*
+        IMPORTANT:
+
+        Teak + Quality 1
+        Teak + Quality 2
+
+        will be separate.
+
+        Example:
+
+        Teak (1)
+        Teak (2)
+    */
+
+    const groupName =
+        woodName + " (" + quality + ")";
+
+
+    const cft =
+        Number(
+            item.cubicFeet || 0
+        );
+
+
+    if (cftSummary[groupName]) {
+
+        cftSummary[groupName] += cft;
+
+    }
+    else {
+
+        cftSummary[groupName] = cft;
+
+    }
+
+});
+
+
+// =========================================
+// DISPLAY CFT SUMMARY
+// =========================================
+
+const cftDiv =
+    document.getElementById("cftSummary");
+
+
+if (cftDiv) {
+
+    cftDiv.innerHTML = "";
+
+
+    for (
+        const groupName in cftSummary
+    ) {
+
+        const p =
+            document.createElement("p");
+
+
+        p.innerHTML = `
+
+            <b>
+                ${groupName}
+            </b>
+
+            <span>
+                :
+                ${cftSummary[groupName].toFixed(2)}
+                CFT
+            </span>
+
+        `;
+
+
+        cftDiv.appendChild(p);
+
+    }
+
+}
+
+
+// =========================================
+// EDIT BILL
+// =========================================
+
+const editBtn =
+    document.getElementById("editBtn");
+
+
+if (editBtn) {
+
+    editBtn.addEventListener(
+        "click",
+        function () {
+
+            /*
+                IMPORTANT:
+
+                Do NOT clear localStorage here.
+
+                All previous wood values remain saved.
+
+                User can edit/add/remove calculations.
+            */
+
+            window.location.href =
+                "wood.html";
+
+        }
     );
 
 }
 
 
 // =========================================
-// PRINT BUTTON
+// CONFIRM BILL
 // =========================================
-// IMPORTANT:
-//
-// This is still the quotation page.
-// Keep the existing print functionality.
-//
-// Later we will change the CONFIRM page
-// Print button to open cbill.html.
-//
+
+const confirmBillBtn =
+    document.getElementById("confirmBill");
+
+
+if (confirmBillBtn) {
+
+    confirmBillBtn.addEventListener(
+        "click",
+        function () {
+
+            /*
+                Do NOT clear data here yet.
+
+                confirm.html will handle
+                final confirmation and database save.
+            */
+
+            window.location.href =
+                "../html/confirm.html";
+
+        }
+    );
+
+}
+
+
+// =========================================
+// PRINT
 // =========================================
 
 const printBtn =
-    document.getElementById(
-        "printBtn"
-    );
+    document.getElementById("printBtn");
 
 
 if (printBtn) {
@@ -951,19 +1004,11 @@ if (printBtn) {
 
 
 // =========================================
-// BACK BUTTON
+// BACK
 // =========================================
 
-const buttons =
-    document.querySelectorAll(
-        ".buttons button"
-    );
-
-
 const backBtn =
-    buttons.length > 0
-        ? buttons[buttons.length - 1]
-        : null;
+    document.getElementById("backBtn");
 
 
 if (backBtn) {
@@ -973,139 +1018,6 @@ if (backBtn) {
         function () {
 
             history.back();
-
-        }
-    );
-
-}
-
-
-// =========================================
-// PRINT CALLBACK
-// =========================================
-
-window.onafterprint =
-    function () {
-
-        console.log(
-            "Quotation Printed Successfully"
-        );
-
-    };
-
-
-// =========================================
-// CFT SUMMARY
-// =========================================
-
-const cftSummary = {};
-
-
-woodData.forEach(
-    function (item) {
-
-        let name =
-            item.woodType ||
-            "Unknown";
-
-
-        if (
-            name === "Other"
-        ) {
-
-            name =
-                item.otherWood ||
-                "Other";
-
-        }
-
-
-        const cft =
-            Number(
-                item.cubicFeet || 0
-            );
-
-
-        if (
-            cftSummary[name]
-        ) {
-
-            cftSummary[name] +=
-                cft;
-
-        }
-
-        else {
-
-            cftSummary[name] =
-                cft;
-
-        }
-
-    }
-);
-
-
-// =========================================
-// DISPLAY CFT SUMMARY
-// =========================================
-
-const cftDiv =
-    document.getElementById(
-        "cftSummary"
-    );
-
-
-if (cftDiv) {
-
-    cftDiv.innerHTML = "";
-
-
-    for (
-        const wood in cftSummary
-    ) {
-
-        cftDiv.innerHTML += `
-
-            <p>
-
-                <b>
-                    ${wood}
-                </b>
-
-                :
-
-                ${cftSummary[wood].toFixed(2)}
-
-                CFT
-
-            </p>
-
-        `;
-
-    }
-
-}
-
-
-// =========================================
-// CONFIRM BILL BUTTON
-// =========================================
-
-const confirmBillBtn =
-    document.getElementById(
-        "confirmBill"
-    );
-
-
-if (confirmBillBtn) {
-
-    confirmBillBtn.addEventListener(
-        "click",
-        function () {
-
-            window.location.href =
-                "../html/confirm.html";
 
         }
     );

@@ -1,251 +1,216 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 
-/* =======================================
-   VARIABLES
-======================================= */
-
-:root {
-
-    --walnut: #2b1c12;
-    --walnut-light: #4a2f1c;
-
-    --brass: #96652a;
-    --brass-light: #c99a4f;
-
-    --paper: #f7f3ea;
-    --paper-dark: #eee5d3;
-
-    --card: #ffffff;
-
-    --ink: #231710;
-    --ink-soft: #6b5a49;
-
-    --border: #dcd0ba;
-
-    --green: #008f5a;
-    --green-light: #e9f8f1;
-
-    --blue: #1769aa;
-    --blue-light: #eaf4ff;
-
-    --radius: 16px;
-
-}
-
-
-/* =======================================
+/* =========================================
    RESET
-======================================= */
+========================================= */
 
 * {
-
     margin: 0;
     padding: 0;
-
     box-sizing: border-box;
-
-    font-family: 'Inter', sans-serif;
-
+    font-family: 'Inter', Arial, sans-serif;
 }
 
 
-/* =======================================
+/* =========================================
    BODY
-======================================= */
+========================================= */
 
 body {
-
-    background:
-        linear-gradient(
-            135deg,
-            #f7f3ea,
-            #eee5d3
-        );
-
     min-height: 100vh;
 
+    background: #f7f3ea;
+
     display: flex;
-
     justify-content: center;
-
     align-items: flex-start;
 
     padding: 30px 15px;
-
 }
 
 
-/* =======================================
-   CONTAINER
-======================================= */
+/* =========================================
+   MAIN CONTAINER
+========================================= */
 
 .container {
-
     width: 100%;
-
     max-width: 470px;
-
 }
 
 
-/* =======================================
+/* =========================================
    CARD
-======================================= */
+========================================= */
 
 .card {
+    width: 100%;
 
-    background: white;
+    background: #ffffff;
 
     padding: 28px 24px;
 
     border-radius: 18px;
 
-    border: 1px solid var(--border);
+    border: 1px solid #dcd0ba;
 
-    border-top: 5px solid var(--brass);
+    border-top: 5px solid #96652a;
 
-    box-shadow:
-        0 10px 35px rgba(43,28,18,.13);
-
+    box-shadow: 0 8px 30px rgba(43, 28, 18, 0.12);
 }
 
 
-/* =======================================
+/* =========================================
    TITLE
-======================================= */
+========================================= */
 
 h1 {
-
     text-align: center;
-
-    color: var(--walnut);
 
     font-size: 24px;
 
     font-weight: 800;
 
-    margin-bottom: 22px;
+    color: #2b1c12;
 
+    margin-bottom: 20px;
 }
 
 
 hr {
+    border: 0;
 
-    border: none;
+    border-top: 1px solid #dcd0ba;
 
-    border-top: 1px solid var(--border);
-
-    margin-bottom: 22px;
-
+    margin-bottom: 20px;
 }
 
 
-/* =======================================
+/* =========================================
    NORMAL ROW
-======================================= */
+========================================= */
 
 .row {
-
     margin-bottom: 20px;
-
 }
 
 
 .row > label {
-
     display: block;
 
     font-size: 14px;
 
     font-weight: 700;
 
-    color: var(--ink);
+    color: #231710;
 
     margin-bottom: 8px;
-
 }
 
 
-/* =======================================
+/* =========================================
    INPUT
-======================================= */
+========================================= */
 
 input[type="text"],
 input[type="number"] {
-
     width: 100%;
 
     height: 52px;
 
     padding: 0 15px;
 
-    border: 2px solid var(--border);
+    background: #f7f3ea;
+
+    border: 2px solid #dcd0ba;
 
     border-radius: 10px;
 
-    background: var(--paper);
-
-    color: var(--ink);
+    color: #231710;
 
     font-size: 17px;
 
     font-weight: 600;
-
 }
 
 
-input:focus {
-
+input[type="text"]:focus,
+input[type="number"]:focus {
     outline: none;
 
-    border-color: var(--brass);
+    border-color: #96652a;
 
-    box-shadow:
-        0 0 0 4px rgba(150,101,42,.12);
-
+    box-shadow: 0 0 0 4px rgba(150, 101, 42, 0.12);
 }
 
 
-/* =======================================
+input::placeholder {
+    color: #a89a86;
+}
+
+
+/* =========================================
+   GRAND TOTAL
+========================================= */
+
+#grandTotal {
+    background: #f6ead2;
+
+    border-color: #c99a4f;
+
+    color: #2b1c12;
+
+    font-weight: 800;
+}
+
+
+/* =========================================
+   FINAL GRAND TOTAL
+========================================= */
+
+#finalGrandTotal {
+    background: #e9f8f1;
+
+    border-color: #008f5a;
+
+    color: #008f5a;
+
+    font-weight: 800;
+}
+
+
+/* =========================================
    PAYMENT SECTION
-======================================= */
+========================================= */
 
 .payment-section {
-
     margin-top: 25px;
 
+    margin-bottom: 25px;
 }
 
 
-/* =======================================
-   SECTION TITLE
-======================================= */
+/* =========================================
+   SECTION HEADER
+========================================= */
 
 .section-title {
-
     display: flex;
 
     align-items: center;
 
     gap: 12px;
 
-    margin-bottom: 13px;
-
+    margin-bottom: 14px;
 }
 
 
 .section-icon {
-
     width: 42px;
-
     height: 42px;
 
-    border-radius: 12px;
-
-    background: var(--walnut);
-
-    color: white;
+    flex-shrink: 0;
 
     display: flex;
 
@@ -253,77 +218,92 @@ input:focus {
 
     justify-content: center;
 
-    font-size: 20px;
+    border-radius: 12px;
 
+    background: #2b1c12;
+
+    color: white;
+
+    font-size: 20px;
 }
 
 
 .section-title h3 {
+    margin: 0;
 
-    font-size: 15px;
+    font-size: 16px;
 
-    color: var(--ink);
+    font-weight: 800;
 
-    margin-bottom: 3px;
-
+    color: #231710;
 }
 
 
 .section-title p {
+    margin: 3px 0 0;
 
     font-size: 11px;
 
-    color: var(--ink-soft);
-
+    color: #6b5a49;
 }
 
 
-/* =======================================
-   PAYMENT TYPE CARDS
-======================================= */
+/* =========================================
+   PAYMENT TYPE
+========================================= */
 
 .payment-cards {
-
     display: grid;
 
     grid-template-columns: 1fr 1fr;
 
     gap: 12px;
-
 }
 
+
+/* =========================================
+   PAYMENT TYPE CARD
+========================================= */
 
 .payment-card {
-
     position: relative;
 
-    cursor: pointer;
+    display: block;
 
+    cursor: pointer;
 }
 
 
-.payment-card input {
+/* Hide radio button */
 
+.payment-card input[type="radio"] {
     position: absolute;
 
     opacity: 0;
 
-    pointer-events: none;
+    width: 1px;
+    height: 1px;
 
+    pointer-events: none;
 }
 
 
-.card-content {
+/* =========================================
+   PAYMENT TYPE CONTENT
+========================================= */
 
-    min-height: 120px;
+.card-content {
+    position: relative;
+
+    min-height: 125px;
 
     padding: 15px;
 
-    border: 2px solid var(--border);
+    background: #ffffff;
+
+    border: 2px solid #dcd0ba;
 
     border-radius: 14px;
-
-    background: #fff;
 
     display: flex;
 
@@ -331,36 +311,28 @@ input:focus {
 
     justify-content: space-between;
 
-    position: relative;
-
-    transition: .2s ease;
-
+    transition: all 0.2s ease;
 }
 
 
 .payment-card:hover .card-content {
+    border-color: #96652a;
 
     transform: translateY(-2px);
 
-    border-color: var(--brass-light);
-
-    box-shadow:
-        0 5px 15px rgba(43,28,18,.10);
-
+    box-shadow: 0 5px 15px rgba(43, 28, 18, 0.10);
 }
 
 
-/* =======================================
+/* =========================================
    PAYMENT ICON
-======================================= */
+========================================= */
 
 .payment-icon {
+    width: 40px;
+    height: 40px;
 
-    width: 38px;
-
-    height: 38px;
-
-    border-radius: 10px;
+    border-radius: 11px;
 
     display: flex;
 
@@ -371,82 +343,69 @@ input:focus {
     font-size: 18px;
 
     font-weight: 800;
-
 }
 
 
-/* READY CASH */
+/* Ready Cash icon */
 
 .cash-icon {
-
     background: #edf0f2;
 
     color: #343a40;
-
 }
 
 
-/* ADVANCE */
+/* Advance icon */
 
 .advance-icon {
-
     background: #fff0df;
 
     color: #a85b00;
-
 }
 
 
-/* =======================================
-   PAYMENT INFO
-======================================= */
+/* =========================================
+   PAYMENT TEXT
+========================================= */
 
 .payment-info {
-
     display: flex;
 
     flex-direction: column;
 
-    margin-top: 10px;
+    gap: 3px;
 
+    margin-top: 10px;
 }
 
 
 .payment-info strong {
-
     font-size: 14px;
 
-    color: var(--ink);
-
+    color: #231710;
 }
 
 
 .payment-info span {
-
     font-size: 11px;
 
-    color: var(--ink-soft);
-
-    margin-top: 3px;
-
+    color: #6b5a49;
 }
 
 
-/* =======================================
+/* =========================================
    CHECK MARK
-======================================= */
+========================================= */
 
 .check-mark {
-
     position: absolute;
 
-    top: 10px;
+    top: 12px;
 
-    right: 10px;
+    right: 12px;
 
-    width: 23px;
-
-    height: 23px;
+    width: 24px;
+    height: 24px;
 
     border-radius: 50%;
 
@@ -463,128 +422,119 @@ input:focus {
     font-size: 13px;
 
     font-weight: 800;
-
 }
 
 
-/* =======================================
+/* =========================================
    READY CASH SELECTED
-======================================= */
+========================================= */
 
-.payment-card input[value="cash"]:checked
-~ .card-content {
+.payment-card input[value="cash"]:checked + .card-content {
+    background: #f1f3f5;
 
     border-color: #343a40;
 
-    background: #f1f3f5;
-
+    box-shadow: 0 4px 12px rgba(52, 58, 64, 0.12);
 }
 
 
-.payment-card input[value="cash"]:checked
-~ .card-content .cash-icon {
-
+.payment-card input[value="cash"]:checked + .card-content .cash-icon {
     background: #343a40;
 
     color: white;
-
 }
 
 
-.payment-card input[value="cash"]:checked
-~ .card-content .check-mark {
-
+.payment-card input[value="cash"]:checked + .card-content .check-mark {
     background: #343a40;
 
     color: white;
-
 }
 
 
-/* =======================================
+/* =========================================
    ADVANCE SELECTED
-======================================= */
+========================================= */
 
-.payment-card input[value="advance"]:checked
-~ .card-content {
+.payment-card input[value="advance"]:checked + .card-content {
+    background: #fff7ed;
 
     border-color: #a85b00;
 
-    background: #fff7ed;
-
+    box-shadow: 0 4px 12px rgba(168, 91, 0, 0.12);
 }
 
 
-.payment-card input[value="advance"]:checked
-~ .card-content .advance-icon {
-
+.payment-card input[value="advance"]:checked + .card-content .advance-icon {
     background: #a85b00;
 
     color: white;
-
 }
 
 
-.payment-card input[value="advance"]:checked
-~ .card-content .check-mark {
-
+.payment-card input[value="advance"]:checked + .card-content .check-mark {
     background: #a85b00;
 
     color: white;
-
 }
 
 
-/* =======================================
+/* =========================================
    PAYMENT MODE
-======================================= */
+========================================= */
 
 .mode-cards {
-
     display: flex;
 
     flex-direction: column;
 
-    gap: 10px;
-
+    gap: 11px;
 }
 
 
-/* =======================================
+/* =========================================
    MODE CARD
-======================================= */
+========================================= */
 
 .mode-card {
-
     position: relative;
 
-    cursor: pointer;
+    display: block;
 
+    cursor: pointer;
 }
 
 
-.mode-card input {
-
+.mode-card input[type="radio"] {
     position: absolute;
 
     opacity: 0;
 
-    pointer-events: none;
+    width: 1px;
+    height: 1px;
 
+    pointer-events: none;
 }
 
 
-.mode-content {
+/* =========================================
+   MODE CONTENT
+========================================= */
 
-    min-height: 72px;
+.mode-content {
+    position: relative;
+
+    width: 100%;
+
+    min-height: 76px;
 
     padding: 12px 15px;
 
-    border: 2px solid var(--border);
+    background: #ffffff;
+
+    border: 2px solid #dcd0ba;
 
     border-radius: 13px;
-
-    background: white;
 
     display: flex;
 
@@ -592,31 +542,24 @@ input:focus {
 
     gap: 13px;
 
-    position: relative;
-
-    transition: .2s ease;
-
+    transition: all 0.2s ease;
 }
 
 
 .mode-card:hover .mode-content {
+    border-color: #96652a;
 
     transform: translateX(2px);
-
-    border-color: var(--brass-light);
-
 }
 
 
-/* =======================================
+/* =========================================
    MODE ICON
-======================================= */
+========================================= */
 
 .mode-icon {
-
-    width: 45px;
-
-    height: 45px;
+    width: 46px;
+    height: 46px;
 
     flex-shrink: 0;
 
@@ -628,82 +571,69 @@ input:focus {
 
     justify-content: center;
 
-    font-size: 17px;
+    font-size: 18px;
 
     font-weight: 800;
-
 }
 
 
-/* CASH */
+/* Cash */
 
 .cash-mode {
-
     background: #e9f8f1;
 
-    color: var(--green);
-
+    color: #008f5a;
 }
 
 
 /* UPI */
 
 .upi-mode {
+    background: #eaf4ff;
 
-    background: var(--blue-light);
-
-    color: var(--blue);
+    color: #1769aa;
 
     font-size: 13px;
-
 }
 
 
-/* =======================================
+/* =========================================
    MODE TEXT
-======================================= */
+========================================= */
 
 .mode-info {
-
     display: flex;
 
     flex-direction: column;
 
+    gap: 3px;
 }
 
 
 .mode-info strong {
-
     font-size: 15px;
 
-    color: var(--ink);
-
+    color: #231710;
 }
 
 
 .mode-info span {
-
     font-size: 11px;
 
-    color: var(--ink-soft);
-
-    margin-top: 3px;
-
+    color: #6b5a49;
 }
 
 
-/* =======================================
+/* =========================================
    MODE CHECK
-======================================= */
+========================================= */
 
 .mode-check {
-
     position: absolute;
 
     right: 15px;
 
     width: 25px;
-
     height: 25px;
 
     border-radius: 50%;
@@ -714,111 +644,88 @@ input:focus {
 
     justify-content: center;
 
-    color: transparent;
-
     background: transparent;
 
+    color: transparent;
+
+    font-size: 13px;
+
     font-weight: 800;
-
 }
 
 
-/* =======================================
+/* =========================================
    CASH SELECTED
-======================================= */
+========================================= */
 
-.mode-card input[value="cash"]:checked
-~ .mode-content {
+.mode-card input[value="cash"]:checked + .mode-content {
+    background: #e9f8f1;
 
-    border-color: var(--green);
+    border-color: #008f5a;
 
-    background: var(--green-light);
-
+    box-shadow: 0 4px 12px rgba(0, 143, 90, 0.12);
 }
 
 
-.mode-card input[value="cash"]:checked
-~ .mode-content .cash-mode {
-
-    background: var(--green);
+.mode-card input[value="cash"]:checked + .mode-content .cash-mode {
+    background: #008f5a;
 
     color: white;
-
 }
 
 
-.mode-card input[value="cash"]:checked
-~ .mode-content .mode-check {
-
-    background: var(--green);
+.mode-card input[value="cash"]:checked + .mode-content .mode-check {
+    background: #008f5a;
 
     color: white;
-
 }
 
 
-/* =======================================
+/* =========================================
    UPI SELECTED
-======================================= */
+========================================= */
 
-.mode-card input[value="upi"]:checked
-~ .mode-content {
+.mode-card input[value="upi"]:checked + .mode-content {
+    background: #eaf4ff;
 
-    border-color: var(--blue);
+    border-color: #1769aa;
 
-    background: var(--blue-light);
-
+    box-shadow: 0 4px 12px rgba(23, 105, 170, 0.12);
 }
 
 
-.mode-card input[value="upi"]:checked
-~ .mode-content .upi-mode {
-
-    background: var(--blue);
+.mode-card input[value="upi"]:checked + .mode-content .upi-mode {
+    background: #1769aa;
 
     color: white;
-
 }
 
 
-.mode-card input[value="upi"]:checked
-~ .mode-content .mode-check {
-
-    background: var(--blue);
+.mode-card input[value="upi"]:checked + .mode-content .mode-check {
+    background: #1769aa;
 
     color: white;
-
 }
 
 
-/* =======================================
+/* =========================================
    ADVANCE SECTION
-======================================= */
+========================================= */
 
 #advanceSection {
-
     margin-top: 20px;
 
     padding-top: 18px;
 
-    border-top: 1px dashed var(--border);
-
+    border-top: 1px dashed #dcd0ba;
 }
 
 
-/* =======================================
-   BUTTONS
-======================================= */
+/* =========================================
+   CALCULATE BUTTON
+========================================= */
 
-.buttonRow {
-
-    margin-top: 20px;
-
-}
-
-
-button {
-
+#calculateBtn {
     width: 100%;
 
     height: 52px;
@@ -827,108 +734,110 @@ button {
 
     border-radius: 11px;
 
+    background: #96652a;
+
+    color: white;
+
     font-size: 16px;
 
     font-weight: 700;
 
     cursor: pointer;
-
-}
-
-
-/* =======================================
-   CALCULATE
-======================================= */
-
-#calculateBtn {
-
-    background: var(--brass);
-
-    color: white;
-
 }
 
 
 #calculateBtn:hover {
-
-    background: var(--brass-light);
-
+    background: #7c511f;
 }
 
 
-/* =======================================
-   NEXT
-======================================= */
+/* =========================================
+   NEXT BUTTON
+========================================= */
 
 #nextBtn {
+    width: 100%;
 
-    margin-top: 5px;
+    height: 52px;
 
-    background: var(--green);
+    margin-top: 8px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #008f5a;
 
     color: white;
 
     font-size: 17px;
 
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
 
 #nextBtn:hover {
-
     background: #006f46;
-
 }
 
 
-/* =======================================
-   BACK
-======================================= */
+/* =========================================
+   BACK BUTTON
+========================================= */
 
 .button-container {
-
     display: flex;
 
     justify-content: center;
 
     margin-top: 20px;
-
 }
 
 
 #backBtn {
-
     width: 140px;
+
+    height: 50px;
+
+    border: none;
+
+    border-radius: 9px;
 
     background: #343a40;
 
     color: white;
 
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
 
 #backBtn:hover {
-
     background: #23272b;
-
 }
 
 
-/* =======================================
+/* =========================================
    MOBILE
-======================================= */
+========================================= */
 
-@media(max-width:420px) {
+@media (max-width: 430px) {
+
+    body {
+        padding: 15px 10px;
+    }
 
     .card {
-
         padding: 22px 16px;
-
     }
 
     .payment-cards {
-
         grid-template-columns: 1fr;
-
     }
 
 }

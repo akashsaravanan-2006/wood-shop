@@ -5,11 +5,13 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Advance Payment</title>
 
-    <link rel="stylesheet" href="../css/advance.css">
+    <link rel="stylesheet"
+          href="../css/advance.css">
 
 </head>
 
@@ -35,47 +37,7 @@
             <input
                 type="text"
                 id="grandTotal"
-                readonly
-            >
-
-        </div>
-
-
-        <!-- =========================================
-             DISCOUNT
-        ========================================== -->
-
-        <div class="row">
-
-            <label>
-                Discount Amount
-                <span class="optional">(Optional)</span>
-            </label>
-
-            <input
-                type="number"
-                id="discountAmount"
-                min="0"
-                step="1"
-                placeholder="Enter Discount Amount"
-            >
-
-        </div>
-
-
-        <!-- =========================================
-             FINAL GRAND TOTAL
-        ========================================== -->
-
-        <div class="row">
-
-            <label>Final Grand Total</label>
-
-            <input
-                type="text"
-                id="finalGrandTotal"
-                readonly
-            >
+                readonly>
 
         </div>
 
@@ -97,6 +59,7 @@
 
             <div class="payment-cards">
 
+
                 <!-- READY CASH -->
 
                 <label class="payment-card">
@@ -105,8 +68,7 @@
                         type="radio"
                         name="paymentType"
                         value="cash"
-                        checked
-                    >
+                        checked>
 
                     <div class="card-content">
 
@@ -118,7 +80,9 @@
 
                             <strong>Ready Cash</strong>
 
-                            <span>Full payment now</span>
+                            <span>
+                                Full payment now
+                            </span>
 
                         </div>
 
@@ -138,8 +102,7 @@
                     <input
                         type="radio"
                         name="paymentType"
-                        value="advance"
-                    >
+                        value="advance">
 
                     <div class="card-content">
 
@@ -151,7 +114,9 @@
 
                             <strong>Advance</strong>
 
-                            <span>Pay partially now</span>
+                            <span>
+                                Pay partially now
+                            </span>
 
                         </div>
 
@@ -185,6 +150,7 @@
 
             <div class="mode-cards">
 
+
                 <!-- CASH -->
 
                 <label class="mode-card">
@@ -193,8 +159,7 @@
                         type="radio"
                         name="paymentMode"
                         value="cash"
-                        checked
-                    >
+                        checked>
 
                     <div class="mode-content">
 
@@ -206,7 +171,9 @@
 
                             <strong>Cash</strong>
 
-                            <span>Physical payment</span>
+                            <span>
+                                Physical payment
+                            </span>
 
                         </div>
 
@@ -226,8 +193,7 @@
                     <input
                         type="radio"
                         name="paymentMode"
-                        value="upi"
-                    >
+                        value="upi">
 
                     <div class="mode-content">
 
@@ -239,7 +205,9 @@
 
                             <strong>UPI</strong>
 
-                            <span>Digital payment</span>
+                            <span>
+                                Digital payment
+                            </span>
 
                         </div>
 
@@ -258,46 +226,55 @@
 
         <!-- =========================================
              ADVANCE SECTION
-             ONLY SHOW WHEN ADVANCE SELECTED
+             ONLY SHOW FOR ADVANCE PAYMENT
         ========================================== -->
 
         <div id="advanceSection">
 
+            <!-- ADVANCE AMOUNT -->
+
             <div class="row">
 
-                <label>Advance Amount</label>
+                <label>
+                    Advance Amount
+                </label>
 
                 <input
                     type="number"
                     id="advanceAmount"
                     min="0"
                     step="1"
-                    placeholder="Enter Advance Amount"
-                >
+                    placeholder="Enter Advance Amount">
 
             </div>
 
 
+            <!-- BALANCE AMOUNT -->
+
             <div class="row">
 
-                <label>Balance Amount</label>
+                <label>
+                    Balance Amount
+                </label>
 
                 <input
                     type="text"
                     id="balanceAmount"
-                    readonly
-                >
+                    readonly>
 
             </div>
 
+
+            <!-- CALCULATE -->
 
             <div class="buttonRow">
 
                 <button
                     type="button"
-                    id="calculateBtn"
-                >
+                    id="calculateBtn">
+
                     Calculate Balance
+
                 </button>
 
             </div>
@@ -306,32 +283,34 @@
 
 
         <!-- =========================================
-             NEXT
+             NEXT BUTTON
         ========================================== -->
 
-        <div class="buttonRow">
+        <div class="buttonRow next-row">
 
             <button
                 type="button"
-                id="nextBtn"
-            >
+                id="nextBtn">
+
                 Next
+
             </button>
 
         </div>
 
 
         <!-- =========================================
-             BACK
+             BACK BUTTON
         ========================================== -->
 
         <div class="button-container">
 
             <button
                 type="button"
-                id="backBtn"
-            >
+                id="backBtn">
+
                 Back
+
             </button>
 
         </div>

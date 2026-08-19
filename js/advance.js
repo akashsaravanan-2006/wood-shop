@@ -564,8 +564,11 @@ if (nextBtn) {
             // GO TO DISCOUNT PAGE
             // =====================================
 
-            window.location.href =
-                "discount.html";
+            // =====================================
+// GO TO DISCOUNT PAGE
+// =====================================
+
+window.location.assign("./discount.html");
 
         }
     );

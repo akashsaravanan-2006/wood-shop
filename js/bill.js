@@ -1,6 +1,6 @@
 // =========================================
 // BILL.JS
-// QUOTATION / BILL PREVIEW PAGE
+// WOOD BILL / BILL PREVIEW
 // =========================================
 
 
@@ -31,6 +31,7 @@ const billDayTimeElement =
 
 let savedDate =
     localStorage.getItem("billDate");
+
 
 const days = [
     "Sunday",
@@ -71,6 +72,7 @@ if (billDateElement) {
 
 
 const now = new Date();
+
 
 if (billDayTimeElement) {
 
@@ -154,15 +156,49 @@ const subtotal =
 
 // =========================================
 // DISCOUNT
+// IMPORTANT:
+// Declare discount BEFORE using it
 // =========================================
 
-if (discount > 0) {
-    discountRow.style.display = "flex";
+const discount =
+    Number(
+        localStorage.getItem("discountAmount")
+    ) || 0;
 
-    discountElement.textContent =
-        "- ₹ " + Math.round(discount);
-} else {
-    discountRow.style.display = "none";
+
+const discountRow =
+    document.getElementById("discountRow");
+
+
+const discountElement =
+    document.getElementById("discountAmount");
+
+
+if (discount > 0) {
+
+    if (discountRow) {
+
+        discountRow.style.display = "flex";
+
+    }
+
+
+    if (discountElement) {
+
+        discountElement.textContent =
+            "- ₹ " + Math.round(discount);
+
+    }
+
+}
+else {
+
+    if (discountRow) {
+
+        discountRow.style.display = "none";
+
+    }
+
 }
 
 
@@ -181,7 +217,9 @@ let finalGrandTotal =
     calculate it here.
 */
 
-if (isNaN(finalGrandTotal)) {
+if (
+    !Number.isFinite(finalGrandTotal)
+) {
 
     finalGrandTotal =
         Math.max(
@@ -190,6 +228,13 @@ if (isNaN(finalGrandTotal)) {
         );
 
 }
+
+
+// Save final total again
+localStorage.setItem(
+    "finalTotal",
+    finalGrandTotal
+);
 
 
 // =========================================
@@ -219,10 +264,11 @@ const balanceAmount =
 const woodTotalElement =
     document.getElementById("woodTotal");
 
+
 if (woodTotalElement) {
 
     woodTotalElement.textContent =
-    "₹ " + Math.round(woodTotal);
+        "₹ " + Math.round(woodTotal);
 
 }
 
@@ -234,61 +280,28 @@ if (woodTotalElement) {
 const othersTotalElement =
     document.getElementById("othersTotal");
 
+
 if (othersTotalElement) {
 
     othersTotalElement.textContent =
-    "₹ " + Math.round(othersTotal);
+        "₹ " + Math.round(othersTotal);
 
 }
 
 
 // =========================================
 // DISPLAY SUBTOTAL
+// Only works if #subtotal exists
 // =========================================
 
 const subtotalElement =
     document.getElementById("subtotal");
 
+
 if (subtotalElement) {
 
     subtotalElement.textContent =
-    "₹ " + Math.round(subtotal);
-}
-
-
-// =========================================
-// DISPLAY DISCOUNT
-// =========================================
-
-const discountRow =
-    document.getElementById("discountRow");
-
-const discountElement =
-    document.getElementById("discountAmount");
-
-
-if (discount > 0) {
-
-    if (discountRow) {
-
-        discountRow.style.display = "flex";
-
-    }
-
-    if (discountElement) {
-
-        discountElement.textContent =
-            "- ₹ " + discount.toFixed(2);
-
-    }
-
-} else {
-
-    if (discountRow) {
-
-        discountRow.style.display = "none";
-
-    }
+        "₹ " + Math.round(subtotal);
 
 }
 
@@ -300,10 +313,12 @@ if (discount > 0) {
 const grandTotalElement =
     document.getElementById("grandTotal");
 
+
 if (grandTotalElement) {
 
     grandTotalElement.textContent =
-    "₹ " + Math.round(finalGrandTotal);
+        "₹ " + Math.round(finalGrandTotal);
+
 }
 
 
@@ -313,6 +328,7 @@ if (grandTotalElement) {
 
 const advanceRow =
     document.getElementById("advanceRow");
+
 
 const advanceElement =
     document.getElementById("advanceAmount");
@@ -324,7 +340,8 @@ const paymentType =
 
 if (
     paymentType === "advance"
-    && advanceAmount > 0
+    &&
+    advanceAmount > 0
 ) {
 
     if (advanceRow) {
@@ -333,14 +350,16 @@ if (
 
     }
 
+
     if (advanceElement) {
 
         advanceElement.textContent =
-    "₹ " + Math.round(advanceAmount);
+            "₹ " + Math.round(advanceAmount);
 
     }
 
-} else {
+}
+else {
 
     if (advanceRow) {
 
@@ -362,6 +381,7 @@ const paymentMode =
 const paymentModeRow =
     document.getElementById("paymentModeRow");
 
+
 const paymentModeElement =
     document.getElementById("paymentMode");
 
@@ -374,10 +394,20 @@ if (paymentMode) {
 
     }
 
+
     if (paymentModeElement) {
 
         paymentModeElement.textContent =
             paymentMode.toUpperCase();
+
+    }
+
+}
+else {
+
+    if (paymentModeRow) {
+
+        paymentModeRow.style.display = "none";
 
     }
 
@@ -391,10 +421,11 @@ if (paymentMode) {
 const balanceElement =
     document.getElementById("balanceAmount");
 
+
 if (balanceElement) {
 
     balanceElement.textContent =
-    "₹ " + Math.round(balanceAmount);
+        "₹ " + Math.round(balanceAmount);
 
 }
 
@@ -404,6 +435,7 @@ if (balanceElement) {
 // =========================================
 
 let woodData = [];
+
 
 try {
 
@@ -440,9 +472,19 @@ if (woodTable) {
 
     woodData.forEach(function (item) {
 
-        /*
-            If there are no pieces
-        */
+        // =====================================
+        // WOOD NAME
+        // =====================================
+
+        const woodName =
+            item.woodType === "Other"
+                ? item.otherWood || "-"
+                : item.woodType || "-";
+
+
+        // =====================================
+        // NO PIECES
+        // =====================================
 
         if (
             !item.pieces ||
@@ -452,17 +494,16 @@ if (woodTable) {
             const row =
                 document.createElement("tr");
 
-            const woodName =
-                item.woodType === "Other"
-                    ? item.otherWood || "-"
-                    : item.woodType || "-";
-
 
             row.innerHTML = `
 
-                <td>${sno}</td>
+                <td>
+                    ${sno}
+                </td>
 
-                <td>${woodName}</td>
+                <td>
+                    ${woodName}
+                </td>
 
                 <td>
                     ${item.breadth || "-"}
@@ -470,24 +511,36 @@ if (woodTable) {
                     ${item.thickness || "-"}
                 </td>
 
-                <td>-</td>
-
-                <td>-</td>
-
                 <td>
-                    ${Number(item.totalLength || 0).toFixed(2)}
+                    -
                 </td>
 
                 <td>
-                    ${Number(item.cubicFeet || 0).toFixed(2)}
+                    -
                 </td>
 
                 <td>
-                    ₹ ${Number(item.rate || 0).toFixed(2)}
+                    ${Number(
+                        item.totalLength || 0
+                    ).toFixed(2)}
                 </td>
 
                 <td>
-                    ₹ ${Number(item.amount || 0).toFixed(2)}
+                    ${Number(
+                        item.cubicFeet || 0
+                    ).toFixed(2)}
+                </td>
+
+                <td>
+                    ₹ ${Math.round(
+                        Number(item.rate || 0)
+                    )}
+                </td>
+
+                <td>
+                    ₹ ${Math.round(
+                        Number(item.amount || 0)
+                    )}
                 </td>
 
                 <td>
@@ -496,11 +549,13 @@ if (woodTable) {
 
             `;
 
+
             woodTable.appendChild(row);
 
             sno++;
 
             return;
+
         }
 
 
@@ -508,133 +563,133 @@ if (woodTable) {
         // PIECES
         // =====================================
 
-        item.pieces.forEach(function (piece, index) {
+        item.pieces.forEach(
+            function (piece, index) {
 
-            const row =
-                document.createElement("tr");
-
-
-            const length =
-                Number(piece.length) || 0;
+                const row =
+                    document.createElement("tr");
 
 
-            const extraLength =
-                Number(piece.extraLength) || 0;
+                const length =
+                    Number(piece.length) || 0;
 
 
-            const lengthText =
-                length + extraLength;
+                const extraLength =
+                    Number(piece.extraLength) || 0;
 
 
-            const woodName =
-                item.woodType === "Other"
-                    ? item.otherWood || "-"
-                    : item.woodType || "-";
+                const lengthText =
+                    length + extraLength;
 
 
-            // =================================
-            // FIRST PIECE
-            // =================================
+                // =================================
+                // FIRST PIECE
+                // =================================
 
-            if (index === 0) {
+                if (index === 0) {
 
-                row.innerHTML = `
+                    row.innerHTML = `
 
-                    <td>${sno}</td>
+                        <td>
+                            ${sno}
+                        </td>
 
-                    <td>${woodName}</td>
+                        <td>
+                            ${woodName}
+                        </td>
 
-                    <td>
-                        ${item.breadth || "-"}
-                        ×
-                        ${item.thickness || "-"}
-                    </td>
+                        <td>
+                            ${item.breadth || "-"}
+                            ×
+                            ${item.thickness || "-"}
+                        </td>
 
-                    <td>
-                        ${lengthText}
-                    </td>
+                        <td>
+                            ${lengthText}
+                        </td>
 
-                    <td>
-                        ${piece.qty || 0}
-                    </td>
+                        <td>
+                            ${piece.qty || 0}
+                        </td>
 
-                    <td>
-                        ${Number(
-                            piece.totalLength || 0
-                        ).toFixed(2)}
-                    </td>
+                        <td>
+                            ${Number(
+                                piece.totalLength || 0
+                            ).toFixed(2)}
+                        </td>
 
-                    <td>
-                        ${Number(
-                            item.cubicFeet || 0
-                        ).toFixed(2)}
-                    </td>
+                        <td>
+                            ${Number(
+                                item.cubicFeet || 0
+                            ).toFixed(2)}
+                        </td>
 
-                    <td>
-                        ₹ ${Number(
-                            item.rate || 0
-                        ).toFixed(2)}
-                    </td>
+                        <td>
+                            ₹ ${Math.round(
+                                Number(item.rate || 0)
+                            )}
+                        </td>
 
-                    <td>
-                        ₹ ${Number(
-                            item.amount || 0
-                        ).toFixed(2)}
-                    </td>
+                        <td>
+                            ₹ ${Math.round(
+                                Number(item.amount || 0)
+                            )}
+                        </td>
 
-                    <td>
-                        ${item.quality || "-"}
-                    </td>
+                        <td>
+                            ${item.quality || "-"}
+                        </td>
 
-                `;
+                    `;
+
+                }
+
+
+                // =================================
+                // ADDITIONAL PIECES
+                // =================================
+
+                else {
+
+                    row.innerHTML = `
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td>
+                            ${lengthText}
+                        </td>
+
+                        <td>
+                            ${piece.qty || 0}
+                        </td>
+
+                        <td>
+                            ${Number(
+                                piece.totalLength || 0
+                            ).toFixed(2)}
+                        </td>
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                    `;
+
+                }
+
+
+                woodTable.appendChild(row);
 
             }
-
-
-            // =================================
-            // ADDITIONAL PIECES
-            // =================================
-
-            else {
-
-                row.innerHTML = `
-
-                    <td></td>
-
-                    <td></td>
-
-                    <td></td>
-
-                    <td>
-                        ${lengthText}
-                    </td>
-
-                    <td>
-                        ${piece.qty || 0}
-                    </td>
-
-                    <td>
-                        ${Number(
-                            piece.totalLength || 0
-                        ).toFixed(2)}
-                    </td>
-
-                    <td></td>
-
-                    <td></td>
-
-                    <td></td>
-
-                    <td></td>
-
-                `;
-
-            }
-
-
-            woodTable.appendChild(row);
-
-        });
+        );
 
 
         sno++;
@@ -657,11 +712,19 @@ let chargeSno = 1;
 let hasCharge = false;
 
 
+// =========================================
+// LABOUR CHARGE
+// =========================================
+
 const labourCharge =
     Number(
         localStorage.getItem("labourCharge")
     ) || 0;
 
+
+// =========================================
+// OTHER CHARGE
+// =========================================
 
 const otherCharge =
     Number(
@@ -669,7 +732,12 @@ const otherCharge =
     ) || 0;
 
 
+// =========================================
+// ADDITIONAL CHARGES
+// =========================================
+
 let othersData = [];
+
 
 try {
 
@@ -702,20 +770,27 @@ if (
 
     hasCharge = true;
 
+
     const row =
         document.createElement("tr");
 
+
     row.innerHTML = `
 
-        <td>${chargeSno++}</td>
-
-        <td>Labour Charge</td>
+        <td>
+            ${chargeSno++}
+        </td>
 
         <td>
-            ₹ ${labourCharge.toFixed(2)}
+            Labour Charge
+        </td>
+
+        <td>
+            ₹ ${Math.round(labourCharge)}
         </td>
 
     `;
+
 
     chargeTable.appendChild(row);
 
@@ -733,20 +808,27 @@ if (
 
     hasCharge = true;
 
+
     const row =
         document.createElement("tr");
 
+
     row.innerHTML = `
 
-        <td>${chargeSno++}</td>
-
-        <td>Other Charge</td>
+        <td>
+            ${chargeSno++}
+        </td>
 
         <td>
-            ₹ ${otherCharge.toFixed(2)}
+            Other Charge
+        </td>
+
+        <td>
+            ₹ ${Math.round(otherCharge)}
         </td>
 
     `;
+
 
     chargeTable.appendChild(row);
 
@@ -759,30 +841,39 @@ if (
 
 if (chargeTable) {
 
-    othersData.forEach(function (item) {
+    othersData.forEach(
+        function (item) {
 
-        hasCharge = true;
+            hasCharge = true;
 
-        const row =
-            document.createElement("tr");
 
-        row.innerHTML = `
+            const row =
+                document.createElement("tr");
 
-            <td>${chargeSno++}</td>
 
-            <td>${item.name || "-"}</td>
+            row.innerHTML = `
 
-            <td>
-                ₹ ${Number(
-                    item.amount || 0
-                ).toFixed(2)}
-            </td>
+                <td>
+                    ${chargeSno++}
+                </td>
 
-        `;
+                <td>
+                    ${item.name || "-"}
+                </td>
 
-        chargeTable.appendChild(row);
+                <td>
+                    ₹ ${Math.round(
+                        Number(item.amount || 0)
+                    )}
+                </td>
 
-    });
+            `;
+
+
+            chargeTable.appendChild(row);
+
+        }
+    );
 
 }
 
@@ -799,13 +890,17 @@ if (
     const row =
         document.createElement("tr");
 
+
     row.innerHTML = `
 
         <td>-</td>
+
         <td>-</td>
+
         <td>-</td>
 
     `;
+
 
     chargeTable.appendChild(row);
 
@@ -814,67 +909,72 @@ if (
 
 // =========================================
 // CFT SUMMARY
-// WOOD + QUALITY
+// GROUP BY WOOD + QUALITY
+//
+// Example:
+//
+// Teak (1) : 20.50 CFT
+// Teak (2) : 15.25 CFT
+// Neem (1) : 10.00 CFT
 // =========================================
 
 const cftSummary = {};
 
-woodData.forEach(function (item) {
 
-    let woodName =
-        item.woodType || "Unknown";
+woodData.forEach(
+    function (item) {
+
+        let woodName =
+            item.woodType || "Unknown";
 
 
-    if (
-        woodName === "Other"
-    ) {
+        // Other wood
+        if (
+            woodName === "Other"
+        ) {
 
-        woodName =
-            item.otherWood || "Other";
+            woodName =
+                item.otherWood || "Other";
+
+        }
+
+
+        const quality =
+            item.quality || "1";
+
+
+        // =====================================
+        // GROUP NAME
+        // =====================================
+
+        const groupName =
+            woodName +
+            " (" +
+            quality +
+            ")";
+
+
+        const cft =
+            Number(
+                item.cubicFeet || 0
+            );
+
+
+        if (
+            cftSummary[groupName]
+        ) {
+
+            cftSummary[groupName] += cft;
+
+        }
+        else {
+
+            cftSummary[groupName] = cft;
+
+        }
 
     }
-
-
-    const quality =
-        item.quality || "1";
-
-
-    /*
-        IMPORTANT:
-
-        Teak + Quality 1
-        Teak + Quality 2
-
-        will be separate.
-
-        Example:
-
-        Teak (1)
-        Teak (2)
-    */
-
-    const groupName =
-        woodName + " (" + quality + ")";
-
-
-    const cft =
-        Number(
-            item.cubicFeet || 0
-        );
-
-
-    if (cftSummary[groupName]) {
-
-        cftSummary[groupName] += cft;
-
-    }
-    else {
-
-        cftSummary[groupName] = cft;
-
-    }
-
-});
+);
 
 
 // =========================================
@@ -937,11 +1037,12 @@ if (editBtn) {
             /*
                 IMPORTANT:
 
-                Do NOT clear localStorage here.
+                Do NOT clear localStorage.
 
-                All previous wood values remain saved.
+                Previous wood values remain saved.
 
-                User can edit/add/remove calculations.
+                User can go back to wood page
+                and edit/add/remove calculations.
             */
 
             window.location.href =
@@ -968,9 +1069,9 @@ if (confirmBillBtn) {
         function () {
 
             /*
-                Do NOT clear data here yet.
+                Do NOT clear localStorage here.
 
-                confirm.html will handle
+                confirm.html should handle
                 final confirmation and database save.
             */
 
@@ -984,7 +1085,7 @@ if (confirmBillBtn) {
 
 
 // =========================================
-// PRINT
+// PRINT BILL
 // =========================================
 
 const printBtn =
@@ -1006,7 +1107,7 @@ if (printBtn) {
 
 
 // =========================================
-// BACK
+// BACK BUTTON
 // =========================================
 
 const backBtn =

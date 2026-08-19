@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-
     --walnut: #2b1c12;
     --walnut-light: #4a2f1c;
 
@@ -10,8 +9,6 @@
     --brass-dim: #f6ead2;
 
     --paper: #f7f3ea;
-    --paper-dim: #eee5d3;
-
     --card: #ffffff;
 
     --ink: #231710;
@@ -20,6 +17,9 @@
     --border: #dcd0ba;
 
     --success: #2f7a4f;
+
+    --blue: #1769aa;
+    --blue-light: #e8f3ff;
 
     --radius: 16px;
     --radius-sm: 10px;
@@ -33,16 +33,13 @@
 ======================================= */
 
 * {
-
     margin: 0;
     padding: 0;
-
     box-sizing: border-box;
 
     font-family: 'Inter', sans-serif;
 
     -webkit-tap-highlight-color: transparent;
-
 }
 
 
@@ -51,7 +48,6 @@
 ======================================= */
 
 body {
-
     background: var(--paper);
 
     min-height: 100vh;
@@ -63,7 +59,6 @@ body {
     justify-content: center;
 
     padding: 32px 16px;
-
 }
 
 
@@ -72,11 +67,8 @@ body {
 ======================================= */
 
 .container {
-
     width: 100%;
-
     max-width: 460px;
-
 }
 
 
@@ -85,7 +77,6 @@ body {
 ======================================= */
 
 .card {
-
     background: var(--card);
 
     border-radius: var(--radius);
@@ -98,7 +89,6 @@ body {
     border: 1px solid var(--border);
 
     border-top: 4px solid var(--brass);
-
 }
 
 
@@ -107,7 +97,6 @@ body {
 ======================================= */
 
 h1 {
-
     font-size: 22px;
 
     font-weight: 800;
@@ -117,7 +106,6 @@ h1 {
     text-align: center;
 
     margin-bottom: 22px;
-
 }
 
 
@@ -126,24 +114,20 @@ h1 {
 ======================================= */
 
 .row {
-
     margin-bottom: 20px;
-
 }
 
 
 .row > label {
-
     display: block;
 
     font-size: 14.5px;
 
-    font-weight: 600;
+    font-weight: 700;
 
     color: var(--ink);
 
     margin-bottom: 8px;
-
 }
 
 
@@ -152,13 +136,11 @@ h1 {
 ======================================= */
 
 .optional {
-
     font-size: 12px;
 
     font-weight: 400;
 
     color: #888;
-
 }
 
 
@@ -168,7 +150,6 @@ h1 {
 
 input[type="text"],
 input[type="number"] {
-
     width: 100%;
 
     height: var(--tap);
@@ -190,28 +171,23 @@ input[type="number"] {
     transition:
         border-color .15s ease,
         box-shadow .15s ease;
-
 }
 
 
 input::placeholder {
-
     color: #a89a86;
 
     font-weight: 400;
-
 }
 
 
 input:focus {
-
     outline: none;
 
     border-color: var(--brass);
 
     box-shadow:
         0 0 0 4px var(--brass-dim);
-
 }
 
 
@@ -220,7 +196,6 @@ input:focus {
 ======================================= */
 
 .totalDisplay {
-
     background: var(--brass-dim);
 
     border: 2px solid var(--brass-light);
@@ -232,40 +207,41 @@ input:focus {
     font-weight: 800;
 
     cursor: default;
-
 }
 
 
-/* Final total */
+/* =======================================
+   FINAL TOTAL
+======================================= */
 
 .finalTotal {
-
     background: #eaf5ed;
 
     border-color: var(--success);
 
     color: var(--success);
-
 }
 
 
-/* =======================================
-   PAYMENT TYPE / MODE
-======================================= */
+/* ==================================================
+   PAYMENT TYPE
+   READY CASH / ADVANCE
+================================================== */
 
 .paymentType {
-
     display: grid;
 
     grid-template-columns: 1fr 1fr;
 
     gap: 10px;
-
 }
 
 
-.radioLabel {
+/* =======================================
+   ALL RADIO LABELS
+======================================= */
 
+.radioLabel {
     position: relative;
 
     display: flex;
@@ -293,13 +269,12 @@ input:focus {
     transition:
         border-color .15s ease,
         background .15s ease,
-        color .15s ease;
-
+        color .15s ease,
+        transform .15s ease;
 }
 
 
 .radioLabel input {
-
     position: absolute;
 
     opacity: 0;
@@ -313,27 +288,98 @@ input:focus {
     margin: 0;
 
     cursor: pointer;
-
 }
 
 
-.radioLabel:has(input:checked) {
+/* ==================================================
+   PAYMENT TYPE - READY CASH
+================================================== */
 
-    background: var(--walnut);
+label.radioLabel:has(
+    input[name="paymentType"][value="ready_cash"]:checked
+) {
+    background: #343a40;
 
-    border-color: var(--walnut);
+    border-color: #343a40;
 
-    color: #fff;
+    color: white;
 
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
+
+/* ==================================================
+   PAYMENT TYPE - ADVANCE
+================================================== */
+
+label.radioLabel:has(
+    input[name="paymentType"][value="advance"]:checked
+) {
+    background: #8b4513;
+
+    border-color: #8b4513;
+
+    color: white;
+
+    box-shadow:
+        0 3px 8px rgba(139, 69, 19, 0.25);
+}
+
+
+/* ==================================================
+   PAYMENT MODE - CASH
+================================================== */
+
+label.radioLabel:has(
+    input[name="paymentMode"][value="cash"]:checked
+) {
+    background: #008f5a;
+
+    border-color: #008f5a;
+
+    color: white;
+
+    box-shadow:
+        0 3px 8px rgba(0, 143, 90, 0.25);
+}
+
+
+/* ==================================================
+   PAYMENT MODE - UPI
+================================================== */
+
+label.radioLabel:has(
+    input[name="paymentMode"][value="upi"]:checked
+) {
+    background: #1769aa;
+
+    border-color: #1769aa;
+
+    color: white;
+
+    box-shadow:
+        0 3px 8px rgba(23, 105, 170, 0.25);
+}
+
+
+/* =======================================
+   HOVER
+======================================= */
+
+.radioLabel:hover {
+    transform: translateY(-1px);
+}
+
+
+/* =======================================
+   FOCUS
+======================================= */
 
 .radioLabel:has(input:focus-visible) {
-
     outline: 3px solid var(--brass-light);
 
     outline-offset: 2px;
-
 }
 
 
@@ -342,13 +388,11 @@ input:focus {
 ======================================= */
 
 #advanceSection {
-
     padding-top: 4px;
 
     border-top: 1px dashed var(--border);
 
     margin-top: 4px;
-
 }
 
 
@@ -357,9 +401,7 @@ input:focus {
 ======================================= */
 
 .buttonRow {
-
     margin-top: 6px;
-
 }
 
 
@@ -368,7 +410,6 @@ input:focus {
 ======================================= */
 
 button {
-
     width: 100%;
 
     height: var(--tap);
@@ -388,78 +429,63 @@ button {
     transition:
         background .15s ease,
         transform .15s ease;
-
 }
 
 
 button:focus-visible {
-
     outline: 3px solid var(--brass-light);
 
     outline-offset: 2px;
-
 }
 
 
 /* =======================================
-   CALCULATE
+   CALCULATE BUTTON
 ======================================= */
 
 #calculateBtn {
-
     background: var(--brass-dim);
 
     color: var(--brass);
 
     border: 2px solid var(--brass-light);
-
 }
 
 
 #calculateBtn:hover {
-
     background: var(--brass-light);
 
     color: var(--walnut);
-
 }
 
 
 #calculateBtn:active {
-
     transform: scale(0.98);
-
 }
 
 
 /* =======================================
-   NEXT
+   NEXT BUTTON
 ======================================= */
 
 #nextBtn {
-
     background: var(--success);
 
-    color: #fff;
+    color: white;
 
     margin-top: 18px;
 
     font-size: 17px;
-
 }
 
 
 #nextBtn:hover {
-
     background: #245e3d;
-
 }
 
 
 #nextBtn:active {
-
     transform: scale(0.98);
-
 }
 
 
@@ -468,7 +494,6 @@ button:focus-visible {
 ======================================= */
 
 .button-container {
-
     display: flex;
 
     justify-content: center;
@@ -476,12 +501,10 @@ button:focus-visible {
     align-items: center;
 
     margin-top: 30px;
-
 }
 
 
 #backBtn {
-
     width: 140px;
 
     height: 50px;
@@ -501,23 +524,18 @@ button:focus-visible {
     cursor: pointer;
 
     transition: 0.2s ease;
-
 }
 
 
 #backBtn:hover {
-
     background: #23272b;
 
     transform: translateY(-1px);
-
 }
 
 
 #backBtn:active {
-
     transform: translateY(0);
-
 }
 
 
@@ -528,16 +546,11 @@ button:focus-visible {
 @media (max-width: 400px) {
 
     .card {
-
         padding: 22px 16px;
-
     }
 
-
     .paymentType {
-
-        grid-template-columns: 1fr;
-
+        grid-template-columns: 1fr 1fr;
     }
 
 }

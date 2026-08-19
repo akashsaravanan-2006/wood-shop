@@ -76,9 +76,7 @@ function updatePaymentType() {
 
 
     if (!selectedPaymentType) {
-
         return;
-
     }
 
 
@@ -116,7 +114,7 @@ function updatePaymentType() {
         }
 
 
-        // Full amount is paid
+        // Full payment
 
         localStorage.setItem(
             "advanceAmount",
@@ -153,7 +151,7 @@ function updatePaymentType() {
         }
 
 
-        // Do not automatically enter amount
+        // Focus advance amount
 
         if (advanceAmountInput) {
 
@@ -323,10 +321,7 @@ if (calculateBtn) {
 }
 
 
-   }
-
-
-               // =========================================
+// =========================================
 // NEXT BUTTON
 // =========================================
 
@@ -345,13 +340,17 @@ if (nextBtn) {
                     'input[name="paymentType"]:checked'
                 );
 
+
             if (!selectedPaymentType) {
 
-                alert("Please select Payment Type.");
+                alert(
+                    "Please select Payment Type."
+                );
 
                 return;
 
             }
+
 
             const paymentType =
                 selectedPaymentType.value;
@@ -366,13 +365,17 @@ if (nextBtn) {
                     'input[name="paymentMode"]:checked'
                 );
 
+
             if (!selectedPaymentMode) {
 
-                alert("Please select Payment Mode.");
+                alert(
+                    "Please select Payment Mode."
+                );
 
                 return;
 
             }
+
 
             const paymentMode =
                 selectedPaymentMode.value;
@@ -382,12 +385,15 @@ if (nextBtn) {
             // READY CASH
             // =====================================
 
-            if (paymentType === "cash") {
+            if (
+                paymentType === "cash"
+            ) {
 
                 localStorage.setItem(
                     "advanceAmount",
                     String(grandTotal)
                 );
+
 
                 localStorage.setItem(
                     "balanceAmount",
@@ -401,7 +407,9 @@ if (nextBtn) {
             // ADVANCE
             // =====================================
 
-            if (paymentType === "advance") {
+            if (
+                paymentType === "advance"
+            ) {
 
                 const advance =
                     Math.round(
@@ -410,6 +418,8 @@ if (nextBtn) {
                         ) || 0
                     );
 
+
+                // Check advance amount
 
                 if (advance <= 0) {
 
@@ -424,6 +434,8 @@ if (nextBtn) {
                 }
 
 
+                // Check maximum
+
                 if (advance > grandTotal) {
 
                     alert(
@@ -436,6 +448,8 @@ if (nextBtn) {
 
                 }
 
+
+                // Calculate balance
 
                 const balance =
                     grandTotal - advance;
@@ -460,13 +474,18 @@ if (nextBtn) {
 
 
             // =====================================
-            // SAVE PAYMENT DETAILS
+            // SAVE PAYMENT TYPE
             // =====================================
 
             localStorage.setItem(
                 "paymentType",
                 paymentType
             );
+
+
+            // =====================================
+            // SAVE PAYMENT MODE
+            // =====================================
 
             localStorage.setItem(
                 "paymentMode",
@@ -483,6 +502,7 @@ if (nextBtn) {
                 String(grandTotal)
             );
 
+
             localStorage.setItem(
                 "finalTotal",
                 String(grandTotal)
@@ -498,10 +518,12 @@ if (nextBtn) {
                 "0"
             );
 
+
             localStorage.setItem(
                 "discountApplied",
                 "false"
             );
+
 
             localStorage.setItem(
                 "finalGrandTotal",
@@ -513,12 +535,14 @@ if (nextBtn) {
             // GO TO DISCOUNT PAGE
             // =====================================
 
-            window.location.href = "./discount.html";
+            window.location.href =
+                "./js/discount.html";
 
         }
     );
 
 }
+
 
 // =========================================
 // BACK BUTTON

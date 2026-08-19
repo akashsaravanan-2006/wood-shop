@@ -156,8 +156,14 @@ const subtotal =
 // DISCOUNT
 // =========================================
 
-discountElement.textContent =
-    "- ₹ " + Math.round(discount);
+if (discount > 0) {
+    discountRow.style.display = "flex";
+
+    discountElement.textContent =
+        "- ₹ " + Math.round(discount);
+} else {
+    discountRow.style.display = "none";
+}
 
 
 // =========================================

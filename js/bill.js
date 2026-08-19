@@ -218,7 +218,7 @@ const woodTotalElement =
 if (woodTotalElement) {
 
     woodTotalElement.textContent =
-        "₹ " + woodTotal.toFixed(2);
+    "₹ " + Math.round(woodTotal);
 
 }
 
@@ -233,7 +233,7 @@ const othersTotalElement =
 if (othersTotalElement) {
 
     othersTotalElement.textContent =
-        "₹ " + othersTotal.toFixed(2);
+    "₹ " + Math.round(othersTotal);
 
 }
 
@@ -248,8 +248,7 @@ const subtotalElement =
 if (subtotalElement) {
 
     subtotalElement.textContent =
-        "₹ " + subtotal.toFixed(2);
-
+    "₹ " + Math.round(subtotal);
 }
 
 
@@ -300,8 +299,7 @@ const grandTotalElement =
 if (grandTotalElement) {
 
     grandTotalElement.textContent =
-        "₹ " + finalGrandTotal.toFixed(2);
-
+    "₹ " + Math.round(finalGrandTotal);
 }
 
 
@@ -334,7 +332,7 @@ if (
     if (advanceElement) {
 
         advanceElement.textContent =
-            "₹ " + advanceAmount.toFixed(2);
+    "₹ " + Math.round(advanceAmount);
 
     }
 
@@ -392,7 +390,7 @@ const balanceElement =
 if (balanceElement) {
 
     balanceElement.textContent =
-        "₹ " + balanceAmount.toFixed(2);
+    "₹ " + Math.round(balanceAmount);
 
 }
 

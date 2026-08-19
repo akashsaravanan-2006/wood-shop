@@ -5,10 +5,12 @@
     font-family:Arial, Helvetica, sans-serif;
 }
 
+
 body{
     background:#ececec;
     padding:30px;
 }
+
 
 .bill-container{
     width:850px;
@@ -19,11 +21,17 @@ body{
     box-shadow:0 0 10px rgba(0,0,0,.2);
 }
 
+
+/* =========================
+   HEADER
+========================= */
+
 .header{
     display:flex;
     justify-content:space-between;
     align-items:center;
 }
+
 
 .logo img{
     width:100px;
@@ -31,24 +39,37 @@ body{
     object-fit:contain;
 }
 
+
 .company{
     text-align:right;
 }
+
 
 .company h1{
     font-size:30px;
     margin-bottom:8px;
 }
 
+
 .company p{
     font-size:16px;
     margin:2px 0;
 }
 
+
+/* =========================
+   LINE
+========================= */
+
 hr{
     margin:18px 0;
     border:1px solid #000;
 }
+
+
+/* =========================
+   BILL INFO
+========================= */
 
 .billInfo{
     display:flex;
@@ -57,20 +78,45 @@ hr{
     font-weight:bold;
 }
 
+
+/* =========================
+   CUSTOMER
+========================= */
+
 .customer{
-    line-height:35px;
-    font-size:17px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:20px 0;
+    font-size:18px;
+    font-weight:bold;
 }
+
+
+.customer span{
+    white-space:nowrap;
+}
+
+
+/* =========================
+   HEADINGS
+========================= */
 
 h2{
     margin-bottom:15px;
 }
+
+
+/* =========================
+   TABLE
+========================= */
 
 table{
     width:100%;
     border-collapse:collapse;
     margin-bottom:20px;
 }
+
 
 table th{
     background:#222;
@@ -80,16 +126,23 @@ table th{
     text-align:center;
 }
 
+
 table td{
     padding:10px;
     border:1px solid #000;
     text-align:center;
 }
 
+
+/* =========================
+   TOTALS
+========================= */
+
 .totals{
     width:350px;
     margin-left:auto;
 }
+
 
 .totals p{
     display:flex;
@@ -98,12 +151,83 @@ table td{
     font-size:18px;
 }
 
+
 .totals h2{
     display:flex;
     justify-content:space-between;
     border-top:2px solid #000;
     padding-top:12px;
+    margin-top:12px;
 }
+
+
+/* =========================
+   CFT SUMMARY
+========================= */
+
+.cftTotal{
+    margin-bottom:20px;
+}
+
+
+.cftTotal h3{
+    margin-bottom:10px;
+}
+
+
+#cftSummary{
+    border:1px solid #ddd;
+    padding:10px;
+    background:#fafafa;
+}
+
+
+#cftSummary p{
+    display:flex;
+    justify-content:space-between;
+    margin:7px 0;
+    font-size:17px;
+}
+
+
+#cftSummary b{
+    font-weight:bold;
+}
+
+
+/* =========================
+   DISCOUNT
+========================= */
+
+.discount-row{
+    color:#d00000;
+    font-weight:bold;
+}
+
+
+/* =========================
+   ADVANCE
+========================= */
+
+.advance-row{
+    color:#006400;
+    font-weight:bold;
+}
+
+
+/* =========================
+   BALANCE
+========================= */
+
+.balance-row{
+    font-weight:bold;
+    font-size:20px !important;
+}
+
+
+/* =========================
+   SIGNATURE
+========================= */
 
 .signature{
     display:flex;
@@ -112,37 +236,91 @@ table td{
     font-weight:bold;
 }
 
+
+/* =========================
+   BUTTONS
+========================= */
+
 .buttons{
     display:flex;
     justify-content:center;
-    gap:20px;
+    gap:12px;
     margin-top:30px;
+    flex-wrap:wrap;
 }
 
+
 .buttons button{
-    padding:12px 35px;
-    font-size:17px;
+    padding:12px 25px;
+    font-size:16px;
     border:none;
     border-radius:5px;
     cursor:pointer;
     color:white;
+    font-weight:bold;
 }
+
+
+/* =========================
+   EDIT
+========================= */
+
+#editBtn{
+    background:#6f42c1;
+}
+
+
+#editBtn:hover{
+    background:#59339d;
+}
+
+
+/* =========================
+   CONFIRM
+========================= */
+
+#confirmBill{
+    background-color:#FFD700;
+    color:#000;
+}
+
+
+#confirmBill:hover{
+    background-color:#FFC107;
+}
+
+
+/* =========================
+   PRINT
+========================= */
 
 #printBtn{
     background:#28a745;
 }
 
+
 #printBtn:hover{
     background:#218838;
 }
 
-.buttons button:last-child{
+
+/* =========================
+   BACK
+========================= */
+
+#backBtn{
     background:#007bff;
 }
 
-.buttons button:last-child:hover{
+
+#backBtn:hover{
     background:#0056b3;
 }
+
+
+/* =========================
+   PRINT
+========================= */
 
 @media print{
 
@@ -151,6 +329,7 @@ table td{
         padding:0;
     }
 
+
     .bill-container{
         width:100%;
         box-shadow:none;
@@ -158,35 +337,9 @@ table td{
         padding:0;
     }
 
+
     .buttons{
         display:none;
     }
 
-}.customer{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:20px 0;
-    font-size:18px;
-    font-weight:bold;
-}
-
-.customer div{
-    display:flex;
-    gap:6px;
-    align-items:center;
-}#confirmBill{
-    background-color: #FFD700; /* Gold Yellow */
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-#confirmBill:hover{
-    background-color: #FFC107;
 }

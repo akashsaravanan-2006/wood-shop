@@ -5,15 +5,18 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Advance Payment</title>
 
-    <link rel="stylesheet"
-          href="../css/advance.css">
+    <link
+        rel="stylesheet"
+        href="../css/advance.css">
 
 </head>
+
 
 <body>
 
@@ -21,18 +24,24 @@
 
     <div class="card">
 
+        <!-- =====================================
+             TITLE
+        ====================================== -->
+
         <h1>Advance Payment</h1>
 
         <hr>
 
 
-        <!-- =========================================
+        <!-- =====================================
              GRAND TOTAL
-        ========================================== -->
+        ====================================== -->
 
         <div class="row">
 
-            <label>Grand Total</label>
+            <label>
+                Grand Total
+            </label>
 
             <input
                 type="text"
@@ -42,17 +51,21 @@
         </div>
 
 
-        <!-- =========================================
+        <!-- =====================================
              PAYMENT TYPE
-        ========================================== -->
+        ====================================== -->
 
         <div class="payment-section">
 
             <div class="section-title">
 
-                <h3>Payment Type</h3>
+                <h3>
+                    Payment Type
+                </h3>
 
-                <p>Choose payment type</p>
+                <p>
+                    Choose payment type
+                </p>
 
             </div>
 
@@ -60,7 +73,9 @@
             <div class="payment-cards">
 
 
-                <!-- READY CASH -->
+                <!-- =================================
+                     READY CASH
+                ================================== -->
 
                 <label class="payment-card">
 
@@ -78,7 +93,9 @@
 
                         <div class="payment-info">
 
-                            <strong>Ready Cash</strong>
+                            <strong>
+                                Ready Cash
+                            </strong>
 
                             <span>
                                 Full payment now
@@ -95,7 +112,9 @@
                 </label>
 
 
-                <!-- ADVANCE -->
+                <!-- =================================
+                     ADVANCE
+                ================================== -->
 
                 <label class="payment-card">
 
@@ -112,7 +131,9 @@
 
                         <div class="payment-info">
 
-                            <strong>Advance</strong>
+                            <strong>
+                                Advance
+                            </strong>
 
                             <span>
                                 Pay partially now
@@ -133,17 +154,21 @@
         </div>
 
 
-        <!-- =========================================
+        <!-- =====================================
              PAYMENT MODE
-        ========================================== -->
+        ====================================== -->
 
         <div class="payment-section">
 
             <div class="section-title">
 
-                <h3>Payment Mode</h3>
+                <h3>
+                    Payment Mode
+                </h3>
 
-                <p>Select payment method</p>
+                <p>
+                    Select payment method
+                </p>
 
             </div>
 
@@ -151,7 +176,9 @@
             <div class="mode-cards">
 
 
-                <!-- CASH -->
+                <!-- =================================
+                     CASH
+                ================================== -->
 
                 <label class="mode-card">
 
@@ -169,7 +196,9 @@
 
                         <div class="mode-info">
 
-                            <strong>Cash</strong>
+                            <strong>
+                                Cash
+                            </strong>
 
                             <span>
                                 Physical payment
@@ -186,7 +215,9 @@
                 </label>
 
 
-                <!-- UPI -->
+                <!-- =================================
+                     UPI
+                ================================== -->
 
                 <label class="mode-card">
 
@@ -203,7 +234,9 @@
 
                         <div class="mode-info">
 
-                            <strong>UPI</strong>
+                            <strong>
+                                UPI
+                            </strong>
 
                             <span>
                                 Digital payment
@@ -224,14 +257,21 @@
         </div>
 
 
-        <!-- =========================================
+        <!-- =====================================
              ADVANCE SECTION
-             ONLY SHOW FOR ADVANCE PAYMENT
-        ========================================== -->
+             
+             Hidden by default.
+             Appears only when Advance is selected.
+        ====================================== -->
 
-        <div id="advanceSection">
+        <div
+            id="advanceSection"
+            style="display:none;">
 
-            <!-- ADVANCE AMOUNT -->
+
+            <!-- =================================
+                 ADVANCE AMOUNT
+            ================================== -->
 
             <div class="row">
 
@@ -249,7 +289,9 @@
             </div>
 
 
-            <!-- BALANCE AMOUNT -->
+            <!-- =================================
+                 BALANCE AMOUNT
+            ================================== -->
 
             <div class="row">
 
@@ -265,7 +307,9 @@
             </div>
 
 
-            <!-- CALCULATE -->
+            <!-- =================================
+                 CALCULATE
+            ================================== -->
 
             <div class="buttonRow">
 
@@ -282,11 +326,11 @@
         </div>
 
 
-        <!-- =========================================
-             NEXT BUTTON
-        ========================================== -->
+        <!-- =====================================
+             NEXT
+        ====================================== -->
 
-        <div class="buttonRow next-row">
+        <div class="buttonRow">
 
             <button
                 type="button"
@@ -299,9 +343,9 @@
         </div>
 
 
-        <!-- =========================================
-             BACK BUTTON
-        ========================================== -->
+        <!-- =====================================
+             BACK
+        ====================================== -->
 
         <div class="button-container">
 
@@ -320,9 +364,14 @@
 </div>
 
 
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
 <script src="../js/advance.js"></script>
 
 <script src="../js/inputControl.js"></script>
+
 
 </body>
 

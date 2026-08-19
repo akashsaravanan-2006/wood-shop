@@ -1,120 +1,187 @@
-// =====================================================
-// BILL.JS
-// FINAL BILL PAGE
-// =====================================================
+/* =========================================================
+   BILL.JS
+   WOOD SHOP BILL
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =====================================================
+       HELPER FUNCTIONS
+    ===================================================== */
+
+    function getElement(id) {
+        return document.getElementById(id);
+    }
 
 
-// =====================================================
-// HELPER
-// =====================================================
+    function getNumber(value) {
 
-function money(value) {
+        if (value === null || value === undefined || value === "") {
+            return 0;
+        }
 
-    return "₹ " + Math.round(Number(value) || 0);
+        const number = parseFloat(
+            String(value).replace(/[₹,\s]/g, "")
+        );
 
-}
-
-
-// =====================================================
-// GET LOCAL STORAGE VALUES
-// =====================================================
-
-const customerName =
-    localStorage.getItem("customerName") || "";
-
-const customerMobile =
-    localStorage.getItem("customerMobile") || "";
-
-const customerPlace =
-    localStorage.getItem("customerPlace") || "";
-
-const billNo =
-    localStorage.getItem("billNo") || "BILL-0001";
-
-const billDate =
-    localStorage.getItem("billDate") || "";
+        return Number.isFinite(number) ? number : 0;
+    }
 
 
-// =====================================================
-// CUSTOMER DETAILS
-// =====================================================
+    /* ALL MONEY VALUES ARE INTEGER */
 
-const customerNameElement =
-    document.getElementById("customerName");
-
-const customerMobileElement =
-    document.getElementById("customerMobile");
-
-const customerPlaceElement =
-    document.getElementById("customerPlace");
-
-const billNoElement =
-    document.getElementById("billNo");
-
-const billDateElement =
-    document.getElementById("billDate");
-
-const billDayTimeElement =
-    document.getElementById("billDayTime");
+    function money(value) {
+        return "₹ " + Math.round(getNumber(value));
+    }
 
 
-if (customerNameElement) {
-
-    customerNameElement.textContent =
-        customerName;
-
-}
+    function integer(value) {
+        return Math.round(getNumber(value));
+    }
 
 
-if (customerMobileElement) {
+    function getStorageValue(keys) {
 
-    customerMobileElement.textContent =
-        customerMobile;
+        for (const key of keys) {
 
-}
+            const value = localStorage.getItem(key);
 
+            if (
+                value !== null &&
+                value !== "" &&
+                value !== "null" &&
+                value !== "undefined"
+            ) {
+                return value;
+            }
+        }
 
-if (customerPlaceElement) {
-
-    customerPlaceElement.textContent =
-        customerPlace;
-
-}
-
-
-if (billNoElement) {
-
-    billNoElement.textContent =
-        billNo;
-
-}
+        return null;
+    }
 
 
-if (billDateElement) {
+    function getJSON(keys, defaultValue) {
 
-    billDateElement.textContent =
-        billDate;
+        const value = getStorageValue(keys);
 
-}
+        if (!value) {
+            return defaultValue;
+        }
+
+        try {
+            return JSON.parse(value);
+        }
+        catch (error) {
+
+            console.warn(
+                "Could not parse localStorage:",
+                keys
+            );
+
+            return defaultValue;
+        }
+    }
 
 
-// =====================================================
-// DATE + DAY + TIME
-// =====================================================
+    function setText(id, value) {
 
-if (billDayTimeElement) {
+        const element = getElement(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+
+    /* =====================================================
+       CUSTOMER INFORMATION
+    ===================================================== */
+
+    const customerName = getStorageValue([
+        "customerName",
+        "customer_name",
+        "name"
+    ]) || "---";
+
+
+    const customerMobile = getStorageValue([
+        "customerMobile",
+        "customer_mobile",
+        "mobile",
+        "phone"
+    ]) || "---";
+
+
+    const customerPlace = getStorageValue([
+        "customerPlace",
+        "customer_place",
+        "place",
+        "address"
+    ]) || "---";
+
+
+    setText(
+        "customerName",
+        customerName
+    );
+
+
+    setText(
+        "customerMobile",
+        customerMobile
+    );
+
+
+    setText(
+        "customerPlace",
+        customerPlace
+    );
+
+
+    /* =====================================================
+       BILL NUMBER
+    ===================================================== */
+
+    let billNumber = getStorageValue([
+        "billNo",
+        "billNumber",
+        "bill_no"
+    ]);
+
+
+    if (!billNumber) {
+
+        billNumber = "BILL-0001";
+
+        localStorage.setItem(
+            "billNo",
+            billNumber
+        );
+    }
+
+
+    setText(
+        "billNo",
+        billNumber
+    );
+
+
+    /* =====================================================
+       DATE & TIME
+    ===================================================== */
 
     const now = new Date();
 
-    const day =
-        now.toLocaleDateString(
-            "en-IN",
-            {
-                weekday: "long"
-            }
-        );
 
-    const time =
+    const dateText =
+        now.getFullYear() +
+        "-" +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(now.getDate()).padStart(2, "0");
+
+
+    const timeText =
         now.toLocaleTimeString(
             "en-IN",
             {
@@ -123,1056 +190,1124 @@ if (billDayTimeElement) {
             }
         );
 
-    billDayTimeElement.textContent =
-        day + " | " + time;
 
-}
-
-
-// =====================================================
-// WOOD DATA
-// =====================================================
-
-let woodData = [];
+    const dayText =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday: "long"
+            }
+        );
 
 
-// Try main storage first
-try {
-
-    woodData =
-        JSON.parse(
-            localStorage.getItem("woodCalculations")
-        ) || [];
-
-}
-catch (error) {
-
-    woodData = [];
-
-}
+    setText(
+        "billDate",
+        dateText
+    );
 
 
-// =====================================================
-// FALLBACK STORAGE NAMES
-// =====================================================
-
-if (!woodData.length) {
-
-    try {
-
-        woodData =
-            JSON.parse(
-                localStorage.getItem("calculations")
-            ) || [];
-
-    }
-    catch (error) {
-
-        woodData = [];
-
-    }
-
-}
+    setText(
+        "billDayTime",
+        dayText + " | " + timeText
+    );
 
 
-// =====================================================
-// WOOD TABLE
-// =====================================================
+    /* =====================================================
+       LOAD WOOD DATA
+    ===================================================== */
 
-const woodTable =
-    document.getElementById("woodTable");
-
-
-// =====================================================
-// TOTALS
-// =====================================================
-
-let woodTotal = 0;
-
-let totalCFT = 0;
-
-
-// =====================================================
-// QUALITY CFT
-// =====================================================
-
-// Example:
-//
-// Teak (1) → Quality 1 CFT
-// Teak (2) → Quality 2 CFT
-//
-// Each wood + quality is kept separately.
-
-let qualitySummary = {};
+    let woodItems = getJSON(
+        [
+            "woodData",
+            "woodItems",
+            "woodDetails",
+            "woodDetailsData",
+            "billWoodData",
+            "woodRows",
+            "woodList"
+        ],
+        []
+    );
 
 
-// =====================================================
-// CREATE WOOD ROWS
-// =====================================================
+    /*
+       Sometimes the stored object itself contains
+       the wood array.
+    */
 
-if (woodTable) {
+    if (!Array.isArray(woodItems)) {
 
-    woodTable.innerHTML = "";
+        if (
+            woodItems &&
+            Array.isArray(woodItems.woods)
+        ) {
+            woodItems = woodItems.woods;
+        }
 
-}
+        else if (
+            woodItems &&
+            Array.isArray(woodItems.items)
+        ) {
+            woodItems = woodItems.items;
+        }
 
-
-woodData.forEach(function (item, index) {
-
-    const wood =
-        item.woodType ||
-        item.wood ||
-        "Unknown";
-
-    const breadth =
-        Number(
-            item.breadth
-        ) || 0;
-
-    const thickness =
-        Number(
-            item.thickness
-        ) || 0;
-
-    const rate =
-        Number(
-            item.rate
-        ) || 0;
-
-    const quality =
-        item.quality ||
-        "1";
-
-
-    // ---------------------------------------------
-    // LENGTH
-    // ---------------------------------------------
-
-    let length = 0;
-
-    if (Array.isArray(item.lengths)) {
-
-        item.lengths.forEach(function (row) {
-
-            const l =
-                Number(row.length) || 0;
-
-            const extra =
-                Number(row.extraLength) || 0;
-
-            const qty =
-                Number(row.qty) || 0;
-
-            length +=
-                (l + extra) * qty;
-
-        });
-
-    }
-    else {
-
-        length =
-            Number(item.totalLength) || 0;
-
+        else {
+            woodItems = [];
+        }
     }
 
 
-    // ---------------------------------------------
-    // CFT
-    // ---------------------------------------------
+    /* =====================================================
+       LOAD OTHER CHARGES
+    ===================================================== */
 
-    let cft =
-        Number(item.cft) || 0;
+    let otherCharges = getJSON(
+        [
+            "otherCharges",
+            "charges",
+            "chargeData",
+            "otherChargeData",
+            "billCharges",
+            "chargesData"
+        ],
+        []
+    );
 
 
-    if (!cft && breadth && thickness && length) {
+    if (!Array.isArray(otherCharges)) {
 
-        cft =
-            (
-                breadth *
-                thickness *
-                length
-            ) / 144;
+        if (
+            otherCharges &&
+            Array.isArray(otherCharges.charges)
+        ) {
+            otherCharges = otherCharges.charges;
+        }
 
+        else if (
+            otherCharges &&
+            Array.isArray(otherCharges.items)
+        ) {
+            otherCharges = otherCharges.items;
+        }
+
+        else {
+            otherCharges = [];
+        }
     }
 
 
-    // ---------------------------------------------
-    // AMOUNT
-    // ---------------------------------------------
+    /* =====================================================
+       NORMALIZE WOOD DATA
+    ===================================================== */
 
-    let amount =
-        Number(item.amount) || 0;
+    function normalizeWood(item) {
 
+        if (!item || typeof item !== "object") {
+            return null;
+        }
 
-    if (!amount && cft && rate) {
 
-        amount =
-            cft * rate;
+        const wood =
+            item.wood ||
+            item.woodName ||
+            item.name ||
+            item.type ||
+            item.Wood ||
+            "";
 
-    }
 
+        const size =
+            item.size ||
+            item.Size ||
+            "";
 
-    // ---------------------------------------------
-    // INTEGER VALUES
-    // ---------------------------------------------
 
-    cft =
-        Number(cft.toFixed(2));
-
-    amount =
-        Math.round(amount);
-
-    length =
-        Number(length.toFixed(2));
-
-    rate =
-        Math.round(rate);
-
-
-    // ---------------------------------------------
-    // TOTALS
-    // ---------------------------------------------
-
-    totalCFT += cft;
-
-    woodTotal += amount;
-
-
-    // ---------------------------------------------
-    // QUALITY SUMMARY
-    // ---------------------------------------------
-
-    const summaryKey =
-        wood + " (" + quality + ")";
-
-
-    if (!qualitySummary[summaryKey]) {
-
-        qualitySummary[summaryKey] = 0;
-
-    }
-
-
-    qualitySummary[summaryKey] += cft;
-
-
-    // ---------------------------------------------
-    // SIZE
-    // ---------------------------------------------
-
-    const size =
-        breadth +
-        " × " +
-        thickness;
-
-
-    // ---------------------------------------------
-    // TABLE ROW
-    // ---------------------------------------------
-
-    if (woodTable) {
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${index + 1}
-            </td>
-
-            <td>
-                ${wood}
-            </td>
-
-            <td>
-                ${size}
-            </td>
-
-            <td>
-                ${length}
-            </td>
-
-            <td>
-                ${item.qty || 1}
-            </td>
-
-            <td>
-                ${length}
-            </td>
-
-            <td>
-                ${cft.toFixed(2)}
-            </td>
-
-            <td>
-                ₹ ${rate}
-            </td>
-
-            <td>
-                ₹ ${amount}
-            </td>
-
-            <td>
-                ${quality}
-            </td>
-
-        `;
-
-        woodTable.appendChild(row);
-
-    }
-
-});
-
-
-// =====================================================
-// WOOD TOTAL
-// =====================================================
-
-const woodTotalElement =
-    document.getElementById("woodTotal");
-
-
-if (woodTotalElement) {
-
-    woodTotalElement.textContent =
-        money(woodTotal);
-
-}
-
-
-// =====================================================
-// OTHER CHARGES
-// =====================================================
-
-let charges = [];
-
-try {
-
-    charges =
-        JSON.parse(
-            localStorage.getItem("charges")
-        ) || [];
-
-}
-catch (error) {
-
-    charges = [];
-
-}
-
-
-// Some projects may use otherCharges
-if (!charges.length) {
-
-    try {
-
-        charges =
-            JSON.parse(
-                localStorage.getItem("otherCharges")
-            ) || [];
-
-    }
-    catch (error) {
-
-        charges = [];
-
-    }
-
-}
-
-
-const chargeTable =
-    document.getElementById("chargeTable");
-
-
-let othersTotal = 0;
-
-
-if (chargeTable) {
-
-    chargeTable.innerHTML = "";
-
-}
-
-
-if (charges.length) {
-
-    charges.forEach(function (charge, index) {
-
-        const name =
-            charge.name ||
-            charge.chargeName ||
-            "Charge";
-
-        const amount =
-            Math.round(
-                Number(
-                    charge.amount
-                ) || 0
+        const length =
+            getNumber(
+                item.length ??
+                item.Length ??
+                item.len
             );
 
 
-        othersTotal += amount;
+        const qty =
+            getNumber(
+                item.qty ??
+                item.quantity ??
+                item.Qty
+            );
 
 
-        if (chargeTable) {
+        const totalLengthStored =
+            item.totalLength ??
+            item.total_length ??
+            item.totalLen;
+
+
+        const totalLength =
+            totalLengthStored !== undefined &&
+            totalLengthStored !== null &&
+            totalLengthStored !== ""
+                ? getNumber(totalLengthStored)
+                : length * qty;
+
+
+        const cft =
+            getNumber(
+                item.cft ??
+                item.CFT ??
+                item.cftValue
+            );
+
+
+        const rate =
+            getNumber(
+                item.rate ??
+                item.Rate ??
+                item.price
+            );
+
+
+        let amount =
+            getNumber(
+                item.amount ??
+                item.Amount ??
+                item.totalAmount
+            );
+
+
+        /*
+           If amount was not stored,
+           calculate from CFT × Rate.
+        */
+
+        if (!amount && cft && rate) {
+            amount = cft * rate;
+        }
+
+
+        /*
+           Quality is important.
+
+           Example:
+           Teak + Quality 1 = Teak (1)
+           Teak + Quality 2 = Teak (2)
+        */
+
+        const quality =
+            item.quality ??
+            item.Quality ??
+            item.qualityNo ??
+            item.qualityNumber ??
+            item.q ??
+            1;
+
+
+        return {
+
+            wood: String(wood).trim(),
+
+            size: String(size).trim(),
+
+            length: length,
+
+            qty: qty,
+
+            totalLength: totalLength,
+
+            cft: cft,
+
+            rate: rate,
+
+            amount: amount,
+
+            quality: String(quality).trim()
+
+        };
+    }
+
+
+    woodItems = woodItems
+        .map(normalizeWood)
+        .filter(item => item !== null);
+
+
+    /* =====================================================
+       WOOD TABLE
+    ===================================================== */
+
+    const woodTable =
+        getElement("woodTable");
+
+
+    let woodTotal = 0;
+
+
+    if (woodTable) {
+
+        woodTable.innerHTML = "";
+
+
+        if (woodItems.length === 0) {
 
             const row =
                 document.createElement("tr");
 
-
             row.innerHTML = `
-
-                <td>
-                    ${index + 1}
-                </td>
-
-                <td>
-                    ${name}
-                </td>
-
-                <td>
-                    ₹ ${amount}
-                </td>
-
+                <td colspan="10">-</td>
             `;
 
-
-            chargeTable.appendChild(row);
+            woodTable.appendChild(row);
 
         }
 
-    });
 
-}
-else {
+        woodItems.forEach(
+            function (item, index) {
+
+                woodTotal += item.amount;
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.wood)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.size)}
+                    </td>
+
+                    <td>
+                        ${formatNumber(item.length)}
+                    </td>
+
+                    <td>
+                        ${formatNumber(item.qty)}
+                    </td>
+
+                    <td>
+                        ${formatNumber(item.totalLength)}
+                    </td>
+
+                    <td>
+                        ${formatCFT(item.cft)}
+                    </td>
+
+                    <td>
+                        ${money(item.rate)}
+                    </td>
+
+                    <td>
+                        ${money(item.amount)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(item.quality)}
+                    </td>
+
+                `;
+
+
+                woodTable.appendChild(row);
+
+            }
+        );
+    }
+
+
+    /* =====================================================
+       OTHER CHARGES TABLE
+    ===================================================== */
+
+    const chargeTable =
+        getElement("chargeTable");
+
+
+    let othersTotal = 0;
+
 
     if (chargeTable) {
 
-        chargeTable.innerHTML = `
+        chargeTable.innerHTML = "";
 
-            <tr>
 
+        if (otherCharges.length === 0) {
+
+            const row =
+                document.createElement("tr");
+
+            row.innerHTML = `
                 <td>-</td>
-
                 <td>-</td>
-
                 <td>-</td>
+            `;
 
-            </tr>
+            chargeTable.appendChild(row);
+        }
 
-        `;
 
+        otherCharges.forEach(
+            function (charge, index) {
+
+                const name =
+                    charge.name ||
+                    charge.chargeName ||
+                    charge.title ||
+                    charge.Name ||
+                    "";
+
+
+                const amount =
+                    getNumber(
+                        charge.amount ??
+                        charge.Amount ??
+                        charge.value
+                    );
+
+
+                othersTotal += amount;
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(String(name))}
+                    </td>
+
+                    <td>
+                        ${money(amount)}
+                    </td>
+
+                `;
+
+
+                chargeTable.appendChild(row);
+
+            }
+        );
     }
 
-}
+
+    /* =====================================================
+       CFT SUMMARY
+       
+       IMPORTANT:
+       GROUP BY WOOD + QUALITY
+
+       Teak quality 1
+       Teak quality 2
+
+       will be displayed separately.
+    ===================================================== */
+
+    const cftSummary =
+        getElement("cftSummary");
 
 
-// =====================================================
-// OTHERS TOTAL
-// =====================================================
+    if (cftSummary) {
 
-const othersTotalElement =
-    document.getElementById("othersTotal");
+        cftSummary.innerHTML = "";
 
 
-if (othersTotalElement) {
-
-    othersTotalElement.textContent =
-        money(othersTotal);
-
-}
+        const groups = {};
 
 
-// =====================================================
-// CFT SUMMARY
-// =====================================================
+        woodItems.forEach(
+            function (item) {
 
-const cftSummary =
-    document.getElementById("cftSummary");
-
-
-if (cftSummary) {
-
-    cftSummary.innerHTML = "";
+                const woodName =
+                    item.wood || "Unknown";
 
 
-    Object.keys(qualitySummary).forEach(
-        function (key) {
+                const quality =
+                    item.quality || "1";
 
-            const cft =
-                qualitySummary[key];
 
+                const key =
+                    woodName.toLowerCase() +
+                    "||" +
+                    quality;
+
+
+                if (!groups[key]) {
+
+                    groups[key] = {
+
+                        wood: woodName,
+
+                        quality: quality,
+
+                        cft: 0
+
+                    };
+                }
+
+
+                groups[key].cft +=
+                    item.cft;
+
+            }
+        );
+
+
+        const groupValues =
+            Object.values(groups);
+
+
+        if (groupValues.length === 0) {
 
             const p =
                 document.createElement("p");
 
-
             p.innerHTML = `
-
-                <b>
-                    ${key}
-                </b>
-
-                <span>
-                    : ${cft.toFixed(2)} CFT
-                </span>
-
+                <span>-</span>
+                <span>0 CFT</span>
             `;
-
 
             cftSummary.appendChild(p);
 
         }
-    );
-
-}
 
 
-// =====================================================
-// SUBTOTAL
-// =====================================================
+        groupValues.forEach(
+            function (group) {
 
-const subtotal =
-    Math.round(
+                const p =
+                    document.createElement("p");
+
+
+                p.innerHTML = `
+
+                    <b>
+                        ${escapeHTML(group.wood)}
+                        (${escapeHTML(group.quality)})
+                    </b>
+
+                    <span>
+                        : ${formatCFT(group.cft)} CFT
+                    </span>
+
+                `;
+
+
+                cftSummary.appendChild(p);
+
+            }
+        );
+    }
+
+
+    /* =====================================================
+       SUBTOTAL
+    ===================================================== */
+
+    const subtotal =
         woodTotal +
-        othersTotal
+        othersTotal;
+
+
+    setText(
+        "woodTotal",
+        money(woodTotal)
     );
 
 
-// =====================================================
-// DISCOUNT
-// =====================================================
-
-const discount =
-    Math.max(
-        0,
-        Math.round(
-            Number(
-                localStorage.getItem("discountAmount")
-            ) || 0
-        )
+    setText(
+        "othersTotal",
+        money(othersTotal)
     );
 
 
-// =====================================================
-// FINAL GRAND TOTAL
-// =====================================================
-
-const finalGrandTotal =
-    Math.max(
-        0,
-        subtotal - discount
+    setText(
+        "subtotal",
+        money(subtotal)
     );
 
 
-// =====================================================
-// SAVE FINAL TOTALS
-// =====================================================
+    /* =====================================================
+       DISCOUNT
+       
+       IMPORTANT:
+       Read discount BEFORE using it.
+       This prevents:
 
-localStorage.setItem(
-    "woodTotal",
-    String(woodTotal)
-);
+       "discount is not defined"
+    ===================================================== */
 
-localStorage.setItem(
-    "othersTotal",
-    String(othersTotal)
-);
-
-localStorage.setItem(
-    "subtotal",
-    String(subtotal)
-);
-
-localStorage.setItem(
-    "discountAmount",
-    String(discount)
-);
-
-localStorage.setItem(
-    "finalGrandTotal",
-    String(finalGrandTotal)
-);
-
-localStorage.setItem(
-    "grandTotal",
-    String(finalGrandTotal)
-);
-
-
-// =====================================================
-// DISPLAY DISCOUNT
-// =====================================================
-
-const discountRow =
-    document.getElementById("discountRow");
-
-const discountElement =
-    document.getElementById("discountAmount");
-
-
-if (discount > 0) {
-
-    if (discountRow) {
-
-        discountRow.style.display =
-            "flex";
-
-    }
-
-    if (discountElement) {
-
-        discountElement.textContent =
-            "- ₹ " +
-            Math.round(discount);
-
-    }
-
-}
-else {
-
-    if (discountRow) {
-
-        discountRow.style.display =
-            "none";
-
-    }
-
-}
-
-
-// =====================================================
-// DISPLAY GRAND TOTAL
-// =====================================================
-
-const grandTotalElement =
-    document.getElementById("grandTotal");
-
-
-if (grandTotalElement) {
-
-    grandTotalElement.textContent =
-        money(finalGrandTotal);
-
-}
-
-
-// =====================================================
-// ADVANCE AMOUNT
-// =====================================================
-
-const paymentType =
-    localStorage.getItem("paymentType") ||
-    "cash";
-
-
-let advanceAmount = 0;
-
-
-// -----------------------------------------------------
-// READY CASH
-// -----------------------------------------------------
-
-if (paymentType === "cash") {
-
-    advanceAmount =
-        finalGrandTotal;
-
-}
-
-
-// -----------------------------------------------------
-// ADVANCE
-// -----------------------------------------------------
-
-else {
-
-    advanceAmount =
-        Math.max(
-            0,
-            Math.round(
-                Number(
-                    localStorage.getItem(
-                        "advanceAmount"
-                    )
-                ) || 0
-            )
+    let discount =
+        getNumber(
+            getStorageValue([
+                "discountAmount",
+                "discount",
+                "discountValue",
+                "billDiscount"
+            ])
         );
 
-}
+
+    /*
+       Discount cannot be greater than subtotal.
+    */
+
+    if (discount < 0) {
+        discount = 0;
+    }
 
 
-// =====================================================
-// BALANCE
-// =====================================================
+    if (discount > subtotal) {
+        discount = subtotal;
+    }
 
-// IMPORTANT:
-//
-// Balance is calculated from FINAL GRAND TOTAL
-// after discount.
-//
-// Example:
-//
-// Subtotal = 694
-// Discount = 4
-// Grand Total = 690
-// Advance = 90
-//
-// Balance = 690 - 90
-//         = 600
 
-const balanceAmount =
-    Math.max(
-        0,
-        finalGrandTotal -
-        advanceAmount
+    /* =====================================================
+       GRAND TOTAL
+    ===================================================== */
+
+    const grandTotal =
+        Math.max(
+            0,
+            subtotal - discount
+        );
+
+
+    setText(
+        "grandTotal",
+        money(grandTotal)
     );
 
 
-// =====================================================
-// SAVE ADVANCE + BALANCE
-// =====================================================
+    /* =====================================================
+       DISCOUNT DISPLAY
+    ===================================================== */
 
-localStorage.setItem(
-    "advanceAmount",
-    String(advanceAmount)
-);
-
-localStorage.setItem(
-    "balanceAmount",
-    String(balanceAmount)
-);
+    const discountRow =
+        getElement("discountRow");
 
 
-// =====================================================
-// DISPLAY ADVANCE
-// =====================================================
-
-const advanceElement =
-    document.getElementById("advanceAmount");
+    const discountElement =
+        getElement("discountAmount");
 
 
-if (advanceElement) {
+    if (discount > 0) {
 
-    advanceElement.textContent =
-        money(advanceAmount);
-
-}
-
-
-// =====================================================
-// DISPLAY BALANCE
-// =====================================================
-
-const balanceElement =
-    document.getElementById("balanceAmount");
+        if (discountRow) {
+            discountRow.style.display = "flex";
+        }
 
 
-if (balanceElement) {
+        if (discountElement) {
 
-    balanceElement.textContent =
-        money(balanceAmount);
-
-}
-
-
-// =====================================================
-// PAYMENT MODE
-// =====================================================
-
-const paymentMode =
-    localStorage.getItem("paymentMode") ||
-    "cash";
-
-
-const paymentModeElement =
-    document.getElementById("paymentMode");
-
-
-if (paymentModeElement) {
-
-    paymentModeElement.textContent =
-        paymentMode.toUpperCase();
-
-}
-
-
-// =====================================================
-// OPTIONAL PAYMENT MODE ROW
-// =====================================================
-
-const paymentModeRow =
-    document.getElementById(
-        "paymentModeRow"
-    );
-
-
-if (paymentModeRow) {
-
-    paymentModeRow.style.display =
-        "flex";
-
-}
-
-
-// =====================================================
-// EDIT BILL
-// =====================================================
-
-const editBtn =
-    document.getElementById("editBtn");
-
-
-if (editBtn) {
-
-    editBtn.addEventListener(
-        "click",
-        function () {
-
-            // Do NOT clear localStorage.
-            // Wood values remain available.
-
-            localStorage.setItem(
-                "editingBill",
-                "true"
-            );
-
-            window.location.href =
-                "wood.html";
+            discountElement.textContent =
+                "- " + money(discount);
 
         }
-    );
 
-}
+    }
+
+    else {
+
+        if (discountRow) {
+            discountRow.style.display = "none";
+        }
+
+    }
 
 
-// =====================================================
-// PRINT BILL
-// =====================================================
+    /* =====================================================
+       PAYMENT INFORMATION
+    ===================================================== */
 
-const printBtn =
-    document.getElementById("printBtn");
+    let paymentType =
+        getStorageValue([
+            "paymentType",
+            "selectedPaymentType",
+            "payment_type"
+        ]);
 
 
-if (printBtn) {
+    let paymentMode =
+        getStorageValue([
+            "paymentMode",
+            "selectedPaymentMode",
+            "payment_mode"
+        ]);
 
-    printBtn.addEventListener(
-        "click",
-        function () {
 
-            window.print();
+    /*
+       Normalize values.
+    */
+
+    if (
+        paymentType === "readyCash" ||
+        paymentType === "ready_cash"
+    ) {
+        paymentType = "cash";
+    }
+
+
+    if (!paymentType) {
+        paymentType = "cash";
+    }
+
+
+    if (!paymentMode) {
+        paymentMode = "cash";
+    }
+
+
+    /* =====================================================
+       ADVANCE AMOUNT
+    ===================================================== */
+
+    let advanceAmount =
+        getNumber(
+            getStorageValue([
+                "advanceAmount",
+                "advance",
+                "advanceValue",
+                "paidAmount"
+            ])
+        );
+
+
+    /*
+       Ready Cash means full payment.
+       Therefore advance = Grand Total.
+    */
+
+    if (
+        paymentType === "cash" ||
+        paymentType === "readyCash"
+    ) {
+
+        advanceAmount =
+            grandTotal;
+
+    }
+
+
+    /*
+       Advance cannot be greater than Grand Total.
+    */
+
+    if (advanceAmount < 0) {
+        advanceAmount = 0;
+    }
+
+
+    if (advanceAmount > grandTotal) {
+        advanceAmount = grandTotal;
+    }
+
+
+    /* =====================================================
+       BALANCE
+    ===================================================== */
+
+    const balanceAmount =
+        Math.max(
+            0,
+            grandTotal - advanceAmount
+        );
+
+
+    /* =====================================================
+       ADVANCE ROW
+    ===================================================== */
+
+    const advanceRow =
+        getElement("advanceRow");
+
+
+    const advanceElement =
+        getElement("advanceAmount");
+
+
+    /*
+       Show Advance Amount only when
+       customer actually selected Advance.
+
+       Ready Cash does not need an Advance row.
+    */
+
+    if (
+        paymentType === "advance" &&
+        advanceAmount > 0
+    ) {
+
+        if (advanceRow) {
+            advanceRow.style.display = "flex";
+        }
+
+
+        if (advanceElement) {
+
+            advanceElement.textContent =
+                money(advanceAmount);
 
         }
-    );
 
-}
+    }
 
+    else {
 
-// =====================================================
-// BACK BUTTON
-// =====================================================
-
-const backBtn =
-    document.getElementById("backBtn");
-
-
-if (backBtn) {
-
-    backBtn.addEventListener(
-        "click",
-        function () {
-
-            window.history.back();
-
+        if (advanceRow) {
+            advanceRow.style.display = "none";
         }
+
+    }
+
+
+    /* =====================================================
+       BALANCE DISPLAY
+    ===================================================== */
+
+    setText(
+        "balanceAmount",
+        money(balanceAmount)
     );
 
-}
+
+    /* =====================================================
+       SAVE FINAL BILL CALCULATION
+       
+       This allows the next page / bill process
+       to use the same values.
+    ===================================================== */
+
+    const finalBillData = {
+
+        billNo: billNumber,
+
+        customerName: customerName,
+
+        customerMobile: customerMobile,
+
+        customerPlace: customerPlace,
+
+        woodItems: woodItems,
+
+        otherCharges: otherCharges,
+
+        woodTotal: integer(woodTotal),
+
+        othersTotal: integer(othersTotal),
+
+        subtotal: integer(subtotal),
+
+        discount: integer(discount),
+
+        grandTotal: integer(grandTotal),
+
+        paymentType: paymentType,
+
+        paymentMode: paymentMode,
+
+        advanceAmount: integer(advanceAmount),
+
+        balanceAmount: integer(balanceAmount),
+
+        date: dateText,
+
+        time: timeText
+
+    };
 
 
-// =====================================================
-// CONFIRM BILL
-// =====================================================
-
-const confirmBill =
-    document.getElementById("confirmBill");
+    localStorage.setItem(
+        "finalBillData",
+        JSON.stringify(finalBillData)
+    );
 
 
-if (confirmBill) {
+    /* =====================================================
+       ALSO SAVE INDIVIDUAL VALUES
+    ===================================================== */
 
-    confirmBill.addEventListener(
-        "click",
-        function () {
+    localStorage.setItem(
+        "billGrandTotal",
+        String(integer(grandTotal))
+    );
 
-            const confirmed =
-                confirm(
-                    "Confirm this bill?"
+
+    localStorage.setItem(
+        "billDiscount",
+        String(integer(discount))
+    );
+
+
+    localStorage.setItem(
+        "billAdvanceAmount",
+        String(integer(advanceAmount))
+    );
+
+
+    localStorage.setItem(
+        "billBalanceAmount",
+        String(integer(balanceAmount))
+    );
+
+
+    /* =====================================================
+       EDIT BILL
+       
+       IMPORTANT:
+       We DO NOT clear localStorage.
+
+       So when user returns to wood page,
+       previous entered values remain.
+    ===================================================== */
+
+    const editBtn =
+        getElement("editBtn");
+
+
+    if (editBtn) {
+
+        editBtn.addEventListener(
+            "click",
+            function () {
+
+                /*
+                   Set editing flag.
+                   The wood page can use this to
+                   restore the previous values.
+                */
+
+                localStorage.setItem(
+                    "editingBill",
+                    "true"
                 );
 
 
-            if (!confirmed) {
+                /*
+                   Change this ONLY if your wood-entry
+                   page has another filename.
+                */
 
-                return;
+                window.location.href =
+                    "wood.html";
 
             }
+        );
+
+    }
 
 
-            // -----------------------------------------
-            // Increase bill counter
-            // -----------------------------------------
+    /* =====================================================
+       BACK BUTTON
+    ===================================================== */
 
-            let billCount =
-                Number(
-                    localStorage.getItem(
-                        "billCount"
-                    )
-                ) || 0;
+    const backBtn =
+        getElement("backBtn");
 
 
-            billCount++;
+    if (backBtn) {
+
+        backBtn.addEventListener(
+            "click",
+            function () {
+
+                history.back();
+
+            }
+        );
+
+    }
 
 
-            localStorage.setItem(
-                "billCount",
-                String(billCount)
-            );
+    /* =====================================================
+       PRINT BUTTON
+    ===================================================== */
+
+    const printBtn =
+        getElement("printBtn");
 
 
-            // -----------------------------------------
-            // Mark bill completed
-            // -----------------------------------------
+    if (printBtn) {
 
-            localStorage.setItem(
-                "billConfirmed",
-                "true"
-            );
+        printBtn.addEventListener(
+            "click",
+            function () {
 
+                window.print();
 
-            // -----------------------------------------
-            // Remove editing state
-            // -----------------------------------------
+            }
+        );
 
-            localStorage.removeItem(
-                "editingBill"
-            );
+    }
 
 
-            alert(
-                "Bill confirmed successfully."
-            );
+    /* =====================================================
+       CONFIRM BILL
+    ===================================================== */
+
+    const confirmBill =
+        getElement("confirmBill");
 
 
-            // -----------------------------------------
-            // Go Home
-            // -----------------------------------------
+    if (confirmBill) {
 
-            window.location.href =
-                "index.html";
+        confirmBill.addEventListener(
+            "click",
+            function () {
 
-        }
-    );
-
-}
-
-
-// =====================================================
-// HOME BUTTON
-// =====================================================
-
-const homeBtn =
-    document.getElementById("homeBtn");
+                const confirmed =
+                    confirm(
+                        "Are you sure you want to confirm this bill?"
+                    );
 
 
-if (homeBtn) {
+                if (!confirmed) {
+                    return;
+                }
 
-    homeBtn.addEventListener(
-        "click",
-        function () {
 
-            const confirmed =
-                confirm(
-                    "Go to Home?"
+                /*
+                   Mark bill as completed.
+                */
+
+                localStorage.setItem(
+                    "billCompleted",
+                    "true"
                 );
 
 
-            if (!confirmed) {
+                localStorage.setItem(
+                    "billConfirmedAt",
+                    new Date().toISOString()
+                );
 
-                return;
+
+                /*
+                   Stop editing mode.
+                */
+
+                localStorage.removeItem(
+                    "editingBill"
+                );
+
+
+                alert(
+                    "Bill confirmed successfully."
+                );
 
             }
+        );
+
+    }
 
 
-            window.location.href =
-                "index.html";
+    /* =====================================================
+       FINISHED
+    ===================================================== */
 
-        }
+    console.log(
+        "Bill loaded successfully."
     );
 
+
+    console.log(
+        "Wood Total:",
+        integer(woodTotal)
+    );
+
+
+    console.log(
+        "Others Total:",
+        integer(othersTotal)
+    );
+
+
+    console.log(
+        "Subtotal:",
+        integer(subtotal)
+    );
+
+
+    console.log(
+        "Discount:",
+        integer(discount)
+    );
+
+
+    console.log(
+        "Grand Total:",
+        integer(grandTotal)
+    );
+
+
+    console.log(
+        "Advance:",
+        integer(advanceAmount)
+    );
+
+
+    console.log(
+        "Balance:",
+        integer(balanceAmount)
+    );
+
+});
+
+
+/* =========================================================
+   FORMAT NUMBER
+========================================================= */
+
+function formatNumber(value) {
+
+    const number =
+        Math.round(
+            Number(value) || 0
+        );
+
+
+    return number.toString();
 }
 
 
-// =====================================================
-// DEBUG INFORMATION
-// =====================================================
+/* =========================================================
+   FORMAT CFT
+========================================================= */
 
-console.log(
-    "===================================="
-);
+function formatCFT(value) {
 
-console.log(
-    "FINAL BILL"
-);
+    const number =
+        Number(value) || 0;
 
-console.log(
-    "Wood Total :",
-    woodTotal
-);
 
-console.log(
-    "Others Total :",
-    othersTotal
-);
+    return number.toFixed(2);
+}
 
-console.log(
-    "Subtotal :",
-    subtotal
-);
 
-console.log(
-    "Discount :",
-    discount
-);
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-console.log(
-    "Final Grand Total :",
-    finalGrandTotal
-);
+function escapeHTML(value) {
 
-console.log(
-    "Payment Type :",
-    paymentType
-);
-
-console.log(
-    "Payment Mode :",
-    paymentMode
-);
-
-console.log(
-    "Advance Amount :",
-    advanceAmount
-);
-
-console.log(
-    "Balance Amount :",
-    balanceAmount
-);
-
-console.log(
-    "===================================="
-);
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}

@@ -43,7 +43,7 @@ body {
 
 
 /* =========================================
-   CARD
+   MAIN CARD
 ========================================= */
 
 .card {
@@ -88,47 +88,32 @@ body {
 
 
 /* =========================================
-   ROW
+   NORMAL ROW
 ========================================= */
 
 .row {
+
     display: flex;
+
     align-items: center;
+
     gap: 12px;
+
     margin-bottom: 18px;
 }
 
+
 .row label {
+
     font-size: 16px;
+
     font-weight: 600;
+
     width: 180px;
+
     min-width: 180px;
 }
 
-.row input {
-    width: 280px;
-    height: 48px;
-    padding: 0 14px;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    font-size: 16px;
-    outline: none;
-    background: #ffffff;
-}
-
-.optional {
-
-    color: #777;
-
-    font-size: 13px;
-
-    font-weight: normal;
-}
-
-
-/* =========================================
-   INPUT
-========================================= */
 
 .row input {
 
@@ -200,7 +185,7 @@ body {
 
 
 /* =========================================
-   PAYMENT CARDS
+   PAYMENT / MODE CARDS
 ========================================= */
 
 .payment-cards,
@@ -213,10 +198,6 @@ body {
     gap: 15px;
 }
 
-
-/* =========================================
-   CARD LABEL
-========================================= */
 
 .payment-card,
 .mode-card {
@@ -269,7 +250,7 @@ body {
 
 
 /* =========================================
-   SELECTED
+   SELECTED CARD
 ========================================= */
 
 .payment-card input:checked + .card-content,
@@ -341,7 +322,7 @@ body {
 
 
 /* =========================================
-   INFO
+   CARD TEXT
 ========================================= */
 
 .payment-info,
@@ -402,13 +383,8 @@ body {
 }
 
 
-.payment-card input:checked
-+ .card-content
-.check-mark,
-
-.mode-card input:checked
-+ .mode-content
-.mode-check {
+.payment-card input:checked + .card-content .check-mark,
+.mode-card input:checked + .mode-content .mode-check {
 
     background: #1680e8;
 }
@@ -435,7 +411,7 @@ body {
 
 
 /* =========================================
-   BUTTON ROW
+   CALCULATE BUTTON ROW
 ========================================= */
 
 .buttonRow {
@@ -449,7 +425,7 @@ body {
 
 
 /* =========================================
-   CALCULATE
+   CALCULATE BUTTON
 ========================================= */
 
 #calculateBtn {
@@ -481,6 +457,12 @@ body {
 /* =========================================
    NEXT
 ========================================= */
+
+.next-row {
+
+    margin-top: 30px;
+}
+
 
 #nextBtn {
 
@@ -587,6 +569,8 @@ body {
 
 
     .row label {
+
+        width: auto;
 
         min-width: auto;
     }

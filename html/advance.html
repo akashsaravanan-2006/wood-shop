@@ -91,86 +91,190 @@
         </div>
 
 
-        <!-- =========================
-             PAYMENT TYPE
-        ========================== -->
+       <!-- =========================================
+     PAYMENT TYPE
+========================================= -->
 
-        <div class="row">
+<div class="payment-section">
 
-            <label>
-                Payment Type
-            </label>
+    <div class="section-title">
+        <span class="section-icon">💳</span>
 
-            <div class="paymentType">
+        <div>
+            <h3>Payment Type</h3>
+            <p>Choose how the customer is paying</p>
+        </div>
+    </div>
 
-                <label class="radioLabel">
+    <div class="payment-cards">
 
-                    <input
-                        type="radio"
-                        name="paymentType"
-                        value="ready_cash"
-                        checked>
+        <!-- READY CASH -->
 
-                    Ready Cash
+        <label class="payment-card type-card">
 
-                </label>
+            <input
+                type="radio"
+                name="paymentType"
+                value="cash"
+                checked>
 
+            <div class="card-content">
 
-                <label class="radioLabel">
+                <div class="payment-icon cash-icon">
+                    ₹
+                </div>
 
-                    <input
-                        type="radio"
-                        name="paymentType"
-                        value="advance">
+                <div class="payment-info">
 
-                    Advance
+                    <strong>Ready Cash</strong>
 
-                </label>
+                    <span>
+                        Full payment now
+                    </span>
+
+                </div>
+
+                <div class="check-mark">
+                    ✓
+                </div>
 
             </div>
 
+        </label>
+
+
+        <!-- ADVANCE -->
+
+        <label class="payment-card type-card">
+
+            <input
+                type="radio"
+                name="paymentType"
+                value="advance">
+
+            <div class="card-content">
+
+                <div class="payment-icon advance-icon">
+                    %
+                </div>
+
+                <div class="payment-info">
+
+                    <strong>Advance</strong>
+
+                    <span>
+                        Pay partially now
+                    </span>
+
+                </div>
+
+                <div class="check-mark">
+                    ✓
+                </div>
+
+            </div>
+
+        </label>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     PAYMENT MODE
+========================================= -->
+
+<div class="payment-section">
+
+    <div class="section-title">
+
+        <span class="section-icon">💰</span>
+
+        <div>
+
+            <h3>Payment Mode</h3>
+
+            <p>Select the payment method</p>
+
         </div>
 
-
-        <!-- =========================
-             PAYMENT MODE
-        ========================== -->
-
-        <div class="row">
-
-            <label>
-                Payment Mode
-            </label>
-
-            <div class="paymentType">
-
-                <label class="radioLabel">
-
-                    <input
-                        type="radio"
-                        name="paymentMode"
-                        value="cash"
-                        checked>
-
-                    Cash
-
-                </label>
+    </div>
 
 
-                <label class="radioLabel">
+    <div class="mode-cards">
 
-                    <input
-                        type="radio"
-                        name="paymentMode"
-                        value="upi">
+        <!-- CASH -->
 
+        <label class="mode-card">
+
+            <input
+                type="radio"
+                name="paymentMode"
+                value="cash"
+                checked>
+
+            <div class="mode-content">
+
+                <div class="mode-icon cash-mode">
+                    💵
+                </div>
+
+                <div class="mode-info">
+
+                    <strong>Cash</strong>
+
+                    <span>
+                        Physical payment
+                    </span>
+
+                </div>
+
+                <div class="mode-check">
+                    ✓
+                </div>
+
+            </div>
+
+        </label>
+
+
+        <!-- UPI -->
+
+        <label class="mode-card">
+
+            <input
+                type="radio"
+                name="paymentMode"
+                value="upi">
+
+            <div class="mode-content">
+
+                <div class="mode-icon upi-mode">
                     UPI
+                </div>
 
-                </label>
+                <div class="mode-info">
+
+                    <strong>UPI</strong>
+
+                    <span>
+                        Digital payment
+                    </span>
+
+                </div>
+
+                <div class="mode-check">
+                    ✓
+                </div>
 
             </div>
 
-        </div>
+        </label>
+
+    </div>
+
+</div>
 
 
         <!-- =========================

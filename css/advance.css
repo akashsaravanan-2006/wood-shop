@@ -1,30 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+
+/* =======================================
+   VARIABLES
+======================================= */
+
 :root {
+
     --walnut: #2b1c12;
     --walnut-light: #4a2f1c;
 
     --brass: #96652a;
     --brass-light: #c99a4f;
-    --brass-dim: #f6ead2;
 
     --paper: #f7f3ea;
+    --paper-dark: #eee5d3;
+
     --card: #ffffff;
 
     --ink: #231710;
-    --ink-soft: #5a4b3c;
+    --ink-soft: #6b5a49;
 
     --border: #dcd0ba;
 
-    --success: #2f7a4f;
+    --green: #008f5a;
+    --green-light: #e9f8f1;
 
     --blue: #1769aa;
-    --blue-light: #e8f3ff;
+    --blue-light: #eaf4ff;
 
     --radius: 16px;
-    --radius-sm: 10px;
 
-    --tap: 52px;
 }
 
 
@@ -33,13 +39,14 @@
 ======================================= */
 
 * {
+
     margin: 0;
     padding: 0;
+
     box-sizing: border-box;
 
     font-family: 'Inter', sans-serif;
 
-    -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -48,17 +55,24 @@
 ======================================= */
 
 body {
-    background: var(--paper);
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7f3ea,
+            #eee5d3
+        );
 
     min-height: 100vh;
 
     display: flex;
 
-    align-items: flex-start;
-
     justify-content: center;
 
-    padding: 32px 16px;
+    align-items: flex-start;
+
+    padding: 30px 15px;
+
 }
 
 
@@ -67,8 +81,11 @@ body {
 ======================================= */
 
 .container {
+
     width: 100%;
-    max-width: 460px;
+
+    max-width: 470px;
+
 }
 
 
@@ -77,18 +94,20 @@ body {
 ======================================= */
 
 .card {
-    background: var(--card);
 
-    border-radius: var(--radius);
+    background: white;
 
-    padding: 28px 22px;
+    padding: 28px 24px;
 
-    box-shadow:
-        0 6px 24px rgba(43, 28, 18, 0.12);
+    border-radius: 18px;
 
     border: 1px solid var(--border);
 
-    border-top: 4px solid var(--brass);
+    border-top: 5px solid var(--brass);
+
+    box-shadow:
+        0 10px 35px rgba(43,28,18,.13);
+
 }
 
 
@@ -97,152 +116,136 @@ body {
 ======================================= */
 
 h1 {
-    font-size: 22px;
-
-    font-weight: 800;
-
-    color: var(--walnut);
 
     text-align: center;
 
+    color: var(--walnut);
+
+    font-size: 24px;
+
+    font-weight: 800;
+
     margin-bottom: 22px;
+
+}
+
+
+hr {
+
+    border: none;
+
+    border-top: 1px solid var(--border);
+
+    margin-bottom: 22px;
+
 }
 
 
 /* =======================================
-   ROW
+   NORMAL ROW
 ======================================= */
 
 .row {
+
     margin-bottom: 20px;
+
 }
 
 
 .row > label {
+
     display: block;
 
-    font-size: 14.5px;
+    font-size: 14px;
 
     font-weight: 700;
 
     color: var(--ink);
 
     margin-bottom: 8px;
+
 }
 
 
 /* =======================================
-   OPTIONAL TEXT
-======================================= */
-
-.optional {
-    font-size: 12px;
-
-    font-weight: 400;
-
-    color: #888;
-}
-
-
-/* =======================================
-   INPUTS
+   INPUT
 ======================================= */
 
 input[type="text"],
 input[type="number"] {
+
     width: 100%;
 
-    height: var(--tap);
+    height: 52px;
 
-    padding: 0 14px;
+    padding: 0 15px;
+
+    border: 2px solid var(--border);
+
+    border-radius: 10px;
+
+    background: var(--paper);
+
+    color: var(--ink);
 
     font-size: 17px;
 
     font-weight: 600;
 
-    color: var(--ink);
-
-    background: var(--paper);
-
-    border: 2px solid var(--border);
-
-    border-radius: var(--radius-sm);
-
-    transition:
-        border-color .15s ease,
-        box-shadow .15s ease;
-}
-
-
-input::placeholder {
-    color: #a89a86;
-
-    font-weight: 400;
 }
 
 
 input:focus {
+
     outline: none;
 
     border-color: var(--brass);
 
     box-shadow:
-        0 0 0 4px var(--brass-dim);
+        0 0 0 4px rgba(150,101,42,.12);
+
 }
 
 
 /* =======================================
-   TOTAL DISPLAY
+   PAYMENT SECTION
 ======================================= */
 
-.totalDisplay {
-    background: var(--brass-dim);
+.payment-section {
 
-    border: 2px solid var(--brass-light);
+    margin-top: 25px;
 
-    color: var(--walnut);
-
-    font-size: 20px;
-
-    font-weight: 800;
-
-    cursor: default;
 }
 
 
 /* =======================================
-   FINAL TOTAL
+   SECTION TITLE
 ======================================= */
 
-.finalTotal {
-    background: #eaf5ed;
+.section-title {
 
-    border-color: var(--success);
+    display: flex;
 
-    color: var(--success);
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 13px;
+
 }
 
 
-/* ==================================================
-   PAYMENT TYPE
-   READY CASH / ADVANCE
-================================================== */
+.section-icon {
 
-.paymentType {
-    display: grid;
+    width: 42px;
 
-    grid-template-columns: 1fr 1fr;
+    height: 42px;
 
-    gap: 10px;
-}
+    border-radius: 12px;
 
+    background: var(--walnut);
 
-/* =======================================
-   ALL RADIO LABELS
-======================================= */
-
-.radioLabel {
-    position: relative;
+    color: white;
 
     display: flex;
 
@@ -250,136 +253,541 @@ input:focus {
 
     justify-content: center;
 
-    height: var(--tap);
+    font-size: 20px;
 
-    border: 2px solid var(--border);
-
-    border-radius: var(--radius-sm);
-
-    background: var(--paper);
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    color: var(--ink-soft);
-
-    cursor: pointer;
-
-    transition:
-        border-color .15s ease,
-        background .15s ease,
-        color .15s ease,
-        transform .15s ease;
 }
 
 
-.radioLabel input {
+.section-title h3 {
+
+    font-size: 15px;
+
+    color: var(--ink);
+
+    margin-bottom: 3px;
+
+}
+
+
+.section-title p {
+
+    font-size: 11px;
+
+    color: var(--ink-soft);
+
+}
+
+
+/* =======================================
+   PAYMENT TYPE CARDS
+======================================= */
+
+.payment-cards {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+}
+
+
+.payment-card {
+
+    position: relative;
+
+    cursor: pointer;
+
+}
+
+
+.payment-card input {
+
     position: absolute;
 
     opacity: 0;
 
-    inset: 0;
+    pointer-events: none;
 
-    width: 100%;
-
-    height: 100%;
-
-    margin: 0;
-
-    cursor: pointer;
 }
 
 
-/* ==================================================
-   PAYMENT TYPE - READY CASH
-================================================== */
+.card-content {
 
-label.radioLabel:has(
-    input[name="paymentType"][value="ready_cash"]:checked
-) {
-    background: #343a40;
+    min-height: 120px;
+
+    padding: 15px;
+
+    border: 2px solid var(--border);
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    transition: .2s ease;
+
+}
+
+
+.payment-card:hover .card-content {
+
+    transform: translateY(-2px);
+
+    border-color: var(--brass-light);
+
+    box-shadow:
+        0 5px 15px rgba(43,28,18,.10);
+
+}
+
+
+/* =======================================
+   PAYMENT ICON
+======================================= */
+
+.payment-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+
+/* READY CASH */
+
+.cash-icon {
+
+    background: #edf0f2;
+
+    color: #343a40;
+
+}
+
+
+/* ADVANCE */
+
+.advance-icon {
+
+    background: #fff0df;
+
+    color: #a85b00;
+
+}
+
+
+/* =======================================
+   PAYMENT INFO
+======================================= */
+
+.payment-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin-top: 10px;
+
+}
+
+
+.payment-info strong {
+
+    font-size: 14px;
+
+    color: var(--ink);
+
+}
+
+
+.payment-info span {
+
+    font-size: 11px;
+
+    color: var(--ink-soft);
+
+    margin-top: 3px;
+
+}
+
+
+/* =======================================
+   CHECK MARK
+======================================= */
+
+.check-mark {
+
+    position: absolute;
+
+    top: 10px;
+
+    right: 10px;
+
+    width: 23px;
+
+    height: 23px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: transparent;
+
+    color: transparent;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+/* =======================================
+   READY CASH SELECTED
+======================================= */
+
+.payment-card input[value="cash"]:checked
+~ .card-content {
 
     border-color: #343a40;
 
-    color: white;
+    background: #f1f3f5;
 
-    box-shadow:
-        0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 
-/* ==================================================
-   PAYMENT TYPE - ADVANCE
-================================================== */
+.payment-card input[value="cash"]:checked
+~ .card-content .cash-icon {
 
-label.radioLabel:has(
-    input[name="paymentType"][value="advance"]:checked
-) {
-    background: #8b4513;
-
-    border-color: #8b4513;
+    background: #343a40;
 
     color: white;
 
-    box-shadow:
-        0 3px 8px rgba(139, 69, 19, 0.25);
 }
 
 
-/* ==================================================
-   PAYMENT MODE - CASH
-================================================== */
+.payment-card input[value="cash"]:checked
+~ .card-content .check-mark {
 
-label.radioLabel:has(
-    input[name="paymentMode"][value="cash"]:checked
-) {
-    background: #008f5a;
-
-    border-color: #008f5a;
+    background: #343a40;
 
     color: white;
 
-    box-shadow:
-        0 3px 8px rgba(0, 143, 90, 0.25);
-}
-
-
-/* ==================================================
-   PAYMENT MODE - UPI
-================================================== */
-
-label.radioLabel:has(
-    input[name="paymentMode"][value="upi"]:checked
-) {
-    background: #1769aa;
-
-    border-color: #1769aa;
-
-    color: white;
-
-    box-shadow:
-        0 3px 8px rgba(23, 105, 170, 0.25);
 }
 
 
 /* =======================================
-   HOVER
+   ADVANCE SELECTED
 ======================================= */
 
-.radioLabel:hover {
-    transform: translateY(-1px);
+.payment-card input[value="advance"]:checked
+~ .card-content {
+
+    border-color: #a85b00;
+
+    background: #fff7ed;
+
+}
+
+
+.payment-card input[value="advance"]:checked
+~ .card-content .advance-icon {
+
+    background: #a85b00;
+
+    color: white;
+
+}
+
+
+.payment-card input[value="advance"]:checked
+~ .card-content .check-mark {
+
+    background: #a85b00;
+
+    color: white;
+
 }
 
 
 /* =======================================
-   FOCUS
+   PAYMENT MODE
 ======================================= */
 
-.radioLabel:has(input:focus-visible) {
-    outline: 3px solid var(--brass-light);
+.mode-cards {
 
-    outline-offset: 2px;
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+/* =======================================
+   MODE CARD
+======================================= */
+
+.mode-card {
+
+    position: relative;
+
+    cursor: pointer;
+
+}
+
+
+.mode-card input {
+
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+.mode-content {
+
+    min-height: 72px;
+
+    padding: 12px 15px;
+
+    border: 2px solid var(--border);
+
+    border-radius: 13px;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    position: relative;
+
+    transition: .2s ease;
+
+}
+
+
+.mode-card:hover .mode-content {
+
+    transform: translateX(2px);
+
+    border-color: var(--brass-light);
+
+}
+
+
+/* =======================================
+   MODE ICON
+======================================= */
+
+.mode-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+}
+
+
+/* CASH */
+
+.cash-mode {
+
+    background: #e9f8f1;
+
+    color: var(--green);
+
+}
+
+
+/* UPI */
+
+.upi-mode {
+
+    background: var(--blue-light);
+
+    color: var(--blue);
+
+    font-size: 13px;
+
+}
+
+
+/* =======================================
+   MODE TEXT
+======================================= */
+
+.mode-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.mode-info strong {
+
+    font-size: 15px;
+
+    color: var(--ink);
+
+}
+
+
+.mode-info span {
+
+    font-size: 11px;
+
+    color: var(--ink-soft);
+
+    margin-top: 3px;
+
+}
+
+
+/* =======================================
+   MODE CHECK
+======================================= */
+
+.mode-check {
+
+    position: absolute;
+
+    right: 15px;
+
+    width: 25px;
+
+    height: 25px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: transparent;
+
+    background: transparent;
+
+    font-weight: 800;
+
+}
+
+
+/* =======================================
+   CASH SELECTED
+======================================= */
+
+.mode-card input[value="cash"]:checked
+~ .mode-content {
+
+    border-color: var(--green);
+
+    background: var(--green-light);
+
+}
+
+
+.mode-card input[value="cash"]:checked
+~ .mode-content .cash-mode {
+
+    background: var(--green);
+
+    color: white;
+
+}
+
+
+.mode-card input[value="cash"]:checked
+~ .mode-content .mode-check {
+
+    background: var(--green);
+
+    color: white;
+
+}
+
+
+/* =======================================
+   UPI SELECTED
+======================================= */
+
+.mode-card input[value="upi"]:checked
+~ .mode-content {
+
+    border-color: var(--blue);
+
+    background: var(--blue-light);
+
+}
+
+
+.mode-card input[value="upi"]:checked
+~ .mode-content .upi-mode {
+
+    background: var(--blue);
+
+    color: white;
+
+}
+
+
+.mode-card input[value="upi"]:checked
+~ .mode-content .mode-check {
+
+    background: var(--blue);
+
+    color: white;
+
 }
 
 
@@ -388,37 +796,36 @@ label.radioLabel:has(
 ======================================= */
 
 #advanceSection {
-    padding-top: 4px;
+
+    margin-top: 20px;
+
+    padding-top: 18px;
 
     border-top: 1px dashed var(--border);
 
-    margin-top: 4px;
 }
 
 
 /* =======================================
-   BUTTON ROW
+   BUTTONS
 ======================================= */
 
 .buttonRow {
-    margin-top: 6px;
+
+    margin-top: 20px;
+
 }
 
 
-/* =======================================
-   BUTTON
-======================================= */
-
 button {
+
     width: 100%;
 
-    height: var(--tap);
+    height: 52px;
 
     border: none;
 
-    border-radius: var(--radius-sm);
-
-    font-family: 'Inter', sans-serif;
+    border-radius: 11px;
 
     font-size: 16px;
 
@@ -426,116 +833,83 @@ button {
 
     cursor: pointer;
 
-    transition:
-        background .15s ease,
-        transform .15s ease;
-}
-
-
-button:focus-visible {
-    outline: 3px solid var(--brass-light);
-
-    outline-offset: 2px;
 }
 
 
 /* =======================================
-   CALCULATE BUTTON
+   CALCULATE
 ======================================= */
 
 #calculateBtn {
-    background: var(--brass-dim);
 
-    color: var(--brass);
+    background: var(--brass);
 
-    border: 2px solid var(--brass-light);
+    color: white;
+
 }
 
 
 #calculateBtn:hover {
+
     background: var(--brass-light);
 
-    color: var(--walnut);
-}
-
-
-#calculateBtn:active {
-    transform: scale(0.98);
 }
 
 
 /* =======================================
-   NEXT BUTTON
+   NEXT
 ======================================= */
 
 #nextBtn {
-    background: var(--success);
+
+    margin-top: 5px;
+
+    background: var(--green);
 
     color: white;
 
-    margin-top: 18px;
-
     font-size: 17px;
+
 }
 
 
 #nextBtn:hover {
-    background: #245e3d;
-}
 
+    background: #006f46;
 
-#nextBtn:active {
-    transform: scale(0.98);
 }
 
 
 /* =======================================
-   BACK BUTTON
+   BACK
 ======================================= */
 
 .button-container {
+
     display: flex;
 
     justify-content: center;
 
-    align-items: center;
+    margin-top: 20px;
 
-    margin-top: 30px;
 }
 
 
 #backBtn {
-    width: 140px;
 
-    height: 50px;
+    width: 140px;
 
     background: #343a40;
 
     color: white;
 
-    border: none;
-
-    border-radius: 8px;
-
-    font-size: 17px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
 }
 
 
 #backBtn:hover {
+
     background: #23272b;
 
-    transform: translateY(-1px);
-}
-
-
-#backBtn:active {
-    transform: translateY(0);
 }
 
 
@@ -543,14 +917,18 @@ button:focus-visible {
    MOBILE
 ======================================= */
 
-@media (max-width: 400px) {
+@media(max-width:420px) {
 
     .card {
+
         padding: 22px 16px;
+
     }
 
-    .paymentType {
-        grid-template-columns: 1fr 1fr;
+    .payment-cards {
+
+        grid-template-columns: 1fr;
+
     }
 
 }

@@ -15,40 +15,89 @@
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
+
     <div class="card">
 
-        <h1>Advance Payment</h1>
+
+        <!-- =========================
+             TITLE
+        ========================== -->
+
+        <h1>
+            Advance Payment
+        </h1>
+
 
         <hr>
 
-        <!-- ========================= -->
-        <!-- Grand Total -->
-        <!-- ========================= -->
+
+        <!-- =========================
+             GRAND TOTAL
+        ========================== -->
 
         <div class="row">
 
-            <label>Grand Total</label>
+            <label>
+                Grand Total
+            </label>
 
             <input
                 type="text"
                 id="grandTotal"
+                class="totalDisplay"
                 readonly>
 
         </div>
 
-        <!-- ========================= -->
-        <!-- Payment Type -->
-        <!-- ========================= -->
+
+        <!-- =========================
+             DISCOUNT
+        ========================== -->
 
         <div class="row">
 
-            <label>Payment Type</label>
+            <label>
+                Discount Amount
+                <span style="
+                    font-size:12px;
+                    font-weight:400;
+                    color:#888;
+                ">
+                    (Optional)
+                </span>
+            </label>
+
+            <input
+                type="number"
+                id="discountAmount"
+                min="0"
+                step="1"
+                placeholder="Enter Discount Amount">
+
+        </div>
+
+
+        <!-- =========================
+             PAYMENT TYPE
+        ========================== -->
+
+        <div class="row">
+
+            <label>
+                Payment Type
+            </label>
+
 
             <div class="paymentType">
+
+
+                <!-- CASH -->
 
                 <label class="radioLabel">
 
@@ -58,9 +107,26 @@
                         value="cash"
                         checked>
 
-                    Ready Cash
+                    Cash
 
                 </label>
+
+
+                <!-- UPI -->
+
+                <label class="radioLabel">
+
+                    <input
+                        type="radio"
+                        name="paymentType"
+                        value="upi">
+
+                    UPI
+
+                </label>
+
+
+                <!-- ADVANCE -->
 
                 <label class="radioLabel">
 
@@ -73,30 +139,48 @@
 
                 </label>
 
+
             </div>
 
         </div>
 
-        <!-- ========================= -->
-        <!-- Advance Section -->
-        <!-- ========================= -->
+
+        <!-- =========================
+             ADVANCE SECTION
+        ========================== -->
 
         <div id="advanceSection">
 
+
+            <!-- =========================
+                 ADVANCE AMOUNT
+            ========================== -->
+
             <div class="row">
 
-                <label>Advance Amount</label>
+                <label>
+                    Advance Amount
+                </label>
 
                 <input
                     type="number"
                     id="advanceAmount"
+                    min="0"
+                    step="1"
                     placeholder="Enter Advance Amount">
 
             </div>
 
+
+            <!-- =========================
+                 BALANCE AMOUNT
+            ========================== -->
+
             <div class="row">
 
-                <label>Balance Amount</label>
+                <label>
+                    Balance Amount
+                </label>
 
                 <input
                     type="text"
@@ -104,6 +188,11 @@
                     readonly>
 
             </div>
+
+
+            <!-- =========================
+                 CALCULATE
+            ========================== -->
 
             <div class="buttonRow">
 
@@ -117,11 +206,13 @@
 
             </div>
 
+
         </div>
 
-        <!-- ========================= -->
-        <!-- Next Button -->
-        <!-- ========================= -->
+
+        <!-- =========================
+             NEXT BUTTON
+        ========================== -->
 
         <div class="buttonRow">
 
@@ -132,21 +223,39 @@
                 Next
 
             </button>
-            <div class="button-container">
-
-    <button id="backBtn">
-        Back
-    </button>
-
-</div>
 
         </div>
 
+
+        <!-- =========================
+             BACK BUTTON
+        ========================== -->
+
+        <div class="button-container">
+
+            <button
+                type="button"
+                id="backBtn">
+
+                Back
+
+            </button>
+
+        </div>
+
+
     </div>
+
 
 </div>
 
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
 <script src="../js/advance.js"></script>
+
 <script src="../js/inputControl.js"></script>
 
 

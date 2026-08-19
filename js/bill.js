@@ -156,10 +156,8 @@ const subtotal =
 // DISCOUNT
 // =========================================
 
-const discount =
-    Number(
-        localStorage.getItem("discountAmount")
-    ) || 0;
+discountElement.textContent =
+    "- ₹ " + Math.round(discount);
 
 
 // =========================================

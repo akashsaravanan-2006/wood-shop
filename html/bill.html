@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -12,26 +11,20 @@
 
     <link rel="stylesheet"
           href="../css/bill.css">
-
 </head>
 
 <body>
 
 <div class="bill-container">
 
-    <!-- ================================= -->
     <!-- HEADER -->
-    <!-- ================================= -->
-
     <div class="header">
 
         <div class="logo">
-
             <img
                 src="../img/logo.jpg"
                 id="logo"
                 alt="Logo">
-
         </div>
 
         <div class="company">
@@ -60,81 +53,56 @@
 
     </div>
 
-
     <hr>
 
-
-    <!-- ================================= -->
     <!-- BILL INFORMATION -->
-    <!-- ================================= -->
-
     <div class="billInfo">
 
         <div>
-
             <b>Bill No :</b>
-
             <span id="billNo">---</span>
-
         </div>
 
-        <div>
-
+        <div class="bill-date">
             <b>Date :</b>
-
-            <span id="billDate"></span>
-
+            <span id="billDate">---</span>
             <br>
-
-            <small id="billDayTime"></small>
-
+            <small id="billDayTime">---</small>
         </div>
 
     </div>
 
-
     <hr>
 
-
-    <!-- ================================= -->
     <!-- CUSTOMER -->
-    <!-- ================================= -->
-
     <div class="customer">
 
         <span>
             <b>Customer :</b>
-            <span id="customerName"></span>
+            <span id="customerName">---</span>
         </span>
 
         <span>
             <b>Mobile :</b>
-            <span id="customerMobile"></span>
+            <span id="customerMobile">---</span>
         </span>
 
         <span>
             <b>Place :</b>
-            <span id="customerPlace"></span>
+            <span id="customerPlace">---</span>
         </span>
 
     </div>
 
-
     <hr>
 
-
-    <!-- ================================= -->
     <!-- WOOD DETAILS -->
-    <!-- ================================= -->
-
     <h2>Wood Details</h2>
 
-    <table>
+    <table class="wood-table">
 
         <thead>
-
             <tr>
-
                 <th>S.No</th>
                 <th>Wood</th>
                 <th>Size</th>
@@ -145,50 +113,34 @@
                 <th>Rate</th>
                 <th>Amount</th>
                 <th>Quality</th>
-
             </tr>
-
         </thead>
 
         <tbody id="woodTable"></tbody>
 
     </table>
 
-
-    <!-- ================================= -->
     <!-- OTHER CHARGES -->
-    <!-- ================================= -->
-
     <h2>Other Charges</h2>
 
-    <table>
+    <table class="charge-table">
 
         <thead>
-
             <tr>
-
                 <th>S.No</th>
                 <th>Name</th>
                 <th>Amount</th>
-
             </tr>
-
         </thead>
 
         <tbody id="chargeTable"></tbody>
 
     </table>
 
-
-    <!-- ================================= -->
     <!-- TOTALS -->
-    <!-- ================================= -->
-
     <div class="totals">
 
-
-        <!-- CFT TOTAL -->
-
+        <!-- CFT SUMMARY -->
         <div class="cftTotal">
 
             <h3>CFT Total</h3>
@@ -197,48 +149,25 @@
 
         </div>
 
-
         <!-- WOOD TOTAL -->
-
         <p>
-
             <span>Wood Total</span>
-
-            <span id="woodTotal">
-                ₹ 0.00
-            </span>
-
+            <span id="woodTotal">₹ 0</span>
         </p>
 
-
-        <!-- OTHERS TOTAL -->
-
+        <!-- OTHER TOTAL -->
         <p>
-
             <span>Others Total</span>
-
-            <span id="othersTotal">
-                ₹ 0.00
-            </span>
-
+            <span id="othersTotal">₹ 0</span>
         </p>
-
 
         <!-- SUBTOTAL -->
-
         <p class="subtotal-row">
-
             <span>Subtotal</span>
-
-            <span id="subtotal">
-                ₹ 0.00
-            </span>
-
+            <span id="subtotal">₹ 0</span>
         </p>
 
-
         <!-- DISCOUNT -->
-
         <p
             id="discountRow"
             class="discount-row"
@@ -247,27 +176,23 @@
             <span>Discount</span>
 
             <span id="discountAmount">
-                - ₹ 0.00
+                - ₹ 0
             </span>
 
         </p>
 
-
         <!-- GRAND TOTAL -->
-
         <h2 class="grand-total-row">
 
             <span>Grand Total</span>
 
             <span id="grandTotal">
-                ₹ 0.00
+                ₹ 0
             </span>
 
         </h2>
 
-
         <!-- ADVANCE -->
-
         <p
             id="advanceRow"
             class="advance-row"
@@ -276,14 +201,12 @@
             <span>Advance Amount</span>
 
             <span id="advanceAmount">
-                ₹ 0.00
+                ₹ 0
             </span>
 
         </p>
 
-
         <!-- PAYMENT MODE -->
-
         <p
             id="paymentModeRow"
             class="payment-mode-row"
@@ -297,97 +220,54 @@
 
         </p>
 
-
         <!-- BALANCE -->
-
         <p class="balance-row">
 
             <span>Balance Amount</span>
 
             <span id="balanceAmount">
-                ₹ 0.00
+                ₹ 0
             </span>
 
         </p>
 
-
     </div>
 
-
-    <!-- ================================= -->
     <!-- SIGNATURE -->
-    <!-- ================================= -->
-
     <div class="signature">
 
-        <p>
-            Customer Signature
-        </p>
+        <p>Customer Signature</p>
 
-        <p>
-            Authorized Signature
-        </p>
+        <p>Authorized Signature</p>
 
     </div>
 
-
-    <br>
-
-
-    <!-- ================================= -->
     <!-- BUTTONS -->
-    <!-- ================================= -->
-
     <div class="buttons">
 
-        <button
-            id="editBtn"
-            type="button">
-
+        <button id="editBtn" type="button">
             Edit Bill
-
         </button>
 
-
-        <button
-            id="confirmBill"
-            type="button">
-
+        <button id="confirmBill" type="button">
             Confirm
-
         </button>
 
-
-        <button
-            id="printBtn"
-            type="button">
-
+        <button id="printBtn" type="button">
             Print Bill
-
         </button>
 
-
-        <button
-            id="backBtn"
-            type="button">
-
+        <button id="backBtn" type="button">
             Back
-
         </button>
 
     </div>
-
 
 </div>
 
-
 <script src="../js/bill.js"></script>
-
 <script src="../js/inputControl.js"></script>
-
 <script src="../js/formPersistence.js"></script>
 
-
 </body>
-
 </html>

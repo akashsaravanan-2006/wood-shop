@@ -189,4 +189,154 @@ table td{
 
 #confirmBill:hover{
     background-color: #FFC107;
+}/* =========================================
+   SUBTOTAL
+========================================= */
+
+.subtotal-row {
+    border-top: 1px solid #999;
+    margin-top: 5px;
+    padding-top: 8px !important;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   DISCOUNT
+========================================= */
+
+.discount-row {
+    color: #c62828;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   ADVANCE
+========================================= */
+
+.advance-row {
+    color: #155724;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   PAYMENT MODE
+========================================= */
+
+.payment-mode-row {
+    color: #444;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   BALANCE
+========================================= */
+
+.balance-row {
+    font-weight: 700;
+}
+
+
+/* =========================================
+   CFT SUMMARY
+========================================= */
+
+#cftSummary p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    margin: 0;
+}
+
+#cftSummary p b {
+    font-weight: 700;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+#editBtn {
+    background: #f0ad4e;
+    color: #ffffff;
+}
+
+#editBtn:hover {
+    background: #d9912b;
+}
+
+
+#confirmBill {
+    background: #ffc107;
+    color: #111111;
+}
+
+#confirmBill:hover {
+    background: #e0a800;
+}
+
+
+#printBtn {
+    background: #00a651;
+    color: white;
+}
+
+#printBtn:hover {
+    background: #008f45;
+}
+
+
+#backBtn {
+    background: #1680e8;
+    color: white;
+}
+
+#backBtn:hover {
+    background: #086ac5;
+}
+
+
+/* =========================================
+   BUTTON SPACING
+========================================= */
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+
+.buttons button {
+    border: none;
+    border-radius: 6px;
+    padding: 13px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .buttons button {
+        width: 100%;
+    }
+
 }

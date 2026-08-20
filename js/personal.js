@@ -570,7 +570,7 @@ if (nextBtn) {
             // =================================
 
             window.location.href =
-                "advance.html";
+                "discount.html";
 
         }
     );

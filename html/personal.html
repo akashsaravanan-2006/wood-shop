@@ -1,90 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+console.log("=== NEW PERSONAL.JS LOADED ===");
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+const nextBtn = document.getElementById("nextBtn");
 
-    <title>Customer Information</title>
+if (!nextBtn) {
+    console.error("NEXT BUTTON NOT FOUND");
+} else {
 
-    <link rel="stylesheet" href="../css/personal.css">
-</head>
+    nextBtn.onclick = function (event) {
 
-<body>
+        event.preventDefault();
 
-<div class="container">
+        console.log("=== PERSONAL NEXT CLICKED ===");
+        console.log("GOING TO DISCOUNT.HTML");
 
-    <h1>Customer Information</h1>
+        window.location.href = "./discount.html";
+    };
 
-    <div class="inputBox">
-        <label for="customerName">
-            Customer Name
-        </label>
-
-        <input
-            type="text"
-            id="customerName"
-            placeholder="Enter Customer Name">
-    </div>
-
-
-    <div class="inputBox">
-        <label for="mobileNumber">
-            Mobile Number
-        </label>
-
-        <input
-            type="tel"
-            id="mobileNumber"
-            maxlength="10"
-            placeholder="Enter Mobile Number">
-    </div>
-
-
-    <div class="inputBox">
-        <label for="place">
-            Place
-        </label>
-
-        <input
-            type="text"
-            id="place"
-            placeholder="Enter Place">
-    </div>
-
-
-    <button
-        type="button"
-        id="nextBtn">
-
-        Next
-
-    </button>
-
-
-    <div class="button-container">
-
-        <button
-            type="button"
-            id="backBtn">
-
-            Back
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- IMPORTANT: ONLY THESE JS FILES -->
-
-<script src="../js/storedata.js?v=20"></script>
-
-<script src="../js/personal.js?v=20"></script>
-
-<script src="../js/inputControl.js?v=20"></script>
-
-</body>
-
-</html>
+}

@@ -1,203 +1,440 @@
-// =========================================
+// ===========================================
 // DISCOUNT.JS
-// =========================================
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    // =========================================
-    // GET ELEMENTS
-    // =========================================
-
-    const currentTotalElement =
-        document.getElementById("currentTotal");
-
-    const newGrandTotalElement =
-        document.getElementById("newGrandTotal");
-
-    const discountSection =
-        document.getElementById("discountSection");
-
-    const discountAmountInput =
-        document.getElementById("discountAmount");
-
-    const calculateDiscountBtn =
-        document.getElementById("calculateDiscountBtn");
-
-    const nextBtn =
-        document.getElementById("nextBtn");
-
-    const backBtn =
-        document.getElementById("backBtn");
+// CENTRAL BILL STORAGE VERSION
+// ===========================================
 
 
-    // =========================================
-    // GET BALANCE AMOUNT
-    // =========================================
-    // IMPORTANT:
-    // Discount must be calculated from
-    // the balance after advance payment.
-    // =========================================
+// ===========================================
+// GET HTML ELEMENTS
+// ===========================================
 
-    let balanceAmount = Number(
-        localStorage.getItem("balanceAmount")
+const currentTotalElement =
+    document.getElementById("currentTotal");
+
+const newGrandTotalElement =
+    document.getElementById("newGrandTotal");
+
+const discountSection =
+    document.getElementById("discountSection");
+
+const discountAmountInput =
+    document.getElementById("discountAmount");
+
+const calculateDiscountBtn =
+    document.getElementById(
+        "calculateDiscountBtn"
+    );
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+
+// ===========================================
+// GET ADVANCE DATA
+// ===========================================
+
+let advanceData = {};
+
+if (
+    typeof getPageData === "function"
+) {
+
+    advanceData =
+        getPageData("advance") || {};
+
+}
+
+
+// ===========================================
+// GET ORIGINAL GRAND TOTAL
+// ===========================================
+
+let originalGrandTotal =
+    Number(
+        advanceData.grandTotal
+    ) || 0;
+
+
+// Fallback for old storage
+
+if (
+    originalGrandTotal === 0
+) {
+
+    originalGrandTotal =
+        Number(
+            localStorage.getItem(
+                "grandTotal"
+            )
+        ) || 0;
+
+}
+
+
+// ===========================================
+// GET ADVANCE AMOUNT
+// ===========================================
+
+let advanceAmount =
+    Number(
+        advanceData.advanceAmount
+    ) || 0;
+
+
+// Fallback
+
+if (
+    advanceAmount === 0 &&
+    localStorage.getItem("advanceAmount")
+) {
+
+    advanceAmount =
+        Number(
+            localStorage.getItem(
+                "advanceAmount"
+            )
+        ) || 0;
+
+}
+
+
+// ===========================================
+// GET BALANCE AFTER ADVANCE
+// ===========================================
+
+let balanceAmount =
+    Number(
+        advanceData.balanceAmount
     );
 
 
-    // =========================================
-    // VALIDATE BALANCE
-    // =========================================
-
-    if (
-        !Number.isFinite(balanceAmount) ||
-        balanceAmount < 0
-    ) {
-
-        alert(
-            "Balance Amount not found. Please complete the Advance Payment again."
-        );
-
-        return;
-    }
-
-
-    // =========================================
-    // ROUND BALANCE
-    // =========================================
+if (
+    isNaN(balanceAmount)
+) {
 
     balanceAmount =
-        Math.round(balanceAmount);
+        originalGrandTotal -
+        advanceAmount;
+
+}
 
 
-    // =========================================
-    // SAVE DISCOUNT BASE AMOUNT
-    // =========================================
+// ===========================================
+// DISPLAY CURRENT TOTAL
+// ===========================================
+//
+// IMPORTANT:
+// Discount is calculated from the
+// BALANCE after advance.
+//
+// NOT from original grand total.
+// ===========================================
 
-    localStorage.setItem(
-        "discountBaseAmount",
-        String(balanceAmount)
-    );
+if (currentTotalElement) {
+
+    currentTotalElement.textContent =
+        "₹ " +
+        balanceAmount.toFixed(2);
+
+}
 
 
-    // =========================================
-    // DISPLAY CURRENT TOTAL
-    // =========================================
+if (newGrandTotalElement) {
 
-    if (currentTotalElement) {
+    newGrandTotalElement.textContent =
+        "₹ " +
+        balanceAmount.toFixed(2);
 
-        currentTotalElement.textContent =
-            "₹ " + balanceAmount;
+}
+
+
+// ===========================================
+// LOAD SAVED DISCOUNT DATA
+// ===========================================
+
+let savedDiscount = {};
+
+if (
+    typeof getPageData === "function"
+) {
+
+    savedDiscount =
+        getPageData("discount") || {};
+
+}
+
+
+// ===========================================
+// RESTORE DISCOUNT AMOUNT
+// ===========================================
+
+if (
+    discountAmountInput &&
+    savedDiscount.discountAmount !==
+    undefined
+) {
+
+    discountAmountInput.value =
+        savedDiscount.discountAmount;
+
+}
+
+
+// ===========================================
+// RESTORE DISCOUNT OPTION
+// ===========================================
+
+if (
+    savedDiscount.discountOption
+) {
+
+    const savedOption =
+        document.querySelector(
+            'input[name="discountOption"][value="' +
+            savedDiscount.discountOption +
+            '"]'
+        );
+
+
+    if (savedOption) {
+
+        savedOption.checked =
+            true;
+
+    }
+
+}
+
+
+// ===========================================
+// SHOW / HIDE DISCOUNT SECTION
+// ===========================================
+
+function updateDiscountSection() {
+
+    const selectedOption =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
+        );
+
+
+    if (!selectedOption) {
+
+        return;
+
     }
 
 
-    // =========================================
-    // INITIAL NEW GRAND TOTAL
-    // =========================================
+    if (
+        selectedOption.value === "yes"
+    ) {
 
-    if (newGrandTotalElement) {
+        if (discountSection) {
 
-        newGrandTotalElement.textContent =
-            "₹ " + balanceAmount;
+            discountSection.style.display =
+                "block";
+
+        }
+
+        if (discountAmountInput) {
+
+            discountAmountInput.focus();
+
+        }
+
+    }
+    else {
+
+        if (discountSection) {
+
+            discountSection.style.display =
+                "none";
+
+        }
+
+        if (discountAmountInput) {
+
+            discountAmountInput.value =
+                "";
+
+        }
+
+
+        if (newGrandTotalElement) {
+
+            newGrandTotalElement.textContent =
+                "₹ " +
+                balanceAmount.toFixed(2);
+
+        }
+
+    }
+
+}
+
+
+// ===========================================
+// SAVE DISCOUNT DATA
+// ===========================================
+
+function saveDiscountData(
+    discountOption,
+    discount
+) {
+
+    const finalBalance =
+        balanceAmount -
+        discount;
+
+
+    // =====================================
+    // CENTRAL STORAGE
+    // =====================================
+
+    if (
+        typeof savePageData === "function"
+    ) {
+
+        savePageData(
+            "discount",
+            {
+
+                discountOption:
+                    discountOption,
+
+                discountAmount:
+                    discount,
+
+                discountApplied:
+                    discount > 0,
+
+                balanceBeforeDiscount:
+                    balanceAmount,
+
+                finalAmount:
+                    finalBalance
+
+            }
+        );
+
     }
 
 
-    // =========================================
-    // RESET DISCOUNT
-    // =========================================
+    // =====================================
+    // OLD LOCAL STORAGE
+    // Keep compatibility with bill.js
+    // =====================================
 
     localStorage.setItem(
         "discountAmount",
-        "0"
+        String(discount)
     );
+
 
     localStorage.setItem(
         "discountApplied",
-        "false"
+        discount > 0
+            ? "true"
+            : "false"
     );
+
 
     localStorage.setItem(
         "finalGrandTotal",
+        String(finalBalance)
+    );
+
+
+    // Also save useful values
+
+    localStorage.setItem(
+        "balanceBeforeDiscount",
         String(balanceAmount)
     );
 
 
-    // =========================================
-    // DISCOUNT OPTIONS
-    // =========================================
-
-    const discountOptions =
-        document.querySelectorAll(
-            'input[name="discountOption"]'
-        );
+    localStorage.setItem(
+        "finalBalance",
+        String(finalBalance)
+    );
 
 
-    discountOptions.forEach(function (option) {
+    return finalBalance;
+
+}
+
+
+// ===========================================
+// DISCOUNT OPTION EVENTS
+// ===========================================
+
+const discountOptions =
+    document.querySelectorAll(
+        'input[name="discountOption"]'
+    );
+
+
+discountOptions.forEach(
+    function (option) {
 
         option.addEventListener(
             "change",
             function () {
 
-                // =================================
-                // NEED DISCOUNT
-                // =================================
-
-                if (this.value === "yes") {
+                if (
+                    this.value === "yes"
+                ) {
 
                     if (discountSection) {
 
                         discountSection.style.display =
                             "block";
+
                     }
 
 
                     if (discountAmountInput) {
 
                         discountAmountInput.focus();
+
                     }
 
                 }
-
-
-                // =================================
-                // NO DISCOUNT
-                // =================================
-
                 else {
+
+                    // No discount
 
                     if (discountSection) {
 
                         discountSection.style.display =
                             "none";
+
                     }
 
 
                     if (discountAmountInput) {
 
-                        discountAmountInput.value = "";
+                        discountAmountInput.value =
+                            "";
+
                     }
 
 
                     if (newGrandTotalElement) {
 
                         newGrandTotalElement.textContent =
-                            "₹ " + balanceAmount;
+                            "₹ " +
+                            balanceAmount.toFixed(2);
+
                     }
 
 
-                    localStorage.setItem(
-                        "discountAmount",
-                        "0"
-                    );
-
-
-                    localStorage.setItem(
-                        "discountApplied",
-                        "false"
-                    );
-
-
-                    localStorage.setItem(
-                        "finalGrandTotal",
-                        String(balanceAmount)
+                    saveDiscountData(
+                        "no",
+                        0
                     );
 
                 }
@@ -205,267 +442,383 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
-    });
+    }
+);
 
 
-    // =========================================
-    // CALCULATE DISCOUNT
-    // =========================================
+// ===========================================
+// CALCULATE DISCOUNT
+// ===========================================
 
-    if (calculateDiscountBtn) {
+if (calculateDiscountBtn) {
 
-        calculateDiscountBtn.addEventListener(
-            "click",
-            function () {
+    calculateDiscountBtn.addEventListener(
+        "click",
+        function () {
 
-                let discount =
+            const selectedOption =
+                document.querySelector(
+                    'input[name="discountOption"]:checked'
+                );
+
+
+            if (
+                !selectedOption ||
+                selectedOption.value !== "yes"
+            ) {
+
+                alert(
+                    "Please select Need Discount."
+                );
+
+                return;
+
+            }
+
+
+            let discount =
+                Number(
+                    discountAmountInput.value
+                ) || 0;
+
+
+            // =================================
+            // VALIDATION
+            // =================================
+
+            if (
+                discount <= 0
+            ) {
+
+                alert(
+                    "Please enter the discount amount."
+                );
+
+                discountAmountInput.focus();
+
+                return;
+
+            }
+
+
+            if (
+                discount > balanceAmount
+            ) {
+
+                alert(
+                    "Discount cannot be greater than Balance Amount."
+                );
+
+                discountAmountInput.focus();
+
+                return;
+
+            }
+
+
+            // =================================
+            // CALCULATE FINAL AMOUNT
+            // =================================
+
+            const finalAmount =
+                balanceAmount -
+                discount;
+
+
+            // =================================
+            // DISPLAY
+            // =================================
+
+            if (newGrandTotalElement) {
+
+                newGrandTotalElement.textContent =
+                    "₹ " +
+                    finalAmount.toFixed(2);
+
+            }
+
+
+            // =================================
+            // SAVE
+            // =================================
+
+            saveDiscountData(
+                "yes",
+                discount
+            );
+
+
+            console.log(
+                "Discount calculated:"
+            );
+
+            console.log(
+                "Balance:",
+                balanceAmount
+            );
+
+            console.log(
+                "Discount:",
+                discount
+            );
+
+            console.log(
+                "Final:",
+                finalAmount
+            );
+
+        }
+    );
+
+}
+
+
+// ===========================================
+// NEXT BUTTON
+// ===========================================
+
+if (nextBtn) {
+
+    nextBtn.addEventListener(
+        "click",
+        function () {
+
+            const selectedOption =
+                document.querySelector(
+                    'input[name="discountOption"]:checked'
+                );
+
+
+            // =================================
+            // VALIDATION
+            // =================================
+
+            if (!selectedOption) {
+
+                alert(
+                    "Please select a discount option."
+                );
+
+                return;
+
+            }
+
+
+            // =================================
+            // NO DISCOUNT
+            // =================================
+
+            if (
+                selectedOption.value === "no"
+            ) {
+
+                saveDiscountData(
+                    "no",
+                    0
+                );
+
+            }
+
+
+            // =================================
+            // DISCOUNT REQUIRED
+            // =================================
+
+            if (
+                selectedOption.value === "yes"
+            ) {
+
+                const discount =
                     Number(
                         discountAmountInput.value
                     ) || 0;
 
 
-                discount =
-                    Math.round(discount);
-
-
-                // =================================
-                // VALIDATION
-                // =================================
-
-                if (discount <= 0) {
+                if (
+                    discount <= 0
+                ) {
 
                     alert(
-                        "Please enter a valid discount amount."
+                        "Please enter the discount amount."
                     );
 
                     discountAmountInput.focus();
 
                     return;
+
                 }
 
 
-                // Discount cannot exceed balance
-
-                if (discount > balanceAmount) {
+                if (
+                    discount > balanceAmount
+                ) {
 
                     alert(
                         "Discount cannot be greater than Balance Amount."
                     );
 
-                    discountAmountInput.value =
-                        balanceAmount;
+                    discountAmountInput.focus();
 
                     return;
+
                 }
 
 
-                // =================================
-                // CALCULATE FINAL AMOUNT
-                // =================================
-
-                const finalAmount =
-                    balanceAmount - discount;
-
-
-                // =================================
-                // DISPLAY FINAL AMOUNT
-                // =================================
-
-                if (newGrandTotalElement) {
-
-                    newGrandTotalElement.textContent =
-                        "₹ " + finalAmount;
-                }
-
-
-                // =================================
-                // SAVE DISCOUNT
-                // =================================
-
-                localStorage.setItem(
-                    "discountAmount",
-                    String(discount)
-                );
-
-
-                localStorage.setItem(
-                    "discountApplied",
-                    "true"
-                );
-
-
-                localStorage.setItem(
-                    "finalGrandTotal",
-                    String(finalAmount)
+                saveDiscountData(
+                    "yes",
+                    discount
                 );
 
             }
-        );
-
-    }
 
 
-    // =========================================
-    // NEXT BUTTON
-    // =========================================
+            // =================================
+            // SAVE COMPLETE BILL DEBUG
+            // =================================
 
-    if (nextBtn) {
+            console.log(
+                "================================"
+            );
 
-        nextBtn.addEventListener(
-            "click",
-            function () {
-
-                const selectedOption =
-                    document.querySelector(
-                        'input[name="discountOption"]:checked'
-                    );
+            console.log(
+                "DISCOUNT DATA"
+            );
 
 
-                // =================================
-                // VALIDATE OPTION
-                // =================================
+            if (
+                typeof getPageData === "function"
+            ) {
 
-                if (!selectedOption) {
+                console.log(
+                    getPageData("discount")
+                );
 
-                    alert(
-                        "Please select a discount option."
-                    );
-
-                    return;
-                }
+            }
 
 
-                // =================================
-                // NO DISCOUNT
-                // =================================
-
-                if (
-                    selectedOption.value === "no"
-                ) {
-
-                    localStorage.setItem(
-                        "discountAmount",
-                        "0"
-                    );
+            console.log(
+                "COMPLETE BILL DATA"
+            );
 
 
-                    localStorage.setItem(
-                        "discountApplied",
-                        "false"
-                    );
+            if (
+                typeof getBillData === "function"
+            ) {
+
+                console.log(
+                    getBillData()
+                );
+
+            }
 
 
-                    localStorage.setItem(
-                        "finalGrandTotal",
-                        String(balanceAmount)
-                    );
-
-                }
+            console.log(
+                "================================"
+            );
 
 
-                // =================================
-                // NEED DISCOUNT
-                // =================================
+            // =================================
+            // GO TO BILL
+            // =================================
+
+            window.location.href =
+                "bill.html";
+
+        }
+    );
+
+}
+
+
+// ===========================================
+// BACK BUTTON
+// ===========================================
+
+if (backBtn) {
+
+    backBtn.addEventListener(
+        "click",
+        function () {
+
+            // Save current discount data
+            const selectedOption =
+                document.querySelector(
+                    'input[name="discountOption"]:checked'
+                );
+
+
+            if (
+                selectedOption
+            ) {
 
                 if (
                     selectedOption.value === "yes"
                 ) {
 
-                    let discount =
+                    const discount =
                         Number(
                             discountAmountInput.value
                         ) || 0;
 
 
-                    discount =
-                        Math.round(discount);
-
-
-                    // Validate
-
-                    if (discount <= 0) {
-
-                        alert(
-                            "Please enter the discount amount."
-                        );
-
-                        discountAmountInput.focus();
-
-                        return;
-                    }
-
-
                     if (
-                        discount > balanceAmount
+                        discount >= 0 &&
+                        discount <= balanceAmount
                     ) {
 
-                        alert(
-                            "Discount cannot be greater than Balance Amount."
+                        saveDiscountData(
+                            "yes",
+                            discount
                         );
 
-                        discountAmountInput.focus();
-
-                        return;
                     }
 
+                }
+                else {
 
-                    // Calculate
-
-                    const finalAmount =
-                        balanceAmount - discount;
-
-
-                    // Save
-
-                    localStorage.setItem(
-                        "discountAmount",
-                        String(discount)
-                    );
-
-
-                    localStorage.setItem(
-                        "discountApplied",
-                        "true"
-                    );
-
-
-                    localStorage.setItem(
-                        "finalGrandTotal",
-                        String(finalAmount)
+                    saveDiscountData(
+                        "no",
+                        0
                     );
 
                 }
 
-
-                // =================================
-                // GO TO BILL
-                // =================================
-
-                window.location.href =
-                    "bill.html";
-
             }
-        );
-
-    }
 
 
-    // =========================================
-    // BACK BUTTON
-    // =========================================
+            // Go back to Advance
 
-    if (backBtn) {
+            window.location.href =
+                "advance.html";
 
-        backBtn.addEventListener(
-            "click",
-            function () {
+        }
+    );
 
-                window.location.href =
-                    "advance.html";
+}
 
-            }
-        );
 
-    }
+// ===========================================
+// INITIAL LOAD
+// ===========================================
 
-});
+updateDiscountSection();
+
+
+console.log(
+    "DISCOUNT.JS LOADED SUCCESSFULLY"
+);
+
+console.log(
+    "Original Grand Total:",
+    originalGrandTotal
+);
+
+console.log(
+    "Advance Amount:",
+    advanceAmount
+);
+
+console.log(
+    "Balance Before Discount:",
+    balanceAmount
+);

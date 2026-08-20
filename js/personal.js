@@ -6,7 +6,9 @@
 // Personal -> Discount
 // ============================================================
 
+console.log("======================================");
 console.log("PERSONAL.JS LOADED");
+console.log("======================================");
 
 
 // ============================================================
@@ -30,10 +32,51 @@ const backBtn =
 
 
 // ============================================================
+// CHECK ELEMENTS
+// ============================================================
+
+console.log("Customer Name Element:", customerName);
+console.log("Mobile Element:", mobileNumber);
+console.log("Place Element:", place);
+console.log("Next Button:", nextBtn);
+console.log("Back Button:", backBtn);
+
+
+// ============================================================
 // VALIDATION
 // ============================================================
 
 function validateForm() {
+
+    if (!customerName) {
+
+        console.error(
+            "ERROR: customerName element not found"
+        );
+
+        return false;
+    }
+
+
+    if (!mobileNumber) {
+
+        console.error(
+            "ERROR: mobileNumber element not found"
+        );
+
+        return false;
+    }
+
+
+    if (!place) {
+
+        console.error(
+            "ERROR: place element not found"
+        );
+
+        return false;
+    }
+
 
     const name =
         customerName.value.trim();
@@ -45,9 +88,15 @@ function validateForm() {
         place.value.trim();
 
 
+    // ========================================================
+    // CUSTOMER NAME
+    // ========================================================
+
     if (name === "") {
 
-        alert("Please enter Customer Name");
+        alert(
+            "Please enter Customer Name"
+        );
 
         customerName.focus();
 
@@ -55,9 +104,15 @@ function validateForm() {
     }
 
 
+    // ========================================================
+    // MOBILE
+    // ========================================================
+
     if (mobile === "") {
 
-        alert("Please enter Mobile Number");
+        alert(
+            "Please enter Mobile Number"
+        );
 
         mobileNumber.focus();
 
@@ -77,9 +132,15 @@ function validateForm() {
     }
 
 
+    // ========================================================
+    // PLACE
+    // ========================================================
+
     if (customerPlace === "") {
 
-        alert("Please enter Place");
+        alert(
+            "Please enter Place"
+        );
 
         place.focus();
 
@@ -88,6 +149,7 @@ function validateForm() {
 
 
     return true;
+
 }
 
 
@@ -125,11 +187,18 @@ function savePersonalData() {
         );
 
     }
+    else {
+
+        console.warn(
+            "savePageData() not found"
+        );
+
+    }
 
 
     // ========================================================
     // OLD STORAGE
-    // Keep for existing bill.js compatibility
+    // Keep compatibility with existing bill.js
     // ========================================================
 
     localStorage.setItem(
@@ -149,8 +218,19 @@ function savePersonalData() {
 
 
     console.log(
-        "PERSONAL DATA SAVED:",
+        "======================================"
+    );
+
+    console.log(
+        "PERSONAL DATA SAVED"
+    );
+
+    console.log(
         data
+    );
+
+    console.log(
+        "======================================"
     );
 
 }
@@ -165,6 +245,10 @@ function loadPersonalData() {
     let data = null;
 
 
+    // ========================================================
+    // GET FROM CENTRAL STORAGE
+    // ========================================================
+
     if (
         typeof getPageData === "function"
     ) {
@@ -174,6 +258,10 @@ function loadPersonalData() {
 
     }
 
+
+    // ========================================================
+    // FALLBACK TO OLD STORAGE
+    // ========================================================
 
     if (
         !data ||
@@ -202,14 +290,32 @@ function loadPersonalData() {
     }
 
 
-    customerName.value =
-        data.name || "";
+    // ========================================================
+    // PUT VALUES INTO HTML
+    // ========================================================
 
-    mobileNumber.value =
-        data.mobile || "";
+    if (customerName) {
 
-    place.value =
-        data.place || "";
+        customerName.value =
+            data.name || "";
+
+    }
+
+
+    if (mobileNumber) {
+
+        mobileNumber.value =
+            data.mobile || "";
+
+    }
+
+
+    if (place) {
+
+        place.value =
+            data.place || "";
+
+    }
 
 
     console.log(
@@ -221,50 +327,115 @@ function loadPersonalData() {
 
 
 // ============================================================
-// NEXT
-// Personal -> Discount
-// ============================================================
-
-// ============================================================
 // NEXT BUTTON
-// Personal -> Discount
+//
+// PERSONAL -> DISCOUNT
 // ============================================================
 
 if (nextBtn) {
 
-    nextBtn.addEventListener("click", function () {
+    nextBtn.addEventListener(
+        "click",
+        function (event) {
 
-        // Validate personal details
-        if (!validateForm()) {
-            return;
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            console.log(
+                "======================================"
+            );
+
+            console.log(
+                "PERSONAL NEXT CLICKED"
+            );
+
+
+            // ==================================================
+            // VALIDATE
+            // ==================================================
+
+            if (!validateForm()) {
+
+                console.log(
+                    "VALIDATION FAILED"
+                );
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // SAVE
+            // ==================================================
+
+            savePersonalData();
+
+
+            // ==================================================
+            // REDIRECT
+            // ==================================================
+
+            console.log(
+                "PERSONAL DATA SAVED"
+            );
+
+            console.log(
+                "REDIRECTING TO DISCOUNT.HTML"
+            );
+
+            console.log(
+                "======================================"
+            );
+
+
+            // IMPORTANT
+            // Personal ALWAYS goes to Discount
+
+            window.location.assign(
+                "discount.html"
+            );
+
         }
+    );
 
-        // Save personal details
-        savePersonalData();
+}
+else {
 
-        console.log("PERSONAL DATA SAVED");
-        console.log("GOING TO DISCOUNT PAGE");
-
-        // IMPORTANT:
-        // Personal -> Discount
-        window.location.href = "discount.html";
-
-    });
+    console.error(
+        "ERROR: nextBtn NOT FOUND"
+    );
 
 }
 
+
 // ============================================================
-// BACK
+// BACK BUTTON
+//
+// PERSONAL -> LABOUR
 // ============================================================
 
 if (backBtn) {
 
     backBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            window.location.href =
-                "labour.html";
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            console.log(
+                "BACK BUTTON CLICKED"
+            );
+
+
+            window.location.assign(
+                "labour.html"
+            );
 
         }
     );
@@ -273,12 +444,16 @@ if (backBtn) {
 
 
 // ============================================================
-// LOAD
+// PAGE LOAD
 // ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
+        console.log(
+            "PERSONAL PAGE INITIALIZED"
+        );
 
         loadPersonalData();
 

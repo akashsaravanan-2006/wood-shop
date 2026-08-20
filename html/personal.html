@@ -1,19 +1,146 @@
-console.log("=== NEW PERSONAL.JS LOADED ===");
+<!DOCTYPE html>
+<html lang="en">
 
-const nextBtn = document.getElementById("nextBtn");
+<head>
 
-if (!nextBtn) {
-    console.error("NEXT BUTTON NOT FOUND");
-} else {
+    <meta charset="UTF-8">
 
-    nextBtn.onclick = function (event) {
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-        event.preventDefault();
+    <title>Customer Information</title>
 
-        console.log("=== PERSONAL NEXT CLICKED ===");
-        console.log("GOING TO DISCOUNT.HTML");
+    <link
+        rel="stylesheet"
+        href="../css/personal.css">
 
-        window.location.href = "./discount.html";
-    };
+</head>
 
-}
+
+<body>
+
+<div class="container">
+
+    <!-- =========================================
+         TITLE
+    ========================================== -->
+
+    <h1>
+        Customer Information
+    </h1>
+
+
+    <!-- =========================================
+         CUSTOMER NAME
+    ========================================== -->
+
+    <div class="inputBox">
+
+        <label for="customerName">
+            Customer Name
+        </label>
+
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Enter Customer Name"
+            autocomplete="off">
+
+    </div>
+
+
+    <!-- =========================================
+         MOBILE NUMBER
+    ========================================== -->
+
+    <div class="inputBox">
+
+        <label for="mobileNumber">
+            Mobile Number
+        </label>
+
+        <input
+            type="tel"
+            id="mobileNumber"
+            maxlength="10"
+            inputmode="numeric"
+            placeholder="Enter Mobile Number"
+            autocomplete="off">
+
+    </div>
+
+
+    <!-- =========================================
+         PLACE
+    ========================================== -->
+
+    <div class="inputBox">
+
+        <label for="place">
+            Place
+        </label>
+
+        <input
+            type="text"
+            id="place"
+            placeholder="Enter Place"
+            autocomplete="off">
+
+    </div>
+
+
+    <!-- =========================================
+         NEXT BUTTON
+         PERSONAL -> DISCOUNT
+    ========================================== -->
+
+    <button
+        type="button"
+        id="nextBtn">
+
+        Next
+
+    </button>
+
+
+    <!-- =========================================
+         BACK BUTTON
+         PERSONAL -> LABOUR
+    ========================================== -->
+
+    <div class="button-container">
+
+        <button
+            type="button"
+            id="backBtn">
+
+            Back
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =================================================
+     JAVASCRIPT
+
+     IMPORTANT:
+     Only these files are loaded.
+
+     PERSONAL DOES NOT LOAD advance.js
+     PERSONAL DOES NOT LOAD discount.js
+================================================== -->
+
+<script src="../js/storedata.js?v=20"></script>
+
+<script src="../js/personal.js?v=20"></script>
+
+<script src="../js/inputControl.js?v=20"></script>
+
+
+</body>
+
+</html>

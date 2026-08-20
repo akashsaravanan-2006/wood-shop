@@ -1808,4 +1808,68 @@ console.log(
 
 console.log(
     "=============================="
-);
+);// =========================================
+// CLEAR CURRENT BILL
+// =========================================
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+if (clearBtn) {
+
+    clearBtn.addEventListener(
+        "click",
+        function () {
+
+            const confirmClear =
+                window.confirm(
+                    "Are you sure you want to clear ALL bill data?"
+                );
+
+            if (!confirmClear) {
+                return;
+            }
+
+            // Clear central bill storage
+            if (
+                typeof clearBillData === "function"
+            ) {
+                clearBillData();
+            }
+
+            // Clear old localStorage data
+            localStorage.removeItem("woodData");
+            localStorage.removeItem("labourCharge");
+            localStorage.removeItem("otherCharge");
+            localStorage.removeItem("othersData");
+
+            localStorage.removeItem("customerName");
+            localStorage.removeItem("customerMobile");
+            localStorage.removeItem("customerPlace");
+
+            localStorage.removeItem("advanceAmount");
+            localStorage.removeItem("balanceAmount");
+            localStorage.removeItem("paymentType");
+            localStorage.removeItem("paymentMode");
+
+            localStorage.removeItem("grandTotal");
+            localStorage.removeItem("finalTotal");
+
+            localStorage.removeItem("discountAmount");
+            localStorage.removeItem("discountApplied");
+            localStorage.removeItem("billDiscount");
+            localStorage.removeItem("finalGrandTotal");
+
+            localStorage.removeItem("billConfirmed");
+            localStorage.removeItem("billConfirmedAt");
+            localStorage.removeItem("editingBill");
+            localStorage.removeItem("billDate");
+
+            // Go to home
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}

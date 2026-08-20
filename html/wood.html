@@ -5,43 +5,52 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Wood Calculation</title>
 
-    <link rel="stylesheet"
-          href="../css/wood.css">
+    <link
+        rel="stylesheet"
+        href="../css/wood.css">
 
 </head>
+
 
 <body>
 
 <div class="container">
 
-    <h1> Wood Calculation</h1>
+    <h1>Wood Calculation</h1>
 
-    <!-- =========================
+
+    <!-- =========================================
          ALL CALCULATIONS
-    ========================== -->
+    ========================================== -->
 
     <div id="allCalculations">
 
-        <!-- =========================
+
+        <!-- =========================================
              CALCULATION 1
-        ========================== -->
+        ========================================== -->
 
         <div class="calculation">
 
             <h2>Calculation 1</h2>
 
-            <!-- =========================
+
+            <!-- =====================================
                  WOOD TYPE
-            ========================== -->
+            ====================================== -->
 
             <div class="row">
 
-                <label>Wood Type</label>
+                <label>
+                    Wood Type
+                </label>
+
 
                 <select class="woodType">
 
@@ -63,6 +72,7 @@
 
                 </select>
 
+
                 <input
                     type="text"
                     class="otherWood"
@@ -71,15 +81,20 @@
 
             </div>
 
-            <!-- =========================
+
+            <!-- =====================================
                  BREADTH & THICKNESS
-            ========================== -->
+            ====================================== -->
 
             <div class="row twoColumn">
 
+
                 <div class="field">
 
-                    <label>Breadth (inch)</label>
+                    <label>
+                        Breadth (inch)
+                    </label>
+
 
                     <input
                         type="number"
@@ -90,9 +105,13 @@
 
                 </div>
 
+
                 <div class="field">
 
-                    <label>Thickness (inch)</label>
+                    <label>
+                        Thickness (inch)
+                    </label>
+
 
                     <input
                         type="number"
@@ -105,10 +124,10 @@
 
             </div>
 
-           
-            <!-- =========================
+
+            <!-- =====================================
                  LENGTH HEADER
-            ========================== -->
+            ====================================== -->
 
             <div class="lengthHeader">
 
@@ -116,9 +135,11 @@
                     Length (Feet)
                 </div>
 
+
                 <div class="headQty">
                     Quantity
                 </div>
+
 
                 <div class="headRemove">
                     Remove
@@ -126,17 +147,22 @@
 
             </div>
 
-            <!-- =========================
-                 LENGTH ROWS START
-            ========================== -->
 
-            <div class="lengthRows">                <!-- =========================
+            <!-- =====================================
+                 LENGTH ROWS
+            ====================================== -->
+
+            <div class="lengthRows">
+
+
+                <!-- =================================
                      FIRST LENGTH ROW
-                ========================== -->
+                ================================== -->
 
                 <div class="lengthRow">
 
-                    <!-- Length -->
+
+                    <!-- LENGTH -->
 
                     <div class="lengthInput">
 
@@ -146,6 +172,7 @@
                             step="0.01"
                             min="0"
                             placeholder="Length">
+
 
                         <input
                             type="number"
@@ -157,7 +184,8 @@
 
                     </div>
 
-                    <!-- Quantity -->
+
+                    <!-- QUANTITY -->
 
                     <div class="qtyInput">
 
@@ -169,7 +197,8 @@
 
                     </div>
 
-                    <!-- Remove -->
+
+                    <!-- REMOVE -->
 
                     <div class="removeBox">
 
@@ -187,9 +216,10 @@
 
             </div>
 
-            <!-- =========================
+
+            <!-- =====================================
                  ADD LENGTH
-            ========================== -->
+            ====================================== -->
 
             <div class="buttonRow">
 
@@ -203,50 +233,72 @@
 
             </div>
 
+
             <hr>
-             <!-- =========================
-                 RATE
-            ========================== -->
+
+
+            <!-- =====================================
+                 RATE & QUALITY
+            ====================================== -->
 
             <div class="row twoColumn">
 
-    <div class="field">
 
-        <label>Rate (₹ / CFT)</label>
+                <!-- RATE -->
 
-        <input
-            type="number"
-            class="rate"
-            step="0.01"
-            min="0"
-            placeholder="Enter Rate">
+                <div class="field">
 
-    </div>
-
-    <div class="field">
-
-        <label>Quality</label>
-
-        <select class="quality">
-
-            <option value="1">1</option>
-
-            <option value="2">2</option>
-
-            <option value="3">3</option>
-
-        </select>
-
-    </div>
-
-</div>
+                    <label>
+                        Rate (₹ / CFT)
+                    </label>
 
 
-            <!-- =========================
+                    <input
+                        type="number"
+                        class="rate"
+                        step="0.01"
+                        min="0"
+                        placeholder="Enter Rate">
+
+                </div>
+
+
+                <!-- QUALITY -->
+
+                <div class="field">
+
+                    <label>
+                        Quality
+                    </label>
+
+
+                    <select class="quality">
+
+                        <option value="1">
+                            1
+                        </option>
+
+                        <option value="2">
+                            2
+                        </option>
+
+                        <option value="3">
+                            3
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
                  ACTION BUTTONS
-            ========================== -->
+            ====================================== -->
 
             <div class="buttonRow">
+
 
                 <button
                     type="button"
@@ -256,6 +308,7 @@
 
                 </button>
 
+
                 <button
                     type="button"
                     class="remove">
@@ -263,6 +316,7 @@
                     Remove
 
                 </button>
+
 
                 <button
                     type="button"
@@ -274,23 +328,31 @@
 
             </div>
 
-            <!-- =========================
+
+            <!-- =====================================
                  RESULT
-            ========================== -->
+            ====================================== -->
 
             <div class="result">
 
                 <h3>
 
                     Cubic Feet :
-                    <span class="cf">0.00</span>
+
+                    <span class="cf">
+                        0.00
+                    </span>
 
                 </h3>
 
+
                 <h3>
 
-                    Amount :
-                    ₹ <span class="amount">0.00</span>
+                    Amount : ₹
+
+                    <span class="amount">
+                        0.00
+                    </span>
 
                 </h3>
 
@@ -298,13 +360,24 @@
 
         </div>
 
-    </div>    <!-- =========================
+    </div>
+
+
+    <!-- =========================================
          BOTTOM SECTION
-    ========================== -->
+    ========================================== -->
 
     <div id="bottomSection">
 
+
+        <!-- =====================================
+             BUTTONS
+        ====================================== -->
+
         <div class="bottomButtons">
+
+
+            <!-- ADD ANOTHER CALCULATION -->
 
             <button
                 type="button"
@@ -314,6 +387,9 @@
 
             </button>
 
+
+            <!-- CONFIRM -->
+
             <button
                 type="button"
                 id="confirmBtn">
@@ -322,6 +398,9 @@
 
             </button>
 
+
+            <!-- FINAL CALCULATION -->
+
             <button
                 type="button"
                 id="finalCalculation">
@@ -329,26 +408,33 @@
                 Final Calculation
 
             </button>
-            <button id="homeBtn" type="button">
-    Home
-</button>
+
+
+            <!-- HOME -->
+
+            <button
+                type="button"
+                id="homeBtn">
+
+                Home
+
+            </button>
 
         </div>
 
-        <!-- =========================
+
+        <!-- =====================================
              GRAND TOTAL
-        ========================== -->
+        ====================================== -->
 
         <div class="grand">
 
             <h2>
 
-                Grand Total :
+                Grand Total : ₹
 
-                ₹ <span id="grandTotal">
-
+                <span id="grandTotal">
                     0.00
-
                 </span>
 
             </h2>
@@ -359,12 +445,24 @@
 
 </div>
 
-<!-- =========================
+
+<!-- =========================================
      JAVASCRIPT
-========================== -->
+     
+     IMPORTANT ORDER:
+     
+     1. storedata.js
+     2. wood.js
+     3. inputControl.js
+     
+     DO NOT PUT wood.js BEFORE storedata.js.
+========================================= -->
+
 
 <script src="../js/storedata.js"></script>
+
 <script src="../js/wood.js"></script>
+
 <script src="../js/inputControl.js"></script>
 
 

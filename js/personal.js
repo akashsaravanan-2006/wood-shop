@@ -225,35 +225,33 @@ function loadPersonalData() {
 // Personal -> Discount
 // ============================================================
 
+// ============================================================
+// NEXT BUTTON
+// Personal -> Discount
+// ============================================================
+
 if (nextBtn) {
 
-    nextBtn.addEventListener(
-        "click",
-        function () {
+    nextBtn.addEventListener("click", function () {
 
-            if (!validateForm()) {
-
-                return;
-
-            }
-
-
-            savePersonalData();
-
-
-            console.log(
-                "GOING TO DISCOUNT PAGE"
-            );
-
-
-            window.location.href =
-                "discount.html";
-
+        // Validate personal details
+        if (!validateForm()) {
+            return;
         }
-    );
+
+        // Save personal details
+        savePersonalData();
+
+        console.log("PERSONAL DATA SAVED");
+        console.log("GOING TO DISCOUNT PAGE");
+
+        // IMPORTANT:
+        // Personal -> Discount
+        window.location.href = "discount.html";
+
+    });
 
 }
-
 
 // ============================================================
 // BACK

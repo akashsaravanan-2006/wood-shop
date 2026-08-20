@@ -1706,7 +1706,47 @@ if (homeBtn) {
     );
 
 }
+// =========================================
+// CLEAR BILL
+// =========================================
 
+const clearBtn =
+    document.getElementById("clearBtn");
+
+
+if (clearBtn) {
+
+    clearBtn.addEventListener(
+        "click",
+        function () {
+
+            // Ask confirmation
+            const confirmClear =
+                confirm(
+                    "Are you sure you want to clear all bill data?"
+                );
+
+
+            // User clicked Cancel
+            if (!confirmClear) {
+
+                return;
+
+            }
+
+
+            // User clicked OK
+            clearCurrentBill();
+
+
+            // Go to index.html
+            window.location.href =
+                "../index.html";
+
+        }
+    );
+
+}
 
 // =====================================================
 // START

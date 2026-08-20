@@ -1706,110 +1706,177 @@ if (homeBtn) {
     );
 
 }
-/// =========================================
+// =====================================================
 // CLEAR ALL BILL DATA
-// =========================================
+// =====================================================
 
-const clearBtn = document.getElementById("clearBtn");
+const clearBtn =
+    document.getElementById("clearBtn");
+
 
 if (clearBtn) {
 
-    clearBtn.addEventListener("click", function () {
+    clearBtn.addEventListener(
+        "click",
+        function () {
 
-        const confirmClear = window.confirm(
-            "Are you sure you want to clear ALL bill data?"
-        );
+            // =============================================
+            // CONFIRM
+            // =============================================
 
-        if (!confirmClear) {
-            return;
+            const confirmClear =
+                window.confirm(
+                    "Are you sure you want to clear ALL bill data?"
+                );
+
+
+            if (!confirmClear) {
+
+                return;
+
+            }
+
+
+            // =============================================
+            // CLEAR CENTRAL BILL STORAGE
+            // =============================================
+
+            localStorage.removeItem(
+                "current_bill_data"
+            );
+
+
+            // =============================================
+            // CLEAR WOOD DATA
+            // =============================================
+
+            localStorage.removeItem("woodData");
+            localStorage.removeItem("wood_page_data");
+            localStorage.removeItem("wood");
+            localStorage.removeItem("woodDataStorage");
+
+
+            // =============================================
+            // CLEAR LABOUR DATA
+            // =============================================
+
+            localStorage.removeItem("labour");
+            localStorage.removeItem("labourData");
+            localStorage.removeItem("labourCharge");
+            localStorage.removeItem("otherCharge");
+            localStorage.removeItem("othersData");
+
+
+            // =============================================
+            // CLEAR PERSONAL DATA
+            // =============================================
+
+            localStorage.removeItem("personal");
+            localStorage.removeItem("personalData");
+            localStorage.removeItem("customerName");
+            localStorage.removeItem("customerMobile");
+            localStorage.removeItem("customerPlace");
+
+
+            // =============================================
+            // CLEAR ADVANCE DATA
+            // =============================================
+
+            localStorage.removeItem("advance");
+            localStorage.removeItem("advanceData");
+            localStorage.removeItem("advanceAmount");
+            localStorage.removeItem("balanceAmount");
+            localStorage.removeItem("paymentType");
+            localStorage.removeItem("paymentMode");
+
+
+            // =============================================
+            // CLEAR DISCOUNT DATA
+            // =============================================
+
+            localStorage.removeItem("discount");
+            localStorage.removeItem("discountData");
+            localStorage.removeItem("discountAmount");
+            localStorage.removeItem("discountApplied");
+            localStorage.removeItem("billDiscount");
+            localStorage.removeItem("finalGrandTotal");
+
+
+            // =============================================
+            // CLEAR TOTALS
+            // =============================================
+
+            localStorage.removeItem("grandTotal");
+            localStorage.removeItem("finalTotal");
+            localStorage.removeItem("subtotal");
+            localStorage.removeItem("woodTotal");
+            localStorage.removeItem("othersTotal");
+
+
+            // =============================================
+            // CLEAR SAVED BILL REFERENCES
+            // =============================================
+
+            localStorage.removeItem("savedBillId");
+            localStorage.removeItem("savedBillNo");
+            localStorage.removeItem("savedCustomerId");
+
+
+            // =============================================
+            // CLEAR BILL STATUS
+            // =============================================
+
+            localStorage.removeItem("billConfirmed");
+            localStorage.removeItem("billConfirmedAt");
+            localStorage.removeItem("editingBill");
+            localStorage.removeItem("billDate");
+
+
+            // =============================================
+            // CLEAR SESSION STORAGE
+            // =============================================
+
+            sessionStorage.clear();
+
+
+            // =============================================
+            // DEBUG
+            // =============================================
+
+            console.log(
+                "===================================="
+            );
+
+            console.log(
+                "ALL BILL DATA CLEARED"
+            );
+
+            console.log(
+                "LocalStorage:",
+                localStorage
+            );
+
+            console.log(
+                "SessionStorage:",
+                sessionStorage
+            );
+
+            console.log(
+                "===================================="
+            );
+
+
+            // =============================================
+            // GO TO INDEX
+            // =============================================
+
+            window.location.href =
+                "../html/index.html";
+
         }
+    );
 
-        // =====================================
-        // CLEAR CENTRAL STORAGE
-        // =====================================
-
-        localStorage.removeItem("current_bill_data");
-
-
-        // =====================================
-        // CLEAR WOOD DATA
-        // =====================================
-
-        localStorage.removeItem("woodData");
-        localStorage.removeItem("wood_page_data");
-
-
-        // =====================================
-        // CLEAR LABOUR DATA
-        // =====================================
-
-        localStorage.removeItem("labourCharge");
-        localStorage.removeItem("otherCharge");
-        localStorage.removeItem("othersData");
-
-
-        // =====================================
-        // CLEAR PERSONAL DATA
-        // =====================================
-
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("customerMobile");
-        localStorage.removeItem("customerPlace");
-
-
-        // =====================================
-        // CLEAR ADVANCE DATA
-        // =====================================
-
-        localStorage.removeItem("advanceAmount");
-        localStorage.removeItem("balanceAmount");
-        localStorage.removeItem("paymentType");
-        localStorage.removeItem("paymentMode");
-
-
-        // =====================================
-        // CLEAR TOTALS
-        // =====================================
-
-        localStorage.removeItem("grandTotal");
-        localStorage.removeItem("finalTotal");
-
-
-        // =====================================
-        // CLEAR DISCOUNT
-        // =====================================
-
-        localStorage.removeItem("discountAmount");
-        localStorage.removeItem("discountApplied");
-        localStorage.removeItem("billDiscount");
-        localStorage.removeItem("finalGrandTotal");
-
-
-        // =====================================
-        // CLEAR BILL STATUS
-        // =====================================
-
-        localStorage.removeItem("billConfirmed");
-        localStorage.removeItem("billConfirmedAt");
-        localStorage.removeItem("editingBill");
-        localStorage.removeItem("billDate");
-
-
-        // =====================================
-        // CLEAR SESSION STORAGE TOO
-        // =====================================
-
-        sessionStorage.removeItem("wood_page_data");
-        sessionStorage.removeItem("current_bill_data");
-
-
-        // =====================================
-        // GO HOME
-        // =====================================
-
-        window.location.href = "index.html";
-
-    });
+}
 
 // =====================================================
 // START

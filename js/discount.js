@@ -75,6 +75,20 @@ if (
 
 
 // ===========================================
+// GET PAYMENT TYPE
+// ===========================================
+//
+// Needed to decide how to finalize the
+// bill once discount is applied.
+// ===========================================
+
+let paymentType =
+    advanceData.paymentType ||
+    localStorage.getItem("paymentType") ||
+    "";
+
+
+// ===========================================
 // GET ADVANCE AMOUNT
 // ===========================================
 
@@ -130,7 +144,11 @@ if (
 // Discount is calculated from the
 // BALANCE after advance.
 //
-// NOT from original grand total.
+// For "cash": balance = full grandTotal
+// (nothing finalized yet).
+//
+// For "advance": balance = grandTotal
+// minus what was already paid.
 // ===========================================
 
 if (currentTotalElement) {
@@ -291,7 +309,46 @@ function saveDiscountData(
 
 
     // =====================================
-    // CENTRAL STORAGE
+    // FINALIZE ADVANCE / BALANCE
+    // =====================================
+    //
+    // CASH:
+    // The whole discounted amount is
+    // collected right now. Balance owed
+    // becomes 0.
+    //
+    // ADVANCE:
+    // The amount already collected stays
+    // the same. The discounted amount
+    // becomes the new balance owed.
+    // =====================================
+
+    let finalAdvanceAmount;
+    let finalBalanceAmount;
+
+    if (
+        paymentType === "cash"
+    ) {
+
+        finalAdvanceAmount =
+            finalBalance;
+
+        finalBalanceAmount = 0;
+
+    }
+    else {
+
+        finalAdvanceAmount =
+            advanceAmount;
+
+        finalBalanceAmount =
+            finalBalance;
+
+    }
+
+
+    // =====================================
+    // CENTRAL STORAGE - DISCOUNT
     // =====================================
 
     if (
@@ -316,6 +373,27 @@ function saveDiscountData(
 
                 finalAmount:
                     finalBalance
+
+            }
+        );
+
+
+        // =================================
+        // CENTRAL STORAGE - ADVANCE
+        // (updated with final values)
+        // =================================
+
+        savePageData(
+            "advance",
+            {
+
+                ...advanceData,
+
+                advanceAmount:
+                    finalAdvanceAmount,
+
+                balanceAmount:
+                    finalBalanceAmount
 
             }
         );
@@ -348,8 +426,6 @@ function saveDiscountData(
     );
 
 
-    // Also save useful values
-
     localStorage.setItem(
         "balanceBeforeDiscount",
         String(balanceAmount)
@@ -359,6 +435,20 @@ function saveDiscountData(
     localStorage.setItem(
         "finalBalance",
         String(finalBalance)
+    );
+
+
+    // Final, payment-type-aware values
+    // used by bill.html
+
+    localStorage.setItem(
+        "advanceAmount",
+        String(finalAdvanceAmount)
+    );
+
+    localStorage.setItem(
+        "balanceAmount",
+        String(finalBalanceAmount)
     );
 
 
@@ -811,6 +901,11 @@ console.log(
 console.log(
     "Original Grand Total:",
     originalGrandTotal
+);
+
+console.log(
+    "Payment Type:",
+    paymentType
 );
 
 console.log(

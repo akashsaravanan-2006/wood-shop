@@ -5,19 +5,23 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Final Bill</title>
 
-    <link rel="stylesheet"
-          href="../css/cbill.css">
+    <link
+        rel="stylesheet"
+        href="../css/cbill.css">
 
 </head>
+
 
 <body>
 
 <div class="bill-container">
+
 
     <!-- ================================= -->
     <!-- HEADER -->
@@ -33,6 +37,7 @@
                 alt="Logo">
 
         </div>
+
 
         <div class="company">
 
@@ -238,7 +243,9 @@
     <div class="totals">
 
 
+        <!-- ================================= -->
         <!-- CFT TOTAL -->
+        <!-- ================================= -->
 
         <div class="cftTotal">
 
@@ -253,44 +260,53 @@
         </div>
 
 
+        <!-- ================================= -->
         <!-- WOOD TOTAL -->
+        <!-- ================================= -->
 
         <p>
 
             Wood Total
 
             <span id="woodTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
 
 
+        <!-- ================================= -->
         <!-- OTHERS TOTAL -->
+        <!-- ================================= -->
 
         <p>
 
             Others Total
 
             <span id="othersTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
+
+
+        <!-- ================================= -->
+        <!-- SUBTOTAL -->
+        <!-- ================================= -->
+
         <p id="subtotalRow">
 
-    Subtotal
+            Subtotal
 
-    <span id="subtotalAmount">
-        ₹ 0
-    </span>
+            <span id="subtotalAmount">
+                ₹ 0.00
+            </span>
 
-</p>
+        </p>
 
 
         <!-- ================================= -->
         <!-- DISCOUNT -->
-        <!-- Hidden when discount is 0 -->
         <!-- ================================= -->
 
         <p
@@ -301,7 +317,7 @@
             Discount
 
             <span id="discountAmount">
-                - ₹ 0
+                - ₹ 0.00
             </span>
 
         </p>
@@ -316,14 +332,29 @@
             Grand Total
 
             <span id="grandTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </h2>
 
 
         <!-- ================================= -->
-        <!-- BALANCE -->
+        <!-- ADVANCE AMOUNT -->
+        <!-- ================================= -->
+
+        <p>
+
+            Advance Amount
+
+            <span id="advanceAmount">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================= -->
+        <!-- BALANCE AMOUNT -->
         <!-- ================================= -->
 
         <p>
@@ -331,7 +362,7 @@
             Balance Amount
 
             <span id="balanceAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
 
         </p>
@@ -389,7 +420,12 @@
 </div>
 
 
+<!-- ================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================= -->
+
 <script src="../js/cbill.js"></script>
+
 
 </body>
 

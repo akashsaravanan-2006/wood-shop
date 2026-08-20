@@ -46,6 +46,9 @@ const woodTotalElement =
 const othersTotalElement =
     document.getElementById("othersTotal");
 
+const subtotalAmountElement =
+    document.getElementById("subtotalAmount");
+
 const discountRow =
     document.getElementById("discountRow");
 
@@ -54,6 +57,9 @@ const discountAmountElement =
 
 const grandTotalElement =
     document.getElementById("grandTotal");
+
+const advanceAmountElement =
+    document.getElementById("advanceAmount");
 
 const balanceAmountElement =
     document.getElementById("balanceAmount");
@@ -75,6 +81,7 @@ const homeBtn =
 const savedBillId =
     localStorage.getItem("savedBillId");
 
+
 console.log(
     "Saved Bill ID:",
     savedBillId
@@ -91,6 +98,7 @@ function money(value) {
         Number(value) || 0;
 
     return "₹ " + number.toFixed(2);
+
 }
 
 
@@ -101,11 +109,15 @@ function money(value) {
 function formatDate(dateValue) {
 
     if (!dateValue) {
+
         return "-";
+
     }
+
 
     const date =
         new Date(dateValue);
+
 
     if (
         isNaN(
@@ -116,6 +128,7 @@ function formatDate(dateValue) {
         return String(dateValue);
 
     }
+
 
     return (
 
@@ -145,11 +158,15 @@ function formatDate(dateValue) {
 function formatTime(dateValue) {
 
     if (!dateValue) {
+
         return "-";
+
     }
+
 
     const date =
         new Date(dateValue);
+
 
     if (
         isNaN(
@@ -160,6 +177,7 @@ function formatTime(dateValue) {
         return "-";
 
     }
+
 
     return date.toLocaleTimeString(
         "en-IN",
@@ -184,7 +202,7 @@ function getDiscount(bill) {
 
 
     // =================================================
-    // 1. DATABASE: discount_amount
+    // DATABASE: discount_amount
     // =================================================
 
     if (
@@ -202,7 +220,7 @@ function getDiscount(bill) {
 
 
     // =================================================
-    // 2. DATABASE: discount
+    // DATABASE: discount
     // =================================================
 
     else if (
@@ -220,7 +238,7 @@ function getDiscount(bill) {
 
 
     // =================================================
-    // 3. LOCAL STORAGE: discountAmount
+    // LOCAL STORAGE
     // =================================================
 
     else {
@@ -229,6 +247,7 @@ function getDiscount(bill) {
             localStorage.getItem(
                 "discountAmount"
             );
+
 
         if (
             localDiscount !== null &&
@@ -246,7 +265,7 @@ function getDiscount(bill) {
 
 
     // =================================================
-    // 4. OTHER POSSIBLE LOCAL STORAGE KEY
+    // OTHER LOCAL STORAGE KEY
     // =================================================
 
     if (discount === 0) {
@@ -255,6 +274,7 @@ function getDiscount(bill) {
             localStorage.getItem(
                 "discount"
             );
+
 
         if (
             localDiscount !== null &&
@@ -276,11 +296,93 @@ function getDiscount(bill) {
     // =================================================
 
     if (discount < 0) {
+
         discount = 0;
+
     }
 
 
     return discount;
+
+}
+
+
+// =====================================================
+// GET ADVANCE AMOUNT
+// =====================================================
+
+function getAdvanceAmount(bill) {
+
+    let advance = null;
+
+
+    // =================================================
+    // 1. DATABASE: advance_amount
+    // =================================================
+
+    if (
+        bill.advance_amount !== undefined &&
+        bill.advance_amount !== null &&
+        bill.advance_amount !== ""
+    ) {
+
+        advance =
+            Number(
+                bill.advance_amount
+            );
+
+    }
+
+
+    // =================================================
+    // 2. DATABASE: advance
+    // =================================================
+
+    else if (
+        bill.advance !== undefined &&
+        bill.advance !== null &&
+        bill.advance !== ""
+    ) {
+
+        advance =
+            Number(
+                bill.advance
+            );
+
+    }
+
+
+    // =================================================
+    // 3. LOCAL STORAGE
+    // =================================================
+
+    if (
+        advance === null ||
+        !Number.isFinite(advance)
+    ) {
+
+        advance =
+            Number(
+                localStorage.getItem(
+                    "advanceAmount"
+                )
+            ) || 0;
+
+    }
+
+
+    // =================================================
+    // PREVENT NEGATIVE ADVANCE
+    // =================================================
+
+    if (advance < 0) {
+
+        advance = 0;
+
+    }
+
+
+    return advance;
 
 }
 
@@ -291,14 +393,21 @@ function getDiscount(bill) {
 
 async function loadFinalBill() {
 
+
     if (!savedBillId) {
 
         console.error(
             "savedBillId is missing"
         );
 
-        billNoElement.textContent =
-            "---";
+
+        if (billNoElement) {
+
+            billNoElement.textContent =
+                "---";
+
+        }
+
 
         return;
 
@@ -307,15 +416,16 @@ async function loadFinalBill() {
 
     try {
 
+
+        // =================================================
+        // LOAD BILL
+        // =================================================
+
         console.log(
             "Loading exact bill:",
             savedBillId
         );
 
-
-        // =================================================
-        // API
-        // =================================================
 
         const response =
             await fetch(
@@ -363,8 +473,12 @@ async function loadFinalBill() {
         // BILL NUMBER
         // =================================================
 
-        billNoElement.textContent =
-            bill.bill_no || "---";
+        if (billNoElement) {
+
+            billNoElement.textContent =
+                bill.bill_no || "---";
+
+        }
 
 
         if (bill.bill_no) {
@@ -381,10 +495,14 @@ async function loadFinalBill() {
         // DATE
         // =================================================
 
-        billDateElement.textContent =
-            formatDate(
-                bill.bill_date
-            );
+        if (billDateElement) {
+
+            billDateElement.textContent =
+                formatDate(
+                    bill.bill_date
+                );
+
+        }
 
 
         // =================================================
@@ -403,26 +521,42 @@ async function loadFinalBill() {
         }
 
 
-        billDayTimeElement.textContent =
-            formatTime(
-                timeValue
-            );
+        if (billDayTimeElement) {
+
+            billDayTimeElement.textContent =
+                formatTime(
+                    timeValue
+                );
+
+        }
 
 
         // =================================================
         // CUSTOMER
         // =================================================
 
-        customerNameElement.textContent =
-            bill.customer_name || "-";
+        if (customerNameElement) {
+
+            customerNameElement.textContent =
+                bill.customer_name || "-";
+
+        }
 
 
-        customerMobileElement.textContent =
-            bill.customer_mobile || "-";
+        if (customerMobileElement) {
+
+            customerMobileElement.textContent =
+                bill.customer_mobile || "-";
+
+        }
 
 
-        customerPlaceElement.textContent =
-            bill.customer_place || "-";
+        if (customerPlaceElement) {
+
+            customerPlaceElement.textContent =
+                bill.customer_place || "-";
+
+        }
 
 
         // =================================================
@@ -446,15 +580,9 @@ async function loadFinalBill() {
 
 
         // =================================================
-        // DISCOUNT
-        // =================================================
-
-        const discount =
-            getDiscount(bill);
-
-
-        // =================================================
         // SUBTOTAL
+        //
+        // Wood Total + Others Total
         // =================================================
 
         const subtotal =
@@ -463,13 +591,17 @@ async function loadFinalBill() {
 
 
         // =================================================
-        // FINAL GRAND TOTAL
+        // DISCOUNT
+        // =================================================
+
+        const discount =
+            getDiscount(bill);
+
+
+        // =================================================
+        // GRAND TOTAL
         //
-        // ALWAYS:
-        //
-        // Wood Total
-        // + Others Total
-        // - Discount
+        // Subtotal - Discount
         // =================================================
 
         let grandTotal =
@@ -482,38 +614,84 @@ async function loadFinalBill() {
         // =================================================
 
         if (grandTotal < 0) {
+
             grandTotal = 0;
+
         }
 
 
         // =================================================
-        // BALANCE
+        // ADVANCE AMOUNT
+        //
+        // Get from database or localStorage
         // =================================================
 
-        const balance =
-            Number(
-                bill.balance_amount
-            ) || 0;
+        const advanceAmount =
+            getAdvanceAmount(bill);
+
+
+        // =================================================
+        // BALANCE AMOUNT
+        //
+        // Grand Total - Advance
+        // =================================================
+
+        let balanceAmount =
+            grandTotal -
+            advanceAmount;
+
+
+        // =================================================
+        // PREVENT NEGATIVE BALANCE
+        // =================================================
+
+        if (balanceAmount < 0) {
+
+            balanceAmount = 0;
+
+        }
 
 
         // =================================================
         // DISPLAY WOOD TOTAL
         // =================================================
 
-        woodTotalElement.textContent =
-            money(
-                woodTotal
-            );
+        if (woodTotalElement) {
+
+            woodTotalElement.textContent =
+                money(
+                    woodTotal
+                );
+
+        }
 
 
         // =================================================
         // DISPLAY OTHERS TOTAL
         // =================================================
 
-        othersTotalElement.textContent =
-            money(
-                othersTotal
-            );
+        if (othersTotalElement) {
+
+            othersTotalElement.textContent =
+                money(
+                    othersTotal
+                );
+
+        }
+
+
+        // =================================================
+        // DISPLAY SUBTOTAL
+        // =================================================
+
+        if (subtotalAmountElement) {
+
+            subtotalAmountElement.textContent =
+                money(
+                    subtotal
+                );
+
+        }
 
 
         // =================================================
@@ -522,22 +700,34 @@ async function loadFinalBill() {
 
         if (discount > 0) {
 
-            discountRow.style.display =
-                "flex";
+            if (discountRow) {
+
+                discountRow.style.display =
+                    "flex";
+
+            }
 
 
-            discountAmountElement.textContent =
-                "- " +
-                money(
-                    discount
-                );
+            if (discountAmountElement) {
+
+                discountAmountElement.textContent =
+                    "- " +
+                    money(
+                        discount
+                    );
+
+            }
 
         }
 
         else {
 
-            discountRow.style.display =
-                "none";
+            if (discountRow) {
+
+                discountRow.style.display =
+                    "none";
+
+            }
 
         }
 
@@ -546,20 +736,42 @@ async function loadFinalBill() {
         // DISPLAY GRAND TOTAL
         // =================================================
 
-        grandTotalElement.textContent =
-            money(
-                grandTotal
-            );
+        if (grandTotalElement) {
+
+            grandTotalElement.textContent =
+                money(
+                    grandTotal
+                );
+
+        }
 
 
         // =================================================
-        // DISPLAY BALANCE
+        // DISPLAY ADVANCE AMOUNT
         // =================================================
 
-        balanceAmountElement.textContent =
-            money(
-                balance
-            );
+        if (advanceAmountElement) {
+
+            advanceAmountElement.textContent =
+                money(
+                    advanceAmount
+                );
+
+        }
+
+
+        // =================================================
+        // DISPLAY BALANCE AMOUNT
+        // =================================================
+
+        if (balanceAmountElement) {
+
+            balanceAmountElement.textContent =
+                money(
+                    balanceAmount
+                );
+
+        }
 
 
         // =================================================
@@ -590,6 +802,7 @@ async function loadFinalBill() {
                     "Wood JSON error:",
                     error
                 );
+
 
                 woodData = [];
 
@@ -642,6 +855,7 @@ async function loadFinalBill() {
                     "Others JSON error:",
                     error
                 );
+
 
                 othersData = [];
 
@@ -709,23 +923,29 @@ async function loadFinalBill() {
         );
 
         console.log(
-            "Final Grand Total:",
+            "Grand Total:",
             grandTotal
         );
 
         console.log(
-            "Balance:",
-            balance
+            "Advance Amount:",
+            advanceAmount
+        );
+
+        console.log(
+            "Balance Amount:",
+            balanceAmount
         );
 
         console.log(
             "================================="
         );
 
+
     }
 
-
     catch (error) {
+
 
         console.error(
             "CBILL LOAD ERROR:",
@@ -733,8 +953,12 @@ async function loadFinalBill() {
         );
 
 
-        billNoElement.textContent =
-            "---";
+        if (billNoElement) {
+
+            billNoElement.textContent =
+                "---";
+
+        }
 
 
         alert(
@@ -754,12 +978,24 @@ function loadWoodData(
     woodData
 ) {
 
+
+    if (!woodTable) {
+
+        return;
+
+    }
+
+
     woodTable.innerHTML =
         "";
 
 
     let sno = 1;
 
+
+    // =================================================
+    // NO DATA
+    // =================================================
 
     if (
         woodData.length === 0
@@ -777,10 +1013,15 @@ function loadWoodData(
 
         `;
 
+
         return;
 
     }
 
+
+    // =================================================
+    // LOOP WOOD
+    // =================================================
 
     woodData.forEach(
         function(item) {
@@ -794,6 +1035,7 @@ function loadWoodData(
                 !item.pieces ||
                 item.pieces.length === 0
             ) {
+
 
                 const row =
                     document.createElement(
@@ -902,9 +1144,14 @@ function loadWoodData(
                         );
 
 
+                    // =================================================
+                    // FIRST PIECE
+                    // =================================================
+
                     if (
                         index === 0
                     ) {
+
 
                         const woodName =
                             item.woodType === "Other"
@@ -969,7 +1216,12 @@ function loadWoodData(
                     }
 
 
+                    // =================================================
+                    // ADDITIONAL PIECE
+                    // =================================================
+
                     else {
+
 
                         row.innerHTML = `
 
@@ -1030,6 +1282,14 @@ function loadOtherCharges(
     bill,
     othersData
 ) {
+
+
+    if (!chargeTable) {
+
+        return;
+
+    }
+
 
     chargeTable.innerHTML =
         "";
@@ -1145,8 +1405,11 @@ function loadOtherCharges(
     othersData.forEach(
         function(item) {
 
+
             if (!item) {
+
                 return;
+
             }
 
 
@@ -1242,6 +1505,14 @@ function loadCftSummary(
     woodData
 ) {
 
+
+    if (!cftSummary) {
+
+        return;
+
+    }
+
+
     cftSummary.innerHTML =
         "";
 
@@ -1251,6 +1522,7 @@ function loadCftSummary(
 
     woodData.forEach(
         function(item) {
+
 
             let name =
                 item.woodType;
@@ -1305,6 +1577,7 @@ function loadCftSummary(
         summary
     ).forEach(
         function(name) {
+
 
             const p =
                 document.createElement(
@@ -1364,9 +1637,10 @@ if (homeBtn) {
         "click",
         function() {
 
-            // =========================================
+
+            // =================================================
             // CLEAR CURRENT BILL DATA
-            // =========================================
+            // =================================================
 
             localStorage.removeItem(
                 "savedBillId"
@@ -1386,6 +1660,14 @@ if (homeBtn) {
 
             localStorage.removeItem(
                 "discount"
+            );
+
+            localStorage.removeItem(
+                "discountApplied"
+            );
+
+            localStorage.removeItem(
+                "finalGrandTotal"
             );
 
             localStorage.removeItem(
@@ -1413,9 +1695,9 @@ if (homeBtn) {
             );
 
 
-            // =========================================
+            // =================================================
             // GO HOME
-            // =========================================
+            // =================================================
 
             window.location.href =
                 "../html/index.html";

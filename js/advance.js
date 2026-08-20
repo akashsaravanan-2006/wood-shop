@@ -50,14 +50,6 @@ const backBtn =
 // GET GRAND TOTAL
 // ===========================================
 
-// First preference:
-// finalGrandTotal
-//
-// If discount has not happened yet,
-// use finalTotal.
-//
-// If neither exists, use 0.
-
 let grandTotal =
     Number(
         localStorage.getItem("finalGrandTotal")
@@ -209,27 +201,27 @@ function saveAdvanceData() {
             : "";
 
 
+    // =====================================
+    // DEFAULT VALUES
+    // =====================================
+    //
+    // READY CASH:
+    // Nothing is finalized yet.
+    // Full grandTotal stays as the
+    // "balance" so the Discount page
+    // can correctly discount from it.
+    // The actual amount collected is
+    // decided AFTER discount, in
+    // discount.js.
+    //
+    // This matches the comment below:
+    // "Do NOT permanently calculate
+    // advance here because Discount
+    // comes after this page."
+    // =====================================
+
     let advance = 0;
     let balance = grandTotal;
-
-
-    // =====================================
-    // READY CASH
-    // =====================================
-
-    if (
-        paymentType === "cash"
-    ) {
-
-        // Do NOT permanently calculate
-        // advance here because Discount
-        // comes after this page.
-
-        advance = grandTotal;
-
-        balance = 0;
-
-    }
 
 
     // =====================================
@@ -258,6 +250,10 @@ function saveAdvanceData() {
         }
 
     }
+
+    // NOTE: paymentType === "cash" uses
+    // the defaults above (advance = 0,
+    // balance = grandTotal) intentionally.
 
 
     // =====================================
@@ -397,8 +393,14 @@ paymentTypes.forEach(
 
                     if (balanceAmountInput) {
 
+                        // Balance is the FULL grand
+                        // total at this stage - it
+                        // only becomes 0 after the
+                        // discount step decides the
+                        // final cash amount.
                         balanceAmountInput.value =
-                            "₹ 0.00";
+                            "₹ " +
+                            grandTotal.toFixed(2);
 
                     }
 
@@ -625,6 +627,15 @@ if (nextBtn) {
             // =================================
             // READY CASH
             // =================================
+            //
+            // Do NOT finalize advance/balance
+            // here. Keep balance = grandTotal
+            // so the Discount page can discount
+            // from the full amount. discount.js
+            // will finalize advance = final
+            // amount, balance = 0 once the user
+            // completes the discount step.
+            // =================================
 
             if (
                 paymentType === "cash"
@@ -644,10 +655,10 @@ if (nextBtn) {
                             grandTotal,
 
                         advanceAmount:
-                            grandTotal,
+                            0,
 
                         balanceAmount:
-                            0,
+                            grandTotal,
 
                         discountBaseAmount:
                             grandTotal
@@ -668,12 +679,12 @@ if (nextBtn) {
 
                 localStorage.setItem(
                     "advanceAmount",
-                    String(grandTotal)
+                    "0"
                 );
 
                 localStorage.setItem(
                     "balanceAmount",
-                    "0"
+                    String(grandTotal)
                 );
 
                 localStorage.setItem(

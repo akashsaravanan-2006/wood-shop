@@ -3,19 +3,40 @@
 // ============================================================
 // CENTRAL BILL STORAGE
 //
-// Pages:
-// Wood
-// Labour
-// Personal
-// Advance
-// Discount
-// Bill
+// Stores:
+//
+// 1. Wood
+// 2. Labour
+// 3. Personal
+// 4. Advance
+// 5. Discount
+// 6. Totals
 //
 // DATA WILL REMAIN UNTIL USER CLICKS CLEAR.
 //
 // IMPORTANT:
-// Do NOT call localStorage.clear()
-// Do NOT clear bill data when changing pages.
+//
+// DO NOT clear data when moving between pages.
+//
+// Flow:
+//
+// Wood
+//   ↓
+// Labour
+//   ↓
+// Personal
+//   ↓
+// Advance
+//   ↓
+// Discount
+//   ↓
+// Bill
+//   ↓
+// CBill
+//
+// Data remains available throughout the entire process.
+//
+// Only CLEAR button should remove the current bill.
 // ============================================================
 
 
@@ -23,9 +44,11 @@
 // STORAGE KEYS
 // ============================================================
 
-const BILL_STORAGE_KEY = "current_bill_data";
+const BILL_STORAGE_KEY =
+    "current_bill_data";
 
-const SAVED_BILLS_KEY = "saved_bills";
+const SAVED_BILLS_KEY =
+    "saved_bills";
 
 
 // ============================================================
@@ -75,7 +98,7 @@ function getBillData() {
         );
 
 
-    // No current bill
+    // No bill exists
 
     if (!stored) {
 
@@ -90,7 +113,7 @@ function getBillData() {
             JSON.parse(stored);
 
 
-        // Make sure all default fields exist
+        // Make sure all properties exist
 
         return {
 
@@ -105,7 +128,7 @@ function getBillData() {
     catch (error) {
 
         console.error(
-            "ERROR READING CURRENT BILL:",
+            "ERROR READING BILL DATA:",
             error
         );
 
@@ -170,12 +193,6 @@ function saveBillData(data) {
 //     mobile: "9159034572"
 // });
 //
-// savePageData("advance", {
-//     paymentType: "advance",
-//     advanceAmount: 444,
-//     balanceAmount: 69000
-// });
-//
 // ============================================================
 
 function savePageData(
@@ -191,7 +208,7 @@ function savePageData(
         pageData;
 
 
-    // Bill is currently being edited
+    // Bill is still being edited
 
     bill.saved =
         false;
@@ -199,6 +216,13 @@ function savePageData(
 
     saveBillData(
         bill
+    );
+
+
+    console.log(
+        pageName +
+        " DATA SAVED:",
+        pageData
     );
 
 }
@@ -255,6 +279,12 @@ function saveTotals(
         bill
     );
 
+
+    console.log(
+        "TOTALS SAVED:",
+        totals
+    );
+
 }
 
 
@@ -276,16 +306,6 @@ function getTotals() {
 // ============================================================
 // UPDATE ONE VALUE INSIDE A PAGE
 // ============================================================
-//
-// Example:
-//
-// updatePageValue(
-//     "advance",
-//     "advanceAmount",
-//     5000
-// );
-//
-// ============================================================
 
 function updatePageValue(
     pageName,
@@ -296,6 +316,8 @@ function updatePageValue(
     const bill =
         getBillData();
 
+
+    // Make sure page object exists
 
     if (
         !bill[pageName] ||
@@ -387,10 +409,11 @@ function disableEditMode() {
 // SAVE BILL PERMANENTLY
 // ============================================================
 //
-// Call this when the bill is generated.
+// This creates a permanent browser copy.
 //
 // IMPORTANT:
-// This does NOT clear current bill data.
+//
+// This DOES NOT clear current_bill_data.
 //
 // Therefore the user can still edit the bill.
 // ============================================================
@@ -401,7 +424,7 @@ function saveBillPermanently() {
         getBillData();
 
 
-    // Generate unique bill ID
+    // Create bill ID
 
     const billId =
         currentBill.billId ||
@@ -430,7 +453,7 @@ function saveBillPermanently() {
         getSavedBills();
 
 
-    // Check whether this bill already exists
+    // Check if bill already exists
 
     const existingIndex =
         savedBills.findIndex(
@@ -443,7 +466,9 @@ function saveBillPermanently() {
         );
 
 
-    if (existingIndex >= 0) {
+    if (
+        existingIndex >= 0
+    ) {
 
         // Update existing bill
 
@@ -607,10 +632,7 @@ function getSavedBill(
 // UPDATE PERMANENT BILL
 // ============================================================
 //
-// Use this after editing a generated bill.
-//
-// It updates the permanent browser copy
-// with the latest current bill data.
+// Call this after editing a generated bill.
 // ============================================================
 
 function updatePermanentBill() {
@@ -624,7 +646,7 @@ function updatePermanentBill() {
     ) {
 
         console.warn(
-            "No permanent bill ID found."
+            "NO PERMANENT BILL ID FOUND."
         );
 
 
@@ -648,10 +670,12 @@ function updatePermanentBill() {
         );
 
 
-    if (index === -1) {
+    if (
+        index === -1
+    ) {
 
         console.warn(
-            "Permanent bill not found."
+            "PERMANENT BILL NOT FOUND."
         );
 
 
@@ -698,11 +722,11 @@ function updatePermanentBill() {
 
 
 // ============================================================
-// DATABASE SAVE SUCCESS
+// MARK DATABASE SAVE SUCCESS
 // ============================================================
 //
-// Call this ONLY after your backend confirms
-// that the bill has been successfully stored.
+// Call this after your backend/database confirms
+// successful bill storage.
 // ============================================================
 
 function markBillSaved(
@@ -738,49 +762,108 @@ function markBillSaved(
 // CLEAR CURRENT BILL
 // ============================================================
 //
-// IMPORTANT:
+// THIS IS THE IMPORTANT CLEAR FUNCTION.
 //
-// This function should be called ONLY when
-// the user intentionally clicks CLEAR.
+// It removes:
 //
-// It does NOT clear other localStorage data.
+// current_bill_data
+// grandTotal
+// finalTotal
+// advanceAmount
+// balanceAmount
+// paymentType
+// paymentMode
+// discountAmount
+// discountApplied
+// finalGrandTotal
+// old wood_page_data
+//
 // It does NOT use localStorage.clear().
+//
+// Therefore unrelated application data remains safe.
 // ============================================================
 
 function clearCurrentBill() {
+
+    // ==========================================
+    // CENTRAL BILL DATA
+    // ==========================================
 
     localStorage.removeItem(
         BILL_STORAGE_KEY
     );
 
 
-    console.log(
-        "CURRENT BILL CLEARED."
-    );
-
-}
-
-
-// ============================================================
-// CLEAR PERMANENT SAVED BILLS
-// ============================================================
-//
-// Use this ONLY if you want to delete the
-// permanently saved browser copies.
-//
-// Normally your CLEAR button should NOT
-// call this unless that is your requirement.
-// ============================================================
-
-function clearSavedBills() {
+    // ==========================================
+    // OLD TOTAL DATA
+    // ==========================================
 
     localStorage.removeItem(
-        SAVED_BILLS_KEY
+        "grandTotal"
+    );
+
+    localStorage.removeItem(
+        "finalTotal"
+    );
+
+
+    // ==========================================
+    // ADVANCE DATA
+    // ==========================================
+
+    localStorage.removeItem(
+        "advanceAmount"
+    );
+
+    localStorage.removeItem(
+        "balanceAmount"
+    );
+
+    localStorage.removeItem(
+        "paymentType"
+    );
+
+    localStorage.removeItem(
+        "paymentMode"
+    );
+
+
+    // ==========================================
+    // DISCOUNT DATA
+    // ==========================================
+
+    localStorage.removeItem(
+        "discountAmount"
+    );
+
+    localStorage.removeItem(
+        "discountApplied"
+    );
+
+    localStorage.removeItem(
+        "finalGrandTotal"
+    );
+
+
+    // ==========================================
+    // OLD WOOD DATA
+    // ==========================================
+
+    sessionStorage.removeItem(
+        "wood_page_data"
     );
 
 
     console.log(
-        "ALL PERMANENT BILLS CLEARED."
+        "================================"
+    );
+
+    console.log(
+        "CURRENT BILL COMPLETELY CLEARED"
+    );
+
+    console.log(
+        "================================"
     );
 
 }
@@ -788,6 +871,11 @@ function clearSavedBills() {
 
 // ============================================================
 // CLEAR ONE PERMANENT BILL
+// ============================================================
+//
+// This deletes a specific browser-saved bill.
+//
+// Normally you don't need this for the Clear button.
 // ============================================================
 
 function deleteSavedBill(
@@ -829,20 +917,38 @@ function deleteSavedBill(
 
 
 // ============================================================
+// CLEAR ALL PERMANENT BILLS
+// ============================================================
+//
+// Use only if you intentionally want to delete
+// every browser-saved generated bill.
+// ============================================================
+
+function clearSavedBills() {
+
+    localStorage.removeItem(
+        SAVED_BILLS_KEY
+    );
+
+
+    console.log(
+        "ALL PERMANENT BILLS CLEARED."
+    );
+
+}
+
+
+// ============================================================
 // START NEW BILL
 // ============================================================
 //
-// Call this when user intentionally chooses
-// "New Bill".
-//
-// This starts a completely fresh bill.
+// Same as clearing the current bill,
+// but does not delete permanent saved bills.
 // ============================================================
 
 function startNewBill() {
 
-    localStorage.removeItem(
-        BILL_STORAGE_KEY
-    );
+    clearCurrentBill();
 
 
     console.log(
@@ -853,24 +959,22 @@ function startNewBill() {
 
 
 // ============================================================
-// CHECK WHETHER CURRENT BILL EXISTS
+// CHECK CURRENT BILL
 // ============================================================
 
 function hasCurrentBill() {
 
-    const stored =
+    return (
         localStorage.getItem(
             BILL_STORAGE_KEY
-        );
-
-
-    return !!stored;
+        ) !== null
+    );
 
 }
 
 
 // ============================================================
-// CHECK WHETHER CURRENT BILL IS SAVED
+// CHECK IF CURRENT BILL IS SAVED
 // ============================================================
 
 function isCurrentBillSaved() {
@@ -935,6 +1039,36 @@ function showSavedBills() {
 
     console.log(
         "========================================"
+    );
+
+}
+
+
+// ============================================================
+// DEBUG STORAGE KEYS
+// ============================================================
+
+function showStorageKeys() {
+
+    console.log(
+        "CURRENT BILL:"
+    );
+
+    console.log(
+        localStorage.getItem(
+            BILL_STORAGE_KEY
+        )
+    );
+
+
+    console.log(
+        "PERMANENT BILLS:"
+    );
+
+    console.log(
+        localStorage.getItem(
+            SAVED_BILLS_KEY
+        )
     );
 
 }

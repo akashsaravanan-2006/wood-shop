@@ -635,3 +635,12 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 });
+console.log("🔥🔥🔥 NEW DISCOUNT.JS VERSION 2 LOADED 🔥🔥🔥");
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Discount page started");
+
+    // rest of your code...
+
+});

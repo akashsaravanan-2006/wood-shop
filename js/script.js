@@ -1,53 +1,79 @@
-// =======================================
-// WOOD BUTTON
-// =======================================
+// ===========================================
+// SCRIPT.JS
+// ===========================================
 
-const woodBtn = document.getElementById("woodBtn");
+
+// ===========================================
+// WOOD BUTTON
+// ===========================================
+
+const woodBtn =
+    document.getElementById("woodBtn");
+
 
 if (woodBtn) {
 
-    woodBtn.addEventListener("click", function () {
+    woodBtn.addEventListener(
+        "click",
+        function () {
 
-        window.location.href = "wood.html";
+            window.location.href =
+                "wood.html";
 
-    });
-
-}
-
-
-// =======================================
-// PLATE BUTTON
-// =======================================
-
-const plateBtn = document.getElementById("plateBtn");
-
-if (plateBtn) {
-
-    plateBtn.addEventListener("click", function () {
-
-        window.location.href = "plate.html";
-
-    });
+        }
+    );
 
 }
 
 
-// =======================================
+// ===========================================
+// PENDING BILL BUTTON
+// ===========================================
+
+const pendingBtn =
+    document.getElementById("pendingBtn");
+
+
+if (pendingBtn) {
+
+    pendingBtn.addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "pendingBills.html";
+
+        }
+    );
+
+}
+
+
+// ===========================================
 // HISTORY BUTTON
-// =======================================
+// ===========================================
 
-const historyBtn = document.getElementById("historyBtn");
+const historyBtn =
+    document.getElementById("historyBtn");
+
 
 if (historyBtn) {
 
-    historyBtn.addEventListener("click", function () {
+    historyBtn.addEventListener(
+        "click",
+        function () {
 
-        window.location.href = "history.html";
+            window.location.href =
+                "history.html";
 
-    });
+        }
+    );
 
-}// ===========================================
-// CLEAR ALL BILL DATA
+}
+
+
+// ===========================================
+// CLEAR BUTTON
 // ===========================================
 
 const clearBtn =
@@ -60,13 +86,19 @@ if (clearBtn) {
         "click",
         function () {
 
-            const confirmClear =
-                confirm(
-                    "Are you sure you want to clear all entered data?"
+            // =================================
+            // CONFIRMATION
+            // =================================
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to clear ALL bill data?"
                 );
 
 
-            if (!confirmClear) {
+            // User clicked Cancel
+
+            if (!confirmed) {
 
                 return;
 
@@ -74,14 +106,24 @@ if (clearBtn) {
 
 
             // =================================
-            // CLEAR CENTRAL BILL DATA
+            // CLEAR CENTRAL BILL STORAGE
             // =================================
 
             if (
-                typeof clearBillData === "function"
+                typeof clearBillData ===
+                "function"
             ) {
 
                 clearBillData();
+
+            }
+            else {
+
+                // Fallback
+
+                localStorage.removeItem(
+                    "current_bill_data"
+                );
 
             }
 
@@ -92,34 +134,39 @@ if (clearBtn) {
 
             const keysToRemove = [
 
-                // Wood
+                // WOOD
+
                 "woodTotal",
                 "finalTotal",
                 "grandTotal",
 
-                // Labour
+                // LABOUR
+
                 "labourCharge",
                 "otherCharge",
                 "othersData",
                 "othersTotal",
 
-                // Personal
+                // PERSONAL
+
                 "customerName",
                 "customerMobile",
                 "customerPlace",
 
-                // Bill
+                // BILL
+
                 "billNo",
                 "billDate",
-                "billCount",
 
-                // Advance
+                // ADVANCE
+
                 "paymentType",
                 "paymentMode",
                 "advanceAmount",
                 "balanceAmount",
 
-                // Discount
+                // DISCOUNT
+
                 "discountAmount",
                 "discountApplied",
                 "finalGrandTotal",
@@ -132,21 +179,23 @@ if (clearBtn) {
             keysToRemove.forEach(
                 function (key) {
 
-                    localStorage.removeItem(key);
+                    localStorage.removeItem(
+                        key
+                    );
 
                 }
             );
 
 
             // =================================
-            // CLEAR OLD SESSION STORAGE
+            // CLEAR SESSION STORAGE
             // =================================
 
             sessionStorage.clear();
 
 
             // =================================
-            // MESSAGE
+            // SUCCESS MESSAGE
             // =================================
 
             alert(
@@ -155,7 +204,7 @@ if (clearBtn) {
 
 
             // =================================
-            // GO TO INDEX PAGE
+            // STAY / GO TO INDEX
             // =================================
 
             window.location.href =

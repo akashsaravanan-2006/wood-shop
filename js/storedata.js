@@ -1,46 +1,75 @@
-// =======================================
+// ============================================================
 // STOREDATA.JS
-// =======================================
-// CENTRAL BILL STORAGE
+// ============================================================
+// CENTRAL TEMPORARY BILL STORAGE
 //
-// Data remains until:
-// 1. Bill is successfully saved to DB
-// 2. User intentionally starts a NEW bill
+// Data remains while moving between pages:
 //
-// NEVER clear data when moving between pages.
-// =======================================
+// Wood
+//   ↓
+// Labour
+//   ↓
+// Personal
+//   ↓
+// Advance
+//   ↓
+// Discount
+//   ↓
+// Bill
+//
+// Data is cleared ONLY when:
+// 1. Database save is successful
+// 2. User intentionally starts a new bill
+// ============================================================
 
-const BILL_STORAGE_KEY = "current_bill_data";
+
+const BILL_STORAGE_KEY =
+    "current_bill_data";
 
 
-// =======================================
-// CREATE NEW BILL OBJECT
-// =======================================
+// ============================================================
+// CREATE EMPTY BILL
+// ============================================================
 
 function createEmptyBillData() {
 
     return {
-        wood: {},
+
+        wood: {
+            calculations: [],
+            grandTotal: 0
+        },
+
         labour: {},
+
         personal: {},
+
         advance: {},
+
         discount: {},
+
         totals: {},
+
         editing: false,
+
         saved: false
+
     };
 
 }
 
 
-// =======================================
-// GET COMPLETE BILL
-// =======================================
+// ============================================================
+// GET BILL DATA
+// ============================================================
 
 function getBillData() {
 
     const stored =
-        localStorage.getItem(BILL_STORAGE_KEY);
+        localStorage.getItem(
+            BILL_STORAGE_KEY
+        );
+
 
     if (!stored) {
 
@@ -48,21 +77,60 @@ function getBillData() {
 
     }
 
+
     try {
 
-        const data = JSON.parse(stored);
+        const data =
+            JSON.parse(stored);
+
+
+        const empty =
+            createEmptyBillData();
+
 
         return {
-            ...createEmptyBillData(),
-            ...data
+
+            ...empty,
+
+            ...data,
+
+            // IMPORTANT:
+            // Preserve every page individually.
+
+            wood:
+                data.wood ||
+                empty.wood,
+
+            labour:
+                data.labour ||
+                empty.labour,
+
+            personal:
+                data.personal ||
+                empty.personal,
+
+            advance:
+                data.advance ||
+                empty.advance,
+
+            discount:
+                data.discount ||
+                empty.discount,
+
+            totals:
+                data.totals ||
+                empty.totals
+
         };
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "Error reading bill storage:",
+            "Error reading bill data:",
             error
         );
+
 
         return createEmptyBillData();
 
@@ -71,143 +139,211 @@ function getBillData() {
 }
 
 
-// =======================================
+// ============================================================
 // SAVE COMPLETE BILL
-// =======================================
+// ============================================================
 
 function saveBillData(data) {
 
-    localStorage.setItem(
-        BILL_STORAGE_KEY,
-        JSON.stringify(data)
-    );
+    try {
 
-    console.log(
-        "BILL DATA SAVED:",
-        data
-    );
+        localStorage.setItem(
+
+            BILL_STORAGE_KEY,
+
+            JSON.stringify(data)
+
+        );
+
+
+        console.log(
+            "BILL DATA SAVED:",
+            data
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unable to save bill data:",
+            error
+        );
+
+    }
 
 }
 
 
-// =======================================
+// ============================================================
 // SAVE ONE PAGE
-// =======================================
+// ============================================================
 
-function savePageData(pageName, pageData) {
+function savePageData(
+    pageName,
+    pageData
+) {
 
     const bill =
         getBillData();
+
+
+    // IMPORTANT:
+    // Only update this page.
+    //
+    // Do NOT replace the whole bill.
 
     bill[pageName] =
         pageData;
 
-    // Bill is not saved to DB yet
-    bill.saved = false;
 
-    saveBillData(bill);
+    bill.saved =
+        false;
+
+
+    saveBillData(
+        bill
+    );
 
 }
 
 
-// =======================================
+// ============================================================
 // GET ONE PAGE
-// =======================================
+// ============================================================
 
-function getPageData(pageName) {
+function getPageData(
+    pageName
+) {
 
     const bill =
         getBillData();
 
-    return bill[pageName] || {};
+
+    return (
+        bill[pageName] ||
+        {}
+    );
 
 }
 
 
-// =======================================
+// ============================================================
 // SAVE TOTALS
-// =======================================
+// ============================================================
 
-function saveTotals(totals) {
+function saveTotals(
+    totals
+) {
 
     const bill =
         getBillData();
+
 
     bill.totals =
         totals;
 
-    bill.saved = false;
 
-    saveBillData(bill);
+    bill.saved =
+        false;
+
+
+    saveBillData(
+        bill
+    );
 
 }
 
 
-// =======================================
+// ============================================================
 // GET TOTALS
-// =======================================
+// ============================================================
 
 function getTotals() {
 
     const bill =
         getBillData();
 
-    return bill.totals || {};
+
+    return (
+        bill.totals ||
+        {}
+    );
 
 }
 
 
-// =======================================
+// ============================================================
 // EDIT MODE
-// =======================================
+// ============================================================
 
 function enableEditMode() {
 
     const bill =
         getBillData();
 
-    bill.editing = true;
 
-    bill.saved = false;
+    bill.editing =
+        true;
 
-    saveBillData(bill);
+
+    bill.saved =
+        false;
+
+
+    saveBillData(
+        bill
+    );
 
 }
 
 
-// =======================================
-// DATABASE SAVE SUCCESS
-// =======================================
+// ============================================================
+// CHECK EDIT MODE
+// ============================================================
 
-function markBillSaved(databaseResponse) {
+function isEditMode() {
 
     const bill =
         getBillData();
 
-    bill.saved = true;
 
-    bill.database =
-        databaseResponse;
-
-    saveBillData(bill);
+    return (
+        bill.editing === true
+    );
 
 }
 
 
-// =======================================
-// CLEAR BILL
-// =======================================
-// IMPORTANT:
-//
-// ONLY call this AFTER DB SUCCESS.
-//
-// DO NOT call this from:
-// wood.js
-// labour.js
-// personal.js
-// advance.js
-// discount.js
-// =======================================
+// ============================================================
+// DATABASE SAVE SUCCESS
+// ============================================================
+
+function markBillSaved(
+    databaseResponse
+) {
+
+    const bill =
+        getBillData();
+
+
+    bill.saved =
+        true;
+
+
+    bill.database =
+        databaseResponse;
+
+
+    saveBillData(
+        bill
+    );
+
+}
+
+
+// ============================================================
+// CLEAR AFTER DATABASE SAVE
+// ============================================================
 
 function clearBillData() {
 
@@ -215,22 +351,65 @@ function clearBillData() {
         BILL_STORAGE_KEY
     );
 
+
     console.log(
-        "BILL DATA CLEARED AFTER DATABASE SAVE."
+        "ALL BILL DATA CLEARED AFTER DB SAVE."
     );
 
 }
 
 
-// =======================================
-// START COMPLETELY NEW BILL
-// =======================================
+// ============================================================
+// START NEW BILL
+// ============================================================
 
 function startNewBill() {
+
+    // Clear old bill.
 
     localStorage.removeItem(
         BILL_STORAGE_KEY
     );
+
+
+    // Also clear old compatibility keys.
+
+    localStorage.removeItem(
+        "woodData"
+    );
+
+    localStorage.removeItem(
+        "woodTotal"
+    );
+
+    localStorage.removeItem(
+        "grandTotal"
+    );
+
+    localStorage.removeItem(
+        "finalTotal"
+    );
+
+    localStorage.removeItem(
+        "advanceAmount"
+    );
+
+    localStorage.removeItem(
+        "balanceAmount"
+    );
+
+    localStorage.removeItem(
+        "discountAmount"
+    );
+
+    localStorage.removeItem(
+        "discountApplied"
+    );
+
+    localStorage.removeItem(
+        "finalGrandTotal"
+    );
+
 
     console.log(
         "NEW BILL STARTED."
@@ -239,14 +418,18 @@ function startNewBill() {
 }
 
 
-// =======================================
+// ============================================================
 // DEBUG
-// =======================================
+// ============================================================
 
 function showBillData() {
 
+    const data =
+        getBillData();
+
+
     console.log(
-        "================================"
+        "======================================"
     );
 
     console.log(
@@ -254,11 +437,11 @@ function showBillData() {
     );
 
     console.log(
-        getBillData()
+        data
     );
 
     console.log(
-        "================================"
+        "======================================"
     );
 
 }

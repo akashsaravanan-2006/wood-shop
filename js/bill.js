@@ -1808,68 +1808,109 @@ console.log(
 
 console.log(
     "=============================="
-);// =========================================
-// CLEAR CURRENT BILL
+);/// =========================================
+// CLEAR ALL BILL DATA
 // =========================================
 
-const clearBtn =
-    document.getElementById("clearBtn");
+const clearBtn = document.getElementById("clearBtn");
 
 if (clearBtn) {
 
-    clearBtn.addEventListener(
-        "click",
-        function () {
+    clearBtn.addEventListener("click", function () {
 
-            const confirmClear =
-                window.confirm(
-                    "Are you sure you want to clear ALL bill data?"
-                );
+        const confirmClear = window.confirm(
+            "Are you sure you want to clear ALL bill data?"
+        );
 
-            if (!confirmClear) {
-                return;
-            }
-
-            // Clear central bill storage
-            if (
-                typeof clearBillData === "function"
-            ) {
-                clearBillData();
-            }
-
-            // Clear old localStorage data
-            localStorage.removeItem("woodData");
-            localStorage.removeItem("labourCharge");
-            localStorage.removeItem("otherCharge");
-            localStorage.removeItem("othersData");
-
-            localStorage.removeItem("customerName");
-            localStorage.removeItem("customerMobile");
-            localStorage.removeItem("customerPlace");
-
-            localStorage.removeItem("advanceAmount");
-            localStorage.removeItem("balanceAmount");
-            localStorage.removeItem("paymentType");
-            localStorage.removeItem("paymentMode");
-
-            localStorage.removeItem("grandTotal");
-            localStorage.removeItem("finalTotal");
-
-            localStorage.removeItem("discountAmount");
-            localStorage.removeItem("discountApplied");
-            localStorage.removeItem("billDiscount");
-            localStorage.removeItem("finalGrandTotal");
-
-            localStorage.removeItem("billConfirmed");
-            localStorage.removeItem("billConfirmedAt");
-            localStorage.removeItem("editingBill");
-            localStorage.removeItem("billDate");
-
-            // Go to home
-            window.location.href =
-                "index.html";
-
+        if (!confirmClear) {
+            return;
         }
-    );
+
+        // =====================================
+        // CLEAR CENTRAL STORAGE
+        // =====================================
+
+        localStorage.removeItem("current_bill_data");
+
+
+        // =====================================
+        // CLEAR WOOD DATA
+        // =====================================
+
+        localStorage.removeItem("woodData");
+        localStorage.removeItem("wood_page_data");
+
+
+        // =====================================
+        // CLEAR LABOUR DATA
+        // =====================================
+
+        localStorage.removeItem("labourCharge");
+        localStorage.removeItem("otherCharge");
+        localStorage.removeItem("othersData");
+
+
+        // =====================================
+        // CLEAR PERSONAL DATA
+        // =====================================
+
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("customerMobile");
+        localStorage.removeItem("customerPlace");
+
+
+        // =====================================
+        // CLEAR ADVANCE DATA
+        // =====================================
+
+        localStorage.removeItem("advanceAmount");
+        localStorage.removeItem("balanceAmount");
+        localStorage.removeItem("paymentType");
+        localStorage.removeItem("paymentMode");
+
+
+        // =====================================
+        // CLEAR TOTALS
+        // =====================================
+
+        localStorage.removeItem("grandTotal");
+        localStorage.removeItem("finalTotal");
+
+
+        // =====================================
+        // CLEAR DISCOUNT
+        // =====================================
+
+        localStorage.removeItem("discountAmount");
+        localStorage.removeItem("discountApplied");
+        localStorage.removeItem("billDiscount");
+        localStorage.removeItem("finalGrandTotal");
+
+
+        // =====================================
+        // CLEAR BILL STATUS
+        // =====================================
+
+        localStorage.removeItem("billConfirmed");
+        localStorage.removeItem("billConfirmedAt");
+        localStorage.removeItem("editingBill");
+        localStorage.removeItem("billDate");
+
+
+        // =====================================
+        // CLEAR SESSION STORAGE TOO
+        // =====================================
+
+        sessionStorage.removeItem("wood_page_data");
+        sessionStorage.removeItem("current_bill_data");
+
+
+        // =====================================
+        // GO HOME
+        // =====================================
+
+        window.location.href = "index.html";
+
+    });
 
 }

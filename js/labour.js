@@ -440,20 +440,18 @@ function calculateAdditionalOthers() {
 
 function updateOthersTotal() {
 
-    const mainOther =
-        getMainOther();
+    const labour = getLabour();
 
+    const mainOther = getMainOther();
 
-    const additional =
-        calculateAdditionalOthers();
+    const additional = calculateAdditionalOthers();
 
-
-    const total =
-        money(
-            mainOther +
-            additional
-        );
-
+    const total = money(
+        woodTotal +
+        labour +
+        mainOther +
+        additional
+    );
 
     if (othersTotalElement) {
 
@@ -462,9 +460,7 @@ function updateOthersTotal() {
 
     }
 
-
     return total;
-
 }
 
 
@@ -474,49 +470,51 @@ function updateOthersTotal() {
 
 function calculateGrandTotal() {
 
-    const labour =
-        getLabour();
+    const labour = getLabour();
 
+    const mainOther = getMainOther();
 
-    const others =
-        updateOthersTotal();
+    const additional = calculateAdditionalOthers();
 
-
-    const grandTotal =
-        money(
-            woodTotal +
-            labour +
-            others
-        );
+    const total = money(
+        woodTotal +
+        labour +
+        mainOther +
+        additional
+    );
 
 
     console.log("--------------------------------------");
-
-    console.log(
-        "LABOUR CALCULATION"
-    );
-
-    console.log(
-        "WOOD TOTAL:",
-        woodTotal
-    );
-
-    console.log(
-        "LABOUR CHARGE:",
-        labour
-    );
-
-    console.log(
-        "OTHERS TOTAL:",
-        others
-    );
-
-    console.log(
-        "GRAND TOTAL:",
-        grandTotal
-    );
-
+    console.log("LABOUR CALCULATION");
+    console.log("WOOD TOTAL:", woodTotal);
+    console.log("LABOUR CHARGE:", labour);
+    console.log("OTHER CHARGE:", mainOther);
+    console.log("ADDITIONAL OTHERS:", additional);
+    console.log("OTHERS TOTAL:", total);
+    console.log("GRAND TOTAL:", total);
     console.log("--------------------------------------");
+
+
+    // OTHERS TOTAL
+    if (othersTotalElement) {
+
+        othersTotalElement.textContent =
+            "₹ " + formatMoney(total);
+
+    }
+
+
+    // GRAND TOTAL
+    if (grandTotalElement) {
+
+        grandTotalElement.textContent =
+            "₹ " + formatMoney(total);
+
+    }
+
+
+    return total;
+}
 
 
     // ========================================================

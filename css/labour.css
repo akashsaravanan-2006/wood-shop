@@ -118,7 +118,8 @@ label {
    INPUT
 ========================================================= */
 
-input[type="number"] {
+input[type="number"],
+input[type="text"] {
 
     width: 100%;
 
@@ -142,7 +143,8 @@ input[type="number"] {
 }
 
 
-input[type="number"]:focus {
+input[type="number"]:focus,
+input[type="text"]:focus {
 
     border-color: #008cff;
 
@@ -236,6 +238,112 @@ input[type="number"]:focus {
 
 
 /* =========================================================
+   ADD OTHER FORM
+========================================================= */
+
+.add-other-form {
+
+    width: 100%;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    background: #f8f9fa;
+
+    border:
+        1px solid #d9dee3;
+
+    border-radius: 10px;
+
+}
+
+
+.form-row {
+
+    margin-bottom: 18px;
+
+}
+
+
+.form-row label {
+
+    margin-bottom: 8px;
+
+}
+
+
+/* =========================================================
+   OTHER FORM BUTTONS
+========================================================= */
+
+.other-form-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+
+.other-form-buttons button {
+
+    flex: 1;
+
+    min-height: 44px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   SAVE OTHER
+========================================================= */
+
+.save-other-btn {
+
+    background: #078cff;
+
+}
+
+
+.save-other-btn:hover {
+
+    background: #0075d8;
+
+}
+
+
+/* =========================================================
+   CANCEL OTHER
+========================================================= */
+
+.cancel-other-btn {
+
+    background: #6c757d;
+
+}
+
+
+.cancel-other-btn:hover {
+
+    background: #5a6268;
+
+}
+
+
+/* =========================================================
    OTHERS CONTAINER
 ========================================================= */
 
@@ -258,13 +366,11 @@ input[type="number"]:focus {
 
     align-items: center;
 
-    justify-content: space-between;
-
     gap: 15px;
 
     width: 100%;
 
-    padding: 12px 15px;
+    padding: 14px 15px;
 
     margin-bottom: 10px;
 
@@ -278,13 +384,24 @@ input[type="number"]:focus {
 }
 
 
+.other-item-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
 .other-item-name {
 
     font-size: 16px;
 
     font-weight: 600;
 
-    flex: 1;
+    color: #17202a;
+
+    word-break: break-word;
 
 }
 
@@ -296,6 +413,8 @@ input[type="number"]:focus {
     font-weight: 700;
 
     color: #008cff;
+
+    white-space: nowrap;
 
 }
 
@@ -315,7 +434,7 @@ input[type="number"]:focus {
     color: white;
 
     padding:
-        7px
+        8px
         12px;
 
     font-size: 13px;
@@ -323,6 +442,8 @@ input[type="number"]:focus {
     font-weight: 600;
 
     cursor: pointer;
+
+    white-space: nowrap;
 
 }
 
@@ -497,11 +618,32 @@ input[type="number"]:focus {
     }
 
 
-    .other-item-name {
+    .other-item-info {
 
         width: 100%;
 
         flex: none;
+
+    }
+
+
+    .other-item-value {
+
+        margin-right: auto;
+
+    }
+
+
+    .remove-other-btn {
+
+        margin-left: auto;
+
+    }
+
+
+    .other-form-buttons {
+
+        flex-direction: column;
 
     }
 

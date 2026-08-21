@@ -13,7 +13,7 @@
 
     <link
         rel="stylesheet"
-        href="../css/labour.css">
+        href="../css/labour.css?v=100">
 
 </head>
 
@@ -24,33 +24,41 @@
 
     <div class="card">
 
+        <!-- =========================================
+             TITLE
+        ========================================== -->
+
         <h1>
             Labour & Other Charges
         </h1>
 
 
-        <!-- WOOD TOTAL -->
+        <!-- =========================================
+             WOOD TOTAL
+        ========================================== -->
 
-        <div class="field">
+        <div class="row">
 
             <label>
                 Wood Total
             </label>
 
-            <div class="amount-box">
+            <div
+                id="woodTotal"
+                class="amount-box">
 
-                <strong id="woodTotal">
-                    ₹ 0.00
-                </strong>
+                ₹ 0.00
 
             </div>
 
         </div>
 
 
-        <!-- LABOUR -->
+        <!-- =========================================
+             LABOUR CHARGE
+        ========================================== -->
 
-        <div class="field">
+        <div class="row">
 
             <label for="labourCharge">
                 Labour Charge
@@ -61,14 +69,17 @@
                 id="labourCharge"
                 min="0"
                 step="0.01"
-                placeholder="Enter Labour Charge">
+                placeholder="Enter Labour Charge"
+                autocomplete="off">
 
         </div>
 
 
-        <!-- OTHER -->
+        <!-- =========================================
+             OTHER CHARGE
+        ========================================== -->
 
-        <div class="field">
+        <div class="row">
 
             <label for="otherCharge">
                 Other Charge
@@ -79,76 +90,89 @@
                 id="otherCharge"
                 min="0"
                 step="0.01"
-                placeholder="Enter Other Charge">
+                placeholder="Enter Other Charge"
+                autocomplete="off">
 
         </div>
 
 
-        <!-- ADD OTHER -->
+        <!-- =========================================
+             ADD OTHER
+        ========================================== -->
 
-        <div class="button-row">
+        <button
+            type="button"
+            id="addOtherBtn"
+            class="add-other-btn">
 
-            <button
-                type="button"
-                id="addOtherBtn">
+            + Add Other
 
-                + Add Other
+        </button>
 
-            </button>
+
+        <!-- =========================================
+             ADDITIONAL OTHER ITEMS
+        ========================================== -->
+
+        <div
+            id="othersContainer"
+            class="others-container">
 
         </div>
 
 
-        <!-- ADDITIONAL OTHER ITEMS -->
+        <!-- =========================================
+             OTHERS TOTAL
+        ========================================== -->
 
-        <div id="othersContainer"></div>
-
-
-        <!-- OTHERS TOTAL -->
-
-        <div class="field">
+        <div class="row total-row">
 
             <label>
                 Others Total
             </label>
 
-            <div class="amount-box">
+            <div
+                id="othersTotal"
+                class="amount-box">
 
-                <strong id="othersTotal">
-                    ₹ 0.00
-                </strong>
+                ₹ 0.00
 
             </div>
 
         </div>
 
 
-        <!-- GRAND TOTAL -->
+        <!-- =========================================
+             GRAND TOTAL
+        ========================================== -->
 
-        <div class="field">
+        <div class="row total-row">
 
             <label>
                 Grand Total
             </label>
 
-            <div class="grand-total-box">
+            <div
+                id="grandTotal"
+                class="amount-box grand-total">
 
-                <strong id="grandTotal">
-                    ₹ 0.00
-                </strong>
+                ₹ 0.00
 
             </div>
 
         </div>
 
 
-        <!-- BUTTONS -->
+        <!-- =========================================
+             BUTTONS
+        ========================================== -->
 
-        <div class="bottom-buttons">
+        <div class="button-container">
 
             <button
                 type="button"
-                id="confirmBtn">
+                id="confirmBtn"
+                class="confirm-btn">
 
                 Confirm
 
@@ -157,22 +181,18 @@
 
             <button
                 type="button"
-                id="backBtn">
+                id="backBtn"
+                class="back-btn">
 
                 Back
 
             </button>
 
-        </div>
-
-
-        <!-- NEXT -->
-
-        <div class="next-row">
 
             <button
                 type="button"
-                id="nextBtn">
+                id="nextBtn"
+                class="next-btn">
 
                 Next
 
@@ -185,9 +205,11 @@
 </div>
 
 
-<!-- ONLY LABOUR JS -->
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
 
-<script src="../js/labour.js?v=500"></script>
+<script src="../js/labour.js?v=100"></script>
 
 
 </body>

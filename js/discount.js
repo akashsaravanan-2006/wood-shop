@@ -1,50 +1,54 @@
 // ============================================================
 // DISCOUNT.JS
+// ============================================================
 //
 // FLOW:
-// Personal -> Discount -> Advance
 //
-// Discount is calculated ONLY here.
+// Wood
+//   ↓
+// Personal
+//   ↓
+// Discount
+//   ↓
+// Advance
+//   ↓
+// Bill
+//
+// IMPORTANT:
+// Discount uses the ORIGINAL WOOD TOTAL as its starting amount.
+// After discount, FINAL TOTAL is saved for Advance page.
+//
 // ============================================================
 
-console.log("======================================");
-console.log("DISCOUNT.JS LOADED");
-console.log("======================================");
+console.log("================================================");
+console.log("DISCOUNT.JS LOADED - CLEAN VERSION");
+console.log("================================================");
 
 
 // ============================================================
 // HTML ELEMENTS
 // ============================================================
 
-const currentTotal =
+const currentTotalElement =
     document.getElementById("currentTotal");
 
-const newGrandTotal =
+const newGrandTotalElement =
     document.getElementById("newGrandTotal");
 
-const discountAmount =
+const discountSection =
+    document.getElementById("discountSection");
+
+const discountAmountInput =
     document.getElementById("discountAmount");
 
 const calculateDiscountBtn =
-    document.getElementById(
-        "calculateDiscountBtn"
-    );
+    document.getElementById("calculateDiscountBtn");
 
 const nextBtn =
     document.getElementById("nextBtn");
 
 const backBtn =
     document.getElementById("backBtn");
-
-const discountSection =
-    document.getElementById(
-        "discountSection"
-    );
-
-
-// ============================================================
-// DISCOUNT RADIO BUTTONS
-// ============================================================
 
 const discountOptions =
     document.querySelectorAll(
@@ -53,239 +57,376 @@ const discountOptions =
 
 
 // ============================================================
-// GET ORIGINAL GRAND TOTAL
+// GLOBAL VARIABLES
 // ============================================================
 
-function getOriginalTotal() {
+let originalGrandTotal = 0;
 
-    // --------------------------------------------------------
-    // CENTRAL STORAGE
-    // --------------------------------------------------------
+let discountAmount = 0;
+
+let finalGrandTotal = 0;
+
+
+// ============================================================
+// NUMBER HELPER
+// ============================================================
+
+function toNumber(value) {
+
+    const number =
+        parseFloat(value);
 
     if (
-        typeof getTotals === "function"
+        Number.isFinite(number)
     ) {
 
-        const totals =
-            getTotals();
+        return number;
 
-        console.log(
-            "STORED TOTALS:",
-            totals
-        );
+    }
 
-
-        const values = [
-
-            totals.grandTotal,
-
-            totals.finalGrandTotal,
-
-            totals.finalTotal,
-
-            totals.subtotal
-
-        ];
+    return 0;
+}
 
 
-        for (const value of values) {
+// ============================================================
+// GET WOOD TOTAL
+// ============================================================
+//
+// IMPORTANT:
+// We intentionally DO NOT use an old finalTotal here.
+//
+// finalTotal belongs to the Discount result.
+// Therefore it must NOT be used as the starting amount.
+//
+// ============================================================
 
-            const number =
-                parseFloat(value);
+function getWoodGrandTotal() {
 
+    console.log("--------------------------------");
+    console.log("SEARCHING FOR WOOD GRAND TOTAL");
+    console.log("--------------------------------");
+
+
+    let total = 0;
+
+
+    // ========================================================
+    // 1. Try woodData
+    // ========================================================
+
+    const woodDataRaw =
+        localStorage.getItem("woodData");
+
+
+    if (woodDataRaw) {
+
+        try {
+
+            const woodData =
+                JSON.parse(woodDataRaw);
+
+            console.log(
+                "woodData found:",
+                woodData
+            );
+
+
+            // ------------------------------------------------
+            // CASE A:
+            // { grandTotal: 694.44 }
+            // ------------------------------------------------
 
             if (
-                Number.isFinite(number) &&
-                number > 0
+                woodData &&
+                typeof woodData === "object" &&
+                !Array.isArray(woodData)
             ) {
 
-                return number;
+                if (
+                    woodData.grandTotal !== undefined
+                ) {
+
+                    total =
+                        toNumber(
+                            woodData.grandTotal
+                        );
+
+                }
+
+            }
+
+
+            // ------------------------------------------------
+            // CASE B:
+            // { total: 694.44 }
+            // ------------------------------------------------
+
+            if (
+                total === 0 &&
+                woodData &&
+                typeof woodData === "object" &&
+                woodData.total !== undefined
+            ) {
+
+                total =
+                    toNumber(
+                        woodData.total
+                    );
+
+            }
+
+
+            // ------------------------------------------------
+            // CASE C:
+            // Array of calculations
+            // ------------------------------------------------
+
+            if (
+                total === 0 &&
+                Array.isArray(woodData)
+            ) {
+
+                woodData.forEach(
+                    function (item) {
+
+                        if (!item) {
+                            return;
+                        }
+
+                        if (
+                            item.amount !== undefined
+                        ) {
+
+                            total +=
+                                toNumber(
+                                    item.amount
+                                );
+
+                        }
+                        else if (
+                            item.total !== undefined
+                        ) {
+
+                            total +=
+                                toNumber(
+                                    item.total
+                                );
+
+                        }
+
+                    }
+                );
 
             }
 
         }
+        catch (error) {
 
-    }
-
-
-    // --------------------------------------------------------
-    // OLD STORAGE FALLBACK
-    // --------------------------------------------------------
-
-    const keys = [
-
-        "finalGrandTotal",
-        "grandTotal",
-        "finalTotal",
-        "woodTotal"
-
-    ];
-
-
-    for (const key of keys) {
-
-        const value =
-            parseFloat(
-                localStorage.getItem(key)
+            console.error(
+                "ERROR READING woodData:",
+                error
             );
-
-
-        if (
-            Number.isFinite(value) &&
-            value > 0
-        ) {
-
-            return value;
 
         }
 
     }
 
 
-    return 0;
+    // ========================================================
+    // 2. Try grandTotal
+    // ========================================================
 
-}
+    if (total === 0) {
 
+        const storedGrandTotal =
+            localStorage.getItem(
+                "grandTotal"
+            );
 
-// ============================================================
-// ORIGINAL TOTAL
-// ============================================================
+        if (
+            storedGrandTotal !== null
+        ) {
 
-const originalTotal =
-    getOriginalTotal();
+            total =
+                toNumber(
+                    storedGrandTotal
+                );
 
+            console.log(
+                "Using stored grandTotal:",
+                total
+            );
 
-console.log(
-    "ORIGINAL TOTAL:",
-    originalTotal
-);
-
-
-// ============================================================
-// DISPLAY TOTAL
-// ============================================================
-
-function displayOriginalTotal() {
-
-    if (currentTotal) {
-
-        currentTotal.textContent =
-            "₹ " +
-            originalTotal.toFixed(2);
+        }
 
     }
 
-}
 
+    // ========================================================
+    // 3. Try woodGrandTotal
+    // ========================================================
 
-// ============================================================
-// DISPLAY NEW TOTAL
-// ============================================================
+    if (total === 0) {
 
-function displayNewTotal(amount) {
+        const woodGrandTotal =
+            localStorage.getItem(
+                "woodGrandTotal"
+            );
 
-    if (newGrandTotal) {
+        if (
+            woodGrandTotal !== null
+        ) {
 
-        newGrandTotal.textContent =
-            "₹ " +
-            amount.toFixed(2);
+            total =
+                toNumber(
+                    woodGrandTotal
+                );
+
+            console.log(
+                "Using woodGrandTotal:",
+                total
+            );
+
+        }
 
     }
 
+
+    // ========================================================
+    // 4. Try originalGrandTotal
+    // ========================================================
+
+    if (total === 0) {
+
+        const originalTotal =
+            localStorage.getItem(
+                "originalGrandTotal"
+            );
+
+        if (
+            originalTotal !== null
+        ) {
+
+            total =
+                toNumber(
+                    originalTotal
+                );
+
+            console.log(
+                "Using originalGrandTotal:",
+                total
+            );
+
+        }
+
+    }
+
+
+    // ========================================================
+    // FINAL RESULT
+    // ========================================================
+
+    console.log(
+        "WOOD GRAND TOTAL FOUND:",
+        total
+    );
+
+
+    return total;
 }
 
 
 // ============================================================
-// SAVE DISCOUNT DATA
+// DISPLAY CURRENT TOTAL
 // ============================================================
 
-function saveDiscountData(
-    option,
-    discount,
-    finalTotal
-) {
-
-    const data = {
-
-        discountOption:
-            option,
-
-        originalGrandTotal:
-            originalTotal,
-
-        discountAmount:
-            discount,
-
-        grandTotal:
-            finalTotal
-
-    };
-
-
-    // ========================================================
-    // CENTRAL STORAGE
-    // ========================================================
+function displayCurrentTotal() {
 
     if (
-        typeof savePageData === "function"
+        currentTotalElement
     ) {
 
-        savePageData(
-            "discount",
-            data
+        currentTotalElement.textContent =
+            "₹ " +
+            originalGrandTotal.toFixed(2);
+
+    }
+
+
+    if (
+        newGrandTotalElement
+    ) {
+
+        newGrandTotalElement.textContent =
+            "₹ " +
+            finalGrandTotal.toFixed(2);
+
+    }
+
+}
+
+
+// ============================================================
+// SHOW / HIDE DISCOUNT SECTION
+// ============================================================
+
+function updateDiscountSection() {
+
+    const selected =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
         );
 
+
+    if (!selected) {
+        return;
     }
-
-
-    // ========================================================
-    // SAVE TOTALS
-    // ========================================================
-
-    if (
-        typeof saveTotals === "function"
-    ) {
-
-        saveTotals({
-
-            originalGrandTotal:
-                originalTotal,
-
-            discountAmount:
-                discount,
-
-            grandTotal:
-                finalTotal
-
-        });
-
-    }
-
-
-    // ========================================================
-    // OLD STORAGE
-    // ========================================================
-
-    localStorage.setItem(
-        "discountAmount",
-        discount.toString()
-    );
-
-    localStorage.setItem(
-        "finalGrandTotal",
-        finalTotal.toString()
-    );
-
-    localStorage.setItem(
-        "grandTotal",
-        finalTotal.toString()
-    );
 
 
     console.log(
-        "DISCOUNT DATA SAVED:",
-        data
+        "DISCOUNT OPTION:",
+        selected.value
     );
+
+
+    if (
+        selected.value === "yes"
+    ) {
+
+        if (
+            discountSection
+        ) {
+
+            discountSection.style.display =
+                "block";
+
+        }
+
+    }
+    else {
+
+        if (
+            discountSection
+        ) {
+
+            discountSection.style.display =
+                "none";
+
+        }
+
+
+        // No discount
+        discountAmount = 0;
+
+        finalGrandTotal =
+            originalGrandTotal;
+
+
+        displayCurrentTotal();
+
+        saveDiscountData();
+
+    }
 
 }
 
@@ -296,46 +437,80 @@ function saveDiscountData(
 
 function calculateDiscount() {
 
-    const selected =
-        document.querySelector(
-            'input[name="discountOption"]:checked'
+    console.log("--------------------------------");
+    console.log("CALCULATING DISCOUNT");
+    console.log("--------------------------------");
+
+
+    if (
+        originalGrandTotal <= 0
+    ) {
+
+        alert(
+            "Wood Grand Total is not available."
+        );
+
+        console.error(
+            "ORIGINAL TOTAL IS INVALID:",
+            originalGrandTotal
+        );
+
+        return;
+
+    }
+
+
+    discountAmount =
+        toNumber(
+            discountAmountInput
+                ? discountAmountInput.value
+                : 0
         );
 
 
-    const option =
-        selected
-            ? selected.value
-            : "no";
+    console.log(
+        "Original Total:",
+        originalGrandTotal
+    );
+
+    console.log(
+        "Discount:",
+        discountAmount
+    );
 
 
     // ========================================================
-    // NO DISCOUNT
+    // VALIDATION
     // ========================================================
 
     if (
-        option === "no"
+        discountAmount < 0
     ) {
 
-        const finalTotal =
-            originalTotal;
-
-
-        displayNewTotal(
-            finalTotal
+        alert(
+            "Discount cannot be negative."
         );
 
+        return;
 
-        saveDiscountData(
-            "no",
-            0,
-            finalTotal
+    }
+
+
+    if (
+        discountAmount > originalGrandTotal
+    ) {
+
+        alert(
+            "Discount cannot be greater than the Grand Total."
         );
 
+        if (
+            discountAmountInput
+        ) {
 
-        console.log(
-            "NO DISCOUNT"
-        );
+            discountAmountInput.focus();
 
+        }
 
         return;
 
@@ -343,79 +518,247 @@ function calculateDiscount() {
 
 
     // ========================================================
-    // NEED DISCOUNT
+    // FINAL CALCULATION
     // ========================================================
 
-    let discount =
-        parseFloat(
-            discountAmount
-                ? discountAmount.value
-                : 0
-        );
+    finalGrandTotal =
+        originalGrandTotal -
+        discountAmount;
 
 
-    if (
-        !Number.isFinite(discount) ||
-        discount < 0
-    ) {
+    // Avoid floating point display problems
+    finalGrandTotal =
+        Math.round(
+            finalGrandTotal * 100
+        ) / 100;
 
-        discount = 0;
-
-    }
-
-
-    // Discount cannot exceed total
-
-    if (
-        discount > originalTotal
-    ) {
-
-        discount =
-            originalTotal;
-
-
-        if (discountAmount) {
-
-            discountAmount.value =
-                discount;
-
-        }
-
-    }
-
-
-    const finalTotal =
-        originalTotal -
-        discount;
-
-
-    displayNewTotal(
-        finalTotal
-    );
-
-
-    saveDiscountData(
-        "yes",
-        discount,
-        finalTotal
-    );
-
-
-    console.log(
-        "DISCOUNT:",
-        discount
-    );
 
     console.log(
         "FINAL TOTAL:",
-        finalTotal
+        finalGrandTotal
+    );
+
+
+    // ========================================================
+    // DISPLAY
+    // ========================================================
+
+    displayCurrentTotal();
+
+
+    // ========================================================
+    // SAVE
+    // ========================================================
+
+    saveDiscountData();
+
+}
+
+
+// ============================================================
+// SAVE DISCOUNT DATA
+// ============================================================
+
+function saveDiscountData() {
+
+    const selected =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
+        );
+
+
+    const discountType =
+        selected
+            ? selected.value
+            : "no";
+
+
+    const data = {
+
+        originalGrandTotal:
+            Number(
+                originalGrandTotal.toFixed(2)
+            ),
+
+        discountType:
+            discountType,
+
+        discountAmount:
+            Number(
+                discountAmount.toFixed(2)
+            ),
+
+        finalGrandTotal:
+            Number(
+                finalGrandTotal.toFixed(2)
+            )
+
+    };
+
+
+    console.log(
+        "DISCOUNT DATA SAVED:",
+        data
+    );
+
+
+    // ========================================================
+    // Save complete discount object
+    // ========================================================
+
+    localStorage.setItem(
+        "discountData",
+        JSON.stringify(data)
+    );
+
+
+    // ========================================================
+    // IMPORTANT:
+    // finalTotal = FINAL TOTAL AFTER DISCOUNT
+    // ========================================================
+
+    localStorage.setItem(
+        "finalTotal",
+        finalGrandTotal.toFixed(2)
+    );
+
+
+    // ========================================================
+    // Keep newGrandTotal for compatibility
+    // ========================================================
+
+    localStorage.setItem(
+        "newGrandTotal",
+        finalGrandTotal.toFixed(2)
+    );
+
+
+    // ========================================================
+    // Keep grandTotal updated
+    // ========================================================
+
+    localStorage.setItem(
+        "grandTotal",
+        finalGrandTotal.toFixed(2)
+    );
+
+
+    console.log(
+        "finalTotal SAVED:",
+        localStorage.getItem("finalTotal")
     );
 
 }
 
 
 // ============================================================
-// RADIO CHANGE
+// NEXT
+// Discount -> Advance
+// ============================================================
+
+function goToAdvance() {
+
+    console.log("--------------------------------");
+    console.log("DISCOUNT NEXT CLICKED");
+    console.log("--------------------------------");
+
+
+    // --------------------------------------------------------
+    // Make sure latest discount is saved
+    // --------------------------------------------------------
+
+    const selected =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
+        );
+
+
+    if (
+        selected &&
+        selected.value === "yes"
+    ) {
+
+        calculateDiscount();
+
+    }
+    else {
+
+        discountAmount = 0;
+
+        finalGrandTotal =
+            originalGrandTotal;
+
+        saveDiscountData();
+
+    }
+
+
+    // --------------------------------------------------------
+    // Verify final amount
+    // --------------------------------------------------------
+
+    const savedFinalTotal =
+        toNumber(
+            localStorage.getItem(
+                "finalTotal"
+            )
+        );
+
+
+    console.log(
+        "FINAL TOTAL BEFORE ADVANCE:",
+        savedFinalTotal
+    );
+
+
+    if (
+        savedFinalTotal < 0
+    ) {
+
+        alert(
+            "Invalid final total."
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Redirect
+    // --------------------------------------------------------
+
+    console.log(
+        "REDIRECTING TO advance.html"
+    );
+
+
+    window.location.href =
+        "advance.html";
+
+}
+
+
+// ============================================================
+// BACK
+// Discount -> Personal
+// ============================================================
+
+function goBack() {
+
+    console.log(
+        "DISCOUNT BACK -> PERSONAL"
+    );
+
+
+    window.location.href =
+        "personal.html";
+
+}
+
+
+// ============================================================
+// RADIO BUTTON EVENTS
 // ============================================================
 
 discountOptions.forEach(
@@ -425,43 +768,7 @@ discountOptions.forEach(
             "change",
             function () {
 
-                if (
-                    this.value === "yes"
-                ) {
-
-                    // Show input
-
-                    if (discountSection) {
-
-                        discountSection.style.display =
-                            "block";
-
-                    }
-
-                }
-                else {
-
-                    // Hide input
-
-                    if (discountSection) {
-
-                        discountSection.style.display =
-                            "none";
-
-                    }
-
-
-                    if (discountAmount) {
-
-                        discountAmount.value =
-                            "";
-
-                    }
-
-                }
-
-
-                calculateDiscount();
+                updateDiscountSection();
 
             }
         );
@@ -474,11 +781,16 @@ discountOptions.forEach(
 // CALCULATE BUTTON
 // ============================================================
 
-if (calculateDiscountBtn) {
+if (
+    calculateDiscountBtn
+) {
 
     calculateDiscountBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
 
             calculateDiscount();
 
@@ -489,30 +801,21 @@ if (calculateDiscountBtn) {
 
 
 // ============================================================
-// NEXT
-// Discount -> Advance
+// NEXT BUTTON
 // ============================================================
 
-if (nextBtn) {
+if (
+    nextBtn
+) {
 
     nextBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            calculateDiscount();
+            event.preventDefault();
+            event.stopPropagation();
 
-
-            console.log(
-                "DISCOUNT COMPLETE"
-            );
-
-            console.log(
-                "GOING TO ADVANCE"
-            );
-
-
-            window.location.href =
-                "advance.html";
+            goToAdvance();
 
         }
     );
@@ -521,18 +824,21 @@ if (nextBtn) {
 
 
 // ============================================================
-// BACK
-// Discount -> Personal
+// BACK BUTTON
 // ============================================================
 
-if (backBtn) {
+if (
+    backBtn
+) {
 
     backBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            window.location.href =
-                "personal.html";
+            event.preventDefault();
+            event.stopPropagation();
+
+            goBack();
 
         }
     );
@@ -541,114 +847,65 @@ if (backBtn) {
 
 
 // ============================================================
-// LOAD SAVED DISCOUNT
-// ============================================================
-
-function loadDiscountData() {
-
-    displayOriginalTotal();
-
-
-    let saved = null;
-
-
-    if (
-        typeof getPageData === "function"
-    ) {
-
-        saved =
-            getPageData("discount");
-
-    }
-
-
-    if (
-        saved &&
-        saved.discountOption
-    ) {
-
-        const radio =
-            document.querySelector(
-                `input[name="discountOption"][value="${saved.discountOption}"]`
-            );
-
-
-        if (radio) {
-
-            radio.checked = true;
-
-        }
-
-
-        if (
-            saved.discountOption === "yes"
-        ) {
-
-            if (discountSection) {
-
-                discountSection.style.display =
-                    "block";
-
-            }
-
-
-            if (discountAmount) {
-
-                discountAmount.value =
-                    saved.discountAmount || "";
-
-            }
-
-        }
-        else {
-
-            if (discountSection) {
-
-                discountSection.style.display =
-                    "none";
-
-            }
-
-        }
-
-
-        displayNewTotal(
-            Number(saved.grandTotal) ||
-            originalTotal
-        );
-
-
-        return;
-
-    }
-
-
-    // Default
-
-    if (discountSection) {
-
-        discountSection.style.display =
-            "none";
-
-    }
-
-
-    displayNewTotal(
-        originalTotal
-    );
-
-}
-
-
-// ============================================================
-// START
+// PAGE INITIALIZATION
 // ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        loadDiscountData();
+        console.log("--------------------------------");
+        console.log("DISCOUNT PAGE INITIALIZING");
+        console.log("--------------------------------");
+
+
+        // ----------------------------------------------------
+        // IMPORTANT:
+        // Get the Wood total first.
+        // Do NOT use old finalTotal.
+        // ----------------------------------------------------
+
+        originalGrandTotal =
+            getWoodGrandTotal();
+
+
+        console.log(
+            "ORIGINAL WOOD TOTAL:",
+            originalGrandTotal
+        );
+
+
+        // ----------------------------------------------------
+        // Start with no discount
+        // ----------------------------------------------------
+
+        discountAmount = 0;
+
+        finalGrandTotal =
+            originalGrandTotal;
+
+
+        // ----------------------------------------------------
+        // Display
+        // ----------------------------------------------------
+
+        displayCurrentTotal();
+
+
+        // ----------------------------------------------------
+        // Update discount section
+        // ----------------------------------------------------
+
+        updateDiscountSection();
+
+
+        console.log("--------------------------------");
+        console.log("DISCOUNT PAGE READY");
+        console.log(
+            "WOOD TOTAL = ₹",
+            originalGrandTotal.toFixed(2)
+        );
+        console.log("--------------------------------");
 
     }
 );

@@ -1,9 +1,34 @@
 // ============================================================
 // DISCOUNT.JS
+// VERSION: 400
+//
+// FLOW:
+//
+// WOOD
+//   ↓
+// LABOUR
+//   ↓
+// PERSONAL
+//   ↓
+// DISCOUNT
+//   ↓
+// ADVANCE
+//   ↓
+// BILL
+//   ↓
+// CBILL
+//
+// IMPORTANT:
+//
+// Labour total = BASE TOTAL
+// Discount changes only CURRENT/FINAL TOTAL
+// Advance uses Discount FINAL TOTAL
+//
+// We DO NOT overwrite the original Labour total.
 // ============================================================
 
 console.log("==========================================");
-console.log("DISCOUNT.JS - NEW VERSION");
+console.log("DISCOUNT.JS LOADED - VERSION 400");
 console.log("==========================================");
 
 
@@ -11,16 +36,16 @@ console.log("==========================================");
 // ELEMENTS
 // ============================================================
 
-const currentTotal =
+const currentTotalElement =
     document.getElementById("currentTotal");
 
-const newGrandTotal =
+const newGrandTotalElement =
     document.getElementById("newGrandTotal");
 
 const discountSection =
     document.getElementById("discountSection");
 
-const discountAmount =
+const discountAmountInput =
     document.getElementById("discountAmount");
 
 const calculateDiscountBtn =
@@ -42,19 +67,27 @@ const discountOptions =
 // VARIABLES
 // ============================================================
 
-let gTotal = 0;
+// IMPORTANT:
+//
+// baseGrandTotal NEVER changes on this page.
+//
+// currentGrandTotal changes after discount.
+//
+
+let baseGrandTotal = 0;
+let currentGrandTotal = 0;
 
 
 // ============================================================
 // NUMBER
 // ============================================================
 
-function numberValue(value) {
+function toNumber(value) {
 
-    const n = parseFloat(value);
+    const number = parseFloat(value);
 
-    if (Number.isFinite(n)) {
-        return n;
+    if (Number.isFinite(number)) {
+        return number;
     }
 
     return 0;
@@ -62,98 +95,157 @@ function numberValue(value) {
 
 
 // ============================================================
-// ROUND
+// MONEY
 // ============================================================
 
-function roundMoney(value) {
+function money(value) {
 
     return Math.round(
-        numberValue(value) * 100
+        (toNumber(value) + Number.EPSILON) * 100
     ) / 100;
 
 }
 
 
 // ============================================================
-// LOAD gTotal
+// FORMAT
 // ============================================================
 
-function loadGTotal() {
+function formatMoney(value) {
 
-    const stored =
-        localStorage.getItem("gTotal");
-
-    console.log(
-        "DISCOUNT -> gTotal BEFORE:",
-        stored
-    );
-
-
-    if (
-        stored === null ||
-        stored === ""
-    ) {
-
-        console.error(
-            "DISCOUNT ERROR: gTotal IS NULL"
-        );
-
-        gTotal = 0;
-
-    }
-    else {
-
-        gTotal =
-            roundMoney(stored);
-
-    }
-
-
-    console.log(
-        "DISCOUNT -> gTotal LOADED:",
-        gTotal
-    );
+    return money(value).toFixed(2);
 
 }
 
 
 // ============================================================
-// SAVE gTotal
+// GET LABOUR FINAL TOTAL
+//
+// SOURCE:
+//
+// labourData.finalTotal
+//
+// This is the ORIGINAL amount before discount.
+//
+// We DO NOT use gTotal here.
 // ============================================================
 
-function saveGTotal() {
+function getLabourFinalTotal() {
 
-    gTotal =
-        roundMoney(gTotal);
+    console.log("------------------------------------------");
+    console.log("READING LABOUR FINAL TOTAL");
 
-
-    localStorage.setItem(
-        "gTotal",
-        gTotal.toFixed(2)
-    );
-
+    const labourDataString =
+        localStorage.getItem("labourData");
 
     console.log(
-        "=========================================="
+        "labourData:",
+        labourDataString
     );
 
-    console.log(
-        "DISCOUNT -> gTotal SAVED"
+
+    if (labourDataString) {
+
+        try {
+
+            const labourData =
+                JSON.parse(labourDataString);
+
+            console.log(
+                "LABOUR DATA:",
+                labourData
+            );
+
+
+            if (
+                labourData &&
+                labourData.finalTotal !== undefined &&
+                labourData.finalTotal !== null
+            ) {
+
+                const total =
+                    money(
+                        labourData.finalTotal
+                    );
+
+                console.log(
+                    "USING labourData.finalTotal:",
+                    total
+                );
+
+                return total;
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "LABOUR DATA JSON ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // FALLBACK: finalTotal
+    // --------------------------------------------------------
+
+    const finalTotal =
+        localStorage.getItem("finalTotal");
+
+
+    if (
+        finalTotal !== null &&
+        finalTotal !== ""
+    ) {
+
+        const total =
+            money(finalTotal);
+
+        console.log(
+            "USING FALLBACK finalTotal:",
+            total
+        );
+
+        return total;
+
+    }
+
+
+    // --------------------------------------------------------
+    // FALLBACK: grandTotal
+    // --------------------------------------------------------
+
+    const grandTotal =
+        localStorage.getItem("grandTotal");
+
+
+    if (
+        grandTotal !== null &&
+        grandTotal !== ""
+    ) {
+
+        const total =
+            money(grandTotal);
+
+        console.log(
+            "USING FALLBACK grandTotal:",
+            total
+        );
+
+        return total;
+
+    }
+
+
+    console.error(
+        "DISCOUNT ERROR: LABOUR TOTAL NOT FOUND"
     );
 
-    console.log(
-        "VALUE:",
-        gTotal.toFixed(2)
-    );
-
-    console.log(
-        "CHECK:",
-        localStorage.getItem("gTotal")
-    );
-
-    console.log(
-        "=========================================="
-    );
+    return 0;
 
 }
 
@@ -162,22 +254,34 @@ function saveGTotal() {
 // DISPLAY
 // ============================================================
 
-function displayTotal() {
+function displayTotals() {
 
-    if (currentTotal) {
+    // --------------------------------------------------------
+    // CURRENT GRAND TOTAL
+    //
+    // This remains the ORIGINAL Labour total.
+    // --------------------------------------------------------
 
-        currentTotal.textContent =
+    if (currentTotalElement) {
+
+        currentTotalElement.textContent =
             "₹ " +
-            gTotal.toFixed(2);
+            formatMoney(baseGrandTotal);
 
     }
 
 
-    if (newGrandTotal) {
+    // --------------------------------------------------------
+    // NEW GRAND TOTAL
+    //
+    // This changes when discount is applied.
+    // --------------------------------------------------------
 
-        newGrandTotal.textContent =
+    if (newGrandTotalElement) {
+
+        newGrandTotalElement.textContent =
             "₹ " +
-            gTotal.toFixed(2);
+            formatMoney(currentGrandTotal);
 
     }
 
@@ -228,6 +332,12 @@ function updateDiscountSection() {
 
         }
 
+        // No discount
+        currentGrandTotal =
+            money(baseGrandTotal);
+
+        displayTotals();
+
     }
 
 }
@@ -235,27 +345,41 @@ function updateDiscountSection() {
 
 // ============================================================
 // CALCULATE DISCOUNT
+//
+// IMPORTANT:
+//
+// baseGrandTotal NEVER changes.
+//
+// Example:
+//
+// Labour = 1000
+// Discount = 100
+//
+// Current Grand Total = 1000
+// New Grand Total     = 900
+//
+// If user changes discount to 200:
+//
+// Current Grand Total = 1000
+// New Grand Total     = 800
+//
+// We calculate from BASE every time.
 // ============================================================
 
 function calculateDiscount() {
 
     const discount =
-        numberValue(
-            discountAmount
-                ? discountAmount.value
+        toNumber(
+            discountAmountInput
+                ? discountAmountInput.value
                 : 0
         );
 
 
-    console.log(
-        "ORIGINAL TOTAL:",
-        gTotal
-    );
-
-    console.log(
-        "DISCOUNT:",
-        discount
-    );
+    console.log("------------------------------------------");
+    console.log("CALCULATING DISCOUNT");
+    console.log("BASE TOTAL:", baseGrandTotal);
+    console.log("DISCOUNT:", discount);
 
 
     if (discount < 0) {
@@ -269,7 +393,7 @@ function calculateDiscount() {
     }
 
 
-    if (discount > gTotal) {
+    if (discount > baseGrandTotal) {
 
         alert(
             "Discount cannot be greater than total."
@@ -280,18 +404,132 @@ function calculateDiscount() {
     }
 
 
-    gTotal =
-        roundMoney(
-            gTotal - discount
+    // IMPORTANT:
+    //
+    // Always calculate from BASE.
+    //
+    // DO NOT do:
+    //
+    // currentGrandTotal - discount
+    //
+    // because repeated clicks would deduct twice.
+    //
+
+    currentGrandTotal =
+        money(
+            baseGrandTotal - discount
         );
 
 
-    saveGTotal();
+    console.log(
+        "NEW GRAND TOTAL:",
+        currentGrandTotal
+    );
 
-    displayTotal();
+
+    displayTotals();
 
 
     return true;
+
+}
+
+
+// ============================================================
+// SAVE DISCOUNT DATA
+//
+// IMPORTANT:
+//
+// originalTotal = Labour total
+// finalTotal    = after discount
+//
+// We also keep gTotal for compatibility,
+// but gTotal contains the CURRENT final amount.
+//
+// The original Labour total is NEVER lost because
+// labourData.finalTotal remains unchanged.
+// ============================================================
+
+function saveDiscountData() {
+
+    const selected =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
+        );
+
+
+    let discount = 0;
+
+
+    if (
+        selected &&
+        selected.value === "yes"
+    ) {
+
+        discount =
+            toNumber(
+                discountAmountInput
+                    ? discountAmountInput.value
+                    : 0
+            );
+
+    }
+
+
+    const data = {
+
+        originalTotal:
+            money(baseGrandTotal),
+
+        discountAmount:
+            money(discount),
+
+        grandTotal:
+            money(currentGrandTotal),
+
+        finalTotal:
+            money(currentGrandTotal)
+
+    };
+
+
+    // --------------------------------------------------------
+    // SAVE DISCOUNT DATA
+    // --------------------------------------------------------
+
+    localStorage.setItem(
+        "discountData",
+        JSON.stringify(data)
+    );
+
+
+    // --------------------------------------------------------
+    // CURRENT TOTAL
+    //
+    // This is the value Advance should use.
+    // --------------------------------------------------------
+
+    localStorage.setItem(
+        "discountFinalTotal",
+        currentGrandTotal.toFixed(2)
+    );
+
+
+    // --------------------------------------------------------
+    // DO NOT overwrite Labour data
+    // --------------------------------------------------------
+
+
+    console.log("==========================================");
+    console.log("DISCOUNT DATA SAVED");
+    console.log(data);
+    console.log(
+        "discountFinalTotal:",
+        localStorage.getItem(
+            "discountFinalTotal"
+        )
+    );
+    console.log("==========================================");
 
 }
 
@@ -307,6 +545,24 @@ discountOptions.forEach(
             "change",
             function () {
 
+                console.log(
+                    "DISCOUNT RADIO CHANGED:",
+                    this.value
+                );
+
+
+                if (
+                    this.value === "no"
+                ) {
+
+                    currentGrandTotal =
+                        money(baseGrandTotal);
+
+                    displayTotals();
+
+                }
+
+
                 updateDiscountSection();
 
             }
@@ -317,7 +573,7 @@ discountOptions.forEach(
 
 
 // ============================================================
-// CALCULATE BUTTON
+// CALCULATE DISCOUNT BUTTON
 // ============================================================
 
 if (calculateDiscountBtn) {
@@ -327,10 +583,22 @@ if (calculateDiscountBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
-            calculateDiscount();
+            console.log(
+                "CALCULATE DISCOUNT CLICKED"
+            );
+
+
+            const success =
+                calculateDiscount();
+
+
+            if (success) {
+
+                saveDiscountData();
+
+            }
 
         }
     );
@@ -340,7 +608,8 @@ if (calculateDiscountBtn) {
 
 // ============================================================
 // NEXT
-// DISCOUNT -> LABOUR
+//
+// DISCOUNT -> ADVANCE
 // ============================================================
 
 if (nextBtn) {
@@ -350,17 +619,11 @@ if (nextBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
 
-            console.log(
-                "=========================================="
-            );
-
-            console.log(
-                "DISCOUNT NEXT CLICKED"
-            );
+            console.log("==========================================");
+            console.log("DISCOUNT NEXT CLICKED");
 
 
             const selected =
@@ -369,9 +632,9 @@ if (nextBtn) {
                 );
 
 
-            // ==================================================
+            // ------------------------------------------------
             // NO DISCOUNT
-            // ==================================================
+            // ------------------------------------------------
 
             if (
                 selected &&
@@ -379,30 +642,24 @@ if (nextBtn) {
             ) {
 
                 console.log(
-                    "NO DISCOUNT SELECTED"
+                    "NO DISCOUNT"
                 );
 
 
-                // IMPORTANT
-                // Save current amount
-                saveGTotal();
+                currentGrandTotal =
+                    money(baseGrandTotal);
 
             }
 
 
-            // ==================================================
+            // ------------------------------------------------
             // DISCOUNT
-            // ==================================================
+            // ------------------------------------------------
 
             else if (
                 selected &&
                 selected.value === "yes"
             ) {
-
-                console.log(
-                    "DISCOUNT SELECTED"
-                );
-
 
                 const success =
                     calculateDiscount();
@@ -415,51 +672,30 @@ if (nextBtn) {
             }
 
 
-            // ==================================================
-            // FINAL CHECK
-            // ==================================================
+            // ------------------------------------------------
+            // SAVE
+            // ------------------------------------------------
 
-            const finalStoredTotal =
-                localStorage.getItem(
-                    "gTotal"
-                );
+            saveDiscountData();
 
 
             console.log(
-                "=========================================="
+                "FINAL DISCOUNT TOTAL:",
+                currentGrandTotal
             );
+
 
             console.log(
-                "FINAL gTotal BEFORE LABOUR:",
-                finalStoredTotal
-            );
-
-            console.log(
-                "=========================================="
+                "REDIRECT: advance.html"
             );
 
 
-            // SAFETY CHECK
-            if (
-                finalStoredTotal === null ||
-                finalStoredTotal === ""
-            ) {
-
-                alert(
-                    "Total could not be saved. Please try again."
-                );
-
-                return;
-
-            }
-
-
-            // ==================================================
-            // GO TO LABOUR
-            // ==================================================
+            // ------------------------------------------------
+            // GO TO ADVANCE
+            // ------------------------------------------------
 
             window.location.href =
-                "labour.html";
+                "advance.html";
 
         }
     );
@@ -469,6 +705,8 @@ if (nextBtn) {
 
 // ============================================================
 // BACK
+//
+// DISCOUNT -> PERSONAL
 // ============================================================
 
 if (backBtn) {
@@ -478,8 +716,12 @@ if (backBtn) {
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
+
+
+            console.log(
+                "BACK: personal.html"
+            );
 
 
             window.location.href =
@@ -492,33 +734,106 @@ if (backBtn) {
 
 
 // ============================================================
-// PAGE LOAD
+// PAGE INITIALIZATION
 // ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        console.log(
-            "DISCOUNT PAGE INITIALIZING"
-        );
+        console.log("==========================================");
+        console.log("DISCOUNT PAGE INITIALIZING");
 
 
-        loadGTotal();
+        // ----------------------------------------------------
+        // GET ORIGINAL LABOUR TOTAL
+        // ----------------------------------------------------
 
-        displayTotal();
+        baseGrandTotal =
+            getLabourFinalTotal();
+
+
+        // ----------------------------------------------------
+        // CHECK EXISTING DISCOUNT
+        //
+        // This prevents old discount data from being
+        // accidentally treated as the original total.
+        // ----------------------------------------------------
+
+        const existingDiscount =
+            localStorage.getItem("discountData");
+
+
+        if (existingDiscount) {
+
+            try {
+
+                const data =
+                    JSON.parse(existingDiscount);
+
+
+                if (
+                    data &&
+                    data.originalTotal !== undefined
+                ) {
+
+                    // Always trust Labour total as base
+                    // for a fresh calculation.
+
+                    console.log(
+                        "EXISTING DISCOUNT DATA:",
+                        data
+                    );
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "EXISTING DISCOUNT DATA ERROR:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ----------------------------------------------------
+        // INITIAL VALUE
+        // ----------------------------------------------------
+
+        currentGrandTotal =
+            money(baseGrandTotal);
+
+
+        // ----------------------------------------------------
+        // DISPLAY
+        // ----------------------------------------------------
+
+        displayTotals();
+
+
+        // ----------------------------------------------------
+        // SHOW/HIDE DISCOUNT
+        // ----------------------------------------------------
 
         updateDiscountSection();
 
 
         console.log(
-            "DISCOUNT PAGE READY"
+            "BASE GRAND TOTAL:",
+            baseGrandTotal
         );
 
         console.log(
-            "CURRENT STORAGE gTotal:",
-            localStorage.getItem("gTotal")
+            "CURRENT GRAND TOTAL:",
+            currentGrandTotal
         );
+
+        console.log("DISCOUNT PAGE READY");
+        console.log("==========================================");
 
     }
 );

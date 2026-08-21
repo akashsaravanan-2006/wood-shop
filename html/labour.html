@@ -13,7 +13,7 @@
 
     <link
         rel="stylesheet"
-        href="../css/labour.css?v=100">
+        href="../css/labour.css?v=101">
 
 </head>
 
@@ -97,7 +97,7 @@
 
 
         <!-- =========================================
-             ADD OTHER
+             ADD OTHER BUTTON
         ========================================== -->
 
         <button
@@ -108,6 +108,72 @@
             + Add Other
 
         </button>
+
+
+        <!-- =========================================
+             ADD OTHER FORM
+        ========================================== -->
+
+        <div
+            id="addOtherForm"
+            class="add-other-form"
+            style="display: none;">
+
+            <div class="form-row">
+
+                <label for="otherReason">
+                    Reason
+                </label>
+
+                <input
+                    type="text"
+                    id="otherReason"
+                    placeholder="Example: Lunch, Transport"
+                    autocomplete="off">
+
+            </div>
+
+
+            <div class="form-row">
+
+                <label for="otherAmount">
+                    Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="otherAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter Amount"
+                    autocomplete="off">
+
+            </div>
+
+
+            <div class="other-form-buttons">
+
+                <button
+                    type="button"
+                    id="saveOtherBtn"
+                    class="save-other-btn">
+
+                    Add
+
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelOtherBtn"
+                    class="cancel-other-btn">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </div>
 
 
         <!-- =========================================
@@ -209,8 +275,7 @@
      JAVASCRIPT
 ========================================== -->
 
-<script src="../js/labour.js?v=100"></script>
-
+<script src="../js/labour.js?v=101"></script>
 
 </body>
 

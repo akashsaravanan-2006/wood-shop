@@ -2,111 +2,190 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
     <title>Labour Charges</title>
 
-    <link rel="stylesheet" href="../css/labour.css">
+    <link
+        rel="stylesheet"
+        href="../css/labour.css">
+
 </head>
+
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>Labour & Other Charges</h1>
+    <h1>
+        Labour & Other Charges
+    </h1>
 
-        <!-- Wood Total -->
-        <div class="box">
-            <label>Wood Total</label>
-            <h2 id="woodTotal">₹ 0.00</h2>
-        </div>
 
-        <!-- Labour Charge -->
-        <div class="box">
-            <label>Labour Charge</label>
-            <input
-                type="number"
-                id="labourCharge"
-                placeholder="Enter Labour Charge"
-                min="0">
-        </div>
+    <!-- =========================================
+         WOOD TOTAL
+    ========================================== -->
 
-        <!-- Other Charge -->
-        <div class="box">
-            <label>Other Charge</label>
-            <input
-                type="number"
-                id="otherCharge"
-                placeholder="Enter Other Charge"
-                min="0">
-        </div>
+    <div class="inputBox">
 
-        <!-- Add Other -->
-        <div class="box">
-            <button
-                type="button"
-                id="addOther">
-                + Add Other
-            </button>
-        </div>
+        <label>
+            Wood Total
+        </label>
 
-        <!-- Other Charges Table -->
-        <div id="otherSection" style="display:none;">
+        <div class="amountBox">
 
-            <table border="1" width="100%">
+            <span>
+                ₹
+            </span>
 
-                <thead>
-
-                    <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="othersBody">
-
-                </tbody>
-
-            </table>
+            <strong id="woodTotal">
+                0.00
+            </strong>
 
         </div>
 
-        <br>
+    </div>
 
-        <!-- Others Total -->
-        <div class="box">
-            <label>Others Total</label>
-            <h2 id="othersTotal">₹ 0.00</h2>
-        </div>
 
-        <!-- Grand Total -->
-        <div class="box">
-            <label>Grand Total</label>
-            <h2 id="finalTotal">₹ 0.00</h2>
-        </div>
+    <!-- =========================================
+         LABOUR CHARGE
+    ========================================== -->
 
-        <br>
+    <div class="inputBox">
 
-        <!-- Confirm -->
+        <label for="labourCharge">
+            Labour Charge
+        </label>
+
+        <input
+            type="number"
+            id="labourCharge"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Enter Labour Charge">
+
+    </div>
+
+
+    <!-- =========================================
+         OTHER CHARGE
+    ========================================== -->
+
+    <div class="inputBox">
+
+        <label for="otherCharge">
+            Other Charge
+        </label>
+
+        <input
+            type="number"
+            id="otherCharge"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Enter Other Charge">
+
+    </div>
+
+
+    <!-- =========================================
+         ADD OTHER
+    ========================================== -->
+
+    <button
+        type="button"
+        id="addOtherBtn">
+
+        + Add Other
+
+    </button>
+
+
+    <!-- =========================================
+         ADDITIONAL OTHER CHARGES
+    ========================================== -->
+
+    <div id="othersContainer"></div>
+
+
+    <!-- =========================================
+         OTHERS TOTAL
+    ========================================== -->
+
+    <div class="totalBox">
+
+        <span>
+            Others Total
+        </span>
+
+        <strong id="othersTotal">
+            ₹ 0.00
+        </strong>
+
+    </div>
+
+
+    <!-- =========================================
+         GRAND TOTAL
+    ========================================== -->
+
+    <div class="totalBox grandBox">
+
+        <span>
+            Grand Total
+        </span>
+
+        <strong id="grandTotal">
+            ₹ 0.00
+        </strong>
+
+    </div>
+
+
+    <!-- =========================================
+         BUTTONS
+    ========================================== -->
+
+    <div class="buttonContainer">
+
         <button
             type="button"
             id="confirmBtn">
+
             Confirm
+
         </button>
-        <button id="backBtn">Back</button>
+
+
+        <button
+            type="button"
+            id="backBtn">
+
+            Back
+
+        </button>
 
     </div>
-<script>
-    document.getElementById("backBtn").addEventListener("click", function () {
-        window.location.href = "wood.html";
-    });
-</script>
-    <script src="../js/storedata.js"></script>
-    <script src="../js/labour.js"></script>
-    <script src="../js/inputControl.js"></script>
- 
+
+</div>
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
+
+<script src="../js/storedata.js?v=100"></script>
+
+<script src="../js/labour.js?v=100"></script>
+
+<script src="../js/inputControl.js?v=100"></script>
+
 
 </body>
 

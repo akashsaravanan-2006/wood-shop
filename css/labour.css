@@ -1,6 +1,5 @@
 /* =========================================================
    LABOUR.CSS
-   Labour & Other Charges
 ========================================================= */
 
 
@@ -15,23 +14,40 @@
 }
 
 
+/* =========================================================
+   BODY
+========================================================= */
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: #f3f6f9;
+
     color: #111;
+
     min-height: 100vh;
+
 }
 
 
 /* =========================================================
-   MAIN CONTAINER
+   CONTAINER
 ========================================================= */
 
 .container {
+
     width: 100%;
+
     max-width: 950px;
+
     margin: 30px auto;
-    padding: 30px;
+
+    padding: 20px;
+
 }
 
 
@@ -40,10 +56,16 @@ body {
 ========================================================= */
 
 .card {
+
     background: #ffffff;
+
     border-radius: 16px;
+
     padding: 35px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.10);
+
 }
 
 
@@ -52,22 +74,15 @@ body {
 ========================================================= */
 
 h1 {
+
     text-align: center;
+
     font-size: 32px;
-    margin-bottom: 30px;
+
+    margin-bottom: 35px;
+
     color: #17202a;
-}
 
-
-/* =========================================================
-   LABEL
-========================================================= */
-
-label {
-    display: block;
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 10px;
 }
 
 
@@ -76,7 +91,26 @@ label {
 ========================================================= */
 
 .row {
-    margin-bottom: 25px;
+
+    margin-bottom: 24px;
+
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+label {
+
+    display: block;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    margin-bottom: 10px;
+
 }
 
 
@@ -84,154 +118,71 @@ label {
    INPUT
 ========================================================= */
 
-input[type="text"],
 input[type="number"] {
-    width: 100%;
-    height: 46px;
-    padding: 10px 14px;
 
-    border: 1px solid #d0d7de;
+    width: 100%;
+
+    height: 46px;
+
+    padding:
+        10px
+        14px;
+
+    border:
+        1px solid #d0d7de;
+
     border-radius: 7px;
 
     font-size: 16px;
+
     outline: none;
 
     background: #ffffff;
+
 }
 
 
-input[type="text"]:focus,
 input[type="number"]:focus {
+
     border-color: #008cff;
-    box-shadow: 0 0 0 2px rgba(0, 140, 255, 0.10);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(0, 140, 255, 0.10);
+
 }
 
 
 /* =========================================================
-   WOOD TOTAL
+   AMOUNT BOX
 ========================================================= */
 
-#woodTotal {
+.amount-box {
+
     width: 100%;
+
     min-height: 52px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: flex-end;
 
-    padding: 12px 18px;
+    padding:
+        12px
+        18px;
 
     background: #f1f1f1;
+
     border-radius: 6px;
 
     color: #008cff;
+
     font-size: 25px;
+
     font-weight: 700;
 
-    margin-bottom: 25px;
-}
-
-
-/* =========================================================
-   OTHERS CONTAINER
-========================================================= */
-
-#othersContainer {
-    width: 100%;
-    margin-top: 15px;
-}
-
-
-/* =========================================================
-   INDIVIDUAL OTHER ITEM
-========================================================= */
-
-.other-item {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
-    padding: 12px 15px;
-
-    margin-top: 10px;
-
-    background: #f8f9fa;
-
-    border: 1px solid #dddddd;
-    border-radius: 8px;
-}
-
-
-/* Other item name */
-
-.other-item span {
-    flex: 1;
-
-    font-size: 16px;
-    font-weight: 600;
-}
-
-
-/* Other item amount */
-
-.other-item strong {
-    color: #008cff;
-    font-size: 17px;
-}
-
-
-/* =========================================================
-   REMOVE OTHER BUTTON
-========================================================= */
-
-.removeOtherBtn {
-    border: none;
-
-    background: #dc3545;
-    color: white;
-
-    padding: 8px 14px;
-
-    border-radius: 6px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-
-.removeOtherBtn:hover {
-    background: #c82333;
-}
-
-
-/* =========================================================
-   OTHERS TOTAL
-========================================================= */
-
-#othersTotal {
-    width: 100%;
-    min-height: 55px;
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    padding: 12px 18px;
-
-    background: #f1f1f1;
-
-    border-radius: 6px;
-
-    color: #008cff;
-
-    font-size: 24px;
-    font-weight: 700;
-
-    margin-top: 10px;
 }
 
 
@@ -239,76 +190,194 @@ input[type="number"]:focus {
    GRAND TOTAL
 ========================================================= */
 
-#grandTotal {
-    width: 100%;
-    min-height: 60px;
+.grand-total {
 
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    padding: 12px 18px;
-
-    background: #f1f1f1;
-
-    border-radius: 6px;
+    font-size: 27px;
 
     color: #008cff;
 
-    font-size: 26px;
-    font-weight: 700;
-
-    margin-top: 10px;
 }
 
 
 /* =========================================================
-   BUTTON AREA
+   ADD OTHER BUTTON
 ========================================================= */
 
-.button-container,
-.button-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
+.add-other-btn {
 
+    width: 100%;
 
-/* =========================================================
-   ALL BUTTONS
-========================================================= */
-
-button {
-    min-height: 46px;
-
-    padding: 10px 22px;
+    min-height: 48px;
 
     border: none;
-    border-radius: 6px;
+
+    border-radius: 7px;
+
+    background: #00b956;
+
+    color: white;
 
     font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    margin-bottom: 15px;
+
+}
+
+
+.add-other-btn:hover {
+
+    background: #00a64d;
+
+}
+
+
+/* =========================================================
+   OTHERS CONTAINER
+========================================================= */
+
+.others-container {
+
+    width: 100%;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* =========================================================
+   OTHER ITEM
+========================================================= */
+
+.other-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    width: 100%;
+
+    padding: 12px 15px;
+
+    margin-bottom: 10px;
+
+    background: #f8f9fa;
+
+    border:
+        1px solid #dddddd;
+
+    border-radius: 8px;
+
+}
+
+
+.other-item-name {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    flex: 1;
+
+}
+
+
+.other-item-value {
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    color: #008cff;
+
+}
+
+
+/* =========================================================
+   REMOVE BUTTON
+========================================================= */
+
+.remove-other-btn {
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #dc3545;
+
+    color: white;
+
+    padding:
+        7px
+        12px;
+
+    font-size: 13px;
+
     font-weight: 600;
 
     cursor: pointer;
+
+}
+
+
+.remove-other-btn:hover {
+
+    background: #c82333;
+
 }
 
 
 /* =========================================================
-   ADD OTHER
+   TOTAL ROW
 ========================================================= */
 
-#addOtherBtn {
-    width: 100%;
+.total-row {
 
-    background: #00b956;
-    color: white;
+    margin-top: 25px;
 
-    margin-top: 5px;
 }
 
 
-#addOtherBtn:hover {
-    background: #00a64d;
+/* =========================================================
+   BUTTON CONTAINER
+========================================================= */
+
+.button-container {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 30px;
+
+}
+
+
+/* =========================================================
+   COMMON BUTTON
+========================================================= */
+
+.button-container button {
+
+    flex: 1;
+
+    min-height: 48px;
+
+    border-radius: 7px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
 }
 
 
@@ -316,33 +385,21 @@ button {
    CONFIRM
 ========================================================= */
 
-#confirmBtn {
-    flex: 1;
+.confirm-btn {
+
+    border: none;
 
     background: #078cff;
+
     color: white;
+
 }
 
 
-#confirmBtn:hover {
+.confirm-btn:hover {
+
     background: #0075d8;
-}
 
-
-/* =========================================================
-   NEXT
-========================================================= */
-
-#nextBtn {
-    flex: 1;
-
-    background: #00b956;
-    color: white;
-}
-
-
-#nextBtn:hover {
-    background: #00a64d;
 }
 
 
@@ -350,16 +407,43 @@ button {
    BACK
 ========================================================= */
 
-#backBtn {
-    flex: 1;
+.back-btn {
+
+    border: none;
 
     background: #343a40;
+
     color: white;
+
 }
 
 
-#backBtn:hover {
+.back-btn:hover {
+
     background: #23272b;
+
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+.next-btn {
+
+    border: none;
+
+    background: #00b956;
+
+    color: white;
+
+}
+
+
+.next-btn:hover {
+
+    background: #00a64d;
+
 }
 
 
@@ -370,47 +454,55 @@ button {
 @media (max-width: 700px) {
 
     .container {
-        padding: 15px;
+
+        padding: 10px;
+
         margin: 10px auto;
+
     }
 
 
     .card {
+
         padding: 20px;
+
     }
 
 
     h1 {
+
         font-size: 26px;
+
+    }
+
+
+    .button-container {
+
+        flex-direction: column;
+
+    }
+
+
+    .button-container button {
+
+        width: 100%;
+
     }
 
 
     .other-item {
+
         flex-wrap: wrap;
+
     }
 
 
-    .other-item span {
+    .other-item-name {
+
         width: 100%;
+
         flex: none;
-    }
 
-
-    .removeOtherBtn {
-        margin-left: auto;
-    }
-
-
-    .button-container,
-    .button-row {
-        flex-direction: column;
-    }
-
-
-    #confirmBtn,
-    #nextBtn,
-    #backBtn {
-        width: 100%;
     }
 
 }

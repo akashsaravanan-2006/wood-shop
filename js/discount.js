@@ -4,16 +4,21 @@
 //
 // FLOW:
 //
-// Wood -> Discount -> Labour -> Advance
+// Personal
+//    ↓
+// Discount
+//    ↓
+// Labour
 //
-// ONLY ONE TOTAL IS USED:
-// localStorage["gTotal"]
+// Discount reads gTotal.
+// Discount modifies gTotal.
+// Labour reads the updated gTotal.
 //
 // ============================================================
 
-console.log("======================================");
+console.log("==========================================");
 console.log("DISCOUNT.JS LOADED");
-console.log("======================================");
+console.log("==========================================");
 
 
 // ============================================================
@@ -33,7 +38,9 @@ const discountAmount =
     document.getElementById("discountAmount");
 
 const calculateDiscountBtn =
-    document.getElementById("calculateDiscountBtn");
+    document.getElementById(
+        "calculateDiscountBtn"
+    );
 
 const nextBtn =
     document.getElementById("nextBtn");
@@ -48,92 +55,121 @@ const discountOptions =
 
 
 // ============================================================
-// VARIABLES
+// VARIABLE
 // ============================================================
 
 let gTotal = 0;
 
-let discount = 0;
-
 
 // ============================================================
-// NUMBER FUNCTION
+// NUMBER
 // ============================================================
 
-function numberValue(value) {
+function toNumber(value) {
 
-    const n =
+    const number =
         parseFloat(value);
 
-    if (Number.isFinite(n)) {
+    if (Number.isFinite(number)) {
 
-        return n;
+        return number;
 
     }
 
     return 0;
+
 }
 
 
 // ============================================================
-// GET TOTAL
+// ROUND
 // ============================================================
 
-function getGTotal() {
+function roundMoney(value) {
 
-    const value =
-        localStorage.getItem("gTotal");
+    return Math.round(
+        toNumber(value) * 100
+    ) / 100;
+
+}
+
+
+// ============================================================
+// LOAD gTotal
+// ============================================================
+
+function loadGTotal() {
+
+    const stored =
+        localStorage.getItem(
+            "gTotal"
+        );
+
 
     console.log(
-        "DISCOUNT - gTotal FROM STORAGE:",
-        value
+        "DISCOUNT -> STORED gTotal:",
+        stored
     );
 
 
-    if (value === null) {
+    if (
+        stored === null ||
+        stored === ""
+    ) {
 
         console.error(
-            "gTotal NOT FOUND IN LOCAL STORAGE"
+            "ERROR: gTotal NOT FOUND"
         );
 
-        return 0;
+        gTotal = 0;
+
+    }
+    else {
+
+        gTotal =
+            roundMoney(
+                toNumber(stored)
+            );
 
     }
 
 
-    return numberValue(value);
+    console.log(
+        "DISCOUNT -> LOADED TOTAL:",
+        gTotal
+    );
 
 }
 
 
 // ============================================================
-// SAVE TOTAL
+// SAVE gTotal
 // ============================================================
 
-function saveGTotal(value) {
+function saveGTotal() {
 
-    value =
-        Math.round(
-            numberValue(value) * 100
-        ) / 100;
+    gTotal =
+        roundMoney(
+            gTotal
+        );
 
 
     localStorage.setItem(
         "gTotal",
-        value.toFixed(2)
+        gTotal.toFixed(2)
     );
 
 
     console.log(
-        "DISCOUNT - gTotal SAVED:",
-        value.toFixed(2)
+        "DISCOUNT -> SAVED gTotal:",
+        localStorage.getItem("gTotal")
     );
 
 }
 
 
 // ============================================================
-// DISPLAY TOTAL
+// DISPLAY
 // ============================================================
 
 function displayTotal() {
@@ -155,11 +191,17 @@ function displayTotal() {
 
     }
 
+
+    console.log(
+        "DISCOUNT DISPLAY:",
+        gTotal
+    );
+
 }
 
 
 // ============================================================
-// SHOW / HIDE DISCOUNT
+// SHOW/HIDE DISCOUNT
 // ============================================================
 
 function updateDiscountSection() {
@@ -175,12 +217,6 @@ function updateDiscountSection() {
         return;
 
     }
-
-
-    console.log(
-        "DISCOUNT OPTION:",
-        selected.value
-    );
 
 
     if (
@@ -204,13 +240,6 @@ function updateDiscountSection() {
 
         }
 
-
-        // No discount
-        discount = 0;
-
-        // Keep same total
-        saveGTotal(gTotal);
-
         displayTotal();
 
     }
@@ -224,13 +253,8 @@ function updateDiscountSection() {
 
 function calculateDiscount() {
 
-    console.log("--------------------------------");
-    console.log("CALCULATE DISCOUNT");
-    console.log("--------------------------------");
-
-
-    discount =
-        numberValue(
+    const discount =
+        toNumber(
             discountAmount
                 ? discountAmount.value
                 : 0
@@ -238,10 +262,9 @@ function calculateDiscount() {
 
 
     console.log(
-        "CURRENT gTotal:",
+        "ORIGINAL TOTAL:",
         gTotal
     );
-
 
     console.log(
         "DISCOUNT:",
@@ -249,17 +272,13 @@ function calculateDiscount() {
     );
 
 
-    // ========================================================
-    // VALIDATION
-    // ========================================================
-
     if (discount < 0) {
 
         alert(
             "Discount cannot be negative."
         );
 
-        return;
+        return false;
 
     }
 
@@ -267,145 +286,32 @@ function calculateDiscount() {
     if (discount > gTotal) {
 
         alert(
-            "Discount cannot be greater than the total."
+            "Discount cannot be greater than total."
         );
 
-        return;
+        return false;
 
     }
 
 
-    // ========================================================
-    // SUBTRACT DISCOUNT
-    // ========================================================
-
     gTotal =
-        gTotal - discount;
+        roundMoney(
+            gTotal - discount
+        );
 
 
-    gTotal =
-        Math.round(
-            gTotal * 100
-        ) / 100;
+    saveGTotal();
+
+    displayTotal();
 
 
     console.log(
-        "NEW gTotal AFTER DISCOUNT:",
+        "FINAL TOTAL AFTER DISCOUNT:",
         gTotal
     );
 
 
-    // ========================================================
-    // SAVE NEW TOTAL
-    // ========================================================
-
-    saveGTotal(gTotal);
-
-
-    // ========================================================
-    // DISPLAY
-    // ========================================================
-
-    displayTotal();
-
-}
-
-
-// ============================================================
-// NEXT BUTTON
-// ============================================================
-
-if (nextBtn) {
-
-    nextBtn.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-
-            console.log("--------------------------------");
-            console.log("DISCOUNT NEXT CLICKED");
-            console.log("--------------------------------");
-
-
-            const selected =
-                document.querySelector(
-                    'input[name="discountOption"]:checked'
-                );
-
-
-            // =================================================
-            // NO DISCOUNT
-            // =================================================
-
-            if (
-                selected &&
-                selected.value === "no"
-            ) {
-
-                discount = 0;
-
-                saveGTotal(gTotal);
-
-            }
-
-
-            // =================================================
-            // DISCOUNT
-            // =================================================
-
-            else if (
-                selected &&
-                selected.value === "yes"
-            ) {
-
-                calculateDiscount();
-
-            }
-
-
-            console.log(
-                "FINAL gTotal BEFORE LABOUR:",
-                localStorage.getItem("gTotal")
-            );
-
-
-            // =================================================
-            // GO TO LABOUR
-            // =================================================
-
-            window.location.href =
-                "labour.html";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// BACK BUTTON
-// ============================================================
-
-if (backBtn) {
-
-    backBtn.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-
-            window.location.href =
-                "personal.html";
-
-        }
-    );
+    return true;
 
 }
 
@@ -431,7 +337,7 @@ discountOptions.forEach(
 
 
 // ============================================================
-// CALCULATE BUTTON
+// CALCULATE DISCOUNT BUTTON
 // ============================================================
 
 if (calculateDiscountBtn) {
@@ -444,7 +350,115 @@ if (calculateDiscountBtn) {
 
             event.stopPropagation();
 
+
             calculateDiscount();
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// NEXT
+// Discount -> Labour
+// ============================================================
+
+if (nextBtn) {
+
+    nextBtn.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "DISCOUNT NEXT CLICKED"
+            );
+
+
+            const selected =
+                document.querySelector(
+                    'input[name="discountOption"]:checked'
+                );
+
+
+            // NO DISCOUNT
+            if (
+                selected &&
+                selected.value === "no"
+            ) {
+
+                console.log(
+                    "NO DISCOUNT"
+                );
+
+                // Keep same amount
+                saveGTotal();
+
+            }
+
+
+            // DISCOUNT
+            else if (
+                selected &&
+                selected.value === "yes"
+            ) {
+
+                const success =
+                    calculateDiscount();
+
+
+                if (!success) {
+
+                    return;
+
+                }
+
+            }
+
+
+            console.log(
+                "FINAL gTotal BEFORE LABOUR:",
+                localStorage.getItem("gTotal")
+            );
+
+
+            // Go to Labour
+            window.location.href =
+                "labour.html";
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// BACK
+// Discount -> Personal
+// ============================================================
+
+if (backBtn) {
+
+    backBtn.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window.location.href =
+                "personal.html";
 
         }
     );
@@ -460,45 +474,30 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        console.log("--------------------------------");
-        console.log("DISCOUNT PAGE INITIALIZING");
-        console.log("--------------------------------");
-
-
-        // ====================================================
-        // GET TOTAL FROM WOOD
-        // ====================================================
-
-        gTotal =
-            getGTotal();
-
+        console.log(
+            "=========================================="
+        );
 
         console.log(
-            "DISCOUNT ORIGINAL gTotal:",
-            gTotal
+            "DISCOUNT PAGE INITIALIZING"
         );
 
 
-        // ====================================================
-        // DISPLAY
-        // ====================================================
+        loadGTotal();
 
         displayTotal();
-
-
-        // ====================================================
-        // DISCOUNT SECTION
-        // ====================================================
 
         updateDiscountSection();
 
 
-        console.log("--------------------------------");
         console.log(
-            "DISCOUNT PAGE READY - gTotal:",
-            gTotal
+            "DISCOUNT PAGE READY"
         );
-        console.log("--------------------------------");
+
+        console.log(
+            "CURRENT gTotal:",
+            localStorage.getItem("gTotal")
+        );
 
     }
 );

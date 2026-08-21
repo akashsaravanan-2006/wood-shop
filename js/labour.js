@@ -301,23 +301,10 @@ function updateWoodTotal() {
 // CALCULATE OTHERS TOTAL
 // ============================================================
 //
-// Others Total:
-//
+// Others Total =
 // Labour Charge
-// +
-// Main Other Charge
-// +
-// Additional Other Items
-//
-// Example:
-//
-// Labour = 1000
-// Other Charge = 500
-// Lunch = 300
-// Transport = 200
-//
-// Others Total = 2000
-//
+// + Other Charge
+// + Additional Other Items
 // ============================================================
 
 function calculateOthersTotal() {
@@ -327,34 +314,19 @@ function calculateOthersTotal() {
             labourChargeInput.value
         );
 
-
     const mainOther =
         roundMoney(
             otherChargeInput.value
         );
 
-
     let additionalTotal = 0;
 
+    otherItems.forEach(function (item) {
 
-    otherItems.forEach(
-        function (item) {
+        additionalTotal +=
+            roundMoney(item.amount);
 
-            if (
-                item &&
-                typeof item === "object"
-            ) {
-
-                additionalTotal +=
-                    roundMoney(
-                        item.amount
-                    );
-
-            }
-
-        }
-    );
-
+    });
 
     othersTotal =
         roundMoney(
@@ -363,122 +335,51 @@ function calculateOthersTotal() {
             additionalTotal
         );
 
-
-    if (othersTotalElement) {
-
-        othersTotalElement.textContent =
-            money(othersTotal);
-
-    }
-
+    othersTotalElement.textContent =
+        money(othersTotal);
 
     return othersTotal;
-
 }
-
 
 // ============================================================
 // CALCULATE GRAND TOTAL
 // ============================================================
 //
-// IMPORTANT:
-//
 // Grand Total =
 // Wood Total + Others Total
 //
-// Labour is ALREADY inside Others Total.
-//
-// Therefore DO NOT do:
-//
-// Wood + Labour + Others
-//
-// because that counts Labour twice.
-//
+// IMPORTANT:
+// Labour is already included inside Others Total.
+// So DO NOT add Labour separately.
 // ============================================================
 
 function calculateGrandTotal() {
 
-    // --------------------------------------------------------
-    // Keep Wood Total fixed
-    // --------------------------------------------------------
-
-    woodTotal =
+    const currentWoodTotal =
         roundMoney(
             woodTotal
         );
 
-
-    // --------------------------------------------------------
-    // Read current input values
-    // --------------------------------------------------------
-
-    labourCharge =
-        roundMoney(
-            labourChargeInput.value
-        );
-
-
-    otherCharge =
-        roundMoney(
-            otherChargeInput.value
-        );
-
-
-    // --------------------------------------------------------
-    // Calculate Others Total
-    // --------------------------------------------------------
-
-    calculateOthersTotal();
-
-
-    // --------------------------------------------------------
-    // FINAL GRAND TOTAL
-    // --------------------------------------------------------
+    const currentOthersTotal =
+        calculateOthersTotal();
 
     grandTotal =
         roundMoney(
-            woodTotal +
-            othersTotal
+            currentWoodTotal +
+            currentOthersTotal
         );
 
-
-    // --------------------------------------------------------
-    // DISPLAY
-    // --------------------------------------------------------
-
-    if (grandTotalElement) {
-
-        grandTotalElement.textContent =
-            money(grandTotal);
-
-    }
-
-
-    console.log("--------------------------------");
+    grandTotalElement.textContent =
+        money(grandTotal);
 
     console.log(
         "WOOD TOTAL:",
-        woodTotal
-    );
-
-    console.log(
-        "LABOUR CHARGE:",
-        labourCharge
-    );
-
-    console.log(
-        "OTHER CHARGE:",
-        otherCharge
-    );
-
-    console.log(
-        "ADDITIONAL OTHER ITEMS:",
-        otherItems
+        currentWoodTotal
     );
 
     console.log(
         "OTHERS TOTAL:",
-        othersTotal
+        currentOthersTotal
     );
 
     console.log(
@@ -486,11 +387,7 @@ function calculateGrandTotal() {
         grandTotal
     );
 
-    console.log("--------------------------------");
-
-
     return grandTotal;
-
 }
 
 

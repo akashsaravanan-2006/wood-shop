@@ -24,7 +24,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // CUSTOMER INPUTS
+        // INPUTS
         // ====================================================
 
         const customerName =
@@ -38,7 +38,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // RESTORE PERSONAL DATA
+        // RESTORE DATA
         // ====================================================
 
         function restorePersonalData() {
@@ -68,7 +68,7 @@ document.addEventListener(
 
 
             // ------------------------------------------------
-            // CUSTOMER NAME
+            // NAME
             // ------------------------------------------------
 
             if (
@@ -84,7 +84,7 @@ document.addEventListener(
 
 
             // ------------------------------------------------
-            // MOBILE NUMBER
+            // MOBILE
             // ------------------------------------------------
 
             if (
@@ -118,7 +118,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // SAVE PERSONAL DATA
+        // SAVE DATA
         // ====================================================
 
         function savePersonalData() {
@@ -157,9 +157,7 @@ document.addEventListener(
             };
 
 
-            // ------------------------------------------------
-            // SAVE TO CENTRAL STORE
-            // ------------------------------------------------
+            // Save to central store
 
             savePageData(
                 "personal",
@@ -176,14 +174,182 @@ document.addEventListener(
 
 
         // ====================================================
-        // RESTORE DATA FIRST
+        // VALIDATE PERSONAL DATA
+        // ====================================================
+
+        function validatePersonalData() {
+
+            const name =
+                customerName
+                    ? customerName.value.trim()
+                    : "";
+
+
+            const mobile =
+                mobileNumber
+                    ? mobileNumber.value.trim()
+                    : "";
+
+
+            const customerPlace =
+                place
+                    ? place.value.trim()
+                    : "";
+
+
+            // =================================================
+            // NAME VALIDATION
+            // =================================================
+
+            if (
+                name === ""
+            ) {
+
+                alert(
+                    "Please enter Customer Name."
+                );
+
+
+                if (
+                    customerName
+                ) {
+
+                    customerName.focus();
+
+                }
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // MOBILE EMPTY
+            // =================================================
+
+            if (
+                mobile === ""
+            ) {
+
+                alert(
+                    "Please enter Mobile Number."
+                );
+
+
+                if (
+                    mobileNumber
+                ) {
+
+                    mobileNumber.focus();
+
+                }
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // MOBILE ONLY DIGITS
+            // =================================================
+
+            if (
+                !/^\d+$/.test(mobile)
+            ) {
+
+                alert(
+                    "Mobile Number must contain only digits."
+                );
+
+
+                if (
+                    mobileNumber
+                ) {
+
+                    mobileNumber.focus();
+
+                }
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // MOBILE EXACTLY 10 DIGITS
+            // =================================================
+
+            if (
+                mobile.length !== 10
+            ) {
+
+                alert(
+                    "Mobile Number must be exactly 10 digits."
+                );
+
+
+                if (
+                    mobileNumber
+                ) {
+
+                    mobileNumber.focus();
+
+                }
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // PLACE VALIDATION
+            // =================================================
+
+            if (
+                customerPlace === ""
+            ) {
+
+                alert(
+                    "Please enter Place."
+                );
+
+
+                if (
+                    place
+                ) {
+
+                    place.focus();
+
+                }
+
+
+                return false;
+
+            }
+
+
+            // =================================================
+            // ALL VALID
+            // =================================================
+
+            return true;
+
+        }
+
+
+        // ====================================================
+        // RESTORE FIRST
         // ====================================================
 
         restorePersonalData();
 
 
         // ====================================================
-        // AUTO SAVE - NAME
+        // AUTO SAVE NAME
         // ====================================================
 
         if (
@@ -203,7 +369,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // AUTO SAVE - MOBILE
+        // AUTO SAVE MOBILE
         // ====================================================
 
         if (
@@ -214,6 +380,31 @@ document.addEventListener(
                 "input",
                 function () {
 
+                    // Keep only numbers
+
+                    this.value =
+                        this.value.replace(
+                            /\D/g,
+                            ""
+                        );
+
+
+                    // Maximum 10 digits
+
+                    if (
+                        this.value.length >
+                        10
+                    ) {
+
+                        this.value =
+                            this.value.slice(
+                                0,
+                                10
+                            );
+
+                    }
+
+
                     savePersonalData();
 
                 }
@@ -223,7 +414,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // AUTO SAVE - PLACE
+        // AUTO SAVE PLACE
         // ====================================================
 
         if (
@@ -245,7 +436,7 @@ document.addEventListener(
         // ====================================================
         // NEXT
         //
-        // PERSONAL -> DISCOUNT
+        // PERSONAL → DISCOUNT
         // ====================================================
 
         if (
@@ -266,13 +457,40 @@ document.addEventListener(
                     );
 
 
-                    // SAVE BEFORE LEAVING
+                    // ----------------------------------------
+                    // VALIDATE FIRST
+                    // ----------------------------------------
+
+                    const isValid =
+                        validatePersonalData();
+
+
+                    if (
+                        !isValid
+                    ) {
+
+                        console.log(
+                            "PERSONAL DATA INVALID"
+                        );
+
+
+                        // IMPORTANT:
+                        // Stay on this page.
+
+                        return;
+
+                    }
+
+
+                    // ----------------------------------------
+                    // SAVE VALID DATA
+                    // ----------------------------------------
 
                     savePersonalData();
 
 
                     console.log(
-                        "PERSONAL DATA SAVED"
+                        "PERSONAL DATA VALID AND SAVED"
                     );
 
 
@@ -280,6 +498,10 @@ document.addEventListener(
                         "GOING TO DISCOUNT.HTML"
                     );
 
+
+                    // ----------------------------------------
+                    // GO NEXT
+                    // ----------------------------------------
 
                     window.location.href =
                         "./discount.html";
@@ -300,7 +522,7 @@ document.addEventListener(
         // ====================================================
         // BACK
         //
-        // PERSONAL -> LABOUR
+        // PERSONAL → LABOUR
         // ====================================================
 
         if (
@@ -321,18 +543,13 @@ document.addEventListener(
                     );
 
 
-                    // SAVE BEFORE GOING BACK
+                    // Save current values before going back
 
                     savePersonalData();
 
 
                     console.log(
                         "PERSONAL DATA SAVED"
-                    );
-
-
-                    console.log(
-                        "GOING TO LABOUR.HTML"
                     );
 
 

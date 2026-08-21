@@ -13,7 +13,7 @@
 
     <link
         rel="stylesheet"
-        href="../css/labour.css">
+        href="../css/labour.css?v=200">
 
 </head>
 
@@ -21,6 +21,10 @@
 <body>
 
 <div class="container">
+
+    <!-- =========================================
+         TITLE
+    ========================================== -->
 
     <h1>
         Labour & Other Charges
@@ -31,21 +35,17 @@
          WOOD TOTAL
     ========================================== -->
 
-    <div class="inputBox">
+    <div class="field">
 
         <label>
             Wood Total
         </label>
 
-        <div class="amountBox">
+        <div class="displayBox">
 
-            <span>
-                ₹
+            <span id="woodTotal">
+                ₹ 0.00
             </span>
-
-            <strong id="woodTotal">
-                0.00
-            </strong>
 
         </div>
 
@@ -56,7 +56,7 @@
          LABOUR CHARGE
     ========================================== -->
 
-    <div class="inputBox">
+    <div class="field">
 
         <label for="labourCharge">
             Labour Charge
@@ -67,8 +67,8 @@
             id="labourCharge"
             min="0"
             step="0.01"
-            value="0"
-            placeholder="Enter Labour Charge">
+            placeholder="Enter Labour Charge"
+            autocomplete="off">
 
     </div>
 
@@ -77,7 +77,7 @@
          OTHER CHARGE
     ========================================== -->
 
-    <div class="inputBox">
+    <div class="field">
 
         <label for="otherCharge">
             Other Charge
@@ -88,14 +88,14 @@
             id="otherCharge"
             min="0"
             step="0.01"
-            value="0"
-            placeholder="Enter Other Charge">
+            placeholder="Enter Other Charge"
+            autocomplete="off">
 
     </div>
 
 
     <!-- =========================================
-         ADD OTHER
+         ADD OTHER BUTTON
     ========================================== -->
 
     <button
@@ -118,15 +118,19 @@
          OTHERS TOTAL
     ========================================== -->
 
-    <div class="totalBox">
+    <div class="totalSection">
 
-        <span>
+        <label>
             Others Total
-        </span>
+        </label>
 
-        <strong id="othersTotal">
+        <div
+            id="othersTotal"
+            class="displayBox">
+
             ₹ 0.00
-        </strong>
+
+        </div>
 
     </div>
 
@@ -135,15 +139,19 @@
          GRAND TOTAL
     ========================================== -->
 
-    <div class="totalBox grandBox">
+    <div class="totalSection">
 
-        <span>
+        <label>
             Grand Total
-        </span>
+        </label>
 
-        <strong id="grandTotal">
+        <div
+            id="grandTotal"
+            class="displayBox grandTotal">
+
             ₹ 0.00
-        </strong>
+
+        </div>
 
     </div>
 
@@ -152,11 +160,12 @@
          BUTTONS
     ========================================== -->
 
-    <div class="buttonContainer">
+    <div class="buttons">
 
         <button
             type="button"
-            id="confirmBtn">
+            id="confirmBtn"
+            class="confirmBtn">
 
             Confirm
 
@@ -165,7 +174,8 @@
 
         <button
             type="button"
-            id="backBtn">
+            id="backBtn"
+            class="backBtn">
 
             Back
 
@@ -180,11 +190,9 @@
      JAVASCRIPT
 ========================================== -->
 
-<script src="../js/storedata.js?v=100"></script>
+<script src="../js/storedata.js?v=200"></script>
 
-<script src="../js/labour.js?v=100"></script>
-
-<script src="../js/inputControl.js?v=100"></script>
+<script src="../js/labour.js?v=200"></script>
 
 
 </body>

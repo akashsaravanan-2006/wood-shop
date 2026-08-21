@@ -457,71 +457,27 @@ function calculateOthersTotal() {
 }
 
 
-// ============================================================
-// CALCULATE GRAND TOTAL
-// ============================================================
-//
-// VERY IMPORTANT:
-//
-// Grand Total = Wood Total + Others Total
-//
-// DO NOT:
-//
-// Wood + Labour + Others
-//
-// because Labour is already inside Others Total.
-//
-// ============================================================
-
 function calculateGrandTotal() {
 
-    // --------------------------------------------------------
-    // WOOD TOTAL
-    // --------------------------------------------------------
-
     const currentWoodTotal =
-        roundMoney(
-            woodTotal
-        );
-
-
-    // --------------------------------------------------------
-    // LABOUR VALUE
-    // --------------------------------------------------------
+        roundMoney(woodTotal);
 
     labourCharge =
         roundMoney(
             labourChargeInput.value
         );
 
-
-    // --------------------------------------------------------
-    // MAIN OTHER VALUE
-    // --------------------------------------------------------
-
     otherCharge =
         roundMoney(
             otherChargeInput.value
         );
 
-
-    // --------------------------------------------------------
-    // CALCULATE OTHERS
-    // --------------------------------------------------------
-
     const currentOthersTotal =
         calculateOthersTotal();
 
-
-    // --------------------------------------------------------
-    // GRAND TOTAL
-    // --------------------------------------------------------
-    //
-    // ONLY:
-    //
-    // Wood + Others
-    //
-    // --------------------------------------------------------
+    // IMPORTANT:
+    // Labour is already inside Others Total.
+    // Do NOT add labourCharge again.
 
     grandTotal =
         roundMoney(
@@ -529,28 +485,8 @@ function calculateGrandTotal() {
             currentOthersTotal
         );
 
-
-    // --------------------------------------------------------
-    // DISPLAY GRAND TOTAL
-    // --------------------------------------------------------
-
-    if (
-        grandTotalElement
-    ) {
-
-        grandTotalElement.textContent =
-            money(grandTotal);
-
-    }
-
-
-    // --------------------------------------------------------
-    // DEBUG
-    // --------------------------------------------------------
-
-    console.log(
-        "================================"
-    );
+    grandTotalElement.textContent =
+        money(grandTotal);
 
     console.log(
         "WOOD TOTAL:",
@@ -577,16 +513,8 @@ function calculateGrandTotal() {
         grandTotal
     );
 
-    console.log(
-        "================================"
-    );
-
-
     return grandTotal;
-
 }
-
-
 // ============================================================
 // SHOW ADD OTHER FORM
 // ============================================================

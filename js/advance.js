@@ -1,81 +1,233 @@
 // ============================================================
 // ADVANCE.JS
+// ============================================================
 //
 // FLOW:
-// Discount -> Advance -> Bill
 //
-// Ready Cash = flag 1
-// Advance    = flag 0
+// Personal
+//    ↓
+// Discount
+//    ↓
+// Advance
+//    ↓
+// Bill
+//
+// PAYMENT FLAG:
+//
+// Ready Cash = "1"
+// Advance   = "0"
+//
 // ============================================================
 
-console.log("======================================");
-console.log("ADVANCE.JS CLEAN VERSION");
-console.log("======================================");
+"use strict";
 
-
-// ============================================================
-// HTML
-// ============================================================
-
-const grandTotalElement =
-    document.getElementById("grandTotal");
-
-const advanceAmountInput =
-    document.getElementById("advanceAmount");
-
-const balanceAmountInput =
-    document.getElementById("balanceAmount");
-
-const nextBtn =
-    document.getElementById("nextBtn");
-
-const backBtn =
-    document.getElementById("backBtn");
+console.log("==========================================");
+console.log("ADVANCE.JS STARTING");
+console.log("==========================================");
 
 
 // ============================================================
-// ADVANCE SECTION
+// HTML ELEMENTS
 // ============================================================
 
-const advanceSection =
-    document.getElementById(
-        "advanceSection"
+let grandTotalElement;
+let advanceAmountInput;
+let balanceAmountInput;
+let nextBtn;
+let backBtn;
+let advanceSection;
+
+
+// ============================================================
+// GLOBAL VARIABLES
+// ============================================================
+
+let grandTotal = 0;
+
+
+// ============================================================
+// GET ELEMENTS
+// ============================================================
+
+function getElements() {
+
+    grandTotalElement =
+        document.getElementById("grandTotal");
+
+    advanceAmountInput =
+        document.getElementById("advanceAmount");
+
+    balanceAmountInput =
+        document.getElementById("balanceAmount");
+
+    nextBtn =
+        document.getElementById("nextBtn");
+
+    backBtn =
+        document.getElementById("backBtn");
+
+    advanceSection =
+        document.getElementById("advanceSection");
+
+
+    console.log("ADVANCE ELEMENTS:");
+
+    console.log(
+        "grandTotal:",
+        grandTotalElement
     );
 
-
-// ============================================================
-// PAYMENT CARDS
-// ============================================================
-
-const paymentCards =
-    document.querySelectorAll(
-        ".payment-card, .payment-option, .option-card, label"
+    console.log(
+        "advanceAmount:",
+        advanceAmountInput
     );
 
+    console.log(
+        "balanceAmount:",
+        balanceAmountInput
+    );
+
+    console.log(
+        "nextBtn:",
+        nextBtn
+    );
+
+    console.log(
+        "backBtn:",
+        backBtn
+    );
+
+    console.log(
+        "advanceSection:",
+        advanceSection
+    );
+}
+
 
 // ============================================================
-// GET FINAL TOTAL FROM DISCOUNT
+// NUMBER HELPER
 // ============================================================
 
-function getFinalTotal() {
+function toNumber(value) {
 
-    // Central storage
+    const number = Number(value);
 
-    if (
-        typeof getTotals === "function"
-    ) {
+    if (!Number.isFinite(number)) {
+        return 0;
+    }
 
-        const totals =
-            getTotals();
+    return number;
+}
 
+
+// ============================================================
+// GET GRAND TOTAL
+// ============================================================
+//
+// Priority:
+//
+// 1. Discount page data
+// 2. Central totals
+// 3. localStorage finalGrandTotal
+// 4. localStorage grandTotal
+// 5. wood grand total
+//
+// ============================================================
+
+function getGrandTotal() {
+
+    let total = 0;
+
+
+    // ========================================================
+    // SOURCE 1
+    // DISCOUNT DATA
+    // ========================================================
+
+    try {
 
         if (
-            totals &&
-            Number(totals.grandTotal) >= 0
+            typeof getPageData === "function"
         ) {
 
-            return Number(
-                totals.grandTotal
+            const discountData =
+                getPageData("discount");
+
+
+            console.log(
+                "SOURCE 1 - DISCOUNT DATA:",
+                discountData
+            );
+
+
+            if (
+                discountData &&
+                discountData.grandTotal !== undefined
+            ) {
+
+                total =
+                    toNumber(
+                        discountData.grandTotal
+                    );
+
+            }
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "DISCOUNT DATA ERROR:",
+            error
+        );
+
+    }
+
+
+    // ========================================================
+    // SOURCE 2
+    // CENTRAL TOTALS
+    // ========================================================
+
+    if (total <= 0) {
+
+        try {
+
+            if (
+                typeof getTotals === "function"
+            ) {
+
+                const totals =
+                    getTotals();
+
+
+                console.log(
+                    "SOURCE 2 - CENTRAL TOTALS:",
+                    totals
+                );
+
+
+                if (
+                    totals &&
+                    totals.grandTotal !== undefined
+                ) {
+
+                    total =
+                        toNumber(
+                            totals.grandTotal
+                        );
+
+                }
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "CENTRAL TOTAL ERROR:",
+                error
             );
 
         }
@@ -83,69 +235,115 @@ function getFinalTotal() {
     }
 
 
-    // Discount page storage
+    // ========================================================
+    // SOURCE 3
+    // finalGrandTotal
+    // ========================================================
 
-    const discountData =
-        typeof getPageData === "function"
-            ? getPageData("discount")
-            : null;
+    if (total <= 0) {
+
+        total =
+            toNumber(
+                localStorage.getItem(
+                    "finalGrandTotal"
+                )
+            );
 
 
-    if (
-        discountData &&
-        Number(discountData.grandTotal) >= 0
-    ) {
-
-        return Number(
-            discountData.grandTotal
+        console.log(
+            "SOURCE 3 - finalGrandTotal:",
+            total
         );
 
     }
 
 
-    // Old localStorage
+    // ========================================================
+    // SOURCE 4
+    // grandTotal
+    // ========================================================
 
-    return (
-        Number(
-            localStorage.getItem(
-                "finalGrandTotal"
-            )
-        ) || 0
+    if (total <= 0) {
+
+        total =
+            toNumber(
+                localStorage.getItem(
+                    "grandTotal"
+                )
+            );
+
+
+        console.log(
+            "SOURCE 4 - grandTotal:",
+            total
+        );
+
+    }
+
+
+    // ========================================================
+    // SOURCE 5
+    // woodGrandTotal
+    // ========================================================
+
+    if (total <= 0) {
+
+        total =
+            toNumber(
+                localStorage.getItem(
+                    "woodGrandTotal"
+                )
+            );
+
+
+        console.log(
+            "SOURCE 5 - woodGrandTotal:",
+            total
+        );
+
+    }
+
+
+    // ========================================================
+    // FINAL
+    // ========================================================
+
+    console.log(
+        "FINAL GRAND TOTAL:",
+        total
     );
+
+
+    return Math.max(0, total);
 
 }
 
 
 // ============================================================
-// TOTAL
+// REFRESH GRAND TOTAL
 // ============================================================
 
-const grandTotal =
-    getFinalTotal();
+function refreshGrandTotal() {
+
+    grandTotal =
+        getGrandTotal();
 
 
-console.log(
-    "FINAL TOTAL FROM DISCOUNT:",
-    grandTotal
-);
+    console.log(
+        "GRAND TOTAL USED:",
+        grandTotal
+    );
 
 
-// ============================================================
-// DISPLAY TOTAL
-// ============================================================
+    if (grandTotalElement) {
 
-function displayGrandTotal() {
+        grandTotalElement.value =
+            "₹ " + grandTotal.toFixed(2);
 
-    if (!grandTotalElement) {
-
-        return;
+        grandTotalElement.textContent =
+            "₹ " + grandTotal.toFixed(2);
 
     }
-
-
-    grandTotalElement.textContent =
-        "₹ " +
-        grandTotal.toFixed(2);
 
 }
 
@@ -154,48 +352,131 @@ function displayGrandTotal() {
 // DISPLAY BALANCE
 // ============================================================
 
-function displayBalance(
-    amount
-) {
+function displayBalance(amount) {
+
+    amount =
+        Math.max(
+            0,
+            toNumber(amount)
+        );
+
 
     if (!balanceAmountInput) {
-
         return;
-
     }
 
 
     balanceAmountInput.value =
-        "₹ " +
-        amount.toFixed(2);
+        "₹ " + amount.toFixed(2);
+
+
+    console.log(
+        "BALANCE:",
+        amount.toFixed(2)
+    );
 
 }
 
 
 // ============================================================
-// SHOW / HIDE ADVANCE
+// SHOW ADVANCE SECTION
 // ============================================================
 
 function showAdvanceSection() {
 
-    if (advanceSection) {
-
-        advanceSection.style.display =
-            "block";
-
+    if (!advanceSection) {
+        return;
     }
+
+
+    advanceSection.style.display =
+        "block";
+
+
+    console.log(
+        "ADVANCE SECTION: SHOWN"
+    );
 
 }
 
 
+// ============================================================
+// HIDE ADVANCE SECTION
+// ============================================================
+
 function hideAdvanceSection() {
 
-    if (advanceSection) {
+    if (!advanceSection) {
+        return;
+    }
 
-        advanceSection.style.display =
-            "none";
+
+    advanceSection.style.display =
+        "none";
+
+
+    console.log(
+        "ADVANCE SECTION: HIDDEN"
+    );
+
+}
+
+
+// ============================================================
+// GET PAYMENT FLAG
+// ============================================================
+
+function getPaymentFlag() {
+
+    const flag =
+        localStorage.getItem(
+            "paymentFlag"
+        );
+
+
+    if (
+        flag === "0" ||
+        flag === "1"
+    ) {
+
+        return flag;
 
     }
+
+
+    // Default = Ready Cash
+
+    return "1";
+
+}
+
+
+// ============================================================
+// SET PAYMENT FLAG
+// ============================================================
+
+function setPaymentFlag(flag) {
+
+    if (
+        flag !== "0" &&
+        flag !== "1"
+    ) {
+
+        flag = "1";
+
+    }
+
+
+    localStorage.setItem(
+        "paymentFlag",
+        flag
+    );
+
+
+    console.log(
+        "PAYMENT FLAG SET:",
+        flag
+    );
 
 }
 
@@ -206,18 +487,25 @@ function hideAdvanceSection() {
 
 function setPaymentType(type) {
 
-    if (
-        type === "cash"
-    ) {
+    console.log(
+        "=========================================="
+    );
 
-        // --------------------------------------------
-        // READY CASH
-        // --------------------------------------------
+    console.log(
+        "SETTING PAYMENT TYPE:",
+        type
+    );
 
-        localStorage.setItem(
-            "paymentFlag",
-            "1"
-        );
+
+    // ========================================================
+    // READY CASH
+    // FLAG = 1
+    // ========================================================
+
+    if (type === "cash") {
+
+        setPaymentFlag("1");
+
 
         localStorage.setItem(
             "paymentType",
@@ -245,16 +533,16 @@ function setPaymentType(type) {
 
     }
 
-    else {
 
-        // --------------------------------------------
-        // ADVANCE
-        // --------------------------------------------
+    // ========================================================
+    // ADVANCE
+    // FLAG = 0
+    // ========================================================
 
-        localStorage.setItem(
-            "paymentFlag",
-            "0"
-        );
+    else if (type === "advance") {
+
+        setPaymentFlag("0");
+
 
         localStorage.setItem(
             "paymentType",
@@ -265,15 +553,22 @@ function setPaymentType(type) {
         showAdvanceSection();
 
 
-        let amount =
-            Number(
-                advanceAmountInput?.value
-            ) || 0;
+        let amount = 0;
 
 
-        if (
-            amount > grandTotal
-        ) {
+        if (advanceAmountInput) {
+
+            amount =
+                toNumber(
+                    advanceAmountInput.value
+                );
+
+        }
+
+
+        // Never allow advance greater than total
+
+        if (amount > grandTotal) {
 
             amount =
                 grandTotal;
@@ -281,12 +576,21 @@ function setPaymentType(type) {
         }
 
 
+        if (amount < 0) {
+
+            amount = 0;
+
+        }
+
+
         if (advanceAmountInput) {
 
-            advanceAmountInput.value =
-                amount > 0
-                    ? amount
-                    : "";
+            if (amount > 0) {
+
+                advanceAmountInput.value =
+                    amount;
+
+            }
 
         }
 
@@ -309,15 +613,13 @@ function setPaymentType(type) {
 
 
 // ============================================================
-// SAVE ADVANCE
+// SAVE ADVANCE DATA
 // ============================================================
 
 function saveAdvanceData() {
 
     const flag =
-        localStorage.getItem(
-            "paymentFlag"
-        ) || "1";
+        getPaymentFlag();
 
 
     const paymentType =
@@ -326,48 +628,47 @@ function saveAdvanceData() {
             : "advance";
 
 
-    let advanceAmount;
+    let advanceAmount = 0;
+
+    let balanceAmount = 0;
 
 
-    let balanceAmount;
+    // ========================================================
+    // READY CASH
+    // ========================================================
 
-
-    // Ready Cash
-
-    if (
-        flag === "1"
-    ) {
+    if (flag === "1") {
 
         advanceAmount =
             grandTotal;
 
-        balanceAmount =
-            0;
+        balanceAmount = 0;
 
     }
 
-    // Advance
+
+    // ========================================================
+    // ADVANCE
+    // ========================================================
 
     else {
 
         advanceAmount =
-            Number(
-                advanceAmountInput?.value
-            ) || 0;
+            toNumber(
+                advanceAmountInput
+                    ? advanceAmountInput.value
+                    : 0
+            );
 
 
-        if (
-            advanceAmount < 0
-        ) {
+        if (advanceAmount < 0) {
 
             advanceAmount = 0;
 
         }
 
 
-        if (
-            advanceAmount > grandTotal
-        ) {
+        if (advanceAmount > grandTotal) {
 
             advanceAmount =
                 grandTotal;
@@ -382,11 +683,19 @@ function saveAdvanceData() {
     }
 
 
+    // ========================================================
+    // PAYMENT MODE
+    // ========================================================
+
     const paymentMode =
         localStorage.getItem(
             "paymentMode"
         ) || "cash";
 
+
+    // ========================================================
+    // DATA
+    // ========================================================
 
     const data = {
 
@@ -411,35 +720,65 @@ function saveAdvanceData() {
     };
 
 
-    // Central storage
+    // ========================================================
+    // CENTRAL STORAGE
+    // ========================================================
 
-    if (
-        typeof savePageData === "function"
-    ) {
+    try {
 
-        savePageData(
-            "advance",
-            data
+        if (
+            typeof savePageData === "function"
+        ) {
+
+            savePageData(
+                "advance",
+                data
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "savePageData ERROR:",
+            error
         );
 
     }
 
 
-    // Old storage compatibility
+    // ========================================================
+    // OLD STORAGE
+    // ========================================================
 
     localStorage.setItem(
         "advanceAmount",
-        advanceAmount
+        advanceAmount.toFixed(2)
     );
+
 
     localStorage.setItem(
         "balanceAmount",
-        balanceAmount
+        balanceAmount.toFixed(2)
     );
+
 
     localStorage.setItem(
         "paymentType",
         paymentType
+    );
+
+
+    localStorage.setItem(
+        "paymentFlag",
+        flag
+    );
+
+
+    localStorage.setItem(
+        "paymentMode",
+        paymentMode
     );
 
 
@@ -452,133 +791,213 @@ function saveAdvanceData() {
 
 
 // ============================================================
-// CLICK PAYMENT CARDS
+// PAYMENT CARD LOGIC
+// ============================================================
+//
+// IMPORTANT:
+// Do NOT use every <label>.
+// Only detect actual payment cards.
+//
 // ============================================================
 
-paymentCards.forEach(
-    function (card) {
+function setupPaymentCards() {
 
-        card.addEventListener(
-            "click",
-            function () {
-
-                const text =
-                    this.textContent
-                        .trim()
-                        .toLowerCase();
-
-
-                // Ready Cash
-
-                if (
-                    text.includes("ready cash")
-                ) {
-
-                    setPaymentType(
-                        "cash"
-                    );
-
-                    return;
-
-                }
-
-
-                // Advance
-
-                if (
-                    text.includes("advance")
-                ) {
-
-                    setPaymentType(
-                        "advance"
-                    );
-
-                    return;
-
-                }
-
-
-                // UPI
-
-                if (
-                    text.includes("upi")
-                ) {
-
-                    localStorage.setItem(
-                        "paymentMode",
-                        "upi"
-                    );
-
-                    saveAdvanceData();
-
-                    return;
-
-                }
-
-
-                // Cash payment mode
-
-                if (
-                    text.includes("cash")
-                ) {
-
-                    localStorage.setItem(
-                        "paymentMode",
-                        "cash"
-                    );
-
-                    saveAdvanceData();
-
-                }
-
-            }
+    const cards =
+        document.querySelectorAll(
+            ".payment-card, .payment-option, .option-card"
         );
 
+
+    console.log(
+        "PAYMENT CARDS FOUND:",
+        cards.length
+    );
+
+
+    cards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+
+                    const text =
+                        this.textContent
+                            .trim()
+                            .toLowerCase();
+
+
+                    console.log(
+                        "PAYMENT CARD CLICKED:",
+                        text
+                    );
+
+
+                    // ========================================
+                    // READY CASH
+                    // ========================================
+
+                    if (
+                        text.includes(
+                            "ready cash"
+                        )
+                    ) {
+
+                        setPaymentType(
+                            "cash"
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ========================================
+                    // ADVANCE
+                    // ========================================
+
+                    if (
+                        text.includes(
+                            "advance"
+                        )
+                    ) {
+
+                        setPaymentType(
+                            "advance"
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ========================================
+                    // UPI
+                    // ========================================
+
+                    if (
+                        text.includes(
+                            "upi"
+                        )
+                    ) {
+
+                        localStorage.setItem(
+                            "paymentMode",
+                            "upi"
+                        );
+
+
+                        console.log(
+                            "PAYMENT MODE: UPI"
+                        );
+
+
+                        saveAdvanceData();
+
+                        return;
+
+                    }
+
+
+                    // ========================================
+                    // CASH MODE
+                    // ========================================
+
+                    if (
+                        text.includes(
+                            "cash"
+                        )
+                    ) {
+
+                        localStorage.setItem(
+                            "paymentMode",
+                            "cash"
+                        );
+
+
+                        console.log(
+                            "PAYMENT MODE: CASH"
+                        );
+
+
+                        saveAdvanceData();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// ADVANCE AMOUNT INPUT
+// ============================================================
+
+function setupAdvanceInput() {
+
+    if (!advanceAmountInput) {
+
+        console.log(
+            "NO ADVANCE INPUT FOUND"
+        );
+
+        return;
+
     }
-);
 
-
-// ============================================================
-// ADVANCE INPUT
-// ============================================================
-
-if (advanceAmountInput) {
 
     advanceAmountInput.addEventListener(
         "input",
         function () {
 
             const flag =
-                localStorage.getItem(
-                    "paymentFlag"
-                );
+                getPaymentFlag();
 
 
-            // Ready Cash
+            // ================================================
+            // READY CASH
+            // ================================================
 
-            if (
-                flag === "1"
-            ) {
+            if (flag === "1") {
 
                 this.value =
                     grandTotal;
 
                 displayBalance(0);
 
+                saveAdvanceData();
+
                 return;
 
             }
 
 
-            // Advance
+            // ================================================
+            // ADVANCE
+            // ================================================
 
             let amount =
-                Number(this.value) || 0;
+                toNumber(
+                    this.value
+                );
 
 
-            if (
-                amount > grandTotal
-            ) {
+            if (amount < 0) {
+
+                amount = 0;
+
+            }
+
+
+            if (amount > grandTotal) {
 
                 amount =
                     grandTotal;
@@ -603,15 +1022,112 @@ if (advanceAmountInput) {
 
 
 // ============================================================
-// NEXT
-// Advance -> Bill
+// PAYMENT MODE
 // ============================================================
 
-if (nextBtn) {
+function setupPaymentMode() {
+
+    const paymentModeCards =
+        document.querySelectorAll(
+            ".payment-mode-card, .mode-card"
+        );
+
+
+    paymentModeCards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    const text =
+                        this.textContent
+                            .trim()
+                            .toLowerCase();
+
+
+                    if (
+                        text.includes("upi")
+                    ) {
+
+                        localStorage.setItem(
+                            "paymentMode",
+                            "upi"
+                        );
+
+                    }
+                    else if (
+                        text.includes("cash")
+                    ) {
+
+                        localStorage.setItem(
+                            "paymentMode",
+                            "cash"
+                        );
+
+                    }
+
+
+                    console.log(
+                        "PAYMENT MODE:",
+                        localStorage.getItem(
+                            "paymentMode"
+                        )
+                    );
+
+
+                    saveAdvanceData();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// NEXT
+// ADVANCE -> BILL
+// ============================================================
+
+function setupNextButton() {
+
+    if (!nextBtn) {
+
+        console.log(
+            "NEXT BUTTON NOT FOUND"
+        );
+
+        return;
+
+    }
+
 
     nextBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "ADVANCE NEXT CLICKED"
+            );
+
+
+            // Recalculate before moving
+
+            refreshGrandTotal();
+
+
+            // Save latest data
 
             saveAdvanceData();
 
@@ -620,9 +1136,13 @@ if (nextBtn) {
                 "ADVANCE COMPLETE"
             );
 
+            console.log(
+                "REDIRECTING TO BILL.HTML"
+            );
+
 
             window.location.href =
-                "bill.html";
+                "./bill.html";
 
         }
     );
@@ -632,20 +1152,48 @@ if (nextBtn) {
 
 // ============================================================
 // BACK
-// Advance -> Discount
+// ADVANCE -> DISCOUNT
 // ============================================================
 
-if (backBtn) {
+function setupBackButton() {
+
+    if (!backBtn) {
+
+        console.log(
+            "BACK BUTTON NOT FOUND"
+        );
+
+        return;
+
+    }
+
 
     backBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "ADVANCE BACK CLICKED"
+            );
+
+            console.log(
+                "REDIRECTING TO DISCOUNT.HTML"
+            );
+
 
             saveAdvanceData();
 
 
             window.location.href =
-                "discount.html";
+                "./discount.html";
 
         }
     );
@@ -654,88 +1202,64 @@ if (backBtn) {
 
 
 // ============================================================
-// LOAD SAVED DATA
+// LOAD SAVED PAYMENT STATE
 // ============================================================
 
-function loadAdvanceData() {
-
-    displayGrandTotal();
-
-
-    let saved = null;
-
-
-    if (
-        typeof getPageData === "function"
-    ) {
-
-        saved =
-            getPageData("advance");
-
-    }
-
-
-    if (
-        saved &&
-        (
-            saved.paymentFlag === "0" ||
-            saved.paymentFlag === "1"
-        )
-    ) {
-
-        localStorage.setItem(
-            "paymentFlag",
-            saved.paymentFlag
-        );
-
-    }
-
+function loadPaymentState() {
 
     const flag =
-        localStorage.getItem(
-            "paymentFlag"
-        ) || "1";
+        getPaymentFlag();
+
+
+    console.log(
+        "SAVED PAYMENT FLAG:",
+        flag
+    );
 
 
     // ========================================================
     // READY CASH
     // ========================================================
 
-    if (
-        flag === "1"
-    ) {
+    if (flag === "1") {
 
         setPaymentType(
             "cash"
         );
 
+        return;
+
     }
+
 
     // ========================================================
     // ADVANCE
     // ========================================================
 
-    else {
+    if (flag === "0") {
 
         showAdvanceSection();
 
 
         let amount =
-            saved
-                ? Number(saved.advanceAmount) || 0
-                : Number(
-                    localStorage.getItem(
-                        "advanceAmount"
-                    )
-                ) || 0;
+            toNumber(
+                localStorage.getItem(
+                    "advanceAmount"
+                )
+            );
 
 
-        if (
-            amount > grandTotal
-        ) {
+        if (amount > grandTotal) {
 
             amount =
                 grandTotal;
+
+        }
+
+
+        if (amount < 0) {
+
+            amount = 0;
 
         }
 
@@ -754,13 +1278,100 @@ function loadAdvanceData() {
             grandTotal - amount
         );
 
-        saveAdvanceData();
+
+        console.log(
+            "ADVANCE PAYMENT RESTORED"
+        );
+
+
+        return;
+
+    }
+
+}
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+function initializeAdvancePage() {
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "ADVANCE PAGE INITIALIZING"
+    );
+
+
+    // Get HTML elements
+
+    getElements();
+
+
+    // IMPORTANT:
+    // Calculate total AFTER page/storage is ready
+
+    refreshGrandTotal();
+
+
+    // Set default section
+
+    if (advanceSection) {
+
+        advanceSection.style.display =
+            "none";
 
     }
 
 
+    // Setup controls
+
+    setupPaymentCards();
+
+    setupPaymentMode();
+
+    setupAdvanceInput();
+
+    setupNextButton();
+
+    setupBackButton();
+
+
+    // Load payment state
+
+    loadPaymentState();
+
+
+    console.log(
+        "=========================================="
+    );
+
     console.log(
         "ADVANCE PAGE READY"
+    );
+
+    console.log(
+        "GRAND TOTAL:",
+        grandTotal
+    );
+
+    console.log(
+        "PAYMENT FLAG:",
+        getPaymentFlag()
+    );
+
+    console.log(
+        "PAYMENT TYPE:",
+        localStorage.getItem(
+            "paymentType"
+        )
+    );
+
+    console.log(
+        "=========================================="
     );
 
 }
@@ -770,11 +1381,23 @@ function loadAdvanceData() {
 // START
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+if (
+    document.readyState === "loading"
+) {
 
-        loadAdvanceData();
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeAdvancePage
+    );
 
-    }
+}
+else {
+
+    initializeAdvancePage();
+
+}
+
+
+console.log(
+    "ADVANCE.JS LOADED SUCCESSFULLY"
 );

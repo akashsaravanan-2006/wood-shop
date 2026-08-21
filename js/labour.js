@@ -986,7 +986,7 @@ if (confirmBtn) {
             // ==================================================
 
             window.location.href =
-                "advance.html";
+                "personal.html";
 
         }
     );

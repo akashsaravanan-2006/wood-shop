@@ -9,11 +9,11 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Labour Charges</title>
+    <title>Labour & Other Charges</title>
 
     <link
         rel="stylesheet"
-        href="../css/labour.css?v=200">
+        href="../css/labour.css">
 
 </head>
 
@@ -22,177 +22,172 @@
 
 <div class="container">
 
-    <!-- =========================================
-         TITLE
-    ========================================== -->
+    <div class="card">
 
-    <h1>
-        Labour & Other Charges
-    </h1>
+        <h1>
+            Labour & Other Charges
+        </h1>
 
 
-    <!-- =========================================
-         WOOD TOTAL
-    ========================================== -->
+        <!-- WOOD TOTAL -->
 
-    <div class="field">
+        <div class="field">
 
-        <label>
-            Wood Total
-        </label>
+            <label>
+                Wood Total
+            </label>
 
-        <div class="displayBox">
+            <div class="amount-box">
 
-            <span id="woodTotal">
-                ₹ 0.00
-            </span>
+                <strong id="woodTotal">
+                    ₹ 0.00
+                </strong>
+
+            </div>
 
         </div>
 
-    </div>
 
+        <!-- LABOUR -->
 
-    <!-- =========================================
-         LABOUR CHARGE
-    ========================================== -->
+        <div class="field">
 
-    <div class="field">
+            <label for="labourCharge">
+                Labour Charge
+            </label>
 
-        <label for="labourCharge">
-            Labour Charge
-        </label>
-
-        <input
-            type="number"
-            id="labourCharge"
-            min="0"
-            step="0.01"
-            placeholder="Enter Labour Charge"
-            autocomplete="off">
-
-    </div>
-
-
-    <!-- =========================================
-         OTHER CHARGE
-    ========================================== -->
-
-    <div class="field">
-
-        <label for="otherCharge">
-            Other Charge
-        </label>
-
-        <input
-            type="number"
-            id="otherCharge"
-            min="0"
-            step="0.01"
-            placeholder="Enter Other Charge"
-            autocomplete="off">
-
-    </div>
-
-
-    <!-- =========================================
-         ADD OTHER BUTTON
-    ========================================== -->
-
-    <button
-        type="button"
-        id="addOtherBtn">
-
-        + Add Other
-
-    </button>
-
-
-    <!-- =========================================
-         ADDITIONAL OTHER CHARGES
-    ========================================== -->
-
-    <div id="othersContainer"></div>
-
-
-    <!-- =========================================
-         OTHERS TOTAL
-    ========================================== -->
-
-    <div class="totalSection">
-
-        <label>
-            Others Total
-        </label>
-
-        <div
-            id="othersTotal"
-            class="displayBox">
-
-            ₹ 0.00
+            <input
+                type="number"
+                id="labourCharge"
+                min="0"
+                step="0.01"
+                placeholder="Enter Labour Charge">
 
         </div>
 
-    </div>
 
+        <!-- OTHER -->
 
-    <!-- =========================================
-         GRAND TOTAL
-    ========================================== -->
+        <div class="field">
 
-    <div class="totalSection">
+            <label for="otherCharge">
+                Other Charge
+            </label>
 
-        <label>
-            Grand Total
-        </label>
-
-        <div
-            id="grandTotal"
-            class="displayBox grandTotal">
-
-            ₹ 0.00
+            <input
+                type="number"
+                id="otherCharge"
+                min="0"
+                step="0.01"
+                placeholder="Enter Other Charge">
 
         </div>
 
-    </div>
+
+        <!-- ADD OTHER -->
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                id="addOtherBtn">
+
+                + Add Other
+
+            </button>
+
+        </div>
 
 
-    <!-- =========================================
-         BUTTONS
-    ========================================== -->
+        <!-- ADDITIONAL OTHER ITEMS -->
 
-    <div class="buttons">
-
-        <button
-            type="button"
-            id="confirmBtn"
-            class="confirmBtn">
-
-            Confirm
-
-        </button>
+        <div id="othersContainer"></div>
 
 
-        <button
-            type="button"
-            id="backBtn"
-            class="backBtn">
+        <!-- OTHERS TOTAL -->
 
-            Back
+        <div class="field">
 
-        </button>
+            <label>
+                Others Total
+            </label>
+
+            <div class="amount-box">
+
+                <strong id="othersTotal">
+                    ₹ 0.00
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRAND TOTAL -->
+
+        <div class="field">
+
+            <label>
+                Grand Total
+            </label>
+
+            <div class="grand-total-box">
+
+                <strong id="grandTotal">
+                    ₹ 0.00
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="bottom-buttons">
+
+            <button
+                type="button"
+                id="confirmBtn">
+
+                Confirm
+
+            </button>
+
+
+            <button
+                type="button"
+                id="backBtn">
+
+                Back
+
+            </button>
+
+        </div>
+
+
+        <!-- NEXT -->
+
+        <div class="next-row">
+
+            <button
+                type="button"
+                id="nextBtn">
+
+                Next
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
 
-<!-- =========================================
-     JAVASCRIPT
-========================================== -->
+<!-- ONLY LABOUR JS -->
 
-<script src="../js/storedata.js?v=200"></script>
-
-<script src="../js/labour.js?v=200"></script>
+<script src="../js/labour.js?v=500"></script>
 
 
 </body>

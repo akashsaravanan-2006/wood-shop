@@ -9,19 +9,50 @@ console.log("LABOUR.JS LOADED");
 // ELEMENTS
 // ============================================================
 
-const woodTotalElement = document.getElementById("woodTotal");
-const labourChargeInput = document.getElementById("labourCharge");
-const otherChargeInput = document.getElementById("otherCharge");
+const woodTotalElement =
+    document.getElementById("woodTotal");
 
-const othersTotalElement = document.getElementById("othersTotal");
-const grandTotalElement = document.getElementById("grandTotal");
+const labourChargeInput =
+    document.getElementById("labourCharge");
 
-const addOtherBtn = document.getElementById("addOtherBtn");
-const othersContainer = document.getElementById("othersContainer");
+const otherChargeInput =
+    document.getElementById("otherCharge");
 
-const confirmBtn = document.getElementById("confirmBtn");
-const nextBtn = document.getElementById("nextBtn");
-const backBtn = document.getElementById("backBtn");
+const othersTotalElement =
+    document.getElementById("othersTotal");
+
+const grandTotalElement =
+    document.getElementById("grandTotal");
+
+const addOtherBtn =
+    document.getElementById("addOtherBtn");
+
+const addOtherForm =
+    document.getElementById("addOtherForm");
+
+const otherReasonInput =
+    document.getElementById("otherReason");
+
+const otherAmountInput =
+    document.getElementById("otherAmount");
+
+const saveOtherBtn =
+    document.getElementById("saveOtherBtn");
+
+const cancelOtherBtn =
+    document.getElementById("cancelOtherBtn");
+
+const othersContainer =
+    document.getElementById("othersContainer");
+
+const confirmBtn =
+    document.getElementById("confirmBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
 
 
 // ============================================================
@@ -29,12 +60,15 @@ const backBtn = document.getElementById("backBtn");
 // ============================================================
 
 let woodTotal = 0;
+
 let labourCharge = 0;
+
 let otherCharge = 0;
 
 let otherItems = [];
 
 let othersTotal = 0;
+
 let grandTotal = 0;
 
 
@@ -44,9 +78,12 @@ let grandTotal = 0;
 
 function toNumber(value) {
 
-    const n = parseFloat(value);
+    const n =
+        parseFloat(value);
 
-    return Number.isFinite(n) ? n : 0;
+    return Number.isFinite(n)
+        ? n
+        : 0;
 
 }
 
@@ -58,7 +95,10 @@ function toNumber(value) {
 function roundMoney(value) {
 
     return Math.round(
-        (toNumber(value) + Number.EPSILON) * 100
+        (
+            toNumber(value) +
+            Number.EPSILON
+        ) * 100
     ) / 100;
 
 }
@@ -70,7 +110,8 @@ function roundMoney(value) {
 
 function money(value) {
 
-    return "₹ " + roundMoney(value).toFixed(2);
+    return "₹ " +
+        roundMoney(value).toFixed(2);
 
 }
 
@@ -84,13 +125,21 @@ function getWoodTotal() {
     const possibleKeys = [
 
         "woodFinalTotal",
+
         "woodTotal",
+
         "woodGrandTotal"
 
     ];
 
 
-    for (const key of possibleKeys) {
+    // --------------------------------------------------------
+    // FIRST: CHECK DIRECT WOOD TOTAL KEYS
+    // --------------------------------------------------------
+
+    for (
+        const key of possibleKeys
+    ) {
 
         const value =
             localStorage.getItem(key);
@@ -124,11 +173,13 @@ function getWoodTotal() {
 
 
     // --------------------------------------------------------
-    // Try woodData
+    // SECOND: CHECK woodData
     // --------------------------------------------------------
 
     const woodData =
-        localStorage.getItem("woodData");
+        localStorage.getItem(
+            "woodData"
+        );
 
 
     if (woodData) {
@@ -136,14 +187,19 @@ function getWoodTotal() {
         try {
 
             const data =
-                JSON.parse(woodData);
+                JSON.parse(
+                    woodData
+                );
 
 
             const possibleValues = [
 
                 data.grandTotal,
+
                 data.finalTotal,
+
                 data.totalAmount,
+
                 data.woodTotal
 
             ];
@@ -208,31 +264,30 @@ function updateWoodTotal() {
 
 // ============================================================
 // CALCULATE OTHERS TOTAL
+// ============================================================
 //
-// IMPORTANT:
+// Others Total =
+// Main Other Charge
+// +
+// Additional Other Items
 //
-// Other Charge
-// +
-// Other 1
-// +
-// Other 2
-// +
-// Other 3
+// Example:
 //
-// = Others Total
+// Other Charge = ₹500
+//
+// Lunch = ₹300
+// Transport = ₹200
+//
+// Others Total = ₹1000
 // ============================================================
 
 function calculateOthersTotal() {
-
-    // Main Other Charge
 
     const mainOther =
         roundMoney(
             otherChargeInput.value
         );
 
-
-    // Additional Other items
 
     let additionalTotal = 0;
 
@@ -241,13 +296,13 @@ function calculateOthersTotal() {
         function (item) {
 
             additionalTotal +=
-                roundMoney(item);
+                roundMoney(
+                    item.amount
+                );
 
         }
     );
 
-
-    // Final Others Total
 
     othersTotal =
         roundMoney(
@@ -256,28 +311,8 @@ function calculateOthersTotal() {
         );
 
 
-    // UPDATE SCREEN
-
     othersTotalElement.textContent =
         money(othersTotal);
-
-
-    console.log(
-        "MAIN OTHER:",
-        mainOther
-    );
-
-
-    console.log(
-        "ADDITIONAL OTHERS:",
-        additionalTotal
-    );
-
-
-    console.log(
-        "OTHERS TOTAL:",
-        othersTotal
-    );
 
 
     return othersTotal;
@@ -287,18 +322,28 @@ function calculateOthersTotal() {
 
 // ============================================================
 // CALCULATE GRAND TOTAL
+// ============================================================
 //
+// Grand Total =
 // Wood Total
 // +
 // Labour Charge
 // +
 // Others Total
+//
+// Wood Total is NEVER changed here.
 // ============================================================
 
 function calculateGrandTotal() {
 
+    // IMPORTANT:
+    // Do NOT read/recalculate Wood Total
+    // from Labour inputs.
+
     woodTotal =
-        roundMoney(woodTotal);
+        roundMoney(
+            woodTotal
+        );
 
 
     labourCharge =
@@ -328,32 +373,75 @@ function calculateGrandTotal() {
         money(grandTotal);
 
 
-    console.log("--------------------------------");
+    console.log(
+        "--------------------------------"
+    );
+
 
     console.log(
         "WOOD TOTAL:",
         woodTotal
     );
 
+
     console.log(
         "LABOUR CHARGE:",
         labourCharge
     );
+
 
     console.log(
         "OTHERS TOTAL:",
         othersTotal
     );
 
+
     console.log(
         "GRAND TOTAL:",
         grandTotal
     );
 
-    console.log("--------------------------------");
+
+    console.log(
+        "--------------------------------"
+    );
 
 
     return grandTotal;
+
+}
+
+
+// ============================================================
+// SHOW ADD OTHER FORM
+// ============================================================
+
+function showAddOtherForm() {
+
+    addOtherForm.style.display =
+        "block";
+
+
+    otherReasonInput.focus();
+
+}
+
+
+// ============================================================
+// HIDE ADD OTHER FORM
+// ============================================================
+
+function hideAddOtherForm() {
+
+    addOtherForm.style.display =
+        "none";
+
+
+    otherReasonInput.value =
+        "";
+
+    otherAmountInput.value =
+        "";
 
 }
 
@@ -364,42 +452,44 @@ function calculateGrandTotal() {
 
 function renderOtherItems() {
 
-    othersContainer.innerHTML = "";
+    othersContainer.innerHTML =
+        "";
 
 
     otherItems.forEach(
-        function (amount, index) {
+        function (item, index) {
 
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             row.className =
                 "other-item";
 
 
-            row.style.display = "flex";
-            row.style.alignItems = "center";
-            row.style.justifyContent = "space-between";
-            row.style.marginTop = "10px";
-            row.style.padding = "10px";
-            row.style.border = "1px solid #ddd";
-            row.style.borderRadius = "6px";
-
-
             row.innerHTML = `
 
-                <span>
-                    Other ${index + 1}
-                </span>
+                <div class="other-item-info">
 
-                <strong>
-                    ${money(amount)}
+                    <div class="other-item-name">
+                        ${escapeHtml(item.reason)}
+                    </div>
+
+                </div>
+
+
+                <strong class="other-item-value">
+
+                    ${money(item.amount)}
+
                 </strong>
+
 
                 <button
                     type="button"
-                    class="removeOtherBtn"
+                    class="remove-other-btn"
                     data-index="${index}">
 
                     Remove
@@ -409,17 +499,21 @@ function renderOtherItems() {
             `;
 
 
-            othersContainer.appendChild(row);
+            othersContainer.appendChild(
+                row
+            );
 
         }
     );
 
 
-    // Remove buttons
+    // --------------------------------------------------------
+    // REMOVE BUTTONS
+    // --------------------------------------------------------
 
     const removeButtons =
         document.querySelectorAll(
-            ".removeOtherBtn"
+            ".remove-other-btn"
         );
 
 
@@ -436,6 +530,15 @@ function renderOtherItems() {
                         );
 
 
+                    if (
+                        !Number.isInteger(
+                            index
+                        )
+                    ) {
+                        return;
+                    }
+
+
                     otherItems.splice(
                         index,
                         1
@@ -445,6 +548,8 @@ function renderOtherItems() {
                     renderOtherItems();
 
                     calculateGrandTotal();
+
+                    saveLabourData();
 
                 }
             );
@@ -456,54 +561,147 @@ function renderOtherItems() {
 
 
 // ============================================================
-// ADD OTHER
+// ESCAPE HTML
+// ============================================================
+//
+// Prevents user-entered reason text from being treated
+// as HTML.
 // ============================================================
 
-function addOther() {
+function escapeHtml(value) {
 
-    const value =
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// ADD OTHER ITEM
+// ============================================================
+
+function addOtherItem() {
+
+    const reason =
+        otherReasonInput.value
+            .trim();
+
+
+    const amount =
         roundMoney(
-            otherChargeInput.value
+            otherAmountInput.value
         );
 
 
-    if (value <= 0) {
+    if (!reason) {
 
         alert(
-            "Please enter Other Charge."
+            "Please enter the reason."
         );
 
-        otherChargeInput.focus();
+
+        otherReasonInput.focus();
 
         return;
 
     }
 
 
-    // Add to array
+    if (amount <= 0) {
 
-    otherItems.push(value);
+        alert(
+            "Please enter a valid amount."
+        );
+
+
+        otherAmountInput.focus();
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // STORE BOTH REASON + AMOUNT
+    // --------------------------------------------------------
+
+    otherItems.push({
+
+        reason:
+            reason,
+
+        amount:
+            amount
+
+    });
 
 
     console.log(
-        "OTHER ADDED:",
-        value
+        "OTHER ITEM ADDED:",
+        {
+            reason,
+            amount
+        }
     );
 
 
-    // Clear input
+    // --------------------------------------------------------
+    // CLEAR FORM
+    // --------------------------------------------------------
 
-    otherChargeInput.value = "";
+    otherReasonInput.value =
+        "";
+
+    otherAmountInput.value =
+        "";
 
 
-    // Render
+    // --------------------------------------------------------
+    // HIDE FORM
+    // --------------------------------------------------------
+
+    addOtherForm.style.display =
+        "none";
+
+
+    // --------------------------------------------------------
+    // DISPLAY ITEM
+    // --------------------------------------------------------
 
     renderOtherItems();
 
 
-    // Calculate
+    // --------------------------------------------------------
+    // RECALCULATE
+    // --------------------------------------------------------
 
     calculateGrandTotal();
+
+
+    // --------------------------------------------------------
+    // SAVE
+    // --------------------------------------------------------
+
+    saveLabourData();
 
 }
 
@@ -518,17 +716,14 @@ labourChargeInput.addEventListener(
 
         calculateGrandTotal();
 
+        saveLabourData();
+
     }
 );
 
 
 // ============================================================
-// OTHER INPUT
-//
-// This is important.
-//
-// When user types Other Charge,
-// Others Total and Grand Total update.
+// MAIN OTHER INPUT
 // ============================================================
 
 otherChargeInput.addEventListener(
@@ -536,6 +731,8 @@ otherChargeInput.addEventListener(
     function () {
 
         calculateGrandTotal();
+
+        saveLabourData();
 
     }
 );
@@ -551,7 +748,79 @@ addOtherBtn.addEventListener(
 
         event.preventDefault();
 
-        addOther();
+        showAddOtherForm();
+
+    }
+);
+
+
+// ============================================================
+// SAVE OTHER BUTTON
+// ============================================================
+
+saveOtherBtn.addEventListener(
+    "click",
+    function (event) {
+
+        event.preventDefault();
+
+        addOtherItem();
+
+    }
+);
+
+
+// ============================================================
+// CANCEL OTHER BUTTON
+// ============================================================
+
+cancelOtherBtn.addEventListener(
+    "click",
+    function (event) {
+
+        event.preventDefault();
+
+        hideAddOtherForm();
+
+    }
+);
+
+
+// ============================================================
+// ENTER KEY IN OTHER FORM
+// ============================================================
+
+otherAmountInput.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            addOtherItem();
+
+        }
+
+    }
+);
+
+
+otherReasonInput.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            otherAmountInput.focus();
+
+        }
 
     }
 );
@@ -569,34 +838,62 @@ function saveLabourData() {
     const data = {
 
         woodTotal:
-            roundMoney(woodTotal),
+            roundMoney(
+                woodTotal
+            ),
+
 
         labourCharge:
-            roundMoney(labourCharge),
+            roundMoney(
+                labourCharge
+            ),
+
 
         otherCharge:
-            roundMoney(otherCharge),
+            roundMoney(
+                otherCharge
+            ),
 
+
+        // Save reason + amount
         otherItems:
             otherItems.map(
-                function (value) {
+                function (item) {
 
-                    return roundMoney(value);
+                    return {
+
+                        reason:
+                            String(
+                                item.reason
+                            ),
+
+                        amount:
+                            roundMoney(
+                                item.amount
+                            )
+
+                    };
 
                 }
             ),
 
+
         othersTotal:
-            roundMoney(othersTotal),
+            roundMoney(
+                othersTotal
+            ),
+
 
         grandTotal:
-            roundMoney(grandTotal)
+            roundMoney(
+                grandTotal
+            )
 
     };
 
 
     // --------------------------------------------------------
-    // Main Labour data
+    // MAIN LABOUR DATA
     // --------------------------------------------------------
 
     localStorage.setItem(
@@ -606,20 +903,26 @@ function saveLabourData() {
 
 
     // --------------------------------------------------------
-    // THIS IS THE VALUE DISCOUNT SHOULD READ
+    // VALUE DISCOUNT SHOULD READ
     // --------------------------------------------------------
 
     localStorage.setItem(
         "labourFinalTotal",
-        roundMoney(grandTotal).toFixed(2)
+        roundMoney(
+            grandTotal
+        ).toFixed(2)
     );
 
 
-    // Also save a separate immutable base for this stage.
+    // --------------------------------------------------------
+    // IMMUTABLE BASE FOR THIS STAGE
+    // --------------------------------------------------------
 
     localStorage.setItem(
         "labourBaseTotal",
-        roundMoney(grandTotal).toFixed(2)
+        roundMoney(
+            grandTotal
+        ).toFixed(2)
     );
 
 
@@ -659,11 +962,18 @@ function loadLabourData() {
     try {
 
         const data =
-            JSON.parse(saved);
+            JSON.parse(
+                saved
+            );
 
+
+        // ----------------------------------------------------
+        // LABOUR CHARGE
+        // ----------------------------------------------------
 
         if (
-            data.labourCharge !== undefined
+            data.labourCharge !==
+            undefined
         ) {
 
             labourChargeInput.value =
@@ -672,8 +982,13 @@ function loadLabourData() {
         }
 
 
+        // ----------------------------------------------------
+        // MAIN OTHER CHARGE
+        // ----------------------------------------------------
+
         if (
-            data.otherCharge !== undefined
+            data.otherCharge !==
+            undefined
         ) {
 
             otherChargeInput.value =
@@ -681,6 +996,10 @@ function loadLabourData() {
 
         }
 
+
+        // ----------------------------------------------------
+        // ADDITIONAL OTHER ITEMS
+        // ----------------------------------------------------
 
         if (
             Array.isArray(
@@ -690,15 +1009,60 @@ function loadLabourData() {
 
             otherItems =
                 data.otherItems.map(
-                    function (value) {
+                    function (item) {
 
-                        return roundMoney(value);
+                        // New format:
+                        // { reason, amount }
+
+                        if (
+                            item &&
+                            typeof item ===
+                            "object"
+                        ) {
+
+                            return {
+
+                                reason:
+                                    String(
+                                        item.reason ||
+                                        "Other"
+                                    ),
+
+                                amount:
+                                    roundMoney(
+                                        item.amount
+                                    )
+
+                            };
+
+                        }
+
+
+                        // Old format compatibility:
+                        // If old data only contains amount,
+                        // keep it as "Other".
+
+                        return {
+
+                            reason:
+                                "Other",
+
+                            amount:
+                                roundMoney(
+                                    item
+                                )
+
+                        };
 
                     }
                 );
 
         }
 
+
+        // ----------------------------------------------------
+        // RENDER
+        // ----------------------------------------------------
 
         renderOtherItems();
 
@@ -811,23 +1175,31 @@ function initialize() {
     );
 
 
-    // Get Wood total.
+    // --------------------------------------------------------
+    // GET WOOD TOTAL
+    // --------------------------------------------------------
 
     woodTotal =
         getWoodTotal();
 
 
-    // Show Wood total.
+    // --------------------------------------------------------
+    // SHOW WOOD TOTAL
+    // --------------------------------------------------------
 
     updateWoodTotal();
 
 
-    // Load previous Labour data.
+    // --------------------------------------------------------
+    // LOAD PREVIOUS LABOUR DATA
+    // --------------------------------------------------------
 
     loadLabourData();
 
 
-    // Calculate everything.
+    // --------------------------------------------------------
+    // CALCULATE EVERYTHING
+    // --------------------------------------------------------
 
     calculateGrandTotal();
 
@@ -844,7 +1216,8 @@ function initialize() {
 // ============================================================
 
 if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
 ) {
 
     document.addEventListener(

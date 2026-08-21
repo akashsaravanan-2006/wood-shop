@@ -1,406 +1,360 @@
-/* =======================================
-   GLOBAL
-======================================= */
+/* =========================================================
+   LABOUR PAGE
+========================================================= */
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
-
-/* =======================================
-   BODY
-======================================= */
 
 body {
-    background: #f5f5f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+
+    margin: 0;
+
     padding: 20px;
+
+    background: #f4f6f8;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #222;
+
 }
 
 
-/* =======================================
-   MAIN CONTAINER
-======================================= */
+/* =========================================================
+   CONTAINER
+========================================================= */
 
 .container {
-    width: 650px;
-    max-width: 100%;
-    background: #ffffff;
+
+    width: 100%;
+
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    background: white;
+
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.12);
+
 }
 
 
-/* =======================================
-   HEADING
-======================================= */
+/* =========================================================
+   TITLE
+========================================================= */
 
 h1 {
+
     text-align: center;
-    margin-bottom: 25px;
-    color: #333;
+
+    margin-top: 0;
+
+    margin-bottom: 30px;
+
+    font-size: 32px;
+
 }
 
 
-/* =======================================
-   INPUT BOX
-======================================= */
+/* =========================================================
+   FIELD
+========================================================= */
 
-.box {
-    margin-bottom: 20px;
+.field {
+
+    margin-bottom: 22px;
+
 }
 
 
-label {
+.field label,
+.totalSection label {
+
     display: block;
+
+    font-size: 17px;
+
     font-weight: bold;
+
     margin-bottom: 8px;
-    color: #444;
+
 }
 
+
+/* =========================================================
+   INPUT
+========================================================= */
 
 input {
+
     width: 100%;
-    padding: 12px;
+
+    height: 45px;
+
+    padding: 10px 14px;
+
     border: 1px solid #ccc;
+
     border-radius: 6px;
+
     font-size: 16px;
+
     outline: none;
-    background: #fff;
+
 }
 
 
 input:focus {
-    border-color: #2196F3;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.08);
+
+    border-color: #008cff;
+
 }
 
 
-/* =======================================
-   TOTAL
-======================================= */
+/* =========================================================
+   DISPLAY BOX
+========================================================= */
 
-h2 {
-    background: #f2f2f2;
-    padding: 12px;
-    border-radius: 6px;
-    color: #0b7dda;
-    text-align: right;
-}
+.displayBox {
 
-
-/* =======================================
-   GENERAL BUTTON
-======================================= */
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: 0.2s ease;
-}
-
-
-/* =======================================
-   ADD OTHER
-======================================= */
-
-#addOther {
-    background: #28a745;
-    color: white;
     width: 100%;
-    font-weight: 600;
-}
 
+    min-height: 52px;
 
-#addOther:hover {
-    background: #218838;
-}
-
-
-/* =======================================
-   TABLE
-======================================= */
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-
-
-table th {
-    background: #007bff;
-    color: white;
-    padding: 10px;
-    text-align: center;
-}
-
-
-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-
-table input {
-    width: 100%;
-}
-
-
-/* =======================================
-   REMOVE BUTTON
-======================================= */
-
-.removeBtn {
-    background: #dc3545;
-    color: white;
-    width: 100%;
-}
-
-
-.removeBtn:hover {
-    background: #b52a37;
-}
-
-
-/* =======================================
-   OTHER SECTION
-======================================= */
-
-#otherSection {
-    margin-top: 15px;
-}
-
-
-/* =======================================
-   TOTAL SECTIONS
-======================================= */
-
-#othersTotal,
-#grandTotal {
-    margin-top: 8px;
-    min-height: 55px;
     display: flex;
+
     align-items: center;
+
     justify-content: flex-end;
+
+    padding: 12px 18px;
+
+    background: #f1f1f1;
+
+    border-radius: 6px;
+
     font-size: 24px;
+
     font-weight: bold;
+
+    color: #008cff;
+
 }
 
 
-/* =======================================
-   BOTTOM BUTTON AREA
-======================================= */
+/* =========================================================
+   GRAND TOTAL
+========================================================= */
 
-.button-container {
-    display: flex;
-    gap: 12px;
+.grandTotal {
+
+    color: #e60000;
+
+    font-size: 28px;
+
+}
+
+
+/* =========================================================
+   ADD OTHER BUTTON
+========================================================= */
+
+#addOtherBtn {
+
     width: 100%;
-    margin-top: 35px;
-    align-items: stretch;
-}
 
-
-/* =======================================
-   BACK BUTTON
-======================================= */
-
-#backBtn {
-    width: 140px;
-    min-width: 140px;
-    height: 55px;
-
-    background: #343a40;
-    color: white;
+    height: 48px;
 
     border: none;
-    border-radius: 8px;
+
+    border-radius: 6px;
+
+    background: #00b85a;
+
+    color: white;
 
     font-size: 17px;
-    font-weight: 600;
+
+    font-weight: bold;
 
     cursor: pointer;
 
-    transition: 0.2s ease;
+    margin-bottom: 20px;
+
 }
 
 
-#backBtn:hover {
-    background: #23272b;
-    transform: translateY(-1px);
+#addOtherBtn:hover {
+
+    background: #009b4c;
+
 }
 
 
-#backBtn:active {
-    transform: translateY(0);
+/* =========================================================
+   OTHER ROW
+========================================================= */
+
+.otherRow {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 150px 90px;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+
 }
 
 
-/* =======================================
-   CONFIRM BUTTON
-======================================= */
+.otherRow button {
 
-#confirmBtn {
-    flex: 1;
-    width: auto;
-    height: 55px;
+    border: none;
 
-    background: #007bff;
+    border-radius: 5px;
+
+    background: #dc3545;
+
     color: white;
 
     font-weight: bold;
-    font-size: 18px;
-
-    margin-top: 0;
-
-    border-radius: 8px;
 
     cursor: pointer;
 
-    transition: 0.2s ease;
 }
 
 
-#confirmBtn:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
+/* =========================================================
+   TOTAL SECTION
+========================================================= */
+
+.totalSection {
+
+    margin-top: 25px;
+
+    margin-bottom: 25px;
+
 }
 
 
-#confirmBtn:active {
-    transform: translateY(0);
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 30px;
+
 }
 
 
-/* =======================================
-   NUMBER INPUT
-   REMOVE SPINNER
-======================================= */
+.buttons button {
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    flex: 1;
+
+    height: 52px;
+
+    border-radius: 6px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
 }
 
-input[type="number"] {
-    appearance: textfield;
+
+.confirmBtn {
+
+    border: none;
+
+    background: #0785f5;
+
+    color: white;
+
 }
 
 
-/* =======================================
+.backBtn {
+
+    border: none;
+
+    background: #343a40;
+
+    color: white;
+
+}
+
+
+.confirmBtn:hover {
+
+    background: #006fd6;
+
+}
+
+
+.backBtn:hover {
+
+    background: #22272b;
+
+}
+
+
+/* =========================================================
    MOBILE
-======================================= */
+========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
 
     body {
+
         padding: 10px;
-        align-items: flex-start;
+
     }
+
 
     .container {
-        width: 100%;
+
         padding: 20px;
-        margin-top: 10px;
+
     }
+
 
     h1 {
-        font-size: 24px;
+
+        font-size: 26px;
+
     }
 
-    button {
-        font-size: 15px;
+
+    .otherRow {
+
+        grid-template-columns: 1fr;
+
     }
 
-    .button-container {
-        flex-direction: column;
+
+    .otherRow button {
+
+        height: 42px;
+
     }
 
-    #backBtn {
-        width: 100%;
-        min-width: 100%;
-    }
-
-    #confirmBtn {
-        width: 100%;
-    }
-
-}/* =======================================
-   CENTER BUTTON AREA
-======================================= */
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    margin-top: 35px;
-}
-
-
-/* =======================================
-   BACK BUTTON
-======================================= */
-
-#backBtn {
-    width: 140px;
-    height: 55px;
-
-    background: #343a40;
-    color: white;
-
-    border: none;
-    border-radius: 8px;
-
-    font-size: 17px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-#backBtn:hover {
-    background: #23272b;
-    transform: translateY(-1px);
-}
-
-
-/* =======================================
-   CONFIRM BUTTON
-======================================= */
-
-#confirmBtn {
-    width: 220px;
-    height: 55px;
-
-    background: #007bff;
-    color: white;
-
-    border: none;
-    border-radius: 8px;
-
-    font-size: 18px;
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-#confirmBtn:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
 }

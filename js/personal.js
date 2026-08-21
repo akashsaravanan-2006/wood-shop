@@ -1,205 +1,108 @@
 // ============================================================
 // PERSONAL.JS
-// CUSTOMER INFORMATION
-//
 // FLOW:
 // Personal -> Discount
 // Back     -> Labour
 // ============================================================
 
-console.log("==========================================");
-console.log("PERSONAL.JS LOADED - NEW VERSION");
-console.log("VERSION: PERSONAL-DISCOUNT-10000");
-console.log("==========================================");
-
-
-// ============================================================
-// WAIT UNTIL PAGE IS READY
-// ============================================================
+console.log("PERSONAL.JS VERSION 10001 LOADED");
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    console.log("PERSONAL PAGE INITIALIZED");
-
+    console.log("PERSONAL PAGE READY");
 
     // ========================================================
-    // GET HTML ELEMENTS
+    // ELEMENTS
     // ========================================================
 
-    const customerName =
-        document.getElementById("customerName");
+    const customerName = document.getElementById("customerName");
+    const mobileNumber = document.getElementById("mobileNumber");
+    const place = document.getElementById("place");
 
-    const mobileNumber =
-        document.getElementById("mobileNumber");
-
-    const place =
-        document.getElementById("place");
-
-    const nextBtn =
-        document.getElementById("nextBtn");
-
-    const backBtn =
-        document.getElementById("backBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
 
 
     // ========================================================
     // CHECK ELEMENTS
     // ========================================================
 
-    if (!customerName) {
-        console.error("ERROR: customerName element not found");
+    if (!customerName || !mobileNumber || !place) {
+        console.error("PERSONAL ERROR: Input element missing");
         return;
     }
 
-    if (!mobileNumber) {
-        console.error("ERROR: mobileNumber element not found");
+    if (!nextBtn || !backBtn) {
+        console.error("PERSONAL ERROR: Button element missing");
         return;
     }
-
-    if (!place) {
-        console.error("ERROR: place element not found");
-        return;
-    }
-
-    if (!nextBtn) {
-        console.error("ERROR: nextBtn element not found");
-        return;
-    }
-
-    if (!backBtn) {
-        console.error("ERROR: backBtn element not found");
-        return;
-    }
-
-
-    console.log("All Personal page elements found");
 
 
     // ========================================================
     // LOAD SAVED DATA
     // ========================================================
 
-    function loadPersonalData() {
+    customerName.value =
+        localStorage.getItem("customerName") || "";
 
-        try {
+    mobileNumber.value =
+        localStorage.getItem("customerMobile") || "";
 
-            customerName.value =
-                localStorage.getItem("customerName") || "";
-
-            mobileNumber.value =
-                localStorage.getItem("customerMobile") || "";
-
-            place.value =
-                localStorage.getItem("customerPlace") || "";
+    place.value =
+        localStorage.getItem("customerPlace") || "";
 
 
-            console.log("PERSONAL DATA LOADED");
-
-            console.log(
-                "Name:",
-                customerName.value
-            );
-
-            console.log(
-                "Mobile:",
-                mobileNumber.value
-            );
-
-            console.log(
-                "Place:",
-                place.value
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "ERROR LOADING PERSONAL DATA:",
-                error
-            );
-
-        }
-
-    }
+    console.log("Personal data loaded");
 
 
     // ========================================================
-    // VALIDATE PERSONAL DATA
+    // VALIDATION
     // ========================================================
 
-    function validatePersonalData() {
+    function validatePersonal() {
 
-        const name =
-            customerName.value.trim();
+        const name = customerName.value.trim();
+        const mobile = mobileNumber.value.trim();
+        const customerPlace = place.value.trim();
 
-        const mobile =
-            mobileNumber.value.trim();
-
-        const customerPlace =
-            place.value.trim();
-
-
-        // -----------------------------
-        // NAME
-        // -----------------------------
 
         if (name === "") {
 
             alert("Please enter Customer Name");
-
             customerName.focus();
 
             return false;
-
         }
 
-
-        // -----------------------------
-        // MOBILE
-        // -----------------------------
 
         if (mobile === "") {
 
             alert("Please enter Mobile Number");
-
             mobileNumber.focus();
 
             return false;
-
         }
 
 
         if (!/^[0-9]{10}$/.test(mobile)) {
 
-            alert(
-                "Please enter a valid 10-digit Mobile Number"
-            );
-
+            alert("Please enter a valid 10-digit Mobile Number");
             mobileNumber.focus();
 
             return false;
-
         }
 
-
-        // -----------------------------
-        // PLACE
-        // -----------------------------
 
         if (customerPlace === "") {
 
             alert("Please enter Place");
-
             place.focus();
 
             return false;
-
         }
 
 
         return true;
-
     }
 
 
@@ -209,20 +112,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function savePersonalData() {
 
-        const name =
-            customerName.value.trim();
+        const name = customerName.value.trim();
+        const mobile = mobileNumber.value.trim();
+        const customerPlace = place.value.trim();
 
-        const mobile =
-            mobileNumber.value.trim();
-
-        const customerPlace =
-            place.value.trim();
-
-
-        // ====================================================
-        // OLD STORAGE
-        // Used by bill.js
-        // ====================================================
 
         localStorage.setItem(
             "customerName",
@@ -240,108 +133,54 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        // ====================================================
-        // CENTRAL STORAGE
-        // If storedata.js is available
-        // ====================================================
+        console.log("PERSONAL DATA SAVED");
 
-        if (
-            typeof window.savePageData === "function"
-        ) {
-
-            window.savePageData(
-                "personal",
-                {
-                    name: name,
-                    mobile: mobile,
-                    place: customerPlace
-                }
-            );
-
-            console.log(
-                "CENTRAL PERSONAL DATA SAVED"
-            );
-
-        }
-
-
-        console.log(
-            "PERSONAL DATA SAVED SUCCESSFULLY"
-        );
-
+        console.log({
+            name: name,
+            mobile: mobile,
+            place: customerPlace
+        });
     }
 
 
     // ========================================================
     // NEXT BUTTON
     //
-    // IMPORTANT:
-    //
-    // Personal -> Discount
-    //
-    // NEVER -> Advance
+    // PERSONAL -> DISCOUNT
     // ========================================================
 
     nextBtn.addEventListener("click", function (event) {
 
         event.preventDefault();
-
         event.stopPropagation();
 
+        console.log("--------------------------------");
+        console.log("PERSONAL NEXT CLICKED");
+        console.log("--------------------------------");
 
-        console.log("==========================================");
-        console.log("PERSONAL NEXT BUTTON CLICKED");
-        console.log("==========================================");
 
+        // Validate
+        if (!validatePersonal()) {
 
-        // ====================================================
-        // VALIDATE
-        // ====================================================
-
-        if (!validatePersonalData()) {
-
-            console.log(
-                "PERSONAL VALIDATION FAILED"
-            );
+            console.log("PERSONAL VALIDATION FAILED");
 
             return;
-
         }
 
 
-        // ====================================================
-        // SAVE
-        // ====================================================
-
+        // Save
         savePersonalData();
 
 
-        console.log(
-            "PERSONAL DATA SAVED"
-        );
+        console.log("PERSONAL DATA SAVED");
+        console.log("REDIRECTING TO DISCOUNT.HTML");
 
 
         // ====================================================
-        // IMPORTANT REDIRECT
-        //
-        // ONLY DISCOUNT PAGE
+        // ONLY REDIRECT
         // ====================================================
 
-        console.log(
-            "REDIRECT TARGET: discount.html"
-        );
-
-        console.log(
-            "ADVANCE.HTML WILL NOT BE OPENED FROM PERSONAL.JS"
-        );
-
-
-        // Use replace so old navigation history doesn't
-        // interfere with this flow.
-
-        window.location.replace(
-            "discount.html"
-        );
+        window.location.href = "discount.html";
 
     });
 
@@ -349,43 +188,22 @@ document.addEventListener("DOMContentLoaded", function () {
     // ========================================================
     // BACK BUTTON
     //
-    // Personal -> Labour
+    // PERSONAL -> LABOUR
     // ========================================================
 
     backBtn.addEventListener("click", function (event) {
 
         event.preventDefault();
-
         event.stopPropagation();
 
 
-        console.log(
-            "PERSONAL BACK BUTTON CLICKED"
-        );
-
-        console.log(
-            "REDIRECT TARGET: labour.html"
-        );
+        console.log("PERSONAL BACK CLICKED");
+        console.log("REDIRECTING TO LABOUR.HTML");
 
 
-        window.location.replace(
-            "labour.html"
-        );
+        window.location.href = "labour.html";
 
     });
 
-
-    // ========================================================
-    // LOAD DATA
-    // ========================================================
-
-    loadPersonalData();
-
-
-    console.log("==========================================");
-    console.log("PERSONAL PAGE READY");
-    console.log("NEXT = discount.html");
-    console.log("BACK = labour.html");
-    console.log("==========================================");
 
 });

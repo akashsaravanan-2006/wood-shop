@@ -267,28 +267,28 @@ function updateWoodTotal() {
 // ============================================================
 //
 // Others Total =
-// Main Other Charge
-// +
-// Additional Other Items
-//
-// Example:
-//
-// Other Charge = ₹500
-//
-// Lunch = ₹300
-// Transport = ₹200
-//
-// Others Total = ₹1000
+// Labour Charge
+// + Main Other Charge
+// + Additional Other Items
 // ============================================================
 
 function calculateOthersTotal() {
 
+    // Labour Charge
+    const labour =
+        roundMoney(
+            labourChargeInput.value
+        );
+
+
+    // Main Other Charge
     const mainOther =
         roundMoney(
             otherChargeInput.value
         );
 
 
+    // Additional Other items
     let additionalTotal = 0;
 
 
@@ -304,13 +304,16 @@ function calculateOthersTotal() {
     );
 
 
+    // Final Others Total
     othersTotal =
         roundMoney(
+            labour +
             mainOther +
             additionalTotal
         );
 
 
+    // Update screen
     othersTotalElement.textContent =
         money(othersTotal);
 
@@ -318,7 +321,6 @@ function calculateOthersTotal() {
     return othersTotal;
 
 }
-
 
 // ============================================================
 // CALCULATE GRAND TOTAL

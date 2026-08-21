@@ -1,228 +1,201 @@
-<!DOCTYPE html>
-<html lang="en">
+// ===========================================
+// LABOUR.JS - PART 1
+// ===========================================
 
-<head>
+// Load Wood Total
+let woodTotal = parseFloat(localStorage.getItem("woodTotal")) || 0;
 
-    <meta charset="UTF-8">
+// HTML Elements
+const woodTotalDisplay = document.getElementById("woodTotal");
+const labourCharge = document.getElementById("labourCharge");
+const otherCharge = document.getElementById("otherCharge");
+const othersTotal = document.getElementById("othersTotal");
+const finalTotal = document.getElementById("finalTotal");
+const othersBody = document.getElementById("othersBody");
+const otherSection = document.getElementById("otherSection");
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+// Display Wood Total
+woodTotalDisplay.innerHTML = "₹ " + woodTotal.toFixed(2);
 
-    <title>Labour & Other Charges</title>
+// ===========================================
+// Calculate Totals
+// ===========================================
 
-    <link
-        rel="stylesheet"
-        href="../css/labour.css">
+function updateTotals() {
 
-</head>
+    let labour = Number(labourCharge.value) || 0;
+    let other = Number(otherCharge.value) || 0;
 
+    let extra = 0;
 
-<body>
+    document.querySelectorAll(".otherAmount").forEach(function (input) {
+        extra += Number(input.value) || 0;
+    });
 
+    let others = labour + other + extra;
+    let grand = woodTotal + others;
 
-<div class="container">
+    othersTotal.innerHTML = "₹ " + others.toFixed(2);
+    finalTotal.innerHTML = "₹ " + grand.toFixed(2);
 
-    <div class="card">
+}
 
+// ===========================================
+// Events
+// ===========================================
 
-        <!-- =========================================
-             TITLE
-        ========================================== -->
+labourCharge.addEventListener("input", updateTotals);
+otherCharge.addEventListener("input", updateTotals);
 
-        <h1>
-            Labour & Other Charges
-        </h1>
+document.addEventListener("input", function (e) {
 
+    if (e.target.classList.contains("otherAmount")) {
 
-        <!-- =========================================
-             WOOD TOTAL
-             
-             THIS VALUE COMES FROM WOOD PAGE.
-             IT MUST NEVER BE MODIFIED HERE.
-        ========================================== -->
+        updateTotals();
 
-        <div class="field">
+    }
 
-            <label>
-                Wood Total
-            </label>
+});
 
-            <div class="amount-box">
+// First Calculation
+updateTotals();
+// ===========================================
+// PART 2
+// Add Other Charges
+// ===========================================
 
-                <strong id="woodTotal">
-                    ₹ 0.00
-                </strong>
+const addOtherBtn = document.getElementById("addOther");
 
-            </div>
+addOtherBtn.addEventListener("click", function () {
 
-        </div>
+    // Show Table
+    otherSection.style.display = "block";
 
+    // Create Row
+    const row = document.createElement("tr");
 
-        <!-- =========================================
-             LABOUR CHARGE
-        ========================================== -->
+    row.innerHTML = `
+        <td>
+            <input
+                type="text"
+                class="otherName"
+                placeholder="Charge Name">
+        </td>
 
-        <div class="field">
-
-            <label for="labourCharge">
-                Labour Charge
-            </label>
-
+        <td>
             <input
                 type="number"
-                id="labourCharge"
-                min="0"
-                step="0.01"
-                placeholder="Enter Labour Charge">
+                class="otherAmount"
+                placeholder="0"
+                min="0">
+        </td>
 
-        </div>
-
-
-        <!-- =========================================
-             OTHER CHARGE
-        ========================================== -->
-
-        <div class="field">
-
-            <label for="otherCharge">
-                Other Charge
-            </label>
-
-            <input
-                type="number"
-                id="otherCharge"
-                min="0"
-                step="0.01"
-                placeholder="Enter Other Charge">
-
-        </div>
-
-
-        <!-- =========================================
-             ADD OTHER
-        ========================================== -->
-
-        <div class="button-row">
-
+        <td>
             <button
                 type="button"
-                id="addOtherBtn">
-
-                + Add Other
-
+                class="removeBtn">
+                Remove
             </button>
+        </td>
+    `;
 
-        </div>
+    othersBody.appendChild(row);
 
+    updateTotals();
 
-        <!-- =========================================
-             OTHER ITEMS
-        ========================================== -->
-
-        <div id="othersContainer"></div>
-
-
-        <!-- =========================================
-             OTHERS TOTAL
-             
-             ONLY ADDITIONAL OTHER ITEMS.
-             LABOUR IS NOT INCLUDED HERE.
-        ========================================== -->
-
-        <div class="field">
-
-            <label>
-                Others Total
-            </label>
-
-            <div class="amount-box">
-
-                <strong id="othersTotal">
-                    ₹ 0.00
-                </strong>
-
-            </div>
-
-        </div>
+});
 
 
-        <!-- =========================================
-             GRAND TOTAL
-             
-             Wood + Labour + Others
-        ========================================== -->
+// ===========================================
+// Remove Other Charge
+// ===========================================
 
-        <div class="field">
+othersBody.addEventListener("click", function (e) {
 
-            <label>
-                Grand Total
-            </label>
+    if (e.target.classList.contains("removeBtn")) {
 
-            <div class="grand-total-box">
+        e.target.closest("tr").remove();
 
-                <strong id="grandTotal">
-                    ₹ 0.00
-                </strong>
+        if (othersBody.rows.length === 0) {
 
-            </div>
+            otherSection.style.display = "none";
 
-        </div>
+        }
 
+        updateTotals();
 
-        <!-- =========================================
-             CONFIRM
-        ========================================== -->
+    }
 
-        <div class="bottom-buttons">
-
-            <button
-                type="button"
-                id="confirmBtn">
-
-                Confirm
-
-            </button>
+});
 
 
-            <button
-                type="button"
-                id="backBtn">
+// ===========================================
+// Update Total Automatically
+// ===========================================
 
-                Back
+othersBody.addEventListener("input", function (e) {
 
-            </button>
+    if (e.target.classList.contains("otherAmount")) {
 
-        </div>
+        updateTotals();
 
+    }
 
-        <!-- =========================================
-             NEXT
-             
-             LABOUR -> PERSONAL
-        ========================================== -->
+});// ===========================================
+// PART 3
+// Confirm Button
+// ===========================================
 
-        <div class="next-row">
+const confirmBtn = document.getElementById("confirmBtn");
 
-            <button
-                type="button"
-                id="nextBtn">
+confirmBtn.addEventListener("click", function () {
 
-                Next
+    let labour = Number(labourCharge.value) || 0;
+    let other = Number(otherCharge.value) || 0;
 
-            </button>
+    let othersData = [];
+    let extraTotal = 0;
 
-        </div>
+    document.querySelectorAll("#othersBody tr").forEach(function (row) {
 
+        let name = row.querySelector(".otherName").value.trim();
 
-    </div>
+        let amount = Number(row.querySelector(".otherAmount").value) || 0;
 
-</div>
+        if (name !== "" || amount > 0) {
 
+            othersData.push({
+                name: name,
+                amount: amount
+            });
 
-<script src="../js/labour.js?v=400"></script>
+            extraTotal += amount;
+        }
 
+    });
 
-</body>
+    let othersTotalValue = labour + other + extraTotal;
+    let finalTotalValue = woodTotal + othersTotalValue;
 
-</html>
+    // Save Data
+    localStorage.setItem("labourCharge", labour);
+    localStorage.setItem("otherCharge", other);
+    localStorage.setItem("othersData", JSON.stringify(othersData));
+    localStorage.setItem("othersTotal", othersTotalValue);
+    localStorage.setItem("finalTotal", finalTotalValue);
+
+    // Next Page
+    window.location.href = "personal.html";
+
+});
+// =======================================
+// BACK BUTTON
+// =======================================
+
+const backBtn = document.getElementById("backBtn");
+
+if (backBtn) {
+    backBtn.addEventListener("click", () => {
+        window.location.href = "wood.html";
+    });
+}

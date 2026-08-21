@@ -1,21 +1,35 @@
 // ============================================================
 // ADVANCE.JS
-// ADVANCE PAYMENT PAGE
+// VERSION 400
 //
 // FLOW:
-// Discount -> Advance -> Bill
 //
-// PAYMENT TYPE:
-// Ready Cash = paymentFlag = 1
-// Advance    = paymentFlag = 0
+// WOOD
+//   ↓
+// LABOUR
+//   ↓
+// PERSONAL
+//   ↓
+// DISCOUNT
+//   ↓
+// ADVANCE
+//   ↓
+// BILL
+//   ↓
+// CBILL
 //
-// PAYMENT MODE:
-// Cash
-// UPI
+// IMPORTANT:
+//
+// ADVANCE GRAND TOTAL comes ONLY from DISCOUNT FINAL TOTAL.
+//
+// Advance amount NEVER changes Grand Total.
+//
+// Grand Total = Discount Final Total
+// Balance     = Grand Total - Advance Amount
 // ============================================================
 
 console.log("==========================================");
-console.log("ADVANCE.JS CLEAN VERSION LOADED");
+console.log("ADVANCE.JS VERSION 400 LOADED");
 console.log("==========================================");
 
 
@@ -35,299 +49,231 @@ let balanceAmount = 0;
 
 
 // ============================================================
-// HELPER - NUMBER
+// ELEMENTS
+// ============================================================
+
+const grandTotalInput =
+    document.getElementById("grandTotal");
+
+const advanceSection =
+    document.getElementById("advanceSection");
+
+const advanceAmountInput =
+    document.getElementById("advanceAmount");
+
+const balanceAmountInput =
+    document.getElementById("balanceAmount");
+
+const calculateBtn =
+    document.getElementById("calculateBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+
+// ============================================================
+// HELPERS
 // ============================================================
 
 function toNumber(value) {
 
-    const number = parseFloat(value);
+    const number =
+        parseFloat(value);
 
-    if (Number.isNaN(number)) {
-        return 0;
+    if (
+        Number.isFinite(number)
+    ) {
+
+        return number;
+
     }
 
-    return number;
-}
-
-
-// ============================================================
-// GET ELEMENT
-// ============================================================
-
-function get(id) {
-    return document.getElementById(id);
-}
-
-
-// ============================================================
-// HTML ELEMENTS
-// ============================================================
-
-let grandTotalInput;
-
-let advanceSection;
-let advanceAmountInput;
-let balanceAmountInput;
-
-let calculateBtn;
-let nextBtn;
-let backBtn;
-
-
-// ============================================================
-// INITIALIZE ELEMENTS
-// ============================================================
-
-function initializeElements() {
-
-    grandTotalInput =
-        get("grandTotal");
-
-    /*
-        Some versions of your HTML may use:
-        totalAmount
-        grandTotal
-    */
-
-    if (!grandTotalInput) {
-        grandTotalInput =
-            get("totalAmount");
-    }
-
-
-    advanceSection =
-        get("advanceSection");
-
-
-    advanceAmountInput =
-        get("advanceAmount");
-
-
-    balanceAmountInput =
-        get("balanceAmount");
-
-
-    calculateBtn =
-        get("calculateBtn");
-
-
-    nextBtn =
-        get("nextBtn");
-
-
-    backBtn =
-        get("backBtn");
-
-
-    console.log("HTML ELEMENTS INITIALIZED");
-
-    console.log({
-        grandTotalInput,
-        advanceSection,
-        advanceAmountInput,
-        balanceAmountInput,
-        calculateBtn,
-        nextBtn,
-        backBtn
-    });
+    return 0;
 
 }
 
 
 // ============================================================
-// GET FINAL TOTAL FROM DISCOUNT PAGE
+// MONEY ROUNDING
 // ============================================================
 
-function getFinalTotal() {
+function money(value) {
 
-    let total = 0;
+    return Math.round(
+        (
+            toNumber(value) +
+            Number.EPSILON
+        ) * 100
+    ) / 100;
 
-
-    // --------------------------------------------------------
-    // 1. finalTotal
-    // --------------------------------------------------------
-
-    const finalTotal =
-        localStorage.getItem("finalTotal");
-
-
-    if (
-        finalTotal !== null &&
-        finalTotal !== ""
-    ) {
-
-        total =
-            toNumber(finalTotal);
-
-        if (total > 0) {
-
-            console.log(
-                "FINAL TOTAL FROM localStorage.finalTotal:",
-                total
-            );
-
-            return total;
-        }
-    }
+}
 
 
-    // --------------------------------------------------------
-    // 2. grandTotal
-    // --------------------------------------------------------
+// ============================================================
+// FORMAT MONEY
+// ============================================================
 
-    const savedGrandTotal =
-        localStorage.getItem("grandTotal");
+function formatMoney(value) {
 
+    return money(value)
+        .toFixed(2);
 
-    if (
-        savedGrandTotal !== null &&
-        savedGrandTotal !== ""
-    ) {
-
-        total =
-            toNumber(savedGrandTotal);
-
-        if (total > 0) {
-
-            console.log(
-                "FINAL TOTAL FROM localStorage.grandTotal:",
-                total
-            );
-
-            return total;
-        }
-    }
+}
 
 
-    // --------------------------------------------------------
-    // 3. newGrandTotal
-    // --------------------------------------------------------
+// ============================================================
+// GET FINAL TOTAL FROM DISCOUNT
+//
+// ONLY THESE SOURCES ARE USED:
+//
+// 1. discountFinalTotal
+// 2. discountData.finalTotal
+//
+// DO NOT USE:
+// gTotal
+// finalTotal
+// grandTotal
+// newGrandTotal
+// old pageData
+//
+// This prevents old/stale values from other pages.
+// ============================================================
 
-    const newGrandTotal =
-        localStorage.getItem("newGrandTotal");
+function getDiscountFinalTotal() {
 
-
-    if (
-        newGrandTotal !== null &&
-        newGrandTotal !== ""
-    ) {
-
-        total =
-            toNumber(newGrandTotal);
-
-        if (total > 0) {
-
-            console.log(
-                "FINAL TOTAL FROM localStorage.newGrandTotal:",
-                total
-            );
-
-            return total;
-        }
-    }
+    console.log("------------------------------------------");
+    console.log("READING TOTAL FROM DISCOUNT PAGE");
 
 
-    // --------------------------------------------------------
-    // 4. discountData
-    // --------------------------------------------------------
+    // ========================================================
+    // SOURCE 1
+    // discountFinalTotal
+    // ========================================================
 
-    try {
-
-        const discountData =
-            JSON.parse(
-                localStorage.getItem(
-                    "discountData"
-                )
-            );
-
-
-        if (
-            discountData &&
-            discountData.newGrandTotal !== undefined
-        ) {
-
-            total =
-                toNumber(
-                    discountData.newGrandTotal
-                );
-
-            if (total > 0) {
-
-                console.log(
-                    "FINAL TOTAL FROM discountData:",
-                    total
-                );
-
-                return total;
-            }
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "discountData could not be read",
-            error
+    const savedDiscountTotal =
+        localStorage.getItem(
+            "discountFinalTotal"
         );
 
+
+    console.log(
+        "discountFinalTotal:",
+        savedDiscountTotal
+    );
+
+
+    if (
+        savedDiscountTotal !== null &&
+        savedDiscountTotal !== ""
+    ) {
+
+        const total =
+            money(savedDiscountTotal);
+
+
+        if (total >= 0) {
+
+            console.log(
+                "USING discountFinalTotal:",
+                total
+            );
+
+            return total;
+
+        }
+
     }
 
 
-    // --------------------------------------------------------
-    // 5. pageData / central storage
-    // --------------------------------------------------------
+    // ========================================================
+    // SOURCE 2
+    // discountData.finalTotal
+    // ========================================================
 
-    try {
+    const discountDataString =
+        localStorage.getItem(
+            "discountData"
+        );
 
-        if (
-            typeof getPageData === "function"
-        ) {
 
-            const discountPage =
-                getPageData("discount");
+    console.log(
+        "discountData:",
+        discountDataString
+    );
+
+
+    if (discountDataString) {
+
+        try {
+
+            const discountData =
+                JSON.parse(
+                    discountDataString
+                );
+
+
+            console.log(
+                "PARSED DISCOUNT DATA:",
+                discountData
+            );
 
 
             if (
-                discountPage &&
-                discountPage.newGrandTotal !== undefined
+                discountData &&
+                discountData.finalTotal !== undefined &&
+                discountData.finalTotal !== null
             ) {
 
-                total =
-                    toNumber(
-                        discountPage.newGrandTotal
+                const total =
+                    money(
+                        discountData.finalTotal
                     );
 
 
-                if (total > 0) {
+                console.log(
+                    "USING discountData.finalTotal:",
+                    total
+                );
 
-                    console.log(
-                        "FINAL TOTAL FROM storedata:",
-                        total
-                    );
 
-                    return total;
-                }
+                return total;
 
             }
 
         }
+        catch (error) {
 
-    } catch (error) {
+            console.error(
+                "DISCOUNT DATA JSON ERROR:",
+                error
+            );
 
-        console.warn(
-            "Could not read central storage",
-            error
-        );
+        }
 
     }
 
 
-    // --------------------------------------------------------
-    // Nothing found
-    // --------------------------------------------------------
+    // ========================================================
+    // NOTHING FOUND
+    // ========================================================
 
-    console.warn(
-        "NO FINAL TOTAL FOUND"
+    console.error(
+        "=========================================="
+    );
+
+    console.error(
+        "ADVANCE ERROR:"
+    );
+
+    console.error(
+        "DISCOUNT FINAL TOTAL NOT FOUND"
+    );
+
+    console.error(
+        "=========================================="
     );
 
 
@@ -338,102 +284,64 @@ function getFinalTotal() {
 
 // ============================================================
 // DISPLAY GRAND TOTAL
+//
+// IMPORTANT:
+//
+// This only displays the value.
+// It does NOT modify the value.
 // ============================================================
 
 function displayGrandTotal() {
 
     if (!grandTotalInput) {
 
-        console.warn(
-            "Grand total element not found"
+        console.error(
+            "ERROR: #grandTotal NOT FOUND"
         );
 
         return;
+
     }
 
 
-    const formatted =
+    grandTotalInput.value =
         "₹ " +
-        grandTotal.toFixed(2);
-
-
-    // INPUT
-    if (
-        grandTotalInput.tagName === "INPUT"
-    ) {
-
-        grandTotalInput.value =
-            formatted;
-
-    }
-
-    // NORMAL ELEMENT
-    else {
-
-        grandTotalInput.textContent =
-            formatted;
-
-    }
+        formatMoney(grandTotal);
 
 
     console.log(
         "GRAND TOTAL DISPLAYED:",
-        formatted
+        grandTotalInput.value
     );
 
 }
 
 
 // ============================================================
-// PAYMENT FLAG
+// DISPLAY BALANCE
 // ============================================================
 
-function setPaymentFlag(flag) {
+function displayBalance() {
 
-    paymentFlag =
-        String(flag);
+    if (!balanceAmountInput) {
 
-
-    localStorage.setItem(
-        "paymentFlag",
-        paymentFlag
-    );
-
-
-    console.log(
-        "PAYMENT FLAG =",
-        paymentFlag
-    );
-
-}
-
-
-// ============================================================
-// GET SAVED PAYMENT FLAG
-// ============================================================
-
-function loadPaymentFlag() {
-
-    const saved =
-        localStorage.getItem(
-            "paymentFlag"
+        console.error(
+            "ERROR: #balanceAmount NOT FOUND"
         );
 
-
-    if (
-        saved === "0" ||
-        saved === "1"
-    ) {
-
-        paymentFlag =
-            saved;
+        return;
 
     }
 
 
+    balanceAmountInput.value =
+        "₹ " +
+        formatMoney(balanceAmount);
+
+
     console.log(
-        "LOADED PAYMENT FLAG:",
-        paymentFlag
+        "BALANCE DISPLAYED:",
+        balanceAmountInput.value
     );
 
 }
@@ -447,11 +355,8 @@ function showAdvanceSection() {
 
     if (!advanceSection) {
 
-        console.warn(
-            "advanceSection not found"
-        );
-
         return;
+
     }
 
 
@@ -460,7 +365,7 @@ function showAdvanceSection() {
 
 
     console.log(
-        "ADVANCE SECTION = SHOW"
+        "ADVANCE SECTION: SHOW"
     );
 
 }
@@ -473,7 +378,9 @@ function showAdvanceSection() {
 function hideAdvanceSection() {
 
     if (!advanceSection) {
+
         return;
+
     }
 
 
@@ -482,7 +389,7 @@ function hideAdvanceSection() {
 
 
     console.log(
-        "ADVANCE SECTION = HIDE"
+        "ADVANCE SECTION: HIDE"
     );
 
 }
@@ -490,23 +397,71 @@ function hideAdvanceSection() {
 
 // ============================================================
 // CALCULATE BALANCE
+//
+// GRAND TOTAL NEVER CHANGES.
+//
+// Example:
+//
+// Grand Total = 900
+// Advance     = 200
+//
+// Balance = 700
+//
+// Grand Total remains 900.
 // ============================================================
 
 function calculateBalance() {
 
+    console.log("------------------------------------------");
+    console.log("CALCULATING BALANCE");
+
+
+    // ========================================================
+    // READY CASH
+    // ========================================================
+
     if (
-        grandTotal <= 0
+        paymentType === "cash"
     ) {
+
+        advanceAmount =
+            grandTotal;
 
         balanceAmount =
             0;
 
+
         displayBalance();
+
+
+        console.log(
+            "READY CASH:"
+        );
+
+        console.log(
+            "GRAND TOTAL:",
+            grandTotal
+        );
+
+        console.log(
+            "ADVANCE:",
+            advanceAmount
+        );
+
+        console.log(
+            "BALANCE:",
+            balanceAmount
+        );
+
 
         return;
 
     }
 
+
+    // ========================================================
+    // ADVANCE PAYMENT
+    // ========================================================
 
     advanceAmount =
         toNumber(
@@ -517,24 +472,24 @@ function calculateBalance() {
 
 
     // --------------------------------------------------------
-    // Prevent negative
+    // Negative check
     // --------------------------------------------------------
 
-    if (advanceAmount < 0) {
+    if (
+        advanceAmount < 0
+    ) {
 
-        advanceAmount =
-            0;
+        advanceAmount = 0;
 
     }
 
 
     // --------------------------------------------------------
-    // Advance cannot exceed total
+    // Cannot exceed Grand Total
     // --------------------------------------------------------
 
     if (
-        advanceAmount >
-        grandTotal
+        advanceAmount > grandTotal
     ) {
 
         alert(
@@ -549,43 +504,52 @@ function calculateBalance() {
         if (advanceAmountInput) {
 
             advanceAmountInput.value =
-                grandTotal.toFixed(2);
+                formatMoney(grandTotal);
 
         }
 
     }
 
 
+    // ========================================================
+    // IMPORTANT
+    //
+    // DO NOT CHANGE grandTotal.
+    //
+    // Only calculate balance.
+    // ========================================================
+
     balanceAmount =
-        grandTotal -
-        advanceAmount;
+        money(
+            grandTotal -
+            advanceAmount
+        );
 
 
-    if (balanceAmount < 0) {
+    if (
+        balanceAmount < 0
+    ) {
 
-        balanceAmount =
-            0;
+        balanceAmount = 0;
 
     }
-
-
-    balanceAmount =
-        parseFloat(
-            balanceAmount.toFixed(2)
-        );
 
 
     displayBalance();
 
 
     console.log(
+        "GRAND TOTAL:",
+        grandTotal
+    );
+
+    console.log(
         "ADVANCE AMOUNT:",
         advanceAmount
     );
 
-
     console.log(
-        "BALANCE AMOUNT:",
+        "BALANCE:",
         balanceAmount
     );
 
@@ -593,199 +557,93 @@ function calculateBalance() {
 
 
 // ============================================================
-// DISPLAY BALANCE
+// PAYMENT TYPE
 // ============================================================
 
-function displayBalance(value) {
+function updatePaymentType() {
 
-    if (
-        value !== undefined
-    ) {
-
-        balanceAmount =
-            toNumber(value);
-
-    }
-
-
-    if (!balanceAmountInput) {
-
-        console.warn(
-            "balanceAmount element not found"
+    const selected =
+        document.querySelector(
+            'input[name="paymentType"]:checked'
         );
+
+
+    if (!selected) {
 
         return;
 
     }
 
 
-    const formatted =
-        "₹ " +
-        balanceAmount.toFixed(2);
+    paymentType =
+        selected.value;
 
+
+    console.log(
+        "PAYMENT TYPE:",
+        paymentType
+    );
+
+
+    // ========================================================
+    // READY CASH
+    // ========================================================
 
     if (
-        balanceAmountInput.tagName === "INPUT"
+        paymentType === "cash"
     ) {
 
-        balanceAmountInput.value =
-            formatted;
-
-    }
-
-    else {
-
-        balanceAmountInput.textContent =
-            formatted;
-
-    }
-
-}
+        paymentFlag = "1";
 
 
-// ============================================================
-// READY CASH
-// ============================================================
-
-function selectReadyCash() {
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "READY CASH CLICKED"
-    );
+        hideAdvanceSection();
 
 
-    // --------------------------------------------------------
-    // FLAG = 1
-    // --------------------------------------------------------
-
-    setPaymentFlag("1");
+        advanceAmount =
+            grandTotal;
 
 
-    paymentType =
-        "cash";
+        balanceAmount =
+            0;
 
 
-    localStorage.setItem(
-        "paymentType",
-        paymentType
-    );
+        if (advanceAmountInput) {
+
+            advanceAmountInput.value =
+                formatMoney(grandTotal);
+
+        }
 
 
-    // --------------------------------------------------------
-    // Full payment
-    // --------------------------------------------------------
-
-    advanceAmount =
-        grandTotal;
-
-
-    balanceAmount =
-        0;
-
-
-    if (advanceAmountInput) {
-
-        advanceAmountInput.value =
-            grandTotal.toFixed(2);
+        displayBalance();
 
     }
 
 
-    displayBalance(0);
+    // ========================================================
+    // ADVANCE
+    // ========================================================
+
+    else if (
+        paymentType === "advance"
+    ) {
+
+        paymentFlag = "0";
 
 
-    // --------------------------------------------------------
-    // Hide advance section
-    // --------------------------------------------------------
-
-    hideAdvanceSection();
+        showAdvanceSection();
 
 
-    // --------------------------------------------------------
-    // Update visual UI
-    // --------------------------------------------------------
+        // Start with zero.
+        // User enters advance amount.
 
-    updatePaymentTypeUI(
-        "readycash"
-    );
+        advanceAmount = 0;
 
-
-    saveAdvanceData();
+        balanceAmount =
+            grandTotal;
 
 
-    console.log(
-        "READY CASH SELECTED"
-    );
-
-    console.log(
-        "PAYMENT FLAG:",
-        paymentFlag
-    );
-
-}
-
-
-// ============================================================
-// ADVANCE PAYMENT
-// ============================================================
-
-function selectAdvance() {
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "ADVANCE CLICKED"
-    );
-
-
-    // --------------------------------------------------------
-    // FLAG = 0
-    // --------------------------------------------------------
-
-    setPaymentFlag("0");
-
-
-    paymentType =
-        "advance";
-
-
-    localStorage.setItem(
-        "paymentType",
-        paymentType
-    );
-
-
-    // --------------------------------------------------------
-    // Show advance section
-    // --------------------------------------------------------
-
-    showAdvanceSection();
-
-
-    // --------------------------------------------------------
-    // Default advance amount
-    // --------------------------------------------------------
-
-    if (advanceAmountInput) {
-
-        let current =
-            toNumber(
-                advanceAmountInput.value
-            );
-
-
-        if (
-            current <= 0
-        ) {
-
-            current =
-                0;
+        if (advanceAmountInput) {
 
             advanceAmountInput.value =
                 "";
@@ -793,30 +651,26 @@ function selectAdvance() {
         }
 
 
-        advanceAmount =
-            current;
+        displayBalance();
 
     }
 
 
-    calculateBalance();
+    // ========================================================
+    // SAVE PAYMENT TYPE
+    // ========================================================
 
-
-    // --------------------------------------------------------
-    // Update UI
-    // --------------------------------------------------------
-
-    updatePaymentTypeUI(
-        "advance"
+    localStorage.setItem(
+        "paymentType",
+        paymentType
     );
 
 
-    saveAdvanceData();
-
-
-    console.log(
-        "ADVANCE SELECTED"
+    localStorage.setItem(
+        "paymentFlag",
+        paymentFlag
     );
+
 
     console.log(
         "PAYMENT FLAG:",
@@ -827,352 +681,37 @@ function selectAdvance() {
 
 
 // ============================================================
-// CASH MODE
+// PAYMENT MODE
 // ============================================================
 
-function selectCashMode() {
+function updatePaymentMode() {
+
+    const selected =
+        document.querySelector(
+            'input[name="paymentMode"]:checked'
+        );
+
+
+    if (!selected) {
+
+        return;
+
+    }
+
 
     paymentMode =
-        "cash";
+        selected.value;
 
 
     localStorage.setItem(
         "paymentMode",
-        "cash"
-    );
-
-
-    updatePaymentModeUI(
-        "cash"
-    );
-
-
-    saveAdvanceData();
-
-
-    console.log(
-        "PAYMENT MODE = CASH"
-    );
-
-}
-
-
-// ============================================================
-// UPI MODE
-// ============================================================
-
-function selectUpiMode() {
-
-    paymentMode =
-        "upi";
-
-
-    localStorage.setItem(
-        "paymentMode",
-        "upi"
-    );
-
-
-    updatePaymentModeUI(
-        "upi"
-    );
-
-
-    saveAdvanceData();
-
-
-    console.log(
-        "PAYMENT MODE = UPI"
-    );
-
-}
-
-
-// ============================================================
-// UPDATE PAYMENT TYPE UI
-//
-// READY CASH / ADVANCE
-// ============================================================
-
-function updatePaymentTypeUI(selected) {
-
-    const allElements =
-        document.querySelectorAll(
-            "label, .payment-card, .payment-option, .option-card, .type-card"
-        );
-
-
-    allElements.forEach(
-        function (card) {
-
-            const text =
-                card.textContent
-                    .trim()
-                    .toLowerCase();
-
-
-            let selectedCard =
-                false;
-
-
-            if (
-                selected === "readycash" &&
-                text.includes("ready cash")
-            ) {
-
-                selectedCard =
-                    true;
-
-            }
-
-
-            if (
-                selected === "advance" &&
-                text.includes("advance")
-            ) {
-
-                selectedCard =
-                    true;
-
-            }
-
-
-            if (
-                selectedCard
-            ) {
-
-                card.classList.add(
-                    "selected"
-                );
-
-                card.classList.add(
-                    "active"
-                );
-
-            }
-
-            else {
-
-                card.classList.remove(
-                    "selected"
-                );
-
-                card.classList.remove(
-                    "active"
-                );
-
-            }
-
-
-            // ------------------------------------------------
-            // Radio button
-            // ------------------------------------------------
-
-            const radio =
-                card.querySelector(
-                    'input[type="radio"]'
-                );
-
-
-            if (radio) {
-
-                if (selectedCard) {
-
-                    radio.checked =
-                        true;
-
-                }
-
-                else {
-
-                    radio.checked =
-                        false;
-
-                }
-
-            }
-
-
-            // ------------------------------------------------
-            // Check mark
-            // ------------------------------------------------
-
-            const check =
-                card.querySelector(
-                    ".check-mark"
-                );
-
-
-            if (check) {
-
-                if (selectedCard) {
-
-                    check.style.background =
-                        "#0789e8";
-
-                    check.style.color =
-                        "#ffffff";
-
-                    check.style.opacity =
-                        "1";
-
-                }
-
-                else {
-
-                    check.style.background =
-                        "#dddddd";
-
-                    check.style.color =
-                        "#ffffff";
-
-                    check.style.opacity =
-                        "1";
-
-                }
-
-            }
-
-        }
+        paymentMode
     );
 
 
     console.log(
-        "PAYMENT TYPE UI UPDATED:",
-        selected
-    );
-
-}
-
-
-// ============================================================
-// UPDATE PAYMENT MODE UI
-//
-// CASH / UPI
-// ============================================================
-
-function updatePaymentModeUI(selected) {
-
-    const allElements =
-        document.querySelectorAll(
-            "label, .payment-card, .payment-option, .option-card, .mode-card"
-        );
-
-
-    allElements.forEach(
-        function (card) {
-
-            const text =
-                card.textContent
-                    .trim()
-                    .toLowerCase();
-
-
-            let selectedCard =
-                false;
-
-
-            if (
-                selected === "cash" &&
-                text.includes("cash") &&
-                !text.includes("ready cash")
-            ) {
-
-                selectedCard =
-                    true;
-
-            }
-
-
-            if (
-                selected === "upi" &&
-                text.includes("upi")
-            ) {
-
-                selectedCard =
-                    true;
-
-            }
-
-
-            if (
-                selectedCard
-            ) {
-
-                card.classList.add(
-                    "selected"
-                );
-
-                card.classList.add(
-                    "active"
-                );
-
-            }
-
-            else {
-
-                card.classList.remove(
-                    "selected"
-                );
-
-                card.classList.remove(
-                    "active"
-                );
-
-            }
-
-
-            const radio =
-                card.querySelector(
-                    'input[type="radio"]'
-                );
-
-
-            if (radio) {
-
-                radio.checked =
-                    selectedCard;
-
-            }
-
-
-            const check =
-                card.querySelector(
-                    ".check-mark"
-                );
-
-
-            if (check) {
-
-                if (selectedCard) {
-
-                    check.style.background =
-                        "#0789e8";
-
-                    check.style.color =
-                        "#ffffff";
-
-                }
-
-                else {
-
-                    check.style.background =
-                        "#dddddd";
-
-                    check.style.color =
-                        "#ffffff";
-
-                }
-
-            }
-
-        }
-    );
-
-
-    console.log(
-        "PAYMENT MODE UI UPDATED:",
-        selected
+        "PAYMENT MODE:",
+        paymentMode
     );
 
 }
@@ -1180,6 +719,12 @@ function updatePaymentModeUI(selected) {
 
 // ============================================================
 // SAVE ADVANCE DATA
+//
+// IMPORTANT:
+//
+// grandTotal is ALWAYS the Discount final total.
+//
+// Advance amount and balance are stored separately.
 // ============================================================
 
 function saveAdvanceData() {
@@ -1196,19 +741,13 @@ function saveAdvanceData() {
             paymentFlag,
 
         grandTotal:
-            parseFloat(
-                grandTotal.toFixed(2)
-            ),
+            money(grandTotal),
 
         advanceAmount:
-            parseFloat(
-                advanceAmount.toFixed(2)
-            ),
+            money(advanceAmount),
 
         balanceAmount:
-            parseFloat(
-                balanceAmount.toFixed(2)
-            ),
+            money(balanceAmount),
 
         savedAt:
             new Date().toISOString()
@@ -1216,9 +755,9 @@ function saveAdvanceData() {
     };
 
 
-    // --------------------------------------------------------
-    // Main storage
-    // --------------------------------------------------------
+    // ========================================================
+    // MAIN DATA
+    // ========================================================
 
     localStorage.setItem(
         "advanceData",
@@ -1226,9 +765,9 @@ function saveAdvanceData() {
     );
 
 
-    // --------------------------------------------------------
-    // Individual values
-    // --------------------------------------------------------
+    // ========================================================
+    // INDIVIDUAL VALUES
+    // ========================================================
 
     localStorage.setItem(
         "paymentType",
@@ -1250,149 +789,92 @@ function saveAdvanceData() {
 
     localStorage.setItem(
         "advanceAmount",
-        advanceAmount.toFixed(2)
+        money(advanceAmount).toFixed(2)
     );
 
 
     localStorage.setItem(
         "balanceAmount",
-        balanceAmount.toFixed(2)
+        money(balanceAmount).toFixed(2)
     );
 
 
     localStorage.setItem(
         "advanceGrandTotal",
-        grandTotal.toFixed(2)
+        money(grandTotal).toFixed(2)
     );
 
 
-    console.log(
-        "ADVANCE DATA SAVED:",
-        data
-    );
+    console.log("==========================================");
+    console.log("ADVANCE DATA SAVED");
+    console.log(data);
+    console.log("==========================================");
 
 }
 
 
 // ============================================================
-// LOAD SAVED ADVANCE DATA
+// PAYMENT TYPE RADIO
 // ============================================================
 
-function loadSavedAdvanceData() {
+document
+    .querySelectorAll(
+        'input[name="paymentType"]'
+    )
+    .forEach(
+        function (radio) {
 
-    try {
+            radio.addEventListener(
+                "change",
+                function () {
 
-        const saved =
-            JSON.parse(
-                localStorage.getItem(
-                    "advanceData"
-                )
+                    updatePaymentType();
+
+                }
             );
 
-
-        if (
-            !saved
-        ) {
-
-            return;
-
         }
-
-
-        console.log(
-            "SAVED ADVANCE DATA:",
-            saved
-        );
-
-
-        if (
-            saved.paymentType
-        ) {
-
-            paymentType =
-                saved.paymentType;
-
-        }
-
-
-        if (
-            saved.paymentMode
-        ) {
-
-            paymentMode =
-                saved.paymentMode;
-
-        }
-
-
-        if (
-            saved.paymentFlag === "0" ||
-            saved.paymentFlag === "1"
-        ) {
-
-            paymentFlag =
-                saved.paymentFlag;
-
-        }
-
-
-        if (
-            saved.advanceAmount !== undefined
-        ) {
-
-            advanceAmount =
-                toNumber(
-                    saved.advanceAmount
-                );
-
-        }
-
-
-        if (
-            saved.balanceAmount !== undefined
-        ) {
-
-            balanceAmount =
-                toNumber(
-                    saved.balanceAmount
-                );
-
-        }
-
-
-    } catch (error) {
-
-        console.warn(
-            "Could not load advanceData:",
-            error
-        );
-
-    }
-
-}
+    );
 
 
 // ============================================================
-// PAYMENT CARD CLICK HANDLER
+// PAYMENT MODE RADIO
+// ============================================================
+
+document
+    .querySelectorAll(
+        'input[name="paymentMode"]'
+    )
+    .forEach(
+        function (radio) {
+
+            radio.addEventListener(
+                "change",
+                function () {
+
+                    updatePaymentMode();
+
+                }
+            );
+
+        }
+    );
+
+
+// ============================================================
+// ADVANCE AMOUNT INPUT
 //
-// IMPORTANT:
-// NO preventDefault()
+// Update Balance while typing.
 // ============================================================
 
-function setupPaymentClick() {
+if (advanceAmountInput) {
 
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            // ------------------------------------------------
-            // Next / Back are handled separately
-            // ------------------------------------------------
+    advanceAmountInput.addEventListener(
+        "input",
+        function () {
 
             if (
-                event.target.closest(
-                    "#nextBtn"
-                )
+                paymentType !== "advance"
             ) {
 
                 return;
@@ -1400,257 +882,7 @@ function setupPaymentClick() {
             }
 
 
-            if (
-                event.target.closest(
-                    "#backBtn"
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // Find clicked card
-            // ------------------------------------------------
-
-            const card =
-                event.target.closest(
-                    "label, .payment-card, .payment-option, .option-card, .type-card, .mode-card"
-                );
-
-
-            if (!card) {
-
-                return;
-
-            }
-
-
-            const text =
-                card.textContent
-                    .trim()
-                    .toLowerCase();
-
-
-            console.log(
-                "CARD CLICKED:",
-                text
-            );
-
-
-            // ------------------------------------------------
-            // Radio
-            // ------------------------------------------------
-
-            const radio =
-                card.querySelector(
-                    'input[type="radio"]'
-                );
-
-
-            /*
-             * DO NOT USE:
-             *
-             * event.preventDefault();
-             *
-             * We manually check the radio.
-             */
-
-            if (radio) {
-
-                radio.checked =
-                    true;
-
-            }
-
-
-            // ------------------------------------------------
-            // READY CASH
-            // ------------------------------------------------
-
-            if (
-                text.includes(
-                    "ready cash"
-                )
-            ) {
-
-                selectReadyCash();
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // ADVANCE
-            // ------------------------------------------------
-
-            if (
-                text.includes(
-                    "advance"
-                )
-            ) {
-
-                selectAdvance();
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // UPI
-            // ------------------------------------------------
-
-            if (
-                text.includes(
-                    "upi"
-                )
-            ) {
-
-                selectUpiMode();
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // CASH
-            //
-            // Avoid Ready Cash
-            // ------------------------------------------------
-
-            if (
-                text.includes("cash") &&
-                !text.includes("ready cash")
-            ) {
-
-                selectCashMode();
-
-                return;
-
-            }
-
-        },
-        false
-    );
-
-}
-
-
-// ============================================================
-// RADIO CHANGE HANDLER
-//
-// This also supports direct radio clicks.
-// ============================================================
-
-function setupRadioChangeEvents() {
-
-    document.addEventListener(
-        "change",
-        function (event) {
-
-            const radio =
-                event.target;
-
-
-            if (
-                !radio.matches(
-                    'input[type="radio"]'
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            const value =
-                String(
-                    radio.value || ""
-                ).toLowerCase();
-
-
-            const name =
-                String(
-                    radio.name || ""
-                ).toLowerCase();
-
-
-            console.log(
-                "RADIO CHANGED:",
-                {
-                    name,
-                    value
-                }
-            );
-
-
-            // ------------------------------------------------
-            // Payment type
-            // ------------------------------------------------
-
-            if (
-                name.includes(
-                    "paymenttype"
-                ) ||
-                name.includes(
-                    "payment_type"
-                )
-            ) {
-
-                if (
-                    value.includes("advance")
-                ) {
-
-                    selectAdvance();
-
-                }
-
-                else {
-
-                    selectReadyCash();
-
-                }
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // Payment mode
-            // ------------------------------------------------
-
-            if (
-                name.includes(
-                    "paymentmode"
-                ) ||
-                name.includes(
-                    "payment_mode"
-                )
-            ) {
-
-                if (
-                    value.includes("upi")
-                ) {
-
-                    selectUpiMode();
-
-                }
-
-                else {
-
-                    selectCashMode();
-
-                }
-
-                return;
-
-            }
+            calculateBalance();
 
         }
     );
@@ -1662,18 +894,7 @@ function setupRadioChangeEvents() {
 // CALCULATE BUTTON
 // ============================================================
 
-function setupCalculateButton() {
-
-    if (!calculateBtn) {
-
-        console.warn(
-            "Calculate button not found"
-        );
-
-        return;
-
-    }
-
+if (calculateBtn) {
 
     calculateBtn.addEventListener(
         "click",
@@ -1702,21 +923,10 @@ function setupCalculateButton() {
 // ============================================================
 // NEXT BUTTON
 //
-// Advance -> Bill
+// ADVANCE -> BILL
 // ============================================================
 
-function setupNextButton() {
-
-    if (!nextBtn) {
-
-        console.warn(
-            "Next button not found"
-        );
-
-        return;
-
-    }
-
+if (nextBtn) {
 
     nextBtn.addEventListener(
         "click",
@@ -1726,25 +936,42 @@ function setupNextButton() {
             event.stopPropagation();
 
 
-            console.log(
-                "================================"
-            );
-
-            console.log(
-                "ADVANCE NEXT CLICKED"
-            );
+            console.log("==========================================");
+            console.log("ADVANCE NEXT CLICKED");
 
 
-            // ------------------------------------------------
+            // =================================================
+            // GET CURRENT PAYMENT TYPE
+            // =================================================
+
+            const selected =
+                document.querySelector(
+                    'input[name="paymentType"]:checked'
+                );
+
+
+            if (selected) {
+
+                paymentType =
+                    selected.value;
+
+            }
+
+
+            // =================================================
             // READY CASH
-            // ------------------------------------------------
+            // =================================================
 
             if (
-                paymentFlag === "1"
+                paymentType === "cash"
             ) {
+
+                paymentFlag = "1";
+
 
                 advanceAmount =
                     grandTotal;
+
 
                 balanceAmount =
                     0;
@@ -1752,47 +979,109 @@ function setupNextButton() {
             }
 
 
-            // ------------------------------------------------
+            // =================================================
             // ADVANCE
-            // ------------------------------------------------
+            // =================================================
 
             else {
 
-                calculateBalance();
+                paymentFlag = "0";
+
+
+                advanceAmount =
+                    toNumber(
+                        advanceAmountInput
+                            ? advanceAmountInput.value
+                            : 0
+                    );
+
+
+                if (
+                    advanceAmount <= 0
+                ) {
+
+                    alert(
+                        "Please enter Advance Amount."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    advanceAmount > grandTotal
+                ) {
+
+                    alert(
+                        "Advance amount cannot be greater than Grand Total."
+                    );
+
+                    return;
+
+                }
+
+
+                balanceAmount =
+                    money(
+                        grandTotal -
+                        advanceAmount
+                    );
 
             }
 
 
-            // ------------------------------------------------
-            // Save
-            // ------------------------------------------------
+            // =================================================
+            // PAYMENT MODE
+            // =================================================
+
+            const selectedMode =
+                document.querySelector(
+                    'input[name="paymentMode"]:checked'
+                );
+
+
+            if (selectedMode) {
+
+                paymentMode =
+                    selectedMode.value;
+
+            }
+
+
+            // =================================================
+            // SAVE
+            // =================================================
 
             saveAdvanceData();
 
 
+            // =================================================
+            // DEBUG
+            // =================================================
+
             console.log(
-                "FINAL ADVANCE DATA:"
+                "FINAL GRAND TOTAL:",
+                grandTotal
+            );
+
+            console.log(
+                "FINAL ADVANCE:",
+                advanceAmount
+            );
+
+            console.log(
+                "FINAL BALANCE:",
+                balanceAmount
             );
 
 
-            console.log(
-                JSON.parse(
-                    localStorage.getItem(
-                        "advanceData"
-                    )
-                )
-            );
-
-
-            // ------------------------------------------------
-            // NEXT PAGE
-            //
-            // Change ONLY if your bill page has
-            // another filename.
-            // ------------------------------------------------
+            // =================================================
+            // GO TO BILL
+            // =================================================
 
             console.log(
-                "REDIRECTING TO BILL.HTML"
+                "REDIRECTING TO bill.html"
             );
 
 
@@ -1808,21 +1097,10 @@ function setupNextButton() {
 // ============================================================
 // BACK BUTTON
 //
-// Advance -> Discount
+// ADVANCE -> DISCOUNT
 // ============================================================
 
-function setupBackButton() {
-
-    if (!backBtn) {
-
-        console.warn(
-            "Back button not found"
-        );
-
-        return;
-
-    }
-
+if (backBtn) {
 
     backBtn.addEventListener(
         "click",
@@ -1833,7 +1111,7 @@ function setupBackButton() {
 
 
             console.log(
-                "ADVANCE BACK CLICKED"
+                "ADVANCE BACK -> DISCOUNT"
             );
 
 
@@ -1847,216 +1125,161 @@ function setupBackButton() {
 
 
 // ============================================================
-// ADVANCE AMOUNT INPUT
-// ============================================================
-
-function setupAdvanceInput() {
-
-    if (!advanceAmountInput) {
-
-        return;
-
-    }
-
-
-    advanceAmountInput.addEventListener(
-        "input",
-        function () {
-
-            // Only calculate automatically
-            // when Advance is selected.
-
-            if (
-                paymentFlag !== "0"
-            ) {
-
-                return;
-
-            }
-
-
-            calculateBalance();
-
-        }
-    );
-
-
-    advanceAmountInput.addEventListener(
-        "blur",
-        function () {
-
-            if (
-                paymentFlag !== "0"
-            ) {
-
-                return;
-
-            }
-
-
-            calculateBalance();
-
-            saveAdvanceData();
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// INITIAL UI
-// ============================================================
-
-function initializePaymentUI() {
-
-    console.log(
-        "INITIAL PAYMENT STATE:"
-    );
-
-
-    console.log({
-        paymentType,
-        paymentMode,
-        paymentFlag
-    });
-
-
-    // --------------------------------------------------------
-    // Payment type
-    // --------------------------------------------------------
-
-    if (
-        paymentFlag === "0"
-    ) {
-
-        selectAdvance();
-
-    }
-
-    else {
-
-        selectReadyCash();
-
-    }
-
-
-    // --------------------------------------------------------
-    // Payment mode
-    // --------------------------------------------------------
-
-    if (
-        paymentMode === "upi"
-    ) {
-
-        selectUpiMode();
-
-    }
-
-    else {
-
-        selectCashMode();
-
-    }
-
-}
-
-
-// ============================================================
-// PAGE INITIALIZATION
+// INITIALIZE
 // ============================================================
 
 function initializeAdvancePage() {
 
-    console.log(
-        "=========================================="
-    );
-
-    console.log(
-        "ADVANCE PAGE INITIALIZED"
-    );
-
-    console.log(
-        "=========================================="
-    );
+    console.log("==========================================");
+    console.log("ADVANCE PAGE INITIALIZING");
 
 
-    initializeElements();
+    // ========================================================
+    // CHECK HTML
+    // ========================================================
+
+    if (!grandTotalInput) {
+
+        console.error(
+            "ERROR: grandTotal element missing"
+        );
+
+    }
 
 
-    // --------------------------------------------------------
-    // Get total FIRST
-    // --------------------------------------------------------
+    if (!advanceSection) {
+
+        console.error(
+            "ERROR: advanceSection element missing"
+        );
+
+    }
+
+
+    if (!advanceAmountInput) {
+
+        console.error(
+            "ERROR: advanceAmount element missing"
+        );
+
+    }
+
+
+    if (!balanceAmountInput) {
+
+        console.error(
+            "ERROR: balanceAmount element missing"
+        );
+
+    }
+
+
+    // ========================================================
+    // GET TOTAL FROM DISCOUNT
+    // ========================================================
 
     grandTotal =
-        getFinalTotal();
+        getDiscountFinalTotal();
 
 
     console.log(
-        "FINAL GRAND TOTAL:",
+        "FINAL GRAND TOTAL FROM DISCOUNT:",
         grandTotal
     );
 
 
-    // --------------------------------------------------------
-    // Display total
-    // --------------------------------------------------------
+    // ========================================================
+    // DISPLAY
+    // ========================================================
 
     displayGrandTotal();
 
 
-    // --------------------------------------------------------
-    // Load saved values
-    // --------------------------------------------------------
+    // ========================================================
+    // DEFAULT PAYMENT TYPE
+    //
+    // HTML already has Ready Cash checked.
+    // ========================================================
 
-    loadPaymentFlag();
-
-    loadSavedAdvanceData();
-
-
-    // --------------------------------------------------------
-    // If total exists, display it again
-    // --------------------------------------------------------
-
-    displayGrandTotal();
+    const selectedType =
+        document.querySelector(
+            'input[name="paymentType"]:checked'
+        );
 
 
-    // --------------------------------------------------------
-    // Setup events
-    // --------------------------------------------------------
+    if (selectedType) {
 
-    setupPaymentClick();
+        paymentType =
+            selectedType.value;
 
-    setupRadioChangeEvents();
-
-    setupCalculateButton();
-
-    setupNextButton();
-
-    setupBackButton();
-
-    setupAdvanceInput();
+    }
 
 
-    // --------------------------------------------------------
-    // Initialize UI
-    // --------------------------------------------------------
+    const selectedMode =
+        document.querySelector(
+            'input[name="paymentMode"]:checked'
+        );
 
-    initializePaymentUI();
+
+    if (selectedMode) {
+
+        paymentMode =
+            selectedMode.value;
+
+    }
 
 
-    console.log(
-        "=========================================="
-    );
+    // ========================================================
+    // INITIAL PAYMENT STATE
+    // ========================================================
 
-    console.log(
-        "ADVANCE PAGE READY"
-    );
+    if (
+        paymentType === "advance"
+    ) {
 
-    console.log(
-        "TOTAL:",
-        grandTotal
-    );
+        paymentFlag = "0";
+
+        showAdvanceSection();
+
+        advanceAmount = 0;
+
+        balanceAmount =
+            grandTotal;
+
+        displayBalance();
+
+    }
+    else {
+
+        paymentType = "cash";
+
+        paymentFlag = "1";
+
+        hideAdvanceSection();
+
+        advanceAmount =
+            grandTotal;
+
+        balanceAmount = 0;
+
+        if (advanceAmountInput) {
+
+            advanceAmountInput.value =
+                formatMoney(grandTotal);
+
+        }
+
+        displayBalance();
+
+    }
+
+
+    // ========================================================
+    // SAVE INITIAL STATE
+    // ========================================================
+
+    saveAdvanceData();
+
 
     console.log(
         "PAYMENT TYPE:",
@@ -2073,15 +1296,14 @@ function initializeAdvancePage() {
         paymentFlag
     );
 
-    console.log(
-        "=========================================="
-    );
+    console.log("ADVANCE PAGE READY");
+    console.log("==========================================");
 
 }
 
 
 // ============================================================
-// DOM READY
+// START
 // ============================================================
 
 if (
@@ -2094,7 +1316,6 @@ if (
     );
 
 }
-
 else {
 
     initializeAdvancePage();
@@ -2103,22 +1324,8 @@ else {
 
 
 // ============================================================
-// EXPOSE FUNCTIONS
-//
-// Useful if HTML onclick is present.
+// OPTIONAL GLOBAL FUNCTIONS
 // ============================================================
-
-window.selectReadyCash =
-    selectReadyCash;
-
-window.selectAdvance =
-    selectAdvance;
-
-window.selectCashMode =
-    selectCashMode;
-
-window.selectUpiMode =
-    selectUpiMode;
 
 window.calculateBalance =
     calculateBalance;
@@ -2126,7 +1333,6 @@ window.calculateBalance =
 window.saveAdvanceData =
     saveAdvanceData;
 
-
 console.log(
-    "ADVANCE.JS READY"
+    "ADVANCE.JS VERSION 400 READY"
 );

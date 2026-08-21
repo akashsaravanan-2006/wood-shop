@@ -1,51 +1,49 @@
 /* =========================================================
-   LABOUR PAGE
+   LABOUR.CSS
+   Labour & Other Charges
+========================================================= */
+
+
+/* =========================================================
+   RESET
 ========================================================= */
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 
 body {
-
-    margin: 0;
-
-    padding: 20px;
-
-    background: #f4f6f8;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    color: #222;
-
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f6f9;
+    color: #111;
+    min-height: 100vh;
 }
 
 
 /* =========================================================
-   CONTAINER
+   MAIN CONTAINER
 ========================================================= */
 
 .container {
-
     width: 100%;
-
-    max-width: 700px;
-
-    margin: 0 auto;
-
-    background: white;
-
+    max-width: 950px;
+    margin: 30px auto;
     padding: 30px;
+}
 
-    border-radius: 15px;
 
-    box-shadow:
-        0 5px 20px rgba(0, 0, 0, 0.12);
+/* =========================================================
+   CARD
+========================================================= */
 
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
 }
 
 
@@ -54,40 +52,31 @@ body {
 ========================================================= */
 
 h1 {
-
     text-align: center;
-
-    margin-top: 0;
-
-    margin-bottom: 30px;
-
     font-size: 32px;
-
+    margin-bottom: 30px;
+    color: #17202a;
 }
 
 
 /* =========================================================
-   FIELD
+   LABEL
 ========================================================= */
 
-.field {
-
-    margin-bottom: 22px;
-
+label {
+    display: block;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 
-.field label,
-.totalSection label {
+/* =========================================================
+   ROW
+========================================================= */
 
-    display: block;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    margin-bottom: 8px;
-
+.row {
+    margin-bottom: 25px;
 }
 
 
@@ -95,46 +84,140 @@ h1 {
    INPUT
 ========================================================= */
 
-input {
-
+input[type="text"],
+input[type="number"] {
     width: 100%;
-
-    height: 45px;
-
+    height: 46px;
     padding: 10px 14px;
 
-    border: 1px solid #ccc;
-
-    border-radius: 6px;
+    border: 1px solid #d0d7de;
+    border-radius: 7px;
 
     font-size: 16px;
-
     outline: none;
 
+    background: #ffffff;
 }
 
 
-input:focus {
-
+input[type="text"]:focus,
+input[type="number"]:focus {
     border-color: #008cff;
-
+    box-shadow: 0 0 0 2px rgba(0, 140, 255, 0.10);
 }
 
 
 /* =========================================================
-   DISPLAY BOX
+   WOOD TOTAL
 ========================================================= */
 
-.displayBox {
-
+#woodTotal {
     width: 100%;
-
     min-height: 52px;
 
     display: flex;
-
     align-items: center;
+    justify-content: flex-end;
 
+    padding: 12px 18px;
+
+    background: #f1f1f1;
+    border-radius: 6px;
+
+    color: #008cff;
+    font-size: 25px;
+    font-weight: 700;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   OTHERS CONTAINER
+========================================================= */
+
+#othersContainer {
+    width: 100%;
+    margin-top: 15px;
+}
+
+
+/* =========================================================
+   INDIVIDUAL OTHER ITEM
+========================================================= */
+
+.other-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 12px 15px;
+
+    margin-top: 10px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+}
+
+
+/* Other item name */
+
+.other-item span {
+    flex: 1;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* Other item amount */
+
+.other-item strong {
+    color: #008cff;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   REMOVE OTHER BUTTON
+========================================================= */
+
+.removeOtherBtn {
+    border: none;
+
+    background: #dc3545;
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.removeOtherBtn:hover {
+    background: #c82333;
+}
+
+
+/* =========================================================
+   OTHERS TOTAL
+========================================================= */
+
+#othersTotal {
+    width: 100%;
+    min-height: 55px;
+
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
 
     padding: 12px 18px;
@@ -143,12 +226,12 @@ input:focus {
 
     border-radius: 6px;
 
-    font-size: 24px;
-
-    font-weight: bold;
-
     color: #008cff;
 
+    font-size: 24px;
+    font-weight: 700;
+
+    margin-top: 10px;
 }
 
 
@@ -156,164 +239,127 @@ input:focus {
    GRAND TOTAL
 ========================================================= */
 
-.grandTotal {
+#grandTotal {
+    width: 100%;
+    min-height: 60px;
 
-    color: #e60000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 
-    font-size: 28px;
+    padding: 12px 18px;
 
+    background: #f1f1f1;
+
+    border-radius: 6px;
+
+    color: #008cff;
+
+    font-size: 26px;
+    font-weight: 700;
+
+    margin-top: 10px;
 }
 
 
 /* =========================================================
-   ADD OTHER BUTTON
+   BUTTON AREA
+========================================================= */
+
+.button-container,
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   ALL BUTTONS
+========================================================= */
+
+button {
+    min-height: 46px;
+
+    padding: 10px 22px;
+
+    border: none;
+    border-radius: 6px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   ADD OTHER
 ========================================================= */
 
 #addOtherBtn {
-
     width: 100%;
 
-    height: 48px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    background: #00b85a;
-
+    background: #00b956;
     color: white;
 
-    font-size: 17px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    margin-bottom: 20px;
-
+    margin-top: 5px;
 }
 
 
 #addOtherBtn:hover {
-
-    background: #009b4c;
-
+    background: #00a64d;
 }
 
 
 /* =========================================================
-   OTHER ROW
+   CONFIRM
 ========================================================= */
 
-.otherRow {
-
-    display: grid;
-
-    grid-template-columns:
-        1fr 150px 90px;
-
-    gap: 10px;
-
-    margin-bottom: 12px;
-
-}
-
-
-.otherRow button {
-
-    border: none;
-
-    border-radius: 5px;
-
-    background: #dc3545;
-
-    color: white;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-}
-
-
-/* =========================================================
-   TOTAL SECTION
-========================================================= */
-
-.totalSection {
-
-    margin-top: 25px;
-
-    margin-bottom: 25px;
-
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-.buttons {
-
-    display: flex;
-
-    gap: 10px;
-
-    margin-top: 30px;
-
-}
-
-
-.buttons button {
-
+#confirmBtn {
     flex: 1;
 
-    height: 52px;
-
-    border-radius: 6px;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-}
-
-
-.confirmBtn {
-
-    border: none;
-
-    background: #0785f5;
-
+    background: #078cff;
     color: white;
-
 }
 
 
-.backBtn {
+#confirmBtn:hover {
+    background: #0075d8;
+}
 
-    border: none;
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+#nextBtn {
+    flex: 1;
+
+    background: #00b956;
+    color: white;
+}
+
+
+#nextBtn:hover {
+    background: #00a64d;
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+#backBtn {
+    flex: 1;
 
     background: #343a40;
-
     color: white;
-
 }
 
 
-.confirmBtn:hover {
-
-    background: #006fd6;
-
-}
-
-
-.backBtn:hover {
-
-    background: #22272b;
-
+#backBtn:hover {
+    background: #23272b;
 }
 
 
@@ -321,40 +367,50 @@ input:focus {
    MOBILE
 ========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
-    body {
-
-        padding: 10px;
-
+    .container {
+        padding: 15px;
+        margin: 10px auto;
     }
 
 
-    .container {
-
+    .card {
         padding: 20px;
-
     }
 
 
     h1 {
-
         font-size: 26px;
-
     }
 
 
-    .otherRow {
-
-        grid-template-columns: 1fr;
-
+    .other-item {
+        flex-wrap: wrap;
     }
 
 
-    .otherRow button {
+    .other-item span {
+        width: 100%;
+        flex: none;
+    }
 
-        height: 42px;
 
+    .removeOtherBtn {
+        margin-left: auto;
+    }
+
+
+    .button-container,
+    .button-row {
+        flex-direction: column;
+    }
+
+
+    #confirmBtn,
+    #nextBtn,
+    #backBtn {
+        width: 100%;
     }
 
 }

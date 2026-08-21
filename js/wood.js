@@ -572,7 +572,7 @@ function updateGrandTotal() {
     if (grandTotalElement) {
 
         grandTotalElement.textContent =
-            total.toFixed(2);
+    Math.round(total);
 
     }
 
@@ -990,7 +990,7 @@ if (finalCalculation) {
 
             alert(
                 "Grand Total : ₹ " +
-                total.toFixed(2)
+Math.round(total)
             );
 
         }
@@ -1038,16 +1038,15 @@ if (confirmBtn) {
 
 
             // Keep old compatibility values.
+localStorage.setItem(
+    "finalTotal",
+    String(Math.round(total))
+);
 
-            localStorage.setItem(
-                "finalTotal",
-                total.toFixed(2)
-            );
-
-            localStorage.setItem(
-                "grandTotal",
-                total.toFixed(2)
-            );
+localStorage.setItem(
+    "grandTotal",
+    String(Math.round(total))
+);
 
 
             console.log(

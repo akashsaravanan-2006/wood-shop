@@ -4,6 +4,7 @@
 
 console.log("PERSONAL JS LOADED");
 
+
 document.addEventListener(
     "DOMContentLoaded",
     function () {
@@ -23,21 +24,21 @@ document.addEventListener(
 
 
         // ====================================================
-        // INPUTS
+        // CUSTOMER INPUTS
         // ====================================================
 
         const customerName =
             document.getElementById("customerName");
 
-        const customerMobile =
-            document.getElementById("customerMobile");
+        const mobileNumber =
+            document.getElementById("mobileNumber");
 
-        const customerPlace =
-            document.getElementById("customerPlace");
+        const place =
+            document.getElementById("place");
 
 
         // ====================================================
-        // RESTORE DATA AFTER REFRESH
+        // RESTORE PERSONAL DATA
         // ====================================================
 
         function restorePersonalData() {
@@ -52,48 +53,64 @@ document.addEventListener(
                 );
 
                 return;
+
             }
 
 
-            const data =
+            const personalData =
                 getPageData("personal");
 
 
             console.log(
-                "PERSONAL DATA FOUND:",
-                data
+                "PERSONAL DATA RESTORED:",
+                personalData
             );
 
 
+            // ------------------------------------------------
+            // CUSTOMER NAME
+            // ------------------------------------------------
+
             if (
                 customerName &&
-                data.name !== undefined
+                personalData.name !==
+                undefined
             ) {
 
                 customerName.value =
-                    data.name;
+                    personalData.name;
 
             }
 
 
+            // ------------------------------------------------
+            // MOBILE NUMBER
+            // ------------------------------------------------
+
             if (
-                customerMobile &&
-                data.mobile !== undefined
+                mobileNumber &&
+                personalData.mobile !==
+                undefined
             ) {
 
-                customerMobile.value =
-                    data.mobile;
+                mobileNumber.value =
+                    personalData.mobile;
 
             }
 
 
+            // ------------------------------------------------
+            // PLACE
+            // ------------------------------------------------
+
             if (
-                customerPlace &&
-                data.place !== undefined
+                place &&
+                personalData.place !==
+                undefined
             ) {
 
-                customerPlace.value =
-                    data.place;
+                place.value =
+                    personalData.place;
 
             }
 
@@ -101,7 +118,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // SAVE DATA
+        // SAVE PERSONAL DATA
         // ====================================================
 
         function savePersonalData() {
@@ -116,6 +133,7 @@ document.addEventListener(
                 );
 
                 return;
+
             }
 
 
@@ -127,20 +145,20 @@ document.addEventListener(
                         : "",
 
                 mobile:
-                    customerMobile
-                        ? customerMobile.value.trim()
+                    mobileNumber
+                        ? mobileNumber.value.trim()
                         : "",
 
                 place:
-                    customerPlace
-                        ? customerPlace.value.trim()
+                    place
+                        ? place.value.trim()
                         : ""
 
             };
 
 
             // ------------------------------------------------
-            // SAVE TO CENTRAL BILL STORAGE
+            // SAVE TO CENTRAL STORE
             // ------------------------------------------------
 
             savePageData(
@@ -158,17 +176,19 @@ document.addEventListener(
 
 
         // ====================================================
-        // RESTORE FIRST
+        // RESTORE DATA FIRST
         // ====================================================
 
         restorePersonalData();
 
 
         // ====================================================
-        // AUTO SAVE WHILE TYPING
+        // AUTO SAVE - NAME
         // ====================================================
 
-        if (customerName) {
+        if (
+            customerName
+        ) {
 
             customerName.addEventListener(
                 "input",
@@ -182,9 +202,15 @@ document.addEventListener(
         }
 
 
-        if (customerMobile) {
+        // ====================================================
+        // AUTO SAVE - MOBILE
+        // ====================================================
 
-            customerMobile.addEventListener(
+        if (
+            mobileNumber
+        ) {
+
+            mobileNumber.addEventListener(
                 "input",
                 function () {
 
@@ -196,9 +222,15 @@ document.addEventListener(
         }
 
 
-        if (customerPlace) {
+        // ====================================================
+        // AUTO SAVE - PLACE
+        // ====================================================
 
-            customerPlace.addEventListener(
+        if (
+            place
+        ) {
+
+            place.addEventListener(
                 "input",
                 function () {
 
@@ -212,10 +244,13 @@ document.addEventListener(
 
         // ====================================================
         // NEXT
-        // PERSONAL → DISCOUNT
+        //
+        // PERSONAL -> DISCOUNT
         // ====================================================
 
-        if (nextBtn) {
+        if (
+            nextBtn
+        ) {
 
             nextBtn.addEventListener(
                 "click",
@@ -226,13 +261,23 @@ document.addEventListener(
                     event.stopImmediatePropagation();
 
 
+                    console.log(
+                        "NEXT CLICKED"
+                    );
+
+
                     // SAVE BEFORE LEAVING
 
                     savePersonalData();
 
 
                     console.log(
-                        "PERSONAL → DISCOUNT"
+                        "PERSONAL DATA SAVED"
+                    );
+
+
+                    console.log(
+                        "GOING TO DISCOUNT.HTML"
                     );
 
 
@@ -243,14 +288,24 @@ document.addEventListener(
             );
 
         }
+        else {
+
+            console.error(
+                "Next button not found!"
+            );
+
+        }
 
 
         // ====================================================
         // BACK
-        // PERSONAL → LABOUR
+        //
+        // PERSONAL -> LABOUR
         // ====================================================
 
-        if (backBtn) {
+        if (
+            backBtn
+        ) {
 
             backBtn.addEventListener(
                 "click",
@@ -261,13 +316,23 @@ document.addEventListener(
                     event.stopImmediatePropagation();
 
 
-                    // SAVE BEFORE LEAVING
+                    console.log(
+                        "BACK CLICKED"
+                    );
+
+
+                    // SAVE BEFORE GOING BACK
 
                     savePersonalData();
 
 
                     console.log(
-                        "PERSONAL → LABOUR"
+                        "PERSONAL DATA SAVED"
+                    );
+
+
+                    console.log(
+                        "GOING TO LABOUR.HTML"
                     );
 
 
@@ -275,6 +340,13 @@ document.addEventListener(
                         "./labour.html";
 
                 }
+            );
+
+        }
+        else {
+
+            console.error(
+                "Back button not found!"
             );
 
         }

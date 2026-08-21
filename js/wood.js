@@ -328,6 +328,9 @@ document.addEventListener(
         );
 
 
+        // Recalculate after adding a row
+        calculateCard(card);
+
         saveCurrentWoodData();
 
     }
@@ -369,12 +372,19 @@ document.addEventListener(
         }
 
 
+        const card =
+            e.target.closest(".calculation");
+
+
         e.target
             .closest(".lengthRow")
             .remove();
 
 
-        updateGrandTotal();
+        // Recalculate after removing a row
+        if (card) {
+            calculateCard(card);
+        }
 
         saveCurrentWoodData();
 
@@ -383,7 +393,125 @@ document.addEventListener(
 
 
 // ============================================================
-// CALCULATE
+// CALCULATE ONE CARD
+// ============================================================
+
+function calculateCard(card) {
+
+    if (!card) {
+        return;
+    }
+
+
+    const breadth =
+        parseFloat(
+            card.querySelector(".breadth")?.value
+        ) || 0;
+
+
+    const thickness =
+        parseFloat(
+            card.querySelector(".thickness")?.value
+        ) || 0;
+
+
+    const rate =
+        parseFloat(
+            card.querySelector(".rate")?.value
+        ) || 0;
+
+
+    let totalLength = 0;
+
+
+    card
+        .querySelectorAll(".lengthRow")
+        .forEach(function (row) {
+
+            const length =
+                parseFloat(
+                    row.querySelector(".length")?.value
+                ) || 0;
+
+
+            const extra =
+                parseFloat(
+                    row.querySelector(".extraLength")?.value
+                ) || 0;
+
+
+            const qty =
+                parseFloat(
+                    row.querySelector(".qty")?.value
+                ) || 0;
+
+
+            const finalLength =
+                length + extra;
+
+
+            totalLength +=
+                finalLength * qty;
+
+        });
+
+
+    // --------------------------------------------------------
+    // CUBIC FEET CALCULATION
+    // --------------------------------------------------------
+
+    const cubicFeet =
+        (
+            breadth *
+            thickness *
+            totalLength
+        ) / 144;
+
+
+    // --------------------------------------------------------
+    // AMOUNT CALCULATION
+    // --------------------------------------------------------
+
+    const amount =
+        cubicFeet * rate;
+
+
+    // --------------------------------------------------------
+    // DISPLAY RESULT
+    // --------------------------------------------------------
+
+    const cfElement =
+        card.querySelector(".cf");
+
+
+    const amountElement =
+        card.querySelector(".amount");
+
+
+    if (cfElement) {
+
+        cfElement.textContent =
+            cubicFeet.toFixed(2);
+
+    }
+
+
+    if (amountElement) {
+
+        amountElement.textContent =
+            amount.toFixed(2);
+
+    }
+
+
+    // Update grand total automatically
+    updateGrandTotal();
+
+}
+
+
+// ============================================================
+// CALCULATE BUTTON
 // ============================================================
 
 document.addEventListener(
@@ -406,96 +534,7 @@ document.addEventListener(
         }
 
 
-        const breadth =
-            parseFloat(
-                card.querySelector(".breadth")?.value
-            ) || 0;
-
-
-        const thickness =
-            parseFloat(
-                card.querySelector(".thickness")?.value
-            ) || 0;
-
-
-        const rate =
-            parseFloat(
-                card.querySelector(".rate")?.value
-            ) || 0;
-
-
-        let totalLength = 0;
-
-
-        card
-            .querySelectorAll(".lengthRow")
-            .forEach(function (row) {
-
-                const length =
-                    parseFloat(
-                        row.querySelector(".length")?.value
-                    ) || 0;
-
-
-                const extra =
-                    parseFloat(
-                        row.querySelector(".extraLength")?.value
-                    ) || 0;
-
-
-                const qty =
-                    parseFloat(
-                        row.querySelector(".qty")?.value
-                    ) || 0;
-
-
-                const finalLength =
-                    length + extra;
-
-
-                totalLength +=
-                    finalLength * qty;
-
-            });
-
-
-        const cubicFeet =
-            (
-                breadth *
-                thickness *
-                totalLength
-            ) / 144;
-
-
-        const amount =
-            cubicFeet * rate;
-
-
-        const cfElement =
-            card.querySelector(".cf");
-
-
-        const amountElement =
-            card.querySelector(".amount");
-
-
-        if (cfElement) {
-
-            cfElement.textContent =
-                cubicFeet.toFixed(2);
-
-        }
-
-
-        if (amountElement) {
-
-            amountElement.textContent =
-                amount.toFixed(2);
-
-        }
-
-
-        updateGrandTotal();
+        calculateCard(card);
 
         saveCurrentWoodData();
 
@@ -898,13 +937,20 @@ if (addCalculation) {
             }
 
 
-            document
-                .getElementById(
+            const allCalculations =
+                document.getElementById(
                     "allCalculations"
-                )
-                .appendChild(
-                    newCard
                 );
+
+
+            if (!allCalculations) {
+                return;
+            }
+
+
+            allCalculations.appendChild(
+                newCard
+            );
 
 
             renameCalculations();
@@ -1075,22 +1121,36 @@ if (homeBtn) {
 
 
 // ============================================================
-// SAVE WHILE USER TYPES
+// AUTO CALCULATE + SAVE WHILE USER TYPES
 // ============================================================
 
 document.addEventListener(
     "input",
     function (e) {
 
-        if (
+        const card =
             e.target.closest(
                 ".calculation"
-            )
-        ) {
+            );
 
-            saveCurrentWoodData();
 
+        if (!card) {
+            return;
         }
+
+
+        // ----------------------------------------------------
+        // AUTOMATIC CALCULATION
+        // ----------------------------------------------------
+
+        calculateCard(card);
+
+
+        // ----------------------------------------------------
+        // AUTOMATIC SAVE
+        // ----------------------------------------------------
+
+        saveCurrentWoodData();
 
     }
 );
@@ -1104,15 +1164,22 @@ document.addEventListener(
     "change",
     function (e) {
 
-        if (
+        const card =
             e.target.closest(
                 ".calculation"
-            )
-        ) {
+            );
 
-            saveCurrentWoodData();
 
+        if (!card) {
+            return;
         }
+
+
+        // Recalculate for select/change inputs too
+        calculateCard(card);
+
+
+        saveCurrentWoodData();
 
     }
 );
@@ -1393,8 +1460,8 @@ function restoreWoodData() {
 
                 cf.textContent =
                     Number(
-                        data.cubicFeet
-                    || 0
+                        data.cubicFeet ||
+                        0
                     ).toFixed(2);
 
             }
@@ -1410,8 +1477,8 @@ function restoreWoodData() {
 
                 amount.textContent =
                     Number(
-                        data.amount
-                    || 0
+                        data.amount ||
+                        0
                     ).toFixed(2);
 
             }
@@ -1439,6 +1506,19 @@ function restoreWoodData() {
             allCalculations.appendChild(
                 card
             );
+
+        });
+
+
+    // --------------------------------------------------------
+    // RECALCULATE ALL RESTORED CARDS
+    // --------------------------------------------------------
+
+    document
+        .querySelectorAll(".calculation")
+        .forEach(function (card) {
+
+            calculateCard(card);
 
         });
 

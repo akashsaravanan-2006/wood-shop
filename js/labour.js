@@ -1,66 +1,57 @@
-// ===========================================
+// ============================================================
 // LABOUR.JS
-// CENTRAL STORAGE VERSION
-// ===========================================
+// ============================================================
+//
+// FLOW:
+//
+// Wood
+//   ↓
+// Personal
+//   ↓
+// Discount
+//   ↓
+// Labour
+//   ↓
+// Advance
+//
+// IMPORTANT:
+//
+// Discount saves the discounted amount into:
+// localStorage["gTotal"]
+//
+// Labour reads that value.
+// Labour adds labour + other charges.
+// Labour saves the FINAL amount back to:
+// localStorage["gTotal"]
+//
+// ============================================================
+
+console.log("==========================================");
+console.log("LABOUR.JS LOADED");
+console.log("==========================================");
 
 
-// ===========================================
-// CHECK STORE DATA
-// ===========================================
+// ============================================================
+// ELEMENTS
+// ============================================================
 
-if (
-    typeof getPageData !== "function" ||
-    typeof savePageData !== "function"
-) {
-
-    console.error(
-        "storedata.js is not loaded before labour.js"
-    );
-
-    alert(
-        "Storage system not loaded. Please check storedata.js."
-    );
-
-}
-
-
-// ===========================================
-// LOAD WOOD TOTAL
-// ===========================================
-
-let woodTotal =
-    parseFloat(
-        localStorage.getItem("woodTotal")
-    ) || 0;
-
-
-// ===========================================
-// HTML ELEMENTS
-// ===========================================
-
-const woodTotalDisplay =
-    document.getElementById("woodTotal");
-
-const labourCharge =
+const labourChargeInput =
     document.getElementById("labourCharge");
 
-const otherCharge =
+const otherChargeInput =
     document.getElementById("otherCharge");
-
-const othersTotal =
-    document.getElementById("othersTotal");
-
-const finalTotal =
-    document.getElementById("finalTotal");
-
-const othersBody =
-    document.getElementById("othersBody");
-
-const otherSection =
-    document.getElementById("otherSection");
 
 const addOtherBtn =
     document.getElementById("addOther");
+
+const othersContainer =
+    document.getElementById("othersContainer");
+
+const othersTotalElement =
+    document.getElementById("othersTotal");
+
+const grandTotalElement =
+    document.getElementById("grandTotal");
 
 const confirmBtn =
     document.getElementById("confirmBtn");
@@ -69,519 +60,566 @@ const backBtn =
     document.getElementById("backBtn");
 
 
-// ===========================================
-// DISPLAY WOOD TOTAL
-// ===========================================
+// ============================================================
+// VARIABLES
+// ============================================================
 
-if (woodTotalDisplay) {
+// Amount received from Discount
+let baseTotal = 0;
 
-    woodTotalDisplay.innerHTML =
-        "₹ " +
-        woodTotal.toFixed(2);
+// Labour charge
+let labourCharge = 0;
+
+// Other charge
+let otherCharge = 0;
+
+// Additional Other rows
+let othersData = [];
+
+
+// ============================================================
+// NUMBER FUNCTION
+// ============================================================
+
+function toNumber(value) {
+
+    const number =
+        parseFloat(value);
+
+    if (Number.isFinite(number)) {
+
+        return number;
+
+    }
+
+    return 0;
+}
+
+
+// ============================================================
+// ROUND MONEY
+// ============================================================
+
+function roundMoney(value) {
+
+    return Math.round(
+        toNumber(value) * 100
+    ) / 100;
 
 }
 
 
-// ===========================================
-// LOAD SAVED LABOUR DATA
-// ===========================================
+// ============================================================
+// LOAD gTotal FROM DISCOUNT
+// ============================================================
 
-const savedLabour =
-    getPageData("labour");
+function loadBaseTotal() {
 
-
-console.log(
-    "Loaded Labour Data:",
-    savedLabour
-);
+    const storedTotal =
+        localStorage.getItem("gTotal");
 
 
-// ===========================================
-// RESTORE BASIC LABOUR VALUES
-// ===========================================
-
-if (labourCharge) {
-
-    labourCharge.value =
-        savedLabour.labourCharge || "";
-
-}
+    console.log(
+        "LABOUR - gTotal FROM STORAGE:",
+        storedTotal
+    );
 
 
-if (otherCharge) {
+    if (
+        storedTotal === null ||
+        storedTotal === ""
+    ) {
 
-    otherCharge.value =
-        savedLabour.otherCharge || "";
+        console.error(
+            "LABOUR ERROR: gTotal NOT FOUND"
+        );
 
-}
+        baseTotal = 0;
+
+    }
+    else {
+
+        baseTotal =
+            toNumber(storedTotal);
+
+    }
 
 
-// ===========================================
-// RESTORE OTHER CHARGES
-// ===========================================
+    baseTotal =
+        roundMoney(baseTotal);
 
-if (
-    Array.isArray(
-        savedLabour.othersData
-    )
-) {
 
-    savedLabour.othersData.forEach(
-        function (item) {
-
-            createOtherRow(
-                item.name || "",
-                item.amount || ""
-            );
-
-        }
+    console.log(
+        "LABOUR BASE TOTAL:",
+        baseTotal
     );
 
 }
 
 
-// ===========================================
-// SHOW OTHER SECTION IF DATA EXISTS
-// ===========================================
+// ============================================================
+// GET INPUT VALUES
+// ============================================================
 
-if (
-    Array.isArray(
-        savedLabour.othersData
-    ) &&
-    savedLabour.othersData.length > 0
-) {
+function getCharges() {
 
-    if (otherSection) {
-
-        otherSection.style.display =
-            "block";
-
-    }
-
-}
-
-
-// ===========================================
-// CREATE OTHER CHARGE ROW
-// ===========================================
-
-function createOtherRow(
-    name = "",
-    amount = ""
-) {
-
-    if (!othersBody) {
-        return;
-    }
-
-
-    const row =
-        document.createElement("tr");
-
-
-    row.innerHTML = `
-
-        <td>
-
-            <input
-                type="text"
-                class="otherName"
-                placeholder="Charge Name"
-                value="${escapeHTML(name)}">
-
-        </td>
-
-        <td>
-
-            <input
-                type="number"
-                class="otherAmount"
-                placeholder="0"
-                min="0"
-                value="${amount}">
-
-        </td>
-
-        <td>
-
-            <button
-                type="button"
-                class="removeBtn">
-
-                Remove
-
-            </button>
-
-        </td>
-
-    `;
-
-
-    othersBody.appendChild(row);
-
-}
-
-
-// ===========================================
-// ESCAPE HTML
-// ===========================================
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-// ===========================================
-// GET ALL OTHER CHARGES
-// ===========================================
-
-function getOthersData() {
-
-    const othersData = [];
-
-
-    if (!othersBody) {
-
-        return othersData;
-
-    }
-
-
-    othersBody
-        .querySelectorAll("tr")
-        .forEach(
-            function (row) {
-
-                const nameInput =
-                    row.querySelector(
-                        ".otherName"
-                    );
-
-                const amountInput =
-                    row.querySelector(
-                        ".otherAmount"
-                    );
-
-
-                if (
-                    !nameInput ||
-                    !amountInput
-                ) {
-
-                    return;
-
-                }
-
-
-                const name =
-                    nameInput.value.trim();
-
-
-                const amount =
-                    Number(
-                        amountInput.value
-                    ) || 0;
-
-
-                if (
-                    name !== "" ||
-                    amount > 0
-                ) {
-
-                    othersData.push({
-
-                        name: name,
-
-                        amount: amount
-
-                    });
-
-                }
-
-            }
+    labourCharge =
+        toNumber(
+            labourChargeInput
+                ? labourChargeInput.value
+                : 0
         );
 
 
-    return othersData;
+    otherCharge =
+        toNumber(
+            otherChargeInput
+                ? otherChargeInput.value
+                : 0
+        );
+
+
+    console.log(
+        "LABOUR CHARGE:",
+        labourCharge
+    );
+
+    console.log(
+        "OTHER CHARGE:",
+        otherCharge
+    );
 
 }
 
 
-// ===========================================
-// CALCULATE TOTALS
-// ===========================================
+// ============================================================
+// CALCULATE ADDITIONAL OTHERS
+// ============================================================
 
-function updateTotals() {
+function calculateOthersTotal() {
 
-    const labour =
-        Number(
-            labourCharge?.value
-        ) || 0;
-
-
-    const other =
-        Number(
-            otherCharge?.value
-        ) || 0;
-
-
-    let extra = 0;
-
-
-    if (othersBody) {
-
-        othersBody
-            .querySelectorAll(
-                ".otherAmount"
-            )
-            .forEach(
-                function (input) {
-
-                    extra +=
-                        Number(
-                            input.value
-                        ) || 0;
-
-                }
-            );
-
-    }
-
-
-    const others =
-        labour +
-        other +
-        extra;
-
-
-    const grand =
-        woodTotal +
-        others;
-
-
-    // =====================================
-    // DISPLAY
-    // =====================================
-
-    if (othersTotal) {
-
-        othersTotal.innerHTML =
-            "₹ " +
-            others.toFixed(2);
-
-    }
-
-
-    if (finalTotal) {
-
-        finalTotal.innerHTML =
-            "₹ " +
-            grand.toFixed(2);
-
-    }
-
-
-    // =====================================
-    // SAVE CURRENT LABOUR DATA
-    // =====================================
-
-    saveLabourData();
-
-}
-
-
-// ===========================================
-// SAVE LABOUR DATA
-// ===========================================
-
-function saveLabourData() {
-
-    const labour =
-        Number(
-            labourCharge?.value
-        ) || 0;
-
-
-    const other =
-        Number(
-            otherCharge?.value
-        ) || 0;
-
-
-    const othersData =
-        getOthersData();
-
-
-    let extraTotal = 0;
+    let total = 0;
 
 
     othersData.forEach(
         function (item) {
 
-            extraTotal +=
-                Number(
-                    item.amount
-                ) || 0;
+            total +=
+                toNumber(item.amount);
 
         }
     );
 
 
-    const othersTotalValue =
-        labour +
-        other +
-        extraTotal;
+    return roundMoney(total);
+
+}
 
 
-    const finalTotalValue =
-        woodTotal +
-        othersTotalValue;
+// ============================================================
+// UPDATE OTHERS TOTAL
+// ============================================================
+
+function updateOthersTotal() {
+
+    const total =
+        calculateOthersTotal();
 
 
-    // =====================================
-    // CENTRAL STORAGE
-    // =====================================
+    if (othersTotalElement) {
 
-    savePageData(
-        "labour",
-        {
+        othersTotalElement.textContent =
+            "₹ " +
+            total.toFixed(2);
 
-            labourCharge:
-                String(labour),
+    }
 
-            otherCharge:
-                String(other),
 
-            othersData:
-                othersData,
+    return total;
 
-            othersTotal:
-                othersTotalValue,
+}
 
-            finalTotal:
-                finalTotalValue
 
-        }
+// ============================================================
+// CALCULATE FINAL TOTAL
+// ============================================================
+
+function calculateFinalTotal() {
+
+    getCharges();
+
+
+    const additionalOthers =
+        calculateOthersTotal();
+
+
+    const finalTotal =
+        baseTotal +
+        labourCharge +
+        otherCharge +
+        additionalOthers;
+
+
+    return roundMoney(
+        finalTotal
+    );
+
+}
+
+
+// ============================================================
+// DISPLAY FINAL TOTAL
+// ============================================================
+
+function updateGrandTotal() {
+
+    const finalTotal =
+        calculateFinalTotal();
+
+
+    if (grandTotalElement) {
+
+        grandTotalElement.textContent =
+            "₹ " +
+            finalTotal.toFixed(2);
+
+    }
+
+
+    updateOthersTotal();
+
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "LABOUR CALCULATION"
+    );
+
+    console.log(
+        "BASE TOTAL:",
+        baseTotal
+    );
+
+    console.log(
+        "LABOUR CHARGE:",
+        labourCharge
+    );
+
+    console.log(
+        "OTHER CHARGE:",
+        otherCharge
+    );
+
+    console.log(
+        "ADDITIONAL OTHERS:",
+        calculateOthersTotal()
+    );
+
+    console.log(
+        "FINAL TOTAL:",
+        finalTotal
+    );
+
+    console.log(
+        "=========================================="
     );
 
 
-    // =====================================
-    // KEEP OLD TOTAL KEYS
-    // FOR YOUR EXISTING BILL CODE
-    // =====================================
+    return finalTotal;
+
+}
+
+
+// ============================================================
+// SAVE FINAL TOTAL
+// ============================================================
+
+function saveLabourData() {
+
+    const finalTotal =
+        updateGrandTotal();
+
+
+    // ========================================================
+    // SAVE FINAL TOTAL AS gTotal
+    // ========================================================
 
     localStorage.setItem(
-        "woodTotal",
-        String(woodTotal)
+        "gTotal",
+        finalTotal.toFixed(2)
     );
 
 
-    localStorage.setItem(
-        "othersTotal",
-        String(othersTotalValue)
-    );
+    // ========================================================
+    // SAVE LABOUR DATA
+    // ========================================================
+
+    const labourData = {
+
+        baseTotal:
+            baseTotal,
+
+        labourCharge:
+            labourCharge,
+
+        otherCharge:
+            otherCharge,
+
+        othersData:
+            othersData,
+
+        othersTotal:
+            calculateOthersTotal(),
+
+        finalTotal:
+            finalTotal
+
+    };
 
 
     localStorage.setItem(
-        "finalTotal",
-        String(finalTotalValue)
+        "labourData",
+        JSON.stringify(
+            labourData
+        )
     );
 
 
     console.log(
-        "Labour data saved:",
-        getPageData("labour")
+        "LABOUR DATA SAVED:",
+        labourData
     );
+
+
+    console.log(
+        "LABOUR -> gTotal SAVED:",
+        localStorage.getItem("gTotal")
+    );
+
+
+    return finalTotal;
 
 }
 
 
-// ===========================================
-// LABOUR INPUT
-// ===========================================
+// ============================================================
+// ADD OTHER
+// ============================================================
 
-if (labourCharge) {
+function addOther() {
 
-    labourCharge.addEventListener(
-        "input",
-        updateTotals
+    if (!othersContainer) {
+
+        console.warn(
+            "othersContainer not found"
+        );
+
+        return;
+
+    }
+
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        "other-row";
+
+
+    row.innerHTML = `
+
+        <input
+            type="text"
+            class="otherName"
+            placeholder="Other Name">
+
+        <input
+            type="number"
+            class="otherAmount"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="Amount">
+
+        <button
+            type="button"
+            class="removeOther">
+
+            Remove
+
+        </button>
+
+    `;
+
+
+    othersContainer.appendChild(
+        row
     );
 
-}
+
+    const nameInput =
+        row.querySelector(
+            ".otherName"
+        );
+
+    const amountInput =
+        row.querySelector(
+            ".otherAmount"
+        );
+
+    const removeButton =
+        row.querySelector(
+            ".removeOther"
+        );
 
 
-// ===========================================
-// OTHER CHARGE INPUT
-// ===========================================
+    function updateRow() {
 
-if (otherCharge) {
+        const name =
+            nameInput.value.trim();
 
-    otherCharge.addEventListener(
+        const amount =
+            toNumber(
+                amountInput.value
+            );
+
+
+        const existingIndex =
+            othersData.findIndex(
+                function (item) {
+
+                    return item.row === row;
+
+                }
+            );
+
+
+        if (existingIndex !== -1) {
+
+            othersData[
+                existingIndex
+            ].name =
+                name;
+
+            othersData[
+                existingIndex
+            ].amount =
+                amount;
+
+        }
+        else {
+
+            othersData.push({
+
+                row:
+                    row,
+
+                name:
+                    name,
+
+                amount:
+                    amount
+
+            });
+
+        }
+
+
+        updateGrandTotal();
+
+    }
+
+
+    nameInput.addEventListener(
         "input",
-        updateTotals
+        updateRow
     );
 
-}
 
-
-// ===========================================
-// OTHER AMOUNT INPUT
-// ===========================================
-
-if (othersBody) {
-
-    othersBody.addEventListener(
+    amountInput.addEventListener(
         "input",
-        function (e) {
+        updateRow
+    );
 
-            if (
-                e.target.classList.contains(
-                    "otherAmount"
-                ) ||
-                e.target.classList.contains(
-                    "otherName"
-                )
-            ) {
 
-                updateTotals();
+    removeButton.addEventListener(
+        "click",
+        function () {
 
-            }
+            othersData =
+                othersData.filter(
+                    function (item) {
+
+                        return item.row !== row;
+
+                    }
+                );
+
+
+            row.remove();
+
+
+            updateGrandTotal();
 
         }
     );
 
+
+    othersData.push({
+
+        row:
+            row,
+
+        name:
+            "",
+
+        amount:
+            0
+
+    });
+
+
+    updateGrandTotal();
+
 }
 
 
-// ===========================================
-// ADD OTHER CHARGE
-// ===========================================
+// ============================================================
+// ADD OTHER BUTTON
+// ============================================================
 
 if (addOtherBtn) {
 
     addOtherBtn.addEventListener(
         "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            addOther();
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// LIVE LABOUR INPUT
+// ============================================================
+
+if (labourChargeInput) {
+
+    labourChargeInput.addEventListener(
+        "input",
         function () {
 
-            if (otherSection) {
-
-                otherSection.style.display =
-                    "block";
-
-            }
-
-
-            createOtherRow();
-
-
-            updateTotals();
+            updateGrandTotal();
 
         }
     );
@@ -589,50 +627,17 @@ if (addOtherBtn) {
 }
 
 
-// ===========================================
-// REMOVE OTHER CHARGE
-// ===========================================
+// ============================================================
+// LIVE OTHER CHARGE INPUT
+// ============================================================
 
-if (othersBody) {
+if (otherChargeInput) {
 
-    othersBody.addEventListener(
-        "click",
-        function (e) {
+    otherChargeInput.addEventListener(
+        "input",
+        function () {
 
-            if (
-                e.target.classList.contains(
-                    "removeBtn"
-                )
-            ) {
-
-                const row =
-                    e.target.closest("tr");
-
-
-                if (row) {
-
-                    row.remove();
-
-                }
-
-
-                if (
-                    othersBody.rows.length === 0
-                ) {
-
-                    if (otherSection) {
-
-                        otherSection.style.display =
-                            "none";
-
-                    }
-
-                }
-
-
-                updateTotals();
-
-            }
+            updateGrandTotal();
 
         }
     );
@@ -640,23 +645,51 @@ if (othersBody) {
 }
 
 
-// ===========================================
-// CONFIRM BUTTON
-// ===========================================
+// ============================================================
+// CONFIRM
+// Labour -> Advance
+// ============================================================
 
 if (confirmBtn) {
 
     confirmBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            // Save before leaving
-            saveLabourData();
+            event.preventDefault();
+
+            event.stopPropagation();
 
 
-            // Go to Personal page
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "LABOUR CONFIRM CLICKED"
+            );
+
+
+            // Save final Labour amount
+            const finalTotal =
+                saveLabourData();
+
+
+            console.log(
+                "FINAL LABOUR TOTAL:",
+                finalTotal
+            );
+
+
+            console.log(
+                "REDIRECTING TO ADVANCE"
+            );
+
+
+            // IMPORTANT
+            // Labour -> Advance
             window.location.href =
-                "personal.html";
+                "advance.html";
 
         }
     );
@@ -664,24 +697,29 @@ if (confirmBtn) {
 }
 
 
-// ===========================================
-// BACK BUTTON
-// ===========================================
+// ============================================================
+// BACK
+// Labour -> Discount
+// ============================================================
 
 if (backBtn) {
 
     backBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            // IMPORTANT:
-            // Save before going back
+            event.preventDefault();
 
-            saveLabourData();
+            event.stopPropagation();
+
+
+            console.log(
+                "LABOUR BACK CLICKED"
+            );
 
 
             window.location.href =
-                "wood.html";
+                "discount.html";
 
         }
     );
@@ -689,13 +727,95 @@ if (backBtn) {
 }
 
 
-// ===========================================
-// INITIAL CALCULATION
-// ===========================================
+// ============================================================
+// PAGE LOAD
+// ============================================================
 
-updateTotals();
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "LABOUR PAGE INITIALIZING"
+        );
 
 
-console.log(
-    "LABOUR PAGE READY"
+        // Load discounted total
+        loadBaseTotal();
+
+
+        // Load previously saved Labour data
+        const savedData =
+            localStorage.getItem(
+                "labourData"
+            );
+
+
+        if (savedData) {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        savedData
+                    );
+
+
+                console.log(
+                    "SAVED LABOUR DATA:",
+                    data
+                );
+
+
+                // Do NOT replace baseTotal
+                // with old data.
+                //
+                // Always use current gTotal
+                // from Discount.
+
+                if (labourChargeInput) {
+
+                    labourChargeInput.value =
+                        data.labourCharge || "";
+
+                }
+
+
+                if (otherChargeInput) {
+
+                    otherChargeInput.value =
+                        data.otherCharge || "";
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "LABOUR DATA PARSE ERROR:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        updateGrandTotal();
+
+
+        console.log(
+            "LABOUR PAGE READY"
+        );
+
+        console.log(
+            "CURRENT gTotal:",
+            localStorage.getItem("gTotal")
+        );
+
+    }
 );

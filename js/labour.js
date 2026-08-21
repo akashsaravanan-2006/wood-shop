@@ -977,7 +977,7 @@ if (confirmBtn) {
 
 
             console.log(
-                "REDIRECT: advance.html"
+                "REDIRECT: persnal.html"
             );
 
 

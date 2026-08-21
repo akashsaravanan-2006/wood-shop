@@ -326,93 +326,96 @@ function calculateOthersTotal() {
 // CALCULATE GRAND TOTAL
 // ============================================================
 //
-// Grand Total =
-// Wood Total
-// +
+// Others Total already contains:
 // Labour Charge
-// +
-// Others Total
+// + Other Charge
+// + Additional Other Items
 //
-// Wood Total is NEVER changed here.
+// Therefore:
+//
+// Grand Total = Wood Total + Others Total
 // ============================================================
 
 function calculateGrandTotal() {
 
-    // IMPORTANT:
-    // Do NOT read/recalculate Wood Total
-    // from Labour inputs.
-
+    // Keep Wood Total fixed
     woodTotal =
-        roundMoney(
-            woodTotal
-        );
+        roundMoney(woodTotal);
 
 
+    // Read Labour Charge
     labourCharge =
         roundMoney(
             labourChargeInput.value
         );
 
 
+    // Read Main Other Charge
     otherCharge =
         roundMoney(
             otherChargeInput.value
         );
 
 
+    // Calculate Others Total
+    // This includes Labour Charge
     calculateOthersTotal();
 
+
+    // IMPORTANT:
+    // Do NOT add labourCharge separately here.
+    //
+    // WRONG:
+    // woodTotal + labourCharge + othersTotal
+    //
+    // CORRECT:
+    // woodTotal + othersTotal
 
     grandTotal =
         roundMoney(
             woodTotal +
-            labourCharge +
             othersTotal
         );
 
 
+    // Display Grand Total
     grandTotalElement.textContent =
         money(grandTotal);
 
 
-    console.log(
-        "--------------------------------"
-    );
-
+    console.log("--------------------------------");
 
     console.log(
         "WOOD TOTAL:",
         woodTotal
     );
 
-
     console.log(
         "LABOUR CHARGE:",
         labourCharge
     );
 
+    console.log(
+        "OTHER CHARGE:",
+        otherCharge
+    );
 
     console.log(
         "OTHERS TOTAL:",
         othersTotal
     );
 
-
     console.log(
         "GRAND TOTAL:",
         grandTotal
     );
 
-
-    console.log(
-        "--------------------------------"
-    );
+    console.log("--------------------------------");
 
 
     return grandTotal;
 
 }
-
 
 // ============================================================
 // SHOW ADD OTHER FORM

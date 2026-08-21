@@ -1,5 +1,6 @@
 // ============================================================
 // LABOUR.JS
+// Labour & Other Charges
 //
 // FLOW:
 //
@@ -15,13 +16,14 @@
 //
 // IMPORTANT:
 //
-// Wood Total = final total received from Discount
+// Labour gets the WOOD TOTAL from Discount.
+// Labour calculates:
 //
-// Grand Total =
 // Wood Total
 // + Labour Charge
 // + Other Charge
 // + Additional Others
+// = Grand Total
 // ============================================================
 
 
@@ -29,7 +31,7 @@ console.clear();
 
 console.log("======================================");
 console.log("LABOUR.JS LOADED");
-console.log("LABOUR.JS VERSION 200");
+console.log("LABOUR.JS VERSION 300");
 console.log("======================================");
 
 
@@ -71,8 +73,6 @@ const backBtn =
 
 let woodTotal = 0;
 
-let additionalOthers = [];
-
 
 // ============================================================
 // NUMBER
@@ -83,13 +83,10 @@ function number(value) {
     const n = parseFloat(value);
 
     if (isNaN(n)) {
-
         return 0;
-
     }
 
     return n;
-
 }
 
 
@@ -107,7 +104,7 @@ function money(value) {
 
 
 // ============================================================
-// FORMAT
+// FORMAT MONEY
 // ============================================================
 
 function formatMoney(value) {
@@ -118,110 +115,38 @@ function formatMoney(value) {
 
 
 // ============================================================
-// GET TOTAL FROM STORAGE
+// GET WOOD TOTAL
 //
-// We specifically check gTotal first.
+// IMPORTANT:
+//
+// DO NOT READ gTotal FIRST.
+//
+// gTotal is the FINAL LABOUR TOTAL.
+// If we read it here, old Labour totals can become
+// the new Wood Total.
+//
+// Correct source:
+//
+// Discount -> discountData.finalTotal
 // ============================================================
 
 function getWoodTotal() {
 
     console.log("======================================");
-    console.log("READING TOTAL FROM STORAGE");
+    console.log("READING WOOD TOTAL");
     console.log("======================================");
 
 
-    // --------------------------------------------------------
-    // gTotal
-    // --------------------------------------------------------
-
-    const gTotal =
-        localStorage.getItem("gTotal");
-
-
-    console.log(
-        "gTotal FROM STORAGE:",
-        gTotal
-    );
-
-
-    if (
-        gTotal !== null &&
-        gTotal !== ""
-    ) {
-
-        const value =
-            number(gTotal);
-
-
-        console.log(
-            "USING gTotal:",
-            value
-        );
-
-
-        return money(value);
-
-    }
-
-
-    // --------------------------------------------------------
-    // finalTotal
-    // --------------------------------------------------------
-
-    const finalTotal =
-        localStorage.getItem("finalTotal");
-
-
-    console.log(
-        "finalTotal FROM STORAGE:",
-        finalTotal
-    );
-
-
-    if (
-        finalTotal !== null &&
-        finalTotal !== ""
-    ) {
-
-        return money(finalTotal);
-
-    }
-
-
-    // --------------------------------------------------------
-    // grandTotal
-    // --------------------------------------------------------
-
-    const grandTotal =
-        localStorage.getItem("grandTotal");
-
-
-    console.log(
-        "grandTotal FROM STORAGE:",
-        grandTotal
-    );
-
-
-    if (
-        grandTotal !== null &&
-        grandTotal !== ""
-    ) {
-
-        return money(grandTotal);
-
-    }
-
-
-    // --------------------------------------------------------
-    // discountData
-    // --------------------------------------------------------
+    // ========================================================
+    // 1. discountData
+    // ========================================================
 
     const discountData =
         localStorage.getItem("discountData");
 
 
     console.log(
-        "discountData FROM STORAGE:",
+        "discountData:",
         discountData
     );
 
@@ -234,33 +159,67 @@ function getWoodTotal() {
                 JSON.parse(discountData);
 
 
+            console.log(
+                "DISCOUNT DATA:",
+                data
+            );
+
+
+            // ------------------------------------------------
+            // Discount finalTotal
+            // ------------------------------------------------
+
             if (
                 data &&
-                data.grandTotal !== undefined
+                data.finalTotal !== undefined &&
+                data.finalTotal !== null
             ) {
 
-                return money(
-                    data.grandTotal
+                const value =
+                    money(data.finalTotal);
+
+
+                console.log(
+                    "USING DISCOUNT finalTotal:",
+                    value
                 );
+
+
+                return value;
 
             }
 
 
+            // ------------------------------------------------
+            // Discount grandTotal
+            // ------------------------------------------------
+
             if (
                 data &&
-                data.finalTotal !== undefined
+                data.grandTotal !== undefined &&
+                data.grandTotal !== null
             ) {
 
-                return money(
-                    data.finalTotal
+                const value =
+                    money(data.grandTotal);
+
+
+                console.log(
+                    "USING DISCOUNT grandTotal:",
+                    value
                 );
+
+
+                return value;
 
             }
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(
-                "discountData JSON ERROR:",
+                "DISCOUNT DATA JSON ERROR:",
                 error
             );
 
@@ -269,57 +228,82 @@ function getWoodTotal() {
     }
 
 
-    // --------------------------------------------------------
-    // totals
-    // --------------------------------------------------------
+    // ========================================================
+    // 2. finalTotal
+    // ========================================================
 
-    const totals =
-        localStorage.getItem("totals");
+    const finalTotal =
+        localStorage.getItem("finalTotal");
 
 
     console.log(
-        "totals FROM STORAGE:",
-        totals
+        "finalTotal:",
+        finalTotal
     );
 
 
-    if (totals) {
+    if (
+        finalTotal !== null &&
+        finalTotal !== ""
+    ) {
 
-        try {
-
-            const data =
-                JSON.parse(totals);
+        const value =
+            money(finalTotal);
 
 
-            if (
-                data &&
-                data.grandTotal !== undefined
-            ) {
+        console.log(
+            "USING finalTotal:",
+            value
+        );
 
-                return money(
-                    data.grandTotal
-                );
 
-            }
-
-        } catch (error) {
-
-            console.error(
-                "totals JSON ERROR:",
-                error
-            );
-
-        }
+        return value;
 
     }
 
 
-    // --------------------------------------------------------
-    // Nothing found
-    // --------------------------------------------------------
+    // ========================================================
+    // 3. grandTotal
+    // ========================================================
 
-    console.error(
-        "LABOUR ERROR: NO TOTAL FOUND"
+    const grandTotal =
+        localStorage.getItem("grandTotal");
+
+
+    console.log(
+        "grandTotal:",
+        grandTotal
+    );
+
+
+    if (
+        grandTotal !== null &&
+        grandTotal !== ""
+    ) {
+
+        const value =
+            money(grandTotal);
+
+
+        console.log(
+            "USING grandTotal:",
+            value
+        );
+
+
+        return value;
+
+    }
+
+
+    // ========================================================
+    // IMPORTANT
+    //
+    // DO NOT USE gTotal HERE
+    // ========================================================
+
+    console.warn(
+        "NO DISCOUNT TOTAL FOUND"
     );
 
 
@@ -355,15 +339,13 @@ function displayWoodTotal() {
 
 
 // ============================================================
-// GET LABOUR
+// GET LABOUR CHARGE
 // ============================================================
 
 function getLabour() {
 
     if (!labourChargeInput) {
-
         return 0;
-
     }
 
 
@@ -375,15 +357,13 @@ function getLabour() {
 
 
 // ============================================================
-// GET MAIN OTHER
+// GET MAIN OTHER CHARGE
 // ============================================================
 
 function getMainOther() {
 
     if (!otherChargeInput) {
-
         return 0;
-
     }
 
 
@@ -395,7 +375,7 @@ function getMainOther() {
 
 
 // ============================================================
-// CALCULATE ADDITIONAL OTHERS
+// GET ADDITIONAL OTHERS
 // ============================================================
 
 function calculateAdditionalOthers() {
@@ -436,52 +416,109 @@ function calculateAdditionalOthers() {
 
 // ============================================================
 // UPDATE OTHERS TOTAL
+//
+// Others Total:
+//
+// Labour Charge
+// + Other Charge
+// + Additional Others
+//
+// Example:
+//
+// Labour = 10
+// Other = 20
+// Additional = 5
+//
+// Others Total = 35
 // ============================================================
 
 function updateOthersTotal() {
 
-    const labour = getLabour();
+    const labour =
+        getLabour();
 
-    const mainOther = getMainOther();
 
-    const additional = calculateAdditionalOthers();
+    const mainOther =
+        getMainOther();
 
-    const total = money(
-        woodTotal +
-        labour +
-        mainOther +
-        additional
+
+    const additional =
+        calculateAdditionalOthers();
+
+
+    const othersTotal =
+        money(
+            labour +
+            mainOther +
+            additional
+        );
+
+
+    console.log(
+        "OTHERS TOTAL:",
+        othersTotal
     );
+
 
     if (othersTotalElement) {
 
         othersTotalElement.textContent =
-            "₹ " + formatMoney(total);
+            "₹ " + formatMoney(othersTotal);
 
     }
 
-    return total;
+
+    return othersTotal;
+
 }
 
 
 // ============================================================
 // CALCULATE GRAND TOTAL
+//
+// Wood Total
+// + Labour
+// + Other
+// + Additional Others
+//
+// = Grand Total
 // ============================================================
 
 function calculateGrandTotal() {
 
-    const labour = getLabour();
+    const labour =
+        getLabour();
 
-    const mainOther = getMainOther();
 
-    const additional = calculateAdditionalOthers();
+    const mainOther =
+        getMainOther();
 
-    const total = money(
-        woodTotal +
-        labour +
-        mainOther +
-        additional
-    );
+
+    const additional =
+        calculateAdditionalOthers();
+
+
+    // ========================================================
+    // OTHERS TOTAL
+    // ========================================================
+
+    const othersTotal =
+        money(
+            labour +
+            mainOther +
+            additional
+        );
+
+
+    // ========================================================
+    // GRAND TOTAL
+    // ========================================================
+
+    const grandTotal =
+        money(
+            woodTotal +
+            othersTotal
+        );
 
 
     console.log("--------------------------------------");
@@ -490,35 +527,25 @@ function calculateGrandTotal() {
     console.log("LABOUR CHARGE:", labour);
     console.log("OTHER CHARGE:", mainOther);
     console.log("ADDITIONAL OTHERS:", additional);
-    console.log("OTHERS TOTAL:", total);
-    console.log("GRAND TOTAL:", total);
+    console.log("OTHERS TOTAL:", othersTotal);
+    console.log("GRAND TOTAL:", grandTotal);
     console.log("--------------------------------------");
 
 
-    // OTHERS TOTAL
+    // ========================================================
+    // UPDATE OTHERS TOTAL
+    // ========================================================
+
     if (othersTotalElement) {
 
         othersTotalElement.textContent =
-            "₹ " + formatMoney(total);
+            "₹ " + formatMoney(othersTotal);
 
     }
-
-
-    // GRAND TOTAL
-    if (grandTotalElement) {
-
-        grandTotalElement.textContent =
-            "₹ " + formatMoney(total);
-
-    }
-
-
-    return total;
-}
 
 
     // ========================================================
-    // THIS IS THE IMPORTANT PART
+    // UPDATE GRAND TOTAL
     // ========================================================
 
     if (grandTotalElement) {
@@ -542,10 +569,18 @@ function addOther() {
 
     if (!othersContainer) {
 
+        console.error(
+            "othersContainer NOT FOUND"
+        );
+
         return;
 
     }
 
+
+    // ========================================================
+    // CREATE ROW
+    // ========================================================
 
     const row =
         document.createElement("div");
@@ -554,6 +589,10 @@ function addOther() {
     row.className =
         "otherRow";
 
+
+    // ========================================================
+    // ROW HTML
+    // ========================================================
 
     row.innerHTML = `
 
@@ -581,6 +620,10 @@ function addOther() {
     `;
 
 
+    // ========================================================
+    // ELEMENTS
+    // ========================================================
+
     const amountInput =
         row.querySelector(
             ".additionalAmount"
@@ -593,38 +636,54 @@ function addOther() {
         );
 
 
-    // --------------------------------------------------------
-    // Amount change
-    // --------------------------------------------------------
+    // ========================================================
+    // AMOUNT INPUT
+    // ========================================================
 
-    amountInput.addEventListener(
-        "input",
-        function () {
+    if (amountInput) {
 
-            calculateGrandTotal();
+        amountInput.addEventListener(
+            "input",
+            function () {
 
-        }
-    );
+                calculateGrandTotal();
+
+            }
+        );
+
+    }
 
 
-    // --------------------------------------------------------
-    // Remove
-    // --------------------------------------------------------
+    // ========================================================
+    // REMOVE BUTTON
+    // ========================================================
 
-    removeButton.addEventListener(
-        "click",
-        function () {
+    if (removeButton) {
 
-            row.remove();
+        removeButton.addEventListener(
+            "click",
+            function () {
 
-            calculateGrandTotal();
+                row.remove();
 
-        }
-    );
+                calculateGrandTotal();
 
+            }
+        );
+
+    }
+
+
+    // ========================================================
+    // ADD ROW
+    // ========================================================
 
     othersContainer.appendChild(row);
 
+
+    // ========================================================
+    // RECALCULATE
+    // ========================================================
 
     calculateGrandTotal();
 
@@ -649,20 +708,32 @@ function saveLabourData() {
         calculateAdditionalOthers();
 
 
-    const others =
+    // ========================================================
+    // OTHERS TOTAL
+    // ========================================================
+
+    const othersTotal =
         money(
+            labour +
             mainOther +
             additional
         );
 
 
+    // ========================================================
+    // FINAL GRAND TOTAL
+    // ========================================================
+
     const grandTotal =
         money(
             woodTotal +
-            labour +
-            others
+            othersTotal
         );
 
+
+    // ========================================================
+    // GET OTHER ROW DATA
+    // ========================================================
 
     const rows =
         document.querySelectorAll(
@@ -704,6 +775,10 @@ function saveLabourData() {
     });
 
 
+    // ========================================================
+    // DATA OBJECT
+    // ========================================================
+
     const data = {
 
         woodTotal:
@@ -719,7 +794,7 @@ function saveLabourData() {
             othersData,
 
         othersTotal:
-            others,
+            othersTotal,
 
         finalTotal:
             grandTotal
@@ -739,6 +814,9 @@ function saveLabourData() {
 
     // ========================================================
     // SAVE FINAL TOTAL
+    //
+    // gTotal is ONLY the final Labour total.
+    // It is NOT used as Wood Total.
     // ========================================================
 
     localStorage.setItem(
@@ -760,6 +838,11 @@ function saveLabourData() {
 
 
     console.log(
+        "======================================"
+    );
+
+
+    console.log(
         "LABOUR DATA SAVED:",
         data
     );
@@ -770,11 +853,25 @@ function saveLabourData() {
         grandTotal.toFixed(2)
     );
 
+
+    console.log(
+        "FINAL LABOUR TOTAL:",
+        grandTotal
+    );
+
+
+    console.log(
+        "======================================"
+    );
+
+
+    return grandTotal;
+
 }
 
 
 // ============================================================
-// INPUT EVENTS
+// LABOUR INPUT EVENT
 // ============================================================
 
 if (labourChargeInput) {
@@ -790,6 +887,10 @@ if (labourChargeInput) {
 
 }
 
+
+// ============================================================
+// OTHER INPUT EVENT
+// ============================================================
 
 if (otherChargeInput) {
 
@@ -813,7 +914,11 @@ if (addOtherBtn) {
 
     addOtherBtn.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
 
             addOther();
 
@@ -844,17 +949,24 @@ if (confirmBtn) {
                 "======================================"
             );
 
+
             console.log(
                 "LABOUR CONFIRM CLICKED"
             );
 
 
-            // Always calculate one final time
+            // ==================================================
+            // FINAL CALCULATION
+            // ==================================================
+
             const total =
                 calculateGrandTotal();
 
 
-            // Save
+            // ==================================================
+            // SAVE
+            // ==================================================
+
             saveLabourData();
 
 
@@ -868,6 +980,10 @@ if (confirmBtn) {
                 "REDIRECT: advance.html"
             );
 
+
+            // ==================================================
+            // GO TO ADVANCE
+            // ==================================================
 
             window.location.href =
                 "advance.html";
@@ -895,6 +1011,11 @@ if (backBtn) {
             event.stopPropagation();
 
 
+            console.log(
+                "BACK: discount.html"
+            );
+
+
             window.location.href =
                 "discount.html";
 
@@ -916,34 +1037,41 @@ document.addEventListener(
             "======================================"
         );
 
+
         console.log(
             "LABOUR PAGE INITIALIZING"
         );
 
 
-        // ----------------------------------------------------
-        // Read Discount total
-        // ----------------------------------------------------
+        // ====================================================
+        // LOAD WOOD/DISCOUNT TOTAL
+        // ====================================================
 
         displayWoodTotal();
 
 
-        // ----------------------------------------------------
-        // IMPORTANT:
-        // Calculate after woodTotal has been loaded.
-        // ----------------------------------------------------
+        // ====================================================
+        // CALCULATE INITIAL TOTAL
+        // ====================================================
 
         calculateGrandTotal();
+
+
+        console.log(
+            "======================================"
+        );
 
 
         console.log(
             "LABOUR PAGE READY"
         );
 
+
         console.log(
             "CURRENT WOOD TOTAL:",
             woodTotal
         );
+
 
         console.log(
             "CURRENT GRAND TOTAL:",

@@ -207,33 +207,37 @@
     <!-- OTHER CHARGES -->
     <!-- ================================= -->
 
-    <h2>
-        Other Charges
-    </h2>
+    <div id="otherChargesSection">
+
+        <h2>
+            Other Charges
+        </h2>
 
 
-    <table>
+        <table>
 
-        <thead>
+            <thead>
 
-            <tr>
+                <tr>
 
-                <th>S.No</th>
+                    <th>S.No</th>
 
-                <th>Name</th>
+                    <th>Name</th>
 
-                <th>Amount</th>
+                    <th>Amount</th>
 
-            </tr>
+                </tr>
 
-        </thead>
+            </thead>
 
 
-        <tbody id="chargeTable">
+            <tbody id="chargeTable">
 
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
+
+    </div>
 
 
     <!-- ================================= -->
@@ -266,7 +270,9 @@
 
         <p>
 
-            Wood Total
+            <span>
+                Wood Total
+            </span>
 
             <span id="woodTotal">
                 ₹ 0.00
@@ -281,7 +287,9 @@
 
         <p>
 
-            Others Total
+            <span>
+                Others Total
+            </span>
 
             <span id="othersTotal">
                 ₹ 0.00
@@ -296,7 +304,9 @@
 
         <p id="subtotalRow">
 
-            Subtotal
+            <span>
+                Subtotal
+            </span>
 
             <span id="subtotalAmount">
                 ₹ 0.00
@@ -314,7 +324,9 @@
             class="discount-row"
             style="display:none;">
 
-            Discount
+            <span>
+                Discount
+            </span>
 
             <span id="discountAmount">
                 - ₹ 0.00
@@ -329,7 +341,9 @@
 
         <h2 class="grand-total-row">
 
-            Grand Total
+            <span>
+                Grand Total
+            </span>
 
             <span id="grandTotal">
                 ₹ 0.00
@@ -342,9 +356,12 @@
         <!-- ADVANCE AMOUNT -->
         <!-- ================================= -->
 
-        <p>
+        <p
+            id="advanceRow">
 
-            Advance Amount
+            <span>
+                Advance Amount
+            </span>
 
             <span id="advanceAmount">
                 ₹ 0.00
@@ -359,7 +376,9 @@
 
         <p>
 
-            Balance Amount
+            <span>
+                Balance Amount
+            </span>
 
             <span id="balanceAmount">
                 ₹ 0.00
@@ -413,11 +432,15 @@
             Home
 
         </button>
+
+
         <button
-    id="clearBtn"
-    type="button">
-    Clear
-</button>
+            id="clearBtn"
+            type="button">
+
+            Clear
+
+        </button>
 
     </div>
 

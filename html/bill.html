@@ -5,13 +5,15 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
+    <meta
+        name="viewport"
         content="width=device-width, initial-scale=1.0">
 
     <title>Wood Bill</title>
 
-    <link rel="stylesheet"
-        href="../css/bill.css">
+    <link
+        rel="stylesheet"
+        href="../css/bill.css?v=10">
 
 </head>
 
@@ -21,9 +23,9 @@
 <div class="bill-container">
 
 
-    <!-- ========================= -->
-    <!-- HEADER -->
-    <!-- ========================= -->
+    <!-- =========================================
+         HEADER
+    ========================================== -->
 
     <div class="header">
 
@@ -71,9 +73,9 @@
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- BILL INFO -->
-    <!-- ========================= -->
+    <!-- =========================================
+         BILL INFO
+    ========================================== -->
 
     <div class="billInfo">
 
@@ -104,27 +106,42 @@
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- CUSTOMER -->
-    <!-- ========================= -->
+    <!-- =========================================
+         CUSTOMER
+    ========================================== -->
 
     <div class="customer">
 
         <span>
+
             <b>Customer :</b>
-            <span id="customerName">-</span>
+
+            <span id="customerName">
+                -
+            </span>
+
         </span>
 
 
         <span>
+
             <b>Mobile :</b>
-            <span id="customerMobile">-</span>
+
+            <span id="customerMobile">
+                -
+            </span>
+
         </span>
 
 
         <span>
+
             <b>Place :</b>
-            <span id="customerPlace">-</span>
+
+            <span id="customerPlace">
+                -
+            </span>
+
         </span>
 
     </div>
@@ -133,11 +150,13 @@
     <hr>
 
 
-    <!-- ========================= -->
-    <!-- WOOD DETAILS -->
-    <!-- ========================= -->
+    <!-- =========================================
+         WOOD DETAILS
+    ========================================== -->
 
-    <h2>Wood Details</h2>
+    <h2>
+        Wood Details
+    </h2>
 
 
     <table>
@@ -178,12 +197,13 @@
     </table>
 
 
+    <!-- =========================================
+         OTHER CHARGES
+    ========================================== -->
 
-    <!-- ========================= -->
-    <!-- OTHER CHARGES -->
-    <!-- ========================= -->
-
-    <h2>Other Charges</h2>
+    <h2>
+        Other Charges
+    </h2>
 
 
     <table>
@@ -210,19 +230,20 @@
     </table>
 
 
-
-    <!-- ========================= -->
-    <!-- TOTALS -->
-    <!-- ========================= -->
+    <!-- =========================================
+         TOTALS
+    ========================================== -->
 
     <div class="totals">
 
 
-        <!-- CFT TOTAL -->
+        <!-- CFT -->
 
         <div class="cftTotal">
 
-            <h3>CFT Total</h3>
+            <h3>
+                CFT Total
+            </h3>
 
             <div id="cftSummary"></div>
 
@@ -233,7 +254,9 @@
 
         <p>
 
-            <span>Wood Total</span>
+            <span>
+                Wood Total
+            </span>
 
             <span id="woodTotal">
                 ₹ 0
@@ -242,11 +265,13 @@
         </p>
 
 
-        <!-- OTHER TOTAL -->
+        <!-- OTHERS TOTAL -->
 
         <p>
 
-            <span>Others Total</span>
+            <span>
+                Others Total
+            </span>
 
             <span id="othersTotal">
                 ₹ 0
@@ -259,7 +284,9 @@
 
         <p>
 
-            <span>Subtotal</span>
+            <span>
+                Subtotal
+            </span>
 
             <span id="subtotal">
                 ₹ 0
@@ -275,7 +302,9 @@
             class="discount-row"
             style="display:none;">
 
-            <span>Discount</span>
+            <span>
+                Discount
+            </span>
 
             <span id="discountAmount">
                 ₹ 0
@@ -288,7 +317,9 @@
 
         <h2>
 
-            <span>Grand Total</span>
+            <span>
+                Grand Total
+            </span>
 
             <span id="grandTotal">
                 ₹ 0
@@ -304,7 +335,9 @@
             class="advance-row"
             style="display:none;">
 
-            <span>Advance Amount</span>
+            <span>
+                Advance Amount
+            </span>
 
             <span id="advanceAmount">
                 ₹ 0
@@ -317,7 +350,9 @@
 
         <p class="balance-row">
 
-            <span>Balance Amount</span>
+            <span>
+                Balance Amount
+            </span>
 
             <span id="balanceAmount">
                 ₹ 0
@@ -325,21 +360,18 @@
 
         </p>
 
-
     </div>
 
 
-
-    <!-- ========================= -->
-    <!-- SIGNATURE -->
-    <!-- ========================= -->
+    <!-- =========================================
+         SIGNATURE
+    ========================================== -->
 
     <div class="signature">
 
         <p>
             Customer Signature
         </p>
-
 
         <p>
             Authorized Signature
@@ -351,12 +383,11 @@
     <br>
 
 
-    <!-- ========================= -->
-    <!-- BUTTONS -->
-    <!-- ========================= -->
+    <!-- =========================================
+         BUTTONS
+    ========================================== -->
 
     <div class="buttons">
-
 
         <button
             id="editBtn"
@@ -392,12 +423,15 @@
             Back
 
         </button>
-        <button
-    id="clearBtn"
-    type="button">
-    Clear
-</button>
 
+
+        <button
+            id="clearBtn"
+            type="button">
+
+            Clear
+
+        </button>
 
     </div>
 
@@ -405,15 +439,17 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================= -->
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
 
-<script src="../js/bill.js"></script>
+<script src="../js/storedata.js?v=10"></script>
 
-<script src="../js/inputControl.js"></script>
+<script src="../js/bill.js?v=10"></script>
 
-<script src="../js/formPersistence.js"></script>
+<script src="../js/inputControl.js?v=10"></script>
+
+<script src="../js/formPersistence.js?v=10"></script>
 
 
 </body>

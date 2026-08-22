@@ -557,94 +557,90 @@ if (woodTable) {
                 // LENGTHS
                 // ============================================
 
-                let lengthValues = [];
+                
+                // ============================================
+// LENGTH + QUANTITY SEPARATELY
+// Example:
+// 9 → 4
+// 5 → 6
+// ============================================
+
+let lengthValues = [];
+
+pieces.forEach(function (piece) {
+
+    if (!piece) {
+        return;
+    }
+
+    const length = toNumber(piece.length);
+
+    const extraLength = toNumber(piece.extraLength);
+
+    const finalLength = length + extraLength;
+
+    const qty = toNumber(piece.qty);
+
+    if (finalLength > 0) {
+
+        lengthValues.push({
+            length: finalLength,
+            qty: qty
+        });
+
+    }
+
+});
 
 
-                pieces.forEach(
-                    function (piece) {
+// ============================================
+// FALLBACK TO DIRECT LENGTH
+// ============================================
 
-                        if (!piece) {
+if (
+    lengthValues.length === 0 &&
+    item.length !== undefined
+) {
 
-                            return;
+    const directLength =
+        toNumber(item.length);
 
-                        }
+    const directQty =
+        toNumber(item.qty);
 
+    if (directLength > 0) {
 
-                        const length =
-                            toNumber(
-                                piece.length
-                            );
+        lengthValues.push({
+            length: directLength,
+            qty: directQty
+        });
 
+    }
 
-                        const extraLength =
-                            toNumber(
-                                piece.extraLength
-                            );
-
-
-                        const finalLength =
-                            length +
-                            extraLength;
-
-
-                        if (
-                            finalLength > 0
-                        ) {
-
-                            lengthValues.push(
-                                finalLength
-                            );
-
-                        }
-
-                    }
-                );
+}
 
 
-                // If no pieces, try direct length
-                if (
-                    lengthValues.length === 0 &&
-                    item.length !== undefined
-                ) {
+// ============================================
+// DISPLAY EACH LENGTH SEPARATELY
+// ============================================
 
-                    const directLength =
-                        toNumber(
-                            item.length
-                        );
+let lengthText = "-";
 
+if (lengthValues.length > 0) {
 
-                    if (
-                        directLength > 0
-                    ) {
+    lengthText =
+        lengthValues
+            .map(function (item) {
 
-                        lengthValues.push(
-                            directLength
-                        );
+                return `
+                    ${item.length}
+                    → ${item.qty}
+                `;
 
-                    }
+            })
+            .join("<br>");
 
-                }
-
-
-                let lengthText = "-";
-
-
-                if (
-                    lengthValues.length > 0
-                ) {
-
-                    lengthText =
-                        lengthValues
-                            .map(
-                                function (value) {
-
-                                    return value;
-
-                                }
-                            )
-                            .join(" / ");
-
-                }
+}
 
 
                 // ============================================

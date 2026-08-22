@@ -13,7 +13,7 @@
 
     <link
         rel="stylesheet"
-        href="../css/bill.css?v=11">
+        href="../css/bill.css?v=12">
 
 </head>
 
@@ -193,6 +193,27 @@
 
 
     <!-- =========================================
+         SEPARATE WOOD DETAILS TOTAL
+         
+         THIS IS ONLY DISPLAY
+         DOES NOT CHANGE CALCULATION
+         DOES NOT CHANGE BALANCE
+    ========================================== -->
+
+    <div class="wood-details-total">
+
+        <span>
+            Wood Details Total
+        </span>
+
+        <strong id="woodDetailsTotal">
+            ₹ 0.00
+        </strong>
+
+    </div>
+
+
+    <!-- =========================================
          OTHER CHARGES
     ========================================== -->
 
@@ -225,6 +246,9 @@
 
     <!-- =========================================
          TOTALS
+         
+         EXISTING CALCULATIONS
+         DO NOT CHANGE
     ========================================== -->
 
     <div class="totals">
@@ -384,56 +408,55 @@
 
     <div class="buttons">
 
-    <!-- 1. CONFIRM -->
-    <button
-        id="confirmBill"
-        type="button">
-        Confirm
-    </button>
+        <button
+            id="confirmBill"
+            type="button">
+            Confirm
+        </button>
 
 
-    <!-- 2. PRINT BILL -->
-    <button
-        id="printBtn"
-        type="button">
-        Print Bill
-    </button>
+        <button
+            id="printBtn"
+            type="button">
+            Print Bill
+        </button>
 
 
-    <!-- 3. EDIT BILL -->
-    <button
-        id="editBtn"
-        type="button">
-        Edit Bill
-    </button>
+        <button
+            id="editBtn"
+            type="button">
+            Edit Bill
+        </button>
 
 
-    <!-- 4. CLEAR -->
-    <button
-        id="clearBtn"
-        type="button">
-        Clear
-    </button>
+        <button
+            id="clearBtn"
+            type="button">
+            Clear
+        </button>
 
 
-    <!-- 5. WHATSAPP -->
-    <button
-        id="whatsappBtn"
-        type="button">
-        WhatsApp
-    </button>
+        <button
+            id="whatsappBtn"
+            type="button">
+            WhatsApp
+        </button>
+
+    </div>
+
 
 </div>
+
 
 <!-- =========================================
      JAVASCRIPT
 ========================================= -->
 
-<script src="../js/storedata.js?v=11"></script>
+<script src="../js/storedata.js?v=12"></script>
 
-<script src="../js/bill.js?v=11"></script>
+<script src="../js/bill.js?v=12"></script>
 
-<script src="../js/inputControl.js?v=11"></script>
+<script src="../js/inputControl.js?v=12"></script>
 
 
 </body>

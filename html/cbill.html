@@ -7,7 +7,521 @@ console.clear();
 
 console.log("==========================================");
 console.log("           CBILL.JS LOADED");
-console.log("==========================================");
+console.log("==============<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Final Bill</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/cbill.css">
+
+</head>
+
+
+<body>
+
+<div class="bill-container">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="header">
+
+        <div class="logo">
+
+            <img
+                src="../img/logo.jpg"
+                id="logo"
+                alt="Sri Amman Samil Logo">
+
+        </div>
+
+
+        <div class="company">
+
+            <h1>
+                ஸ்ரீ அம்மன் சாமில்
+            </h1>
+
+            <h4>
+                தேக்கு, வேம்பு, பூவரசு வியாபாரம்
+            </h4>
+
+            <p>
+                2/17,A, மணப்பாறை மெயின் ரோடு, சத்தியமங்கலம்
+            </p>
+
+            <p>
+                குளித்தலை வட்டம், கரூர் மாவட்டம் - 639 120
+            </p>
+
+            <h3>
+                Mobile : 9443076409 , 9715050908
+            </h3>
+
+            <h4>
+                GST : 33DLKPK5760D1Z5
+            </h4>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================= -->
+    <!-- BILL INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="billInfo">
+
+        <div>
+
+            <b>
+                Bill No :
+            </b>
+
+            <span id="billNo">
+                Loading...
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <b>
+                Date :
+            </b>
+
+            <span id="billDate">
+                -
+            </span>
+
+            <br>
+
+            <small id="billDayTime">
+                -
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================= -->
+    <!-- CUSTOMER DETAILS -->
+    <!-- ================================================= -->
+
+    <div class="customer">
+
+        <span>
+
+            <b>
+                Customer :
+            </b>
+
+            <span id="customerName">
+                -
+            </span>
+
+        </span>
+
+
+        <span>
+
+            <b>
+                Mobile :
+            </b>
+
+            <span id="customerMobile">
+                -
+            </span>
+
+        </span>
+
+
+        <span>
+
+            <b>
+                Placee :
+            </b>
+
+            <span id="customerPlace">
+                -
+            </span>
+
+        </span>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ================================================= -->
+    <!-- WOOD DETAILS -->
+    <!-- ================================================= -->
+
+    <h2>
+        Wood Details
+    </h2>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        S.No
+                    </th>
+
+                    <th>
+                        Wood
+                    </th>
+
+                    <th>
+                        Size
+                    </th>
+
+                    <th>
+                        Length
+                    </th>
+
+                    <th>
+                        Qty
+                    </th>
+
+                    <th>
+                        Total Length
+                    </th>
+
+                    <th>
+                        CFT
+                    </th>
+
+                    <th>
+                        Rate
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Quality
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="woodTable">
+
+                <!-- CBILL.JS INSERTS WOOD DATA HERE -->
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- OTHER CHARGES -->
+    <!-- ================================================= -->
+
+    <div id="otherChargesSection">
+
+        <h2>
+            Other Charges
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            S.No
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="chargeTable">
+
+                    <!-- CBILL.JS INSERTS CHARGES HERE -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- TOTALS -->
+    <!-- ================================================= -->
+
+    <div class="totals">
+
+
+        <!-- ================================================= -->
+        <!-- CFT SUMMARY -->
+        <!-- ================================================= -->
+
+        <div class="cftTotal">
+
+            <h3>
+                CFT Total
+            </h3>
+
+
+            <div id="cftSummary">
+
+                <!-- CBILL.JS INSERTS CFT DETAILS -->
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- WOOD TOTAL -->
+        <!-- ================================================= -->
+
+        <p>
+
+            <span>
+                Wood Total
+            </span>
+
+            <span id="woodTotal">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- OTHER TOTAL -->
+        <!-- ================================================= -->
+
+        <p>
+
+            <span>
+                Others Total
+            </span>
+
+            <span id="othersTotal">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- SUBTOTAL -->
+        <!-- ================================================= -->
+
+        <p id="subtotalRow">
+
+            <span>
+                Subtotal
+            </span>
+
+            <span id="subtotalAmount">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- DISCOUNT -->
+        <!-- ================================================= -->
+
+        <p
+            id="discountRow"
+            class="discount-row"
+            style="display:none;">
+
+            <span>
+                Discount
+            </span>
+
+            <span id="discountAmount">
+                - ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- GRAND TOTAL -->
+        <!-- ================================================= -->
+
+        <h2 class="grand-total-row">
+
+            <span>
+                Grand Total
+            </span>
+
+            <span id="grandTotal">
+                ₹ 0.00
+            </span>
+
+        </h2>
+
+
+        <!-- ================================================= -->
+        <!-- ADVANCE -->
+        <!-- ================================================= -->
+
+        <p
+            id="advanceRow">
+
+            <span>
+                Advance Amount
+            </span>
+
+            <span id="advanceAmount">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+        <!-- ================================================= -->
+        <!-- BALANCE -->
+        <!-- ================================================= -->
+
+        <p>
+
+            <span>
+                Balance Amount
+            </span>
+
+            <span id="balanceAmount">
+                ₹ 0.00
+            </span>
+
+        </p>
+
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SIGNATURE -->
+    <!-- ================================================= -->
+
+    <div class="signature">
+
+        <p>
+            Customer Signature
+        </p>
+
+        <p>
+            Authorized Signature
+        </p>
+
+    </div>
+
+
+    <br>
+
+
+    <!-- ================================================= -->
+    <!-- BUTTONS -->
+    <!-- ================================================= -->
+
+    <div class="buttons">
+
+
+        <button
+            id="printBtn"
+            type="button">
+
+            Print Bill
+
+        </button>
+
+
+        <button
+            id="homeBtn"
+            type="button">
+
+            Home
+
+        </button>
+
+
+        <button
+            id="clearBtn"
+            type="button">
+
+            Clear
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CBILL JAVASCRIPT -->
+<!-- ================================================= -->
+
+<script
+    src="../js/cbill.js">
+</script>
+
+
+</body>
+
+</html>============================");
 
 
 // ============================================================

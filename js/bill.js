@@ -2284,3 +2284,158 @@ console.log(
 console.log(
     "===================================="
 );
+// ============================================================
+// WHATSAPP BUTTON
+// ============================================================
+
+const whatsappBtn =
+    document.getElementById("whatsappBtn");
+
+
+if (whatsappBtn) {
+
+    whatsappBtn.addEventListener(
+        "click",
+        function () {
+
+            console.log(
+                "WHATSAPP BUTTON CLICKED"
+            );
+
+
+            // ------------------------------------------------
+            // GET CUSTOMER MOBILE
+            // ------------------------------------------------
+
+            let mobile =
+                personalData.mobile || "";
+
+
+            mobile =
+                String(mobile)
+                    .replace(/\D/g, "");
+
+
+            console.log(
+                "CUSTOMER MOBILE:",
+                mobile
+            );
+
+
+            // ------------------------------------------------
+            // CHECK MOBILE NUMBER
+            // ------------------------------------------------
+
+            if (mobile.length !== 10) {
+
+                alert(
+                    "Customer mobile number is not valid.\n\n" +
+                    "Please enter a valid 10-digit mobile number " +
+                    "in the Personal page."
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------------
+            // CONFIRM
+            // ------------------------------------------------
+
+            const confirmSend =
+                confirm(
+                    "Do you want to send this bill through WhatsApp?"
+                );
+
+
+            if (!confirmSend) {
+
+                console.log(
+                    "WHATSAPP SEND CANCELLED"
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------------
+            // INDIA COUNTRY CODE
+            // ------------------------------------------------
+
+            const whatsappNumber =
+                "91" + mobile;
+
+
+            // ------------------------------------------------
+            // BILL MESSAGE
+            // ------------------------------------------------
+
+            const message =
+
+`🧾 *WOOD BILL*
+
+Customer: ${customerName || "-"}
+Mobile: ${customerMobile || "-"}
+Place: ${customerPlace || "-"}
+
+------------------------------
+
+Wood Total: ${money(woodTotal)}
+Others Total: ${money(othersTotal)}
+Subtotal: ${money(subtotal)}
+Discount: ${money(discount)}
+
+*Grand Total: ${money(grandTotal)}*
+
+Advance Amount: ${money(advanceAmount)}
+Balance Amount: ${money(balanceAmount)}
+
+------------------------------
+
+Thank you 🙏
+ஸ்ரீ அம்மன் சாமில்`;
+
+
+            // ------------------------------------------------
+            // WHATSAPP URL
+            // ------------------------------------------------
+
+            const whatsappURL =
+                "https://wa.me/" +
+                whatsappNumber +
+                "?text=" +
+                encodeURIComponent(
+                    message
+                );
+
+
+            console.log(
+                "WHATSAPP NUMBER:",
+                whatsappNumber
+            );
+
+            console.log(
+                "WHATSAPP MESSAGE:",
+                message
+            );
+
+            console.log(
+                "OPENING WHATSAPP"
+            );
+
+
+            // ------------------------------------------------
+            // OPEN WHATSAPP
+            // ------------------------------------------------
+
+            window.open(
+                whatsappURL,
+                "_blank"
+            );
+
+        }
+    );
+
+}

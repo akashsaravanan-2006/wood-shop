@@ -67,30 +67,8 @@ function escapeHTML(value) {
 // ============================================================
 // GET COMPLETE BILL DATA
 // ============================================================
-//
-// Your storedata.js uses:
-//
-// current_bill_data
-//
-// Structure:
-//
-// {
-//     wood: {},
-//     labour: {},
-//     personal: {},
-//     advance: {},
-//     discount: {},
-//     totals: {}
-// }
-//
-// ============================================================
 
 let billData = {};
-
-
-// ------------------------------------------------------------
-// FIRST: USE storedata.js
-// ------------------------------------------------------------
 
 if (
     typeof getBillData ===
@@ -102,8 +80,6 @@ if (
 
 }
 else {
-
-    // Compatibility fallback
 
     try {
 
@@ -171,14 +147,6 @@ const totalsData =
 
 // ============================================================
 // CUSTOMER DETAILS
-// ============================================================
-//
-// personal.js stores:
-//
-// name
-// mobile
-// place
-//
 // ============================================================
 
 const customerName =
@@ -272,19 +240,11 @@ const billDayTimeElement =
     );
 
 
-// ------------------------------------------------------------
-// USE SAVED BILL DATE IF AVAILABLE
-// ------------------------------------------------------------
-
 let savedBillDate =
     localStorage.getItem(
         "billDate"
     );
 
-
-// ------------------------------------------------------------
-// CURRENT DATE
-// ------------------------------------------------------------
 
 const now =
     new Date();
@@ -343,10 +303,6 @@ const currentTime =
     `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
 
 
-// ------------------------------------------------------------
-// DISPLAY DATE
-// ------------------------------------------------------------
-
 if (
     billDateElement
 ) {
@@ -357,10 +313,6 @@ if (
 
 }
 
-
-// ------------------------------------------------------------
-// DISPLAY TIME
-// ------------------------------------------------------------
 
 if (
     billDayTimeElement
@@ -375,22 +327,11 @@ if (
 // ============================================================
 // BILL NUMBER
 // ============================================================
-//
-// IMPORTANT:
-//
-// DO NOT GENERATE BILL NUMBER HERE.
-//
-// Your database-generated bill number remains untouched.
-//
-// If another existing script puts the bill number into
-// #billNo, this code will NOT overwrite it.
-// ============================================================
 
 const billNoElement =
     document.getElementById(
         "billNo"
     );
-
 
 console.log(
     "BILL NUMBER ELEMENT:",
@@ -400,34 +341,6 @@ console.log(
 
 // ============================================================
 // WOOD DATA
-// ============================================================
-//
-// REAL STRUCTURE FROM YOUR wood.js:
-//
-// woodPage.calculations[]
-//
-// Each calculation:
-//
-// {
-//     woodType,
-//     otherWood,
-//     breadth,
-//     thickness,
-//     rate,
-//     quality,
-//     pieces: [
-//         {
-//             length,
-//             extraLength,
-//             qty,
-//             totalLength
-//         }
-//     ],
-//     totalLength,
-//     cubicFeet,
-//     amount
-// }
-//
 // ============================================================
 
 let woodCalculations = [];
@@ -445,7 +358,7 @@ if (
 }
 
 
-// Compatibility fallback for old woodData
+// Compatibility fallback
 
 if (
     woodCalculations.length === 0
@@ -504,30 +417,9 @@ console.log(
 // ============================================================
 // GROUP SAME WOOD + SAME QUALITY
 // ============================================================
-//
-// IMPORTANT:
-//
-// Same Wood + Same Quality = ONE ROW
-//
-// Example:
-//
-// Teak + Quality 1
-// Teak + Quality 1
-// Teak + Quality 2
-//
-// becomes:
-//
-// Teak + Quality 1
-// Teak + Quality 2
-//
-// ============================================================
 
 const woodGroups = {};
 
-
-// ============================================================
-// PROCESS EACH WOOD CALCULATION
-// ============================================================
 
 woodCalculations.forEach(
     function (item) {
@@ -633,7 +525,7 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // TOTAL CFT
+        // CFT
         // ----------------------------------------------------
 
         const cubicFeet =
@@ -643,7 +535,7 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // TOTAL AMOUNT
+        // AMOUNT
         // ----------------------------------------------------
 
         const amount =
@@ -665,10 +557,11 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // CALCULATE TOTAL QTY
+        // TOTAL QTY
         // ----------------------------------------------------
 
         let totalQty = 0;
+
 
         pieces.forEach(
             function (piece) {
@@ -691,9 +584,6 @@ woodCalculations.forEach(
                 item.totalLength
             );
 
-
-        // If totalLength is not saved,
-        // calculate it from pieces.
 
         if (
             totalLength === 0
@@ -780,7 +670,7 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // ADD BREADTH
+        // BREADTH
         // ----------------------------------------------------
 
         if (
@@ -798,7 +688,7 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // ADD THICKNESS
+        // THICKNESS
         // ----------------------------------------------------
 
         if (
@@ -816,7 +706,7 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // ADD PIECE LENGTHS
+        // LENGTHS
         // ----------------------------------------------------
 
         pieces.forEach(
@@ -862,40 +752,21 @@ woodCalculations.forEach(
 
 
         // ----------------------------------------------------
-        // ADD QTY
+        // ADD VALUES
         // ----------------------------------------------------
 
         group.qty +=
             totalQty;
 
-
-        // ----------------------------------------------------
-        // ADD TOTAL LENGTH
-        // ----------------------------------------------------
-
         group.totalLength +=
             totalLength;
-
-
-        // ----------------------------------------------------
-        // ADD CFT
-        // ----------------------------------------------------
 
         group.cubicFeet +=
             cubicFeet;
 
-
-        // ----------------------------------------------------
-        // ADD AMOUNT
-        // ----------------------------------------------------
-
         group.amount +=
             amount;
 
-
-        // ----------------------------------------------------
-        // KEEP RATE
-        // ----------------------------------------------------
 
         if (
             group.rate === 0 &&
@@ -1226,10 +1097,6 @@ if (
 // ============================================================
 // WOOD TOTAL
 // ============================================================
-//
-// Use actual wood calculation amounts.
-// Do NOT recalculate from labour.
-// ============================================================
 
 let woodTotal = 0;
 
@@ -1243,8 +1110,6 @@ finalWoodGroups.forEach(
     }
 );
 
-
-// Fallback to stored wood total
 
 if (
     woodTotal === 0
@@ -1280,12 +1145,6 @@ console.log(
 
 // ============================================================
 // LABOUR DATA
-// ============================================================
-//
-// Your labour.js stores this in:
-//
-// localStorage.labourData
-//
 // ============================================================
 
 let labourData =
@@ -1398,9 +1257,6 @@ let othersTotal =
     additionalTotal;
 
 
-// If labour.js has a saved total,
-// use it when valid.
-
 if (
     toNumber(
         labourData.othersTotal
@@ -1456,10 +1312,6 @@ if (
     let serialNumber = 1;
 
 
-    // --------------------------------------------------------
-    // LABOUR
-    // --------------------------------------------------------
-
     if (
         labourCharge > 0
     ) {
@@ -1489,10 +1341,6 @@ if (
     }
 
 
-    // --------------------------------------------------------
-    // OTHER CHARGE
-    // --------------------------------------------------------
-
     if (
         otherCharge > 0
     ) {
@@ -1521,10 +1369,6 @@ if (
 
     }
 
-
-    // --------------------------------------------------------
-    // ADDITIONAL ITEMS
-    // --------------------------------------------------------
 
     otherItems.forEach(
         function (item) {
@@ -1586,10 +1430,6 @@ if (
     );
 
 
-    // --------------------------------------------------------
-    // EMPTY
-    // --------------------------------------------------------
-
     if (
         serialNumber === 1
     ) {
@@ -1631,21 +1471,12 @@ console.log(
 // ============================================================
 // DISCOUNT
 // ============================================================
-//
-// discount.js stores:
-//
-// discountAmount
-// newGrandTotal
-//
-// ============================================================
 
 let discount =
     toNumber(
         discountDataCentral.discountAmount
     );
 
-
-// Compatibility
 
 if (
     discount === 0
@@ -1707,15 +1538,24 @@ const woodTotalElement =
         "woodTotal"
     );
 
+
+const woodDetailsTotalElement =
+    document.getElementById(
+        "woodDetailsTotal"
+    );
+
+
 const othersTotalElement =
     document.getElementById(
         "othersTotal"
     );
 
+
 const subtotalElement =
     document.getElementById(
         "subtotal"
     );
+
 
 const grandTotalElement =
     document.getElementById(
@@ -1728,6 +1568,27 @@ if (
 ) {
 
     woodTotalElement.textContent =
+        money(
+            woodTotal
+        );
+
+}
+
+
+// ============================================================
+// SEPARATE WOOD DETAILS TOTAL
+// ============================================================
+//
+// ONLY DISPLAYS THE EXISTING WOOD TOTAL.
+// DOES NOT CHANGE ANY CALCULATION.
+// DOES NOT CHANGE BALANCE.
+// ============================================================
+
+if (
+    woodDetailsTotalElement
+) {
+
+    woodDetailsTotalElement.textContent =
         money(
             woodTotal
         );
@@ -1779,6 +1640,7 @@ const discountRow =
     document.getElementById(
         "discountRow"
     );
+
 
 const discountAmountElement =
     document.getElementById(
@@ -1851,10 +1713,6 @@ if (
 }
 
 
-// ------------------------------------------------------------
-// LIMIT ADVANCE TO GRAND TOTAL
-// ------------------------------------------------------------
-
 if (
     advanceAmount > grandTotal
 ) {
@@ -1892,6 +1750,7 @@ const advanceRow =
     document.getElementById(
         "advanceRow"
     );
+
 
 const advanceAmountElement =
     document.getElementById(
@@ -2037,6 +1896,11 @@ console.log(
 
 console.log(
     "Wood Total:",
+    woodTotal
+);
+
+console.log(
+    "Wood Details Total:",
     woodTotal
 );
 
@@ -2273,26 +2137,19 @@ if (
 }
 
 
-console.log(
-    "===================================="
-);
-
-console.log(
-    "BILL.JS READY"
-);
-
-console.log(
-    "===================================="
-);
 // ============================================================
-// WHATSAPP BUTTON
+// WHATSAPP
 // ============================================================
 
 const whatsappBtn =
-    document.getElementById("whatsappBtn");
+    document.getElementById(
+        "whatsappBtn"
+    );
 
 
-if (whatsappBtn) {
+if (
+    whatsappBtn
+) {
 
     whatsappBtn.addEventListener(
         "click",
@@ -2303,10 +2160,6 @@ if (whatsappBtn) {
             );
 
 
-            // ------------------------------------------------
-            // GET CUSTOMER MOBILE
-            // ------------------------------------------------
-
             let mobile =
                 personalData.mobile || "";
 
@@ -2316,32 +2169,19 @@ if (whatsappBtn) {
                     .replace(/\D/g, "");
 
 
-            console.log(
-                "CUSTOMER MOBILE:",
-                mobile
-            );
-
-
-            // ------------------------------------------------
-            // CHECK MOBILE NUMBER
-            // ------------------------------------------------
-
-            if (mobile.length !== 10) {
+            if (
+                mobile.length !== 10
+            ) {
 
                 alert(
                     "Customer mobile number is not valid.\n\n" +
-                    "Please enter a valid 10-digit mobile number " +
-                    "in the Personal page."
+                    "Please enter a valid 10-digit mobile number."
                 );
 
                 return;
 
             }
 
-
-            // ------------------------------------------------
-            // CONFIRM
-            // ------------------------------------------------
 
             const confirmSend =
                 confirm(
@@ -2349,28 +2189,18 @@ if (whatsappBtn) {
                 );
 
 
-            if (!confirmSend) {
-
-                console.log(
-                    "WHATSAPP SEND CANCELLED"
-                );
+            if (
+                !confirmSend
+            ) {
 
                 return;
 
             }
 
 
-            // ------------------------------------------------
-            // INDIA COUNTRY CODE
-            // ------------------------------------------------
-
             const whatsappNumber =
                 "91" + mobile;
 
-
-            // ------------------------------------------------
-            // BILL MESSAGE
-            // ------------------------------------------------
 
             const message =
 
@@ -2398,10 +2228,6 @@ Thank you 🙏
 ஸ்ரீ அம்மன் சாமில்`;
 
 
-            // ------------------------------------------------
-            // WHATSAPP URL
-            // ------------------------------------------------
-
             const whatsappURL =
                 "https://wa.me/" +
                 whatsappNumber +
@@ -2410,25 +2236,6 @@ Thank you 🙏
                     message
                 );
 
-
-            console.log(
-                "WHATSAPP NUMBER:",
-                whatsappNumber
-            );
-
-            console.log(
-                "WHATSAPP MESSAGE:",
-                message
-            );
-
-            console.log(
-                "OPENING WHATSAPP"
-            );
-
-
-            // ------------------------------------------------
-            // OPEN WHATSAPP
-            // ------------------------------------------------
 
             window.open(
                 whatsappURL,
@@ -2439,3 +2246,16 @@ Thank you 🙏
     );
 
 }
+
+
+console.log(
+    "===================================="
+);
+
+console.log(
+    "BILL.JS READY"
+);
+
+console.log(
+    "===================================="
+);

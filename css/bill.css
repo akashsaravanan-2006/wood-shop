@@ -241,105 +241,120 @@ table td{
    BUTTONS
 ========================= */
 
-.buttons{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-top:30px;
-    flex-wrap:wrap;
+/* =========================================
+   BILL BUTTONS
+========================================= */
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    width: 100%;
 }
 
 
-.buttons button{
-    padding:12px 25px;
-    font-size:16px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    color:white;
-    font-weight:bold;
+/* ALL BUTTONS */
+
+.buttons button {
+    flex: 1;
+    border: none;
+    padding: 14px 10px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
 }
 
 
-/* =========================
-   EDIT
-========================= */
+/* =========================================
+   1. CONFIRM
+========================================= */
 
-#editBtn{
-    background:#6f42c1;
+#confirmBill {
+    background: #ffc107;
+    color: #000;
+}
+
+#confirmBill:hover {
+    background: #e0a800;
 }
 
 
-#editBtn:hover{
-    background:#59339d;
+/* =========================================
+   2. PRINT BILL
+========================================= */
+
+#printBtn {
+    background: #00b050;
+}
+
+#printBtn:hover {
+    background: #008f40;
 }
 
 
-/* =========================
-   CONFIRM
-========================= */
+/* =========================================
+   3. EDIT BILL
+========================================= */
 
-#confirmBill{
-    background-color:#FFD700;
-    color:#000;
+#editBtn {
+    background: #7e3fc5;
+}
+
+#editBtn:hover {
+    background: #652da3;
 }
 
 
-#confirmBill:hover{
-    background-color:#FFC107;
+/* =========================================
+   4. CLEAR
+========================================= */
+
+#clearBtn {
+    background: #6c757d;
+}
+
+#clearBtn:hover {
+    background: #545b62;
 }
 
 
-/* =========================
-   PRINT
-========================= */
+/* =========================================
+   5. WHATSAPP
+========================================= */
 
-#printBtn{
-    background:#28a745;
+#whatsappBtn {
+    background: #25d366;
+}
+
+#whatsappBtn:hover {
+    background: #1da851;
 }
 
 
-#printBtn:hover{
-    background:#218838;
+/* =========================================
+   CLICK EFFECT
+========================================= */
+
+.buttons button:active {
+    transform: scale(0.97);
 }
 
 
-/* =========================
-   BACK
-========================= */
+/* =========================================
+   MOBILE
+========================================= */
 
-#backBtn{
-    background:#007bff;
-}
+@media (max-width: 700px) {
 
-
-#backBtn:hover{
-    background:#0056b3;
-}
-
-
-/* =========================
-   PRINT
-========================= */
-
-@media print{
-
-    body{
-        background:white;
-        padding:0;
+    .buttons {
+        flex-direction: column;
     }
 
-
-    .bill-container{
-        width:100%;
-        box-shadow:none;
-        border:none;
-        padding:0;
-    }
-
-
-    .buttons{
-        display:none;
+    .buttons button {
+        width: 100%;
     }
 
 }

@@ -3,16 +3,16 @@
 // FINAL DEBUG VERSION
 // ============================================================
 
-console.log("========================================");
+console.log("==========================================");
 console.log("BILL.JS LOADED");
-console.log("========================================");
+console.log("==========================================");
 
 
 // ============================================================
-// NUMBER HELPER
+// NUMBER
 // ============================================================
 
-function getNumber(value) {
+function num(value) {
 
     if (
         value === null ||
@@ -22,13 +22,13 @@ function getNumber(value) {
         return 0;
     }
 
-    const number = parseFloat(
+    const result = parseFloat(
         String(value)
             .replace(/[₹,\s]/g, "")
     );
 
-    return Number.isFinite(number)
-        ? number
+    return Number.isFinite(result)
+        ? result
         : 0;
 }
 
@@ -40,30 +40,14 @@ function getNumber(value) {
 function money(value) {
 
     return "₹ " + Math.round(
-        getNumber(value)
+        num(value)
     );
 
 }
 
 
 // ============================================================
-// HTML ESCAPE
-// ============================================================
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-// ============================================================
-// READ JSON STORAGE
+// READ JSON
 // ============================================================
 
 function readJSON(key) {
@@ -72,22 +56,18 @@ function readJSON(key) {
         localStorage.getItem(key);
 
     if (!value) {
-
         return null;
-
     }
 
     try {
 
         return JSON.parse(value);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.warn(
             "Invalid JSON:",
-            key,
-            error
+            key
         );
 
         return null;
@@ -98,172 +78,82 @@ function readJSON(key) {
 
 
 // ============================================================
-// CENTRAL BILL
+// GET CENTRAL BILL
 // ============================================================
 
-let centralBill = {};
+let bill = {};
 
-try {
-
-    if (
-        typeof getBillData ===
-        "function"
-    ) {
-
-        centralBill =
-            getBillData() || {};
-
-    }
-    else {
-
-        centralBill =
-            readJSON(
-                "current_bill_data"
-            ) || {};
-
-    }
-
-}
-catch (error) {
-
-    console.error(
-        "CENTRAL BILL ERROR:",
-        error
+const centralStorage =
+    readJSON(
+        "current_bill_data"
     );
 
-    centralBill = {};
+
+if (centralStorage) {
+
+    bill =
+        centralStorage;
 
 }
 
 
 console.log(
-    "CENTRAL BILL:",
-    centralBill
+    "CURRENT BILL DATA:",
+    bill
 );
 
 
 // ============================================================
-// BILL NUMBER
+// PRINT ALL LOCAL STORAGE
 // ============================================================
 
-const billNoElement =
-    document.getElementById(
-        "billNo"
-    );
+console.log(
+    "=========================================="
+);
 
-if (billNoElement) {
+console.log(
+    "ALL LOCAL STORAGE DATA"
+);
 
-    billNoElement.textContent =
-        "---";
-
-}
-
-
-// ============================================================
-// DATE
-// ============================================================
-
-const billDate =
-    document.getElementById(
-        "billDate"
-    );
-
-const billDayTime =
-    document.getElementById(
-        "billDayTime"
-    );
+console.log(
+    "=========================================="
+);
 
 
-const days = [
+for (
+    let i = 0;
+    i < localStorage.length;
+    i++
+) {
 
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
+    const key =
+        localStorage.key(i);
 
-];
-
-
-let savedDate =
-    localStorage.getItem(
-        "billDate"
-    );
-
-
-if (!savedDate) {
-
-    const today =
-        new Date();
-
-    savedDate =
-        today
-            .getDate()
-            .toString()
-            .padStart(2, "0")
-        + "/"
-        +
-        (today.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")
-        + "/"
-        +
-        today.getFullYear();
-
-    localStorage.setItem(
-        "billDate",
-        savedDate
+    console.log(
+        key,
+        ":",
+        localStorage.getItem(key)
     );
 
 }
 
 
-const now =
-    new Date();
-
-
-const time =
-    now.toLocaleTimeString(
-        "en-IN",
-        {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        }
-    );
-
-
-if (billDate) {
-
-    billDate.textContent =
-        savedDate;
-
-}
-
-
-if (billDayTime) {
-
-    billDayTime.textContent =
-        days[now.getDay()]
-        + " | "
-        + time;
-
-}
+console.log(
+    "=========================================="
+);
 
 
 // ============================================================
-// CUSTOMER
+// PERSONAL DATA
 // ============================================================
 
 const personal =
-    centralBill.personal || {};
+    bill.personal || {};
 
 
 const customerNameValue =
     personal.customerName ||
+    personal.name ||
     localStorage.getItem(
         "customerName"
     ) ||
@@ -273,6 +163,7 @@ const customerNameValue =
 const customerMobileValue =
     personal.customerMobile ||
     personal.mobileNumber ||
+    personal.mobile ||
     localStorage.getItem(
         "customerMobile"
     ) ||
@@ -288,46 +179,22 @@ const customerPlaceValue =
     "-";
 
 
-const customerName =
-    document.getElementById(
-        "customerName"
-    );
+document.getElementById(
+    "customerName"
+).textContent =
+    customerNameValue;
 
 
-const customerMobile =
-    document.getElementById(
-        "customerMobile"
-    );
+document.getElementById(
+    "customerMobile"
+).textContent =
+    customerMobileValue;
 
 
-const customerPlace =
-    document.getElementById(
-        "customerPlace"
-    );
-
-
-if (customerName) {
-
-    customerName.textContent =
-        customerNameValue;
-
-}
-
-
-if (customerMobile) {
-
-    customerMobile.textContent =
-        customerMobileValue;
-
-}
-
-
-if (customerPlace) {
-
-    customerPlace.textContent =
-        customerPlaceValue;
-
-}
+document.getElementById(
+    "customerPlace"
+).textContent =
+    customerPlaceValue;
 
 
 // ============================================================
@@ -337,30 +204,68 @@ if (customerPlace) {
 let woodData = [];
 
 
-const storedWood =
-    readJSON(
-        "woodData"
-    );
-
+// Try central storage
 
 if (
     Array.isArray(
-        centralBill.wood
+        bill.wood
     )
 ) {
 
     woodData =
-        centralBill.wood;
+        bill.wood;
 
 }
-else if (
-    Array.isArray(
-        storedWood
-    )
+
+
+// Try woodData
+
+if (
+    woodData.length === 0
 ) {
 
-    woodData =
-        storedWood;
+    const oldWood =
+        readJSON(
+            "woodData"
+        );
+
+
+    if (
+        Array.isArray(
+            oldWood
+        )
+    ) {
+
+        woodData =
+            oldWood;
+
+    }
+
+}
+
+
+// Try wood_page_data
+
+if (
+    woodData.length === 0
+) {
+
+    const oldWoodPage =
+        readJSON(
+            "wood_page_data"
+        );
+
+
+    if (
+        Array.isArray(
+            oldWoodPage
+        )
+    ) {
+
+        woodData =
+            oldWoodPage;
+
+    }
 
 }
 
@@ -372,352 +277,141 @@ console.log(
 
 
 // ============================================================
-// WOOD TABLE
+// WOOD TOTAL
 // ============================================================
 
-const woodTable =
-    document.getElementById(
-        "woodTable"
-    );
+let woodTotal = 0;
 
 
-let woodSno = 1;
+// First central totals
 
+if (
+    bill.totals
+) {
 
-if (woodTable) {
-
-    woodTable.innerHTML = "";
-
-
-    if (
-        woodData.length === 0
-    ) {
-
-        woodTable.innerHTML = `
-
-            <tr>
-
-                <td colspan="10">
-                    No wood details found
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-
-    woodData.forEach(
-        function (item) {
-
-            let woodName =
-                item.woodType ||
-                "-";
-
-
-            if (
-                woodName === "Other"
-            ) {
-
-                woodName =
-                    item.otherWood ||
-                    "Other";
-
-            }
-
-
-            const breadth =
-                item.breadth || "-";
-
-
-            const thickness =
-                item.thickness || "-";
-
-
-            const size =
-                breadth +
-                " × " +
-                thickness;
-
-
-            const quality =
-                String(
-                    item.quality ??
-                    "1"
-                );
-
-
-            const rate =
-                getNumber(
-                    item.rate
-                );
-
-
-            const amount =
-                getNumber(
-                    item.amount
-                );
-
-
-            // =============================================
-            // NO PIECES
-            // =============================================
-
-            if (
-                !Array.isArray(
-                    item.pieces
-                ) ||
-                item.pieces.length === 0
-            ) {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${woodSno}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            woodName
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            size
-                        )}
-                    </td>
-
-                    <td>-</td>
-
-                    <td>-</td>
-
-                    <td>
-                        ${Math.round(
-                            getNumber(
-                                item.totalLength
-                            )
-                        )}
-                    </td>
-
-                    <td>
-                        ${getNumber(
-                            item.cubicFeet
-                        ).toFixed(2)}
-                    </td>
-
-                    <td>
-                        ${money(rate)}
-                    </td>
-
-                    <td>
-                        ${money(amount)}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            quality
-                        )}
-                    </td>
-
-                `;
-
-
-                woodTable.appendChild(
-                    row
-                );
-
-
-                woodSno++;
-
-                return;
-
-            }
-
-
-            // =============================================
-            // PIECES
-            // =============================================
-
-            item.pieces.forEach(
-                function (
-                    piece,
-                    index
-                ) {
-
-                    const length =
-                        getNumber(
-                            piece.length
-                        );
-
-
-                    const extraLength =
-                        getNumber(
-                            piece.extraLength
-                        );
-
-
-                    const qty =
-                        getNumber(
-                            piece.qty
-                        );
-
-
-                    const totalLength =
-                        getNumber(
-                            piece.totalLength
-                        );
-
-
-                    const row =
-                        document.createElement(
-                            "tr"
-                        );
-
-
-                    if (
-                        index === 0
-                    ) {
-
-                        row.innerHTML = `
-
-                            <td>
-                                ${woodSno}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    woodName
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    size
-                                )}
-                            </td>
-
-                            <td>
-                                ${length + extraLength}
-                            </td>
-
-                            <td>
-                                ${qty}
-                            </td>
-
-                            <td>
-                                ${Math.round(
-                                    totalLength
-                                )}
-                            </td>
-
-                            <td>
-                                ${getNumber(
-                                    item.cubicFeet
-                                ).toFixed(2)}
-                            </td>
-
-                            <td>
-                                ${money(rate)}
-                            </td>
-
-                            <td>
-                                ${money(amount)}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    quality
-                                )}
-                            </td>
-
-                        `;
-
-                    }
-                    else {
-
-                        row.innerHTML = `
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td>
-                                ${length + extraLength}
-                            </td>
-
-                            <td>
-                                ${qty}
-                            </td>
-
-                            <td>
-                                ${Math.round(
-                                    totalLength
-                                )}
-                            </td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                        `;
-
-                    }
-
-
-                    woodTable.appendChild(
-                        row
-                    );
-
-                }
-            );
-
-
-            woodSno++;
-
-        }
-    );
+    woodTotal =
+        num(
+            bill.totals.woodTotal
+        );
 
 }
+
+
+// Try wood object
+
+if (
+    woodTotal === 0 &&
+    bill.wood &&
+    !Array.isArray(
+        bill.wood
+    )
+) {
+
+    woodTotal =
+        num(
+            bill.wood.woodTotal
+        );
+
+}
+
+
+// Try localStorage
+
+if (
+    woodTotal === 0
+) {
+
+    woodTotal =
+        num(
+            localStorage.getItem(
+                "woodTotal"
+            )
+        );
+
+}
+
+
+console.log(
+    "WOOD TOTAL:",
+    woodTotal
+);
 
 
 // ============================================================
 // LABOUR DATA
 // ============================================================
-//
-// IMPORTANT:
-// Support BOTH:
-//
-// current_bill_data.labour
-//
-// AND:
-//
-// localStorage.labourCharge
-// localStorage.otherCharge
-// localStorage.othersData
-// localStorage.otherItems
-//
-// ============================================================
 
-const labour =
-    centralBill.labour || {};
+let labour = {};
+
+
+// Central bill
+
+if (
+    bill.labour &&
+    typeof bill.labour ===
+    "object"
+) {
+
+    labour =
+        bill.labour;
+
+}
+
+
+// Try old labourData
+
+if (
+    Object.keys(labour).length === 0
+) {
+
+    const oldLabour =
+        readJSON(
+            "labourData"
+        );
+
+
+    if (
+        oldLabour &&
+        typeof oldLabour ===
+        "object"
+    ) {
+
+        labour =
+            oldLabour;
+
+    }
+
+}
+
+
+// Try labour
+
+if (
+    Object.keys(labour).length === 0
+) {
+
+    const oldLabour2 =
+        readJSON(
+            "labour"
+        );
+
+
+    if (
+        oldLabour2 &&
+        typeof oldLabour2 ===
+        "object"
+    ) {
+
+        labour =
+            oldLabour2;
+
+    }
+
+}
 
 
 console.log(
-    "LABOUR OBJECT:",
+    "LABOUR DATA FOUND:",
     labour
 );
 
@@ -726,166 +420,144 @@ console.log(
 // LABOUR CHARGE
 // ============================================================
 
-let labourCharge = 0;
+let labourCharge =
+    num(
+        labour.labourCharge
+    );
 
 
-const labourCandidates = [
-
-    labour.labourCharge,
-
-    labour.LabourCharge,
-
-    labour.labour,
-
-    labour.labourAmount,
-
-    centralBill.labourCharge,
-
-    localStorage.getItem(
-        "labourCharge"
-    ),
-
-    localStorage.getItem(
-        "LabourCharge"
-    ),
-
-    localStorage.getItem(
-        "labourAmount"
-    )
-
-];
-
-
-for (
-    let i = 0;
-    i < labourCandidates.length;
-    i++
+if (
+    labourCharge === 0
 ) {
 
-    const value =
-        getNumber(
-            labourCandidates[i]
+    labourCharge =
+        num(
+            localStorage.getItem(
+                "labourCharge"
+            )
         );
 
-
-    if (
-        value > 0
-    ) {
-
-        labourCharge =
-            value;
-
-        break;
-
-    }
-
 }
+
+
+console.log(
+    "LABOUR CHARGE:",
+    labourCharge
+);
 
 
 // ============================================================
 // OTHER CHARGE
 // ============================================================
 
-let otherCharge = 0;
+let otherCharge =
+    num(
+        labour.otherCharge
+    );
 
 
-const otherChargeCandidates = [
-
-    labour.otherCharge,
-
-    labour.OtherCharge,
-
-    labour.otherAmount,
-
-    labour.other,
-
-    centralBill.otherCharge,
-
-    localStorage.getItem(
-        "otherCharge"
-    ),
-
-    localStorage.getItem(
-        "OtherCharge"
-    ),
-
-    localStorage.getItem(
-        "otherAmount"
-    )
-
-];
-
-
-for (
-    let i = 0;
-    i < otherChargeCandidates.length;
-    i++
+if (
+    otherCharge === 0
 ) {
 
-    const value =
-        getNumber(
-            otherChargeCandidates[i]
+    otherCharge =
+        num(
+            localStorage.getItem(
+                "otherCharge"
+            )
         );
-
-
-    if (
-        value > 0
-    ) {
-
-        otherCharge =
-            value;
-
-        break;
-
-    }
 
 }
 
 
+console.log(
+    "OTHER CHARGE:",
+    otherCharge
+);
+
+
 // ============================================================
-// ADDITIONAL OTHER ITEMS
+// OTHER ITEMS
 // ============================================================
 
 let otherItems = [];
 
 
-const possibleItems = [
+// Central labour.otherItems
 
-    labour.othersData,
-
-    labour.otherItems,
-
-    labour.items,
-
-    labour.additionalCharges,
-
-    centralBill.othersData,
-
-    centralBill.otherItems,
-
-    readJSON("othersData"),
-
-    readJSON("otherItems")
-
-];
-
-
-for (
-    let i = 0;
-    i < possibleItems.length;
-    i++
+if (
+    Array.isArray(
+        labour.otherItems
+    )
 ) {
+
+    otherItems =
+        labour.otherItems;
+
+}
+
+
+// Try othersData
+
+if (
+    otherItems.length === 0 &&
+    Array.isArray(
+        labour.othersData
+    )
+) {
+
+    otherItems =
+        labour.othersData;
+
+}
+
+
+// Try old localStorage
+
+if (
+    otherItems.length === 0
+) {
+
+    const oldItems =
+        readJSON(
+            "othersData"
+        );
+
 
     if (
         Array.isArray(
-            possibleItems[i]
+            oldItems
         )
     ) {
 
         otherItems =
-            possibleItems[i];
+            oldItems;
 
-        break;
+    }
+
+}
+
+
+// Try otherItems
+
+if (
+    otherItems.length === 0
+) {
+
+    const oldItems2 =
+        readJSON(
+            "otherItems"
+        );
+
+
+    if (
+        Array.isArray(
+            oldItems2
+        )
+    ) {
+
+        otherItems =
+            oldItems2;
 
     }
 
@@ -893,32 +565,20 @@ for (
 
 
 console.log(
-    "LABOUR CHARGE FOUND:",
-    labourCharge
-);
-
-
-console.log(
-    "OTHER CHARGE FOUND:",
-    otherCharge
-);
-
-
-console.log(
-    "OTHER ITEMS FOUND:",
+    "OTHER ITEMS:",
     otherItems
 );
 
 
 // ============================================================
-// CALCULATE ADDITIONAL TOTAL
+// ADDITIONAL TOTAL
 // ============================================================
 
 let additionalTotal = 0;
 
 
 otherItems.forEach(
-    function (item) {
+    function(item) {
 
         if (!item) {
             return;
@@ -926,7 +586,7 @@ otherItems.forEach(
 
 
         additionalTotal +=
-            getNumber(
+            num(
                 item.amount
             );
 
@@ -934,17 +594,27 @@ otherItems.forEach(
 );
 
 
+console.log(
+    "ADDITIONAL TOTAL:",
+    additionalTotal
+);
+
+
 // ============================================================
-// FINAL OTHERS TOTAL
+// OTHERS TOTAL
 // ============================================================
 //
-// Labour + Other + Additional
+// IMPORTANT
+//
+// Labour + Other Charge + Additional Items
 //
 // Example:
 //
-// 100 + 11 + 20
+// Labour = 100
+// Other = 11
+// Transport = 20
 //
-// = 131
+// Others Total = 131
 //
 // ============================================================
 
@@ -957,36 +627,40 @@ const othersTotal =
 
 
 console.log(
-    "----------------------------------------"
+    "=========================================="
 );
 
 console.log(
-    "LABOUR:",
+    "OTHERS CALCULATION"
+);
+
+console.log(
+    "Labour       =",
     labourCharge
 );
 
 console.log(
-    "OTHER:",
+    "Other Charge =",
     otherCharge
 );
 
 console.log(
-    "ADDITIONAL:",
+    "Additional   =",
     additionalTotal
 );
 
 console.log(
-    "OTHERS TOTAL:",
+    "Others Total =",
     othersTotal
 );
 
 console.log(
-    "----------------------------------------"
+    "=========================================="
 );
 
 
 // ============================================================
-// CHARGE TABLE
+// OTHER CHARGES TABLE
 // ============================================================
 
 const chargeTable =
@@ -995,207 +669,137 @@ const chargeTable =
     );
 
 
-if (chargeTable) {
-
-    chargeTable.innerHTML = "";
+chargeTable.innerHTML = "";
 
 
-    let chargeSno = 1;
+let chargeNo = 1;
 
 
-    // =============================================
-    // LABOUR
-    // =============================================
+// Labour
 
-    if (
-        labourCharge > 0
-    ) {
+if (
+    labourCharge > 0
+) {
 
-        chargeTable.innerHTML += `
+    chargeTable.innerHTML += `
 
-            <tr>
+        <tr>
 
-                <td>
-                    ${chargeSno++}
-                </td>
+            <td>
+                ${chargeNo++}
+            </td>
 
-                <td>
-                    Labour Charge
-                </td>
+            <td>
+                Labour Charge
+            </td>
 
-                <td>
-                    ${money(
-                        labourCharge
-                    )}
-                </td>
+            <td>
+                ${money(
+                    labourCharge
+                )}
+            </td>
 
-            </tr>
+        </tr>
 
-        `;
-
-    }
-
-
-    // =============================================
-    // OTHER CHARGE
-    // =============================================
-
-    if (
-        otherCharge > 0
-    ) {
-
-        chargeTable.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${chargeSno++}
-                </td>
-
-                <td>
-                    Other Charge
-                </td>
-
-                <td>
-                    ${money(
-                        otherCharge
-                    )}
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-
-    // =============================================
-    // ADDITIONAL
-    // =============================================
-
-    otherItems.forEach(
-        function (item) {
-
-            if (!item) {
-                return;
-            }
-
-
-            const amount =
-                getNumber(
-                    item.amount
-                );
-
-
-            if (
-                amount <= 0
-            ) {
-
-                return;
-
-            }
-
-
-            chargeTable.innerHTML += `
-
-                <tr>
-
-                    <td>
-                        ${chargeSno++}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            item.name ||
-                            "Other"
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(
-                            amount
-                        )}
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
-    );
-
-
-    // =============================================
-    // NOTHING
-    // =============================================
-
-    if (
-        chargeSno === 1
-    ) {
-
-        chargeTable.innerHTML = `
-
-            <tr>
-
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-
-            </tr>
-
-        `;
-
-    }
+    `;
 
 }
 
 
-// ============================================================
-// WOOD TOTAL
-// ============================================================
+// Other charge
 
-let woodTotal = 0;
-
-
-const woodTotalCandidates = [
-
-    centralBill.totals?.woodTotal,
-
-    centralBill.wood?.woodTotal,
-
-    localStorage.getItem(
-        "woodTotal"
-    ),
-
-    localStorage.getItem(
-        "finalWoodTotal"
-    )
-
-];
-
-
-for (
-    let i = 0;
-    i < woodTotalCandidates.length;
-    i++
+if (
+    otherCharge > 0
 ) {
 
-    const value =
-        getNumber(
-            woodTotalCandidates[i]
-        );
+    chargeTable.innerHTML += `
+
+        <tr>
+
+            <td>
+                ${chargeNo++}
+            </td>
+
+            <td>
+                Other Charge
+            </td>
+
+            <td>
+                ${money(
+                    otherCharge
+                )}
+            </td>
+
+        </tr>
+
+    `;
+
+}
 
 
-    if (
-        value > 0
-    ) {
+// Additional items
 
-        woodTotal =
-            value;
+otherItems.forEach(
+    function(item) {
 
-        break;
+        const amount =
+            num(
+                item.amount
+            );
+
+
+        if (
+            amount <= 0
+        ) {
+            return;
+        }
+
+
+        chargeTable.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${chargeNo++}
+                </td>
+
+                <td>
+                    ${item.name || "Other"}
+                </td>
+
+                <td>
+                    ${money(
+                        amount
+                    )}
+                </td>
+
+            </tr>
+
+        `;
 
     }
+);
+
+
+// No charges
+
+if (
+    chargeNo === 1
+) {
+
+    chargeTable.innerHTML = `
+
+        <tr>
+
+            <td>-</td>
+
+            <td>-</td>
+
+            <td>-</td>
+
+        </tr>
+
+    `;
 
 }
 
@@ -1212,16 +816,6 @@ const subtotal =
 
 
 console.log(
-    "WOOD TOTAL:",
-    woodTotal
-);
-
-console.log(
-    "OTHERS TOTAL:",
-    othersTotal
-);
-
-console.log(
     "SUBTOTAL:",
     subtotal
 );
@@ -1231,31 +825,73 @@ console.log(
 // DISCOUNT
 // ============================================================
 
-const discount =
-    Math.min(
-        subtotal,
-        Math.max(
-            0,
-            getNumber(
-                centralBill.discount?.discountAmount
-            ) ||
-            getNumber(
-                localStorage.getItem(
-                    "discountAmount"
-                )
-            ) ||
-            getNumber(
-                localStorage.getItem(
-                    "discount"
-                )
-            ) ||
-            getNumber(
-                localStorage.getItem(
-                    "billDiscount"
-                )
+let discount = 0;
+
+
+if (
+    bill.discount
+) {
+
+    discount =
+        num(
+            bill.discount.discountAmount
+        );
+
+}
+
+
+if (
+    discount === 0
+) {
+
+    discount =
+        num(
+            localStorage.getItem(
+                "discountAmount"
             )
-        )
-    );
+        );
+
+}
+
+
+if (
+    discount === 0
+) {
+
+    discount =
+        num(
+            localStorage.getItem(
+                "discount"
+            )
+        );
+
+}
+
+
+if (
+    discount === 0
+) {
+
+    discount =
+        num(
+            localStorage.getItem(
+                "billDiscount"
+            )
+        );
+
+}
+
+
+// Discount cannot exceed subtotal
+
+if (
+    discount > subtotal
+) {
+
+    discount =
+        subtotal;
+
+}
 
 
 console.log(
@@ -1266,14 +902,6 @@ console.log(
 
 // ============================================================
 // GRAND TOTAL
-// ============================================================
-//
-// DO NOT USE OLD finalTotal.
-//
-// Always calculate:
-//
-// Wood + Others - Discount
-//
 // ============================================================
 
 const grandTotal =
@@ -1296,68 +924,36 @@ console.log(
 // DISPLAY TOTALS
 // ============================================================
 
-const woodTotalElement =
-    document.getElementById(
-        "woodTotal"
+document.getElementById(
+    "woodTotal"
+).textContent =
+    money(
+        woodTotal
     );
 
 
-if (woodTotalElement) {
-
-    woodTotalElement.textContent =
-        money(
-            woodTotal
-        );
-
-}
-
-
-const othersTotalElement =
-    document.getElementById(
-        "othersTotal"
+document.getElementById(
+    "othersTotal"
+).textContent =
+    money(
+        othersTotal
     );
 
 
-if (othersTotalElement) {
-
-    othersTotalElement.textContent =
-        money(
-            othersTotal
-        );
-
-}
-
-
-const subtotalElement =
-    document.getElementById(
-        "subtotal"
+document.getElementById(
+    "subtotal"
+).textContent =
+    money(
+        subtotal
     );
 
 
-if (subtotalElement) {
-
-    subtotalElement.textContent =
-        money(
-            subtotal
-        );
-
-}
-
-
-const grandTotalElement =
-    document.getElementById(
-        "grandTotal"
+document.getElementById(
+    "grandTotal"
+).textContent =
+    money(
+        grandTotal
     );
-
-
-if (grandTotalElement) {
-
-    grandTotalElement.textContent =
-        money(
-            grandTotal
-        );
-
-}
 
 
 // ============================================================
@@ -1370,43 +966,27 @@ const discountRow =
     );
 
 
-const discountElement =
-    document.getElementById(
-        "discountAmount"
-    );
-
-
 if (
     discount > 0
 ) {
 
-    if (discountRow) {
-
-        discountRow.style.display =
-            "flex";
-
-    }
+    discountRow.style.display =
+        "flex";
 
 
-    if (discountElement) {
-
-        discountElement.textContent =
-            "- " +
-            money(
-                discount
-            );
-
-    }
+    document.getElementById(
+        "discountAmount"
+    ).textContent =
+        "- " +
+        money(
+            discount
+        );
 
 }
 else {
 
-    if (discountRow) {
-
-        discountRow.style.display =
-            "none";
-
-    }
+    discountRow.style.display =
+        "none";
 
 }
 
@@ -1418,54 +998,33 @@ else {
 let advanceAmount = 0;
 
 
-const advanceCandidates = [
-
-    centralBill.advance?.advanceAmount,
-
-    centralBill.advance?.amount,
-
-    localStorage.getItem(
-        "advanceAmount"
-    ),
-
-    localStorage.getItem(
-        "advance"
-    ),
-
-    localStorage.getItem(
-        "advanceValue"
-    )
-
-];
-
-
-for (
-    let i = 0;
-    i < advanceCandidates.length;
-    i++
+if (
+    bill.advance
 ) {
 
-    const value =
-        getNumber(
-            advanceCandidates[i]
+    advanceAmount =
+        num(
+            bill.advance.advanceAmount
         );
-
-
-    if (
-        value > 0
-    ) {
-
-        advanceAmount =
-            value;
-
-        break;
-
-    }
 
 }
 
 
-// Advance cannot exceed grand total
+if (
+    advanceAmount === 0
+) {
+
+    advanceAmount =
+        num(
+            localStorage.getItem(
+                "advanceAmount"
+            )
+        );
+
+}
+
+
+// Advance cannot exceed Grand Total
 
 if (
     advanceAmount >
@@ -1476,6 +1035,12 @@ if (
         grandTotal;
 
 }
+
+
+console.log(
+    "ADVANCE:",
+    advanceAmount
+);
 
 
 // ============================================================
@@ -1493,11 +1058,6 @@ const balanceAmount =
 
 
 console.log(
-    "ADVANCE:",
-    advanceAmount
-);
-
-console.log(
     "BALANCE:",
     balanceAmount
 );
@@ -1513,42 +1073,26 @@ const advanceRow =
     );
 
 
-const advanceElement =
-    document.getElementById(
-        "advanceAmount"
-    );
-
-
 if (
     advanceAmount > 0
 ) {
 
-    if (advanceRow) {
-
-        advanceRow.style.display =
-            "flex";
-
-    }
+    advanceRow.style.display =
+        "flex";
 
 
-    if (advanceElement) {
-
-        advanceElement.textContent =
-            money(
-                advanceAmount
-            );
-
-    }
+    document.getElementById(
+        "advanceAmount"
+    ).textContent =
+        money(
+            advanceAmount
+        );
 
 }
 else {
 
-    if (advanceRow) {
-
-        advanceRow.style.display =
-            "none";
-
-    }
+    advanceRow.style.display =
+        "none";
 
 }
 
@@ -1557,30 +1101,41 @@ else {
 // BALANCE DISPLAY
 // ============================================================
 
-const balanceElement =
-    document.getElementById(
-        "balanceAmount"
+document.getElementById(
+    "balanceAmount"
+).textContent =
+    money(
+        balanceAmount
     );
 
 
-if (balanceElement) {
-
-    balanceElement.textContent =
-        money(
-            balanceAmount
-        );
-
-}
-
-
 // ============================================================
-// SAVE CURRENT TOTALS
+// SAVE FINAL CALCULATED VALUES
 // ============================================================
-//
-// This does NOT clear anything.
-// Refresh will keep the data.
-//
-// ============================================================
+
+localStorage.setItem(
+    "woodTotal",
+    String(
+        woodTotal
+    )
+);
+
+
+localStorage.setItem(
+    "othersTotal",
+    String(
+        othersTotal
+    )
+);
+
+
+localStorage.setItem(
+    "subtotal",
+    String(
+        subtotal
+    )
+);
+
 
 localStorage.setItem(
     "grandTotal",
@@ -1599,14 +1154,6 @@ localStorage.setItem(
 
 
 localStorage.setItem(
-    "othersTotal",
-    String(
-        othersTotal
-    )
-);
-
-
-localStorage.setItem(
     "balanceAmount",
     String(
         balanceAmount
@@ -1615,377 +1162,16 @@ localStorage.setItem(
 
 
 // ============================================================
-// CFT SUMMARY
+// FINAL DEBUG
 // ============================================================
 
-const cftSummary = {};
-
-
-woodData.forEach(
-    function (item) {
-
-        let woodName =
-            item.woodType ||
-            "Unknown";
-
-
-        if (
-            woodName === "Other"
-        ) {
-
-            woodName =
-                item.otherWood ||
-                "Other";
-
-        }
-
-
-        const quality =
-            String(
-                item.quality ??
-                "1"
-            );
-
-
-        const cft =
-            getNumber(
-                item.cubicFeet
-            );
-
-
-        const key =
-            woodName
-                .trim()
-                .toLowerCase()
-            +
-            "||"
-            +
-            quality;
-
-
-        if (
-            !cftSummary[key]
-        ) {
-
-            cftSummary[key] = {
-
-                wood:
-                    woodName,
-
-                quality:
-                    quality,
-
-                cft:
-                    0
-
-            };
-
-        }
-
-
-        cftSummary[key].cft +=
-            cft;
-
-    }
+console.log(
+    "=========================================="
 );
 
-
-// ============================================================
-// DISPLAY CFT
-// ============================================================
-
-const cftDiv =
-    document.getElementById(
-        "cftSummary"
-    );
-
-
-if (cftDiv) {
-
-    cftDiv.innerHTML = "";
-
-
-    const groups =
-        Object.values(
-            cftSummary
-        );
-
-
-    if (
-        groups.length === 0
-    ) {
-
-        cftDiv.innerHTML = `
-
-            <p>
-
-                <b>-</b>
-
-                <span>
-                    0.00 CFT
-                </span>
-
-            </p>
-
-        `;
-
-    }
-
-
-    groups.forEach(
-        function (group) {
-
-            cftDiv.innerHTML += `
-
-                <p>
-
-                    <b>
-                        ${escapeHTML(
-                            group.wood
-                        )}
-                        (${escapeHTML(
-                            group.quality
-                        )})
-                    </b>
-
-                    <span>
-                        ${group.cft.toFixed(2)}
-                        CFT
-                    </span>
-
-                </p>
-
-            `;
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// EDIT
-// ============================================================
-
-const editBtn =
-    document.getElementById(
-        "editBtn"
-    );
-
-
-if (editBtn) {
-
-    editBtn.addEventListener(
-        "click",
-        function () {
-
-            localStorage.setItem(
-                "editingBill",
-                "true"
-            );
-
-
-            window.location.href =
-                "wood.html";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// PRINT
-// ============================================================
-
-const printBtn =
-    document.getElementById(
-        "printBtn"
-    );
-
-
-if (printBtn) {
-
-    printBtn.addEventListener(
-        "click",
-        function () {
-
-            window.print();
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// BACK
-// ============================================================
-
-const backBtn =
-    document.getElementById(
-        "backBtn"
-    );
-
-
-if (backBtn) {
-
-    backBtn.addEventListener(
-        "click",
-        function () {
-
-            history.back();
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// CONFIRM
-// ============================================================
-
-const confirmBillBtn =
-    document.getElementById(
-        "confirmBill"
-    );
-
-
-if (confirmBillBtn) {
-
-    confirmBillBtn.addEventListener(
-        "click",
-        function () {
-
-            const confirmed =
-                window.confirm(
-                    "Are you sure you want to confirm this bill?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            localStorage.setItem(
-                "billConfirmed",
-                "true"
-            );
-
-
-            localStorage.setItem(
-                "billConfirmedAt",
-                new Date().toISOString()
-            );
-
-
-            localStorage.setItem(
-                "finalTotal",
-                String(
-                    grandTotal
-                )
-            );
-
-
-            localStorage.setItem(
-                "advanceAmount",
-                String(
-                    advanceAmount
-                )
-            );
-
-
-            localStorage.setItem(
-                "balanceAmount",
-                String(
-                    balanceAmount
-                )
-            );
-
-
-            localStorage.setItem(
-                "billDiscount",
-                String(
-                    discount
-                )
-            );
-
-
-            window.location.href =
-                "../html/confirm.html";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// CLEAR
-// ============================================================
-
-const clearBtn =
-    document.getElementById(
-        "clearBtn"
-    );
-
-
-if (clearBtn) {
-
-    clearBtn.addEventListener(
-        "click",
-        function () {
-
-            const confirmClear =
-                window.confirm(
-                    "Are you sure you want to clear ALL bill data?"
-                );
-
-
-            if (!confirmClear) {
-
-                return;
-
-            }
-
-
-            if (
-                typeof clearBillData ===
-                "function"
-            ) {
-
-                clearBillData();
-
-            }
-            else {
-
-                localStorage.clear();
-
-                sessionStorage.clear();
-
-            }
-
-
-            window.location.href =
-                "index.html";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// FINAL CONSOLE
-// ============================================================
-
-console.log("========================================");
-console.log("FINAL BILL CALCULATION");
-console.log("========================================");
+console.log(
+    "FINAL BILL DATA"
+);
 
 console.log(
     "Wood Total     :",
@@ -2037,6 +1223,184 @@ console.log(
     balanceAmount
 );
 
-console.log("========================================");
-console.log("BILL.JS READY");
-console.log("========================================");
+console.log(
+    "=========================================="
+);
+
+
+// ============================================================
+// BUTTONS
+// ============================================================
+
+
+// EDIT
+
+const editBtn =
+    document.getElementById(
+        "editBtn"
+    );
+
+
+if (editBtn) {
+
+    editBtn.addEventListener(
+        "click",
+        function() {
+
+            localStorage.setItem(
+                "editingBill",
+                "true"
+            );
+
+            window.location.href =
+                "wood.html";
+
+        }
+    );
+
+}
+
+
+// PRINT
+
+const printBtn =
+    document.getElementById(
+        "printBtn"
+    );
+
+
+if (printBtn) {
+
+    printBtn.addEventListener(
+        "click",
+        function() {
+
+            window.print();
+
+        }
+    );
+
+}
+
+
+// BACK
+
+const backBtn =
+    document.getElementById(
+        "backBtn"
+    );
+
+
+if (backBtn) {
+
+    backBtn.addEventListener(
+        "click",
+        function() {
+
+            history.back();
+
+        }
+    );
+
+}
+
+
+// CLEAR
+
+const clearBtn =
+    document.getElementById(
+        "clearBtn"
+    );
+
+
+if (clearBtn) {
+
+    clearBtn.addEventListener(
+        "click",
+        function() {
+
+            const answer =
+                confirm(
+                    "Are you sure you want to clear the bill?"
+                );
+
+
+            if (!answer) {
+                return;
+            }
+
+
+            if (
+                typeof clearBillData ===
+                "function"
+            ) {
+
+                clearBillData();
+
+            }
+            else {
+
+                localStorage.clear();
+                sessionStorage.clear();
+
+            }
+
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
+
+
+// CONFIRM
+
+const confirmBill =
+    document.getElementById(
+        "confirmBill"
+    );
+
+
+if (confirmBill) {
+
+    confirmBill.addEventListener(
+        "click",
+        function() {
+
+            const answer =
+                confirm(
+                    "Confirm this bill?"
+                );
+
+
+            if (!answer) {
+                return;
+            }
+
+
+            localStorage.setItem(
+                "billConfirmed",
+                "true"
+            );
+
+
+            localStorage.setItem(
+                "billConfirmedAt",
+                new Date().toISOString()
+            );
+
+
+            window.location.href =
+                "confirm.html";
+
+        }
+    );
+
+}
+
+
+console.log(
+    "BILL.JS READY"
+);

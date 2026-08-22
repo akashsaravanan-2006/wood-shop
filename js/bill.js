@@ -1,6 +1,5 @@
 // ============================================================
 // BILL.JS
-// FINAL BILL DISPLAY
 // ============================================================
 
 console.log("====================================");
@@ -22,11 +21,10 @@ function toNumber(value) {
         return 0;
     }
 
-    const number =
-        parseFloat(
-            String(value)
-                .replace(/[₹,\s]/g, "")
-        );
+    const number = parseFloat(
+        String(value)
+            .replace(/[₹,\s]/g, "")
+    );
 
     return Number.isFinite(number)
         ? number
@@ -35,21 +33,18 @@ function toNumber(value) {
 
 
 // ============================================================
-// MONEY
+// MONEY FORMAT
 // ============================================================
 
 function money(value) {
 
-    return (
-        "₹ " +
-        toNumber(value).toFixed(2)
-    );
+    return "₹ " + toNumber(value).toFixed(2);
 
 }
 
 
 // ============================================================
-// ESCAPE HTML
+// HTML ESCAPE
 // ============================================================
 
 function escapeHTML(value) {
@@ -65,21 +60,39 @@ function escapeHTML(value) {
 
 
 // ============================================================
-// GET COMPLETE BILL DATA
+// GET BILL DATA
 // ============================================================
 
 let billData = {};
 
-if (
-    typeof getBillData ===
-    "function"
-) {
 
-    billData =
-        getBillData();
+// If storedata.js provides getBillData()
+if (typeof getBillData === "function") {
+
+    try {
+
+        billData = getBillData() || {};
+
+    }
+    catch (error) {
+
+        console.error(
+            "getBillData() error:",
+            error
+        );
+
+        billData = {};
+
+    }
 
 }
-else {
+
+
+// Fallback to localStorage
+if (
+    !billData ||
+    Object.keys(billData).length === 0
+) {
 
     try {
 
@@ -94,7 +107,7 @@ else {
     catch (error) {
 
         console.error(
-            "Unable to read current_bill_data:",
+            "current_bill_data error:",
             error
         );
 
@@ -106,24 +119,13 @@ else {
 
 
 console.log(
-    "===================================="
-);
-
-console.log(
-    "COMPLETE BILL DATA:"
-);
-
-console.log(
+    "COMPLETE BILL DATA:",
     billData
-);
-
-console.log(
-    "===================================="
 );
 
 
 // ============================================================
-// PAGE DATA
+// DATA SECTIONS
 // ============================================================
 
 const personalData =
@@ -132,17 +134,14 @@ const personalData =
 const woodPage =
     billData.wood || {};
 
-const labourDataCentral =
+const labourCentral =
     billData.labour || {};
 
-const advanceDataCentral =
+const advanceCentral =
     billData.advance || {};
 
-const discountDataCentral =
+const discountCentral =
     billData.discount || {};
-
-const totalsData =
-    billData.totals || {};
 
 
 // ============================================================
@@ -150,13 +149,19 @@ const totalsData =
 // ============================================================
 
 const customerName =
-    personalData.name || "";
+    personalData.name ||
+    personalData.customerName ||
+    "";
 
 const customerMobile =
-    personalData.mobile || "";
+    personalData.mobile ||
+    personalData.customerMobile ||
+    "";
 
 const customerPlace =
-    personalData.place || "";
+    personalData.place ||
+    personalData.customerPlace ||
+    "";
 
 
 // ============================================================
@@ -164,24 +169,16 @@ const customerPlace =
 // ============================================================
 
 const customerNameElement =
-    document.getElementById(
-        "customerName"
-    );
+    document.getElementById("customerName");
 
 const customerMobileElement =
-    document.getElementById(
-        "customerMobile"
-    );
+    document.getElementById("customerMobile");
 
 const customerPlaceElement =
-    document.getElementById(
-        "customerPlace"
-    );
+    document.getElementById("customerPlace");
 
 
-if (
-    customerNameElement
-) {
+if (customerNameElement) {
 
     customerNameElement.textContent =
         customerName || "-";
@@ -189,9 +186,7 @@ if (
 }
 
 
-if (
-    customerMobileElement
-) {
+if (customerMobileElement) {
 
     customerMobileElement.textContent =
         customerMobile || "-";
@@ -199,9 +194,7 @@ if (
 }
 
 
-if (
-    customerPlaceElement
-) {
+if (customerPlaceElement) {
 
     customerPlaceElement.textContent =
         customerPlace || "-";
@@ -209,45 +202,18 @@ if (
 }
 
 
-console.log(
-    "CUSTOMER NAME:",
-    customerName
-);
-
-console.log(
-    "CUSTOMER MOBILE:",
-    customerMobile
-);
-
-console.log(
-    "CUSTOMER PLACE:",
-    customerPlace
-);
-
-
 // ============================================================
 // DATE
 // ============================================================
 
 const billDateElement =
-    document.getElementById(
-        "billDate"
-    );
+    document.getElementById("billDate");
 
 const billDayTimeElement =
-    document.getElementById(
-        "billDayTime"
-    );
+    document.getElementById("billDayTime");
 
 
-let savedBillDate =
-    localStorage.getItem(
-        "billDate"
-    );
-
-
-const now =
-    new Date();
+const now = new Date();
 
 
 const day =
@@ -287,36 +253,22 @@ const ampm =
 
 
 hours =
-    hours % 12;
-
-
-if (
-    hours === 0
-) {
-
-    hours = 12;
-
-}
+    hours % 12 || 12;
 
 
 const currentTime =
     `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
 
 
-if (
-    billDateElement
-) {
+if (billDateElement) {
 
     billDateElement.textContent =
-        savedBillDate ||
         currentDate;
 
 }
 
 
-if (
-    billDayTimeElement
-) {
+if (billDayTimeElement) {
 
     billDayTimeElement.textContent =
         currentTime;
@@ -327,24 +279,55 @@ if (
 // ============================================================
 // BILL NUMBER
 // ============================================================
+// IMPORTANT:
+// This JS does NOT generate a bill number.
+// If your database/storedata.js already supplies the bill
+// number, it will be displayed here.
+// ============================================================
 
 const billNoElement =
-    document.getElementById(
-        "billNo"
-    );
+    document.getElementById("billNo");
 
-console.log(
-    "BILL NUMBER ELEMENT:",
-    billNoElement
-);
+
+if (billNoElement) {
+
+    const billNumber =
+        billData.billNo ||
+        billData.billNumber ||
+        personalData.billNo ||
+        personalData.billNumber ||
+        localStorage.getItem("billNo");
+
+
+    // Only display if already available.
+    // Never create a new bill number here.
+
+    if (billNumber) {
+
+        billNoElement.textContent =
+            billNumber;
+
+    }
+
+}
 
 
 // ============================================================
+// ============================================================
 // WOOD DATA
+// IMPORTANT:
+// EACH CALCULATION REMAINS SEPARATE.
+// NO GROUPING.
+// NO COMBINING SAME WOOD.
+// ============================================================
 // ============================================================
 
 let woodCalculations = [];
 
+
+// ------------------------------------------------------------
+// PRIMARY SOURCE
+// ------------------------------------------------------------
 
 if (
     Array.isArray(
@@ -358,7 +341,9 @@ if (
 }
 
 
-// Compatibility fallback
+// ------------------------------------------------------------
+// FALLBACK SOURCE
+// ------------------------------------------------------------
 
 if (
     woodCalculations.length === 0
@@ -366,7 +351,7 @@ if (
 
     try {
 
-        const oldWoodData =
+        const storedWood =
             JSON.parse(
                 localStorage.getItem(
                     "woodData"
@@ -375,21 +360,20 @@ if (
 
 
         if (
-            Array.isArray(
-                oldWoodData
-            )
+            Array.isArray(storedWood)
         ) {
 
             woodCalculations =
-                oldWoodData;
+                storedWood;
 
         }
 
     }
     catch (error) {
 
-        console.log(
-            "No old woodData"
+        console.error(
+            "woodData error:",
+            error
         );
 
     }
@@ -402,7 +386,8 @@ console.log(
 );
 
 console.log(
-    "WOOD CALCULATIONS:"
+    "TOTAL WOOD CALCULATIONS:",
+    woodCalculations.length
 );
 
 console.log(
@@ -415,402 +400,8 @@ console.log(
 
 
 // ============================================================
-// GROUP SAME WOOD + SAME QUALITY
-// ============================================================
-
-const woodGroups = {};
-
-
-woodCalculations.forEach(
-    function (item) {
-
-        if (
-            !item
-        ) {
-
-            return;
-
-        }
-
-
-        // ----------------------------------------------------
-        // WOOD NAME
-        // ----------------------------------------------------
-
-        let woodName =
-            item.woodType ||
-            "";
-
-
-        if (
-            woodName === "Other"
-        ) {
-
-            woodName =
-                item.otherWood ||
-                "Other";
-
-        }
-
-
-        if (
-            !woodName
-        ) {
-
-            woodName =
-                "-";
-
-        }
-
-
-        // ----------------------------------------------------
-        // QUALITY
-        // ----------------------------------------------------
-
-        const quality =
-            item.quality !== undefined &&
-            item.quality !== ""
-                ? item.quality
-                : "1";
-
-
-        // ----------------------------------------------------
-        // GROUP KEY
-        // ----------------------------------------------------
-
-        const groupKey =
-            String(
-                woodName
-            )
-                .trim()
-                .toLowerCase()
-            +
-            "___"
-            +
-            String(
-                quality
-            )
-                .trim()
-                .toLowerCase();
-
-
-        // ----------------------------------------------------
-        // BREADTH
-        // ----------------------------------------------------
-
-        const breadth =
-            toNumber(
-                item.breadth
-            );
-
-
-        // ----------------------------------------------------
-        // THICKNESS
-        // ----------------------------------------------------
-
-        const thickness =
-            toNumber(
-                item.thickness
-            );
-
-
-        // ----------------------------------------------------
-        // RATE
-        // ----------------------------------------------------
-
-        const rate =
-            toNumber(
-                item.rate
-            );
-
-
-        // ----------------------------------------------------
-        // CFT
-        // ----------------------------------------------------
-
-        const cubicFeet =
-            toNumber(
-                item.cubicFeet
-            );
-
-
-        // ----------------------------------------------------
-        // AMOUNT
-        // ----------------------------------------------------
-
-        const amount =
-            toNumber(
-                item.amount
-            );
-
-
-        // ----------------------------------------------------
-        // PIECES
-        // ----------------------------------------------------
-
-        const pieces =
-            Array.isArray(
-                item.pieces
-            )
-                ? item.pieces
-                : [];
-
-
-        // ----------------------------------------------------
-        // TOTAL QTY
-        // ----------------------------------------------------
-
-        let totalQty = 0;
-
-
-        pieces.forEach(
-            function (piece) {
-
-                totalQty +=
-                    toNumber(
-                        piece.qty
-                    );
-
-            }
-        );
-
-
-        // ----------------------------------------------------
-        // TOTAL LENGTH
-        // ----------------------------------------------------
-
-        let totalLength =
-            toNumber(
-                item.totalLength
-            );
-
-
-        if (
-            totalLength === 0
-        ) {
-
-            pieces.forEach(
-                function (piece) {
-
-                    const length =
-                        toNumber(
-                            piece.length
-                        );
-
-
-                    const extraLength =
-                        toNumber(
-                            piece.extraLength
-                        );
-
-
-                    const qty =
-                        toNumber(
-                            piece.qty
-                        );
-
-
-                    totalLength +=
-                        (
-                            length +
-                            extraLength
-                        ) *
-                        qty;
-
-                }
-            );
-
-        }
-
-
-        // ----------------------------------------------------
-        // CREATE GROUP
-        // ----------------------------------------------------
-
-        if (
-            !woodGroups[groupKey]
-        ) {
-
-            woodGroups[groupKey] = {
-
-                wood:
-                    woodName,
-
-                quality:
-                    quality,
-
-                breadths: [],
-
-                thicknesses: [],
-
-                lengths: [],
-
-                rate:
-                    rate,
-
-                qty:
-                    0,
-
-                totalLength:
-                    0,
-
-                cubicFeet:
-                    0,
-
-                amount:
-                    0
-
-            };
-
-        }
-
-
-        const group =
-            woodGroups[groupKey];
-
-
-        // ----------------------------------------------------
-        // BREADTH
-        // ----------------------------------------------------
-
-        if (
-            breadth > 0 &&
-            !group.breadths.includes(
-                breadth
-            )
-        ) {
-
-            group.breadths.push(
-                breadth
-            );
-
-        }
-
-
-        // ----------------------------------------------------
-        // THICKNESS
-        // ----------------------------------------------------
-
-        if (
-            thickness > 0 &&
-            !group.thicknesses.includes(
-                thickness
-            )
-        ) {
-
-            group.thicknesses.push(
-                thickness
-            );
-
-        }
-
-
-        // ----------------------------------------------------
-        // LENGTHS
-        // ----------------------------------------------------
-
-        pieces.forEach(
-            function (piece) {
-
-                const length =
-                    toNumber(
-                        piece.length
-                    );
-
-
-                const extraLength =
-                    toNumber(
-                        piece.extraLength
-                    );
-
-
-                const finalLength =
-                    length +
-                    extraLength;
-
-
-                if (
-                    finalLength > 0
-                ) {
-
-                    if (
-                        !group.lengths.includes(
-                            finalLength
-                        )
-                    ) {
-
-                        group.lengths.push(
-                            finalLength
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-
-        // ----------------------------------------------------
-        // ADD VALUES
-        // ----------------------------------------------------
-
-        group.qty +=
-            totalQty;
-
-        group.totalLength +=
-            totalLength;
-
-        group.cubicFeet +=
-            cubicFeet;
-
-        group.amount +=
-            amount;
-
-
-        if (
-            group.rate === 0 &&
-            rate > 0
-        ) {
-
-            group.rate =
-                rate;
-
-        }
-
-    }
-);
-
-
-// ============================================================
-// FINAL WOOD GROUPS
-// ============================================================
-
-const finalWoodGroups =
-    Object.values(
-        woodGroups
-    );
-
-
-console.log(
-    "===================================="
-);
-
-console.log(
-    "FINAL WOOD GROUPS:"
-);
-
-console.table(
-    finalWoodGroups
-);
-
-console.log(
-    "===================================="
-);
-
-
-// ============================================================
-// DISPLAY WOOD TABLE
+// WOOD TABLE
+// ONE CALCULATION = ONE ROW
 // ============================================================
 
 const woodTable =
@@ -819,15 +410,17 @@ const woodTable =
     );
 
 
-if (
-    woodTable
-) {
+if (woodTable) {
 
     woodTable.innerHTML = "";
 
 
+    // --------------------------------------------------------
+    // NO DATA
+    // --------------------------------------------------------
+
     if (
-        finalWoodGroups.length === 0
+        woodCalculations.length === 0
     ) {
 
         woodTable.innerHTML = `
@@ -843,91 +436,210 @@ if (
         `;
 
     }
+
+
+    // --------------------------------------------------------
+    // PRINT EVERY CALCULATION
+    // --------------------------------------------------------
+
     else {
 
-        finalWoodGroups.forEach(
+        woodCalculations.forEach(
             function (
                 item,
                 index
             ) {
 
+                if (!item) {
 
-                // --------------------------------------------
+                    return;
+
+                }
+
+
+                // ============================================
+                // WOOD NAME
+                // ============================================
+
+                let woodName =
+                    item.woodType ||
+                    item.wood ||
+                    "";
+
+
+                if (
+                    woodName === "Other"
+                ) {
+
+                    woodName =
+                        item.otherWood ||
+                        item.woodName ||
+                        "Other";
+
+                }
+
+
+                if (!woodName) {
+
+                    woodName =
+                        "-";
+
+                }
+
+
+                // ============================================
+                // BREADTH
+                // ============================================
+
+                const breadth =
+                    toNumber(
+                        item.breadth
+                    );
+
+
+                // ============================================
+                // THICKNESS
+                // ============================================
+
+                const thickness =
+                    toNumber(
+                        item.thickness
+                    );
+
+
+                // ============================================
                 // SIZE
-                // --------------------------------------------
+                // ============================================
 
                 let size = "-";
 
 
                 if (
-                    item.breadths.length > 0 ||
-                    item.thicknesses.length > 0
+                    breadth > 0 &&
+                    thickness > 0
                 ) {
 
-                    const breadthText =
-                        item.breadths
-                            .map(
-                                function (value) {
-                                    return value;
-                                }
-                            )
-                            .join(" / ");
+                    size =
+                        `${breadth} × ${thickness}`;
+
+                }
+                else if (
+                    breadth > 0
+                ) {
+
+                    size =
+                        `${breadth}`;
+
+                }
+                else if (
+                    thickness > 0
+                ) {
+
+                    size =
+                        `${thickness}`;
+
+                }
 
 
-                    const thicknessText =
-                        item.thicknesses
-                            .map(
-                                function (value) {
-                                    return value;
-                                }
-                            )
-                            .join(" / ");
+                // ============================================
+                // PIECES
+                // ============================================
+
+                const pieces =
+                    Array.isArray(
+                        item.pieces
+                    )
+                        ? item.pieces
+                        : [];
+
+
+                // ============================================
+                // LENGTHS
+                // ============================================
+
+                let lengthValues = [];
+
+
+                pieces.forEach(
+                    function (piece) {
+
+                        if (!piece) {
+
+                            return;
+
+                        }
+
+
+                        const length =
+                            toNumber(
+                                piece.length
+                            );
+
+
+                        const extraLength =
+                            toNumber(
+                                piece.extraLength
+                            );
+
+
+                        const finalLength =
+                            length +
+                            extraLength;
+
+
+                        if (
+                            finalLength > 0
+                        ) {
+
+                            lengthValues.push(
+                                finalLength
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                // If no pieces, try direct length
+                if (
+                    lengthValues.length === 0 &&
+                    item.length !== undefined
+                ) {
+
+                    const directLength =
+                        toNumber(
+                            item.length
+                        );
 
 
                     if (
-                        breadthText &&
-                        thicknessText
+                        directLength > 0
                     ) {
 
-                        size =
-                            `${breadthText} × ${thicknessText}`;
-
-                    }
-                    else if (
-                        breadthText
-                    ) {
-
-                        size =
-                            breadthText;
-
-                    }
-                    else {
-
-                        size =
-                            thicknessText;
+                        lengthValues.push(
+                            directLength
+                        );
 
                     }
 
                 }
 
 
-                // --------------------------------------------
-                // LENGTH
-                // --------------------------------------------
-
-                let lengthText =
-                    "-";
+                let lengthText = "-";
 
 
                 if (
-                    item.lengths.length > 0
+                    lengthValues.length > 0
                 ) {
 
                     lengthText =
-                        item.lengths
+                        lengthValues
                             .map(
                                 function (value) {
+
                                     return value;
+
                                 }
                             )
                             .join(" / ");
@@ -935,9 +647,145 @@ if (
                 }
 
 
-                // --------------------------------------------
-                // CREATE ROW
-                // --------------------------------------------
+                // ============================================
+                // QUANTITY
+                // ============================================
+
+                let totalQty = 0;
+
+
+                pieces.forEach(
+                    function (piece) {
+
+                        if (!piece) {
+
+                            return;
+
+                        }
+
+
+                        totalQty +=
+                            toNumber(
+                                piece.qty
+                            );
+
+                    }
+                );
+
+
+                // Fallback to calculation quantity
+                if (
+                    totalQty === 0 &&
+                    item.qty !== undefined
+                ) {
+
+                    totalQty =
+                        toNumber(
+                            item.qty
+                        );
+
+                }
+
+
+                // ============================================
+                // TOTAL LENGTH
+                // ============================================
+
+                let totalLength =
+                    toNumber(
+                        item.totalLength
+                    );
+
+
+                // Calculate only if not already provided
+                if (
+                    totalLength === 0
+                ) {
+
+                    pieces.forEach(
+                        function (piece) {
+
+                            if (!piece) {
+
+                                return;
+
+                            }
+
+
+                            const length =
+                                toNumber(
+                                    piece.length
+                                );
+
+
+                            const extraLength =
+                                toNumber(
+                                    piece.extraLength
+                                );
+
+
+                            const qty =
+                                toNumber(
+                                    piece.qty
+                                );
+
+
+                            totalLength +=
+                                (
+                                    length +
+                                    extraLength
+                                ) * qty;
+
+                        }
+                    );
+
+                }
+
+
+                // ============================================
+                // CFT
+                // ============================================
+
+                const cubicFeet =
+                    toNumber(
+                        item.cubicFeet
+                    );
+
+
+                // ============================================
+                // RATE
+                // ============================================
+
+                const rate =
+                    toNumber(
+                        item.rate
+                    );
+
+
+                // ============================================
+                // AMOUNT
+                // ============================================
+
+                const amount =
+                    toNumber(
+                        item.amount
+                    );
+
+
+                // ============================================
+                // QUALITY
+                // ============================================
+
+                const quality =
+                    item.quality !== undefined &&
+                    item.quality !== ""
+                        ? item.quality
+                        : "1";
+
+
+                // ============================================
+                // CREATE ONE ROW
+                // ============================================
 
                 const row =
                     document.createElement(
@@ -953,7 +801,7 @@ if (
 
                     <td>
                         ${escapeHTML(
-                            item.wood
+                            woodName
                         )}
                     </td>
 
@@ -970,32 +818,32 @@ if (
                     </td>
 
                     <td>
-                        ${item.qty}
+                        ${totalQty}
                     </td>
 
                     <td>
-                        ${item.totalLength.toFixed(2)}
+                        ${totalLength.toFixed(2)}
                     </td>
 
                     <td>
-                        ${item.cubicFeet.toFixed(2)}
+                        ${cubicFeet.toFixed(2)}
                     </td>
 
                     <td>
                         ${money(
-                            item.rate
+                            rate
                         )}
                     </td>
 
                     <td>
                         ${money(
-                            item.amount
+                            amount
                         )}
                     </td>
 
                     <td>
                         ${escapeHTML(
-                            item.quality
+                            quality
                         )}
                     </td>
 
@@ -1015,7 +863,64 @@ if (
 
 
 // ============================================================
+// WOOD TOTAL
+// ADD ALL CALCULATIONS
+// BUT DO NOT COMBINE THEIR DISPLAY
+// ============================================================
+
+let woodTotal = 0;
+
+
+woodCalculations.forEach(
+    function (item) {
+
+        if (!item) {
+
+            return;
+
+        }
+
+
+        woodTotal +=
+            toNumber(
+                item.amount
+            );
+
+    }
+);
+
+
+console.log(
+    "WOOD TOTAL:",
+    woodTotal
+);
+
+
+// ============================================================
+// SEPARATE WOOD DETAILS TOTAL
+// ============================================================
+
+const woodDetailsTotalElement =
+    document.getElementById(
+        "woodDetailsTotal"
+    );
+
+
+if (
+    woodDetailsTotalElement
+) {
+
+    woodDetailsTotalElement.textContent =
+        money(
+            woodTotal
+        );
+
+}
+
+
+// ============================================================
 // CFT SUMMARY
+// EACH CALCULATION SEPARATELY
 // ============================================================
 
 const cftSummary =
@@ -1024,25 +929,19 @@ const cftSummary =
     );
 
 
-if (
-    cftSummary
-) {
+if (cftSummary) {
 
     cftSummary.innerHTML = "";
 
 
     if (
-        finalWoodGroups.length === 0
+        woodCalculations.length === 0
     ) {
 
         cftSummary.innerHTML = `
 
             <div class="cft-item">
-
-                <span>
-                    -
-                </span>
-
+                -
             </div>
 
         `;
@@ -1050,8 +949,56 @@ if (
     }
     else {
 
-        finalWoodGroups.forEach(
-            function (item) {
+        woodCalculations.forEach(
+            function (
+                item,
+                index
+            ) {
+
+                if (!item) {
+
+                    return;
+
+                }
+
+
+                let woodName =
+                    item.woodType ||
+                    item.wood ||
+                    "";
+
+
+                if (
+                    woodName === "Other"
+                ) {
+
+                    woodName =
+                        item.otherWood ||
+                        "Other";
+
+                }
+
+
+                if (!woodName) {
+
+                    woodName =
+                        "-";
+
+                }
+
+
+                const quality =
+                    item.quality !== undefined &&
+                    item.quality !== ""
+                        ? item.quality
+                        : "1";
+
+
+                const cubicFeet =
+                    toNumber(
+                        item.cubicFeet
+                    );
+
 
                 const div =
                     document.createElement(
@@ -1066,16 +1013,17 @@ if (
                 div.innerHTML = `
 
                     <strong>
+                        ${index + 1}.
                         ${escapeHTML(
-                            item.wood
+                            woodName
                         )}
                         (${escapeHTML(
-                            item.quality
+                            quality
                         )})
                     </strong>
 
                     <span>
-                        ${item.cubicFeet.toFixed(2)}
+                        ${cubicFeet.toFixed(2)}
                         CFT
                     </span>
 
@@ -1095,60 +1043,10 @@ if (
 
 
 // ============================================================
-// WOOD TOTAL
-// ============================================================
-
-let woodTotal = 0;
-
-
-finalWoodGroups.forEach(
-    function (item) {
-
-        woodTotal +=
-            item.amount;
-
-    }
-);
-
-
-if (
-    woodTotal === 0
-) {
-
-    woodTotal =
-        toNumber(
-            woodPage.grandTotal
-        );
-
-}
-
-
-if (
-    woodTotal === 0
-) {
-
-    woodTotal =
-        toNumber(
-            localStorage.getItem(
-                "woodTotal"
-            )
-        );
-
-}
-
-
-console.log(
-    "WOOD TOTAL:",
-    woodTotal
-);
-
-
-// ============================================================
 // LABOUR DATA
 // ============================================================
 
-let labourData =
-    {};
+let labourData = {};
 
 
 try {
@@ -1164,7 +1062,7 @@ try {
 catch (error) {
 
     console.error(
-        "LABOUR DATA ERROR:",
+        "Labour localStorage error:",
         error
     );
 
@@ -1178,15 +1076,9 @@ if (
 ) {
 
     labourData =
-        labourDataCentral;
+        labourCentral;
 
 }
-
-
-console.log(
-    "LABOUR DATA:",
-    labourData
-);
 
 
 // ============================================================
@@ -1210,7 +1102,7 @@ const otherCharge =
 
 
 // ============================================================
-// OTHER ITEMS
+// ADDITIONAL OTHER ITEMS
 // ============================================================
 
 const otherItems =
@@ -1221,27 +1113,23 @@ const otherItems =
         : [];
 
 
-// ============================================================
-// ADDITIONAL OTHER TOTAL
-// ============================================================
-
 let additionalTotal = 0;
 
 
 otherItems.forEach(
     function (item) {
 
-        if (
-            item &&
-            typeof item === "object"
-        ) {
+        if (!item) {
 
-            additionalTotal +=
-                toNumber(
-                    item.amount
-                );
+            return;
 
         }
+
+
+        additionalTotal +=
+            toNumber(
+                item.amount
+            );
 
     }
 );
@@ -1257,6 +1145,7 @@ let othersTotal =
     additionalTotal;
 
 
+// Use saved othersTotal if available
 if (
     toNumber(
         labourData.othersTotal
@@ -1282,7 +1171,7 @@ console.log(
 );
 
 console.log(
-    "ADDITIONAL TOTAL:",
+    "ADDITIONAL:",
     additionalTotal
 );
 
@@ -1302,9 +1191,7 @@ const chargeTable =
     );
 
 
-if (
-    chargeTable
-) {
+if (chargeTable) {
 
     chargeTable.innerHTML = "";
 
@@ -1312,6 +1199,7 @@ if (
     let serialNumber = 1;
 
 
+    // Labour
     if (
         labourCharge > 0
     ) {
@@ -1341,6 +1229,7 @@ if (
     }
 
 
+    // Other Charge
     if (
         otherCharge > 0
     ) {
@@ -1370,12 +1259,11 @@ if (
     }
 
 
+    // Additional items
     otherItems.forEach(
         function (item) {
 
-            if (
-                !item
-            ) {
+            if (!item) {
 
                 return;
 
@@ -1388,11 +1276,6 @@ if (
                 );
 
 
-            const reason =
-                item.reason ||
-                "Other";
-
-
             if (
                 amount <= 0
             ) {
@@ -1400,6 +1283,11 @@ if (
                 return;
 
             }
+
+
+            const reason =
+                item.reason ||
+                "Other";
 
 
             chargeTable.innerHTML += `
@@ -1474,7 +1362,7 @@ console.log(
 
 let discount =
     toNumber(
-        discountDataCentral.discountAmount
+        discountCentral.discountAmount
     );
 
 
@@ -1511,8 +1399,7 @@ if (
     grandTotal < 0
 ) {
 
-    grandTotal =
-        0;
+    grandTotal = 0;
 
 }
 
@@ -1530,36 +1417,12 @@ console.log(
 
 
 // ============================================================
-// DISPLAY TOTALS
+// DISPLAY WOOD TOTAL
 // ============================================================
 
 const woodTotalElement =
     document.getElementById(
         "woodTotal"
-    );
-
-
-const woodDetailsTotalElement =
-    document.getElementById(
-        "woodDetailsTotal"
-    );
-
-
-const othersTotalElement =
-    document.getElementById(
-        "othersTotal"
-    );
-
-
-const subtotalElement =
-    document.getElementById(
-        "subtotal"
-    );
-
-
-const grandTotalElement =
-    document.getElementById(
-        "grandTotal"
     );
 
 
@@ -1576,24 +1439,13 @@ if (
 
 
 // ============================================================
-// SEPARATE WOOD DETAILS TOTAL
-// ============================================================
-//
-// ONLY DISPLAYS THE EXISTING WOOD TOTAL.
-// DOES NOT CHANGE ANY CALCULATION.
-// DOES NOT CHANGE BALANCE.
+// DISPLAY OTHERS TOTAL
 // ============================================================
 
-if (
-    woodDetailsTotalElement
-) {
-
-    woodDetailsTotalElement.textContent =
-        money(
-            woodTotal
-        );
-
-}
+const othersTotalElement =
+    document.getElementById(
+        "othersTotal"
+    );
 
 
 if (
@@ -1608,6 +1460,16 @@ if (
 }
 
 
+// ============================================================
+// DISPLAY SUBTOTAL
+// ============================================================
+
+const subtotalElement =
+    document.getElementById(
+        "subtotal"
+    );
+
+
 if (
     subtotalElement
 ) {
@@ -1620,20 +1482,8 @@ if (
 }
 
 
-if (
-    grandTotalElement
-) {
-
-    grandTotalElement.textContent =
-        money(
-            grandTotal
-        );
-
-}
-
-
 // ============================================================
-// DISCOUNT DISPLAY
+// DISPLAY DISCOUNT
 // ============================================================
 
 const discountRow =
@@ -1690,12 +1540,34 @@ else {
 
 
 // ============================================================
+// GRAND TOTAL DISPLAY
+// ============================================================
+
+const grandTotalElement =
+    document.getElementById(
+        "grandTotal"
+    );
+
+
+if (
+    grandTotalElement
+) {
+
+    grandTotalElement.textContent =
+        money(
+            grandTotal
+        );
+
+}
+
+
+// ============================================================
 // ADVANCE
 // ============================================================
 
 let advanceAmount =
     toNumber(
-        advanceDataCentral.advanceAmount
+        advanceCentral.advanceAmount
     );
 
 
@@ -1723,6 +1595,10 @@ if (
 }
 
 
+// ============================================================
+// BALANCE
+// ============================================================
+
 const balanceAmount =
     Math.max(
         0,
@@ -1743,7 +1619,7 @@ console.log(
 
 
 // ============================================================
-// DISPLAY ADVANCE
+// ADVANCE DISPLAY
 // ============================================================
 
 const advanceRow =
@@ -1799,7 +1675,7 @@ else {
 
 
 // ============================================================
-// DISPLAY BALANCE
+// BALANCE DISPLAY
 // ============================================================
 
 const balanceAmountElement =
@@ -1821,54 +1697,42 @@ if (
 
 
 // ============================================================
-// SAVE FINAL TOTALS
+// SAVE TOTALS
 // ============================================================
 
 localStorage.setItem(
     "woodTotal",
-    String(
-        woodTotal
-    )
+    String(woodTotal)
 );
 
 localStorage.setItem(
     "othersTotal",
-    String(
-        othersTotal
-    )
+    String(othersTotal)
 );
 
 localStorage.setItem(
     "subtotal",
-    String(
-        subtotal
-    )
+    String(subtotal)
 );
 
 localStorage.setItem(
     "grandTotal",
-    String(
-        grandTotal
-    )
+    String(grandTotal)
 );
 
 localStorage.setItem(
     "finalTotal",
-    String(
-        grandTotal
-    )
+    String(grandTotal)
 );
 
 localStorage.setItem(
     "balanceAmount",
-    String(
-        balanceAmount
-    )
+    String(balanceAmount)
 );
 
 
 // ============================================================
-// FINAL DEBUG
+// DEBUG
 // ============================================================
 
 console.log(
@@ -1876,76 +1740,46 @@ console.log(
 );
 
 console.log(
-    "FINAL BILL VALUES"
+    "FINAL BILL"
 );
 
 console.log(
-    "Customer:",
-    customerName
+    "NUMBER OF WOOD CALCULATIONS:",
+    woodCalculations.length
 );
 
 console.log(
-    "Mobile:",
-    customerMobile
-);
-
-console.log(
-    "Place:",
-    customerPlace
-);
-
-console.log(
-    "Wood Total:",
+    "WOOD TOTAL:",
     woodTotal
 );
 
 console.log(
-    "Wood Details Total:",
-    woodTotal
-);
-
-console.log(
-    "Labour:",
-    labourCharge
-);
-
-console.log(
-    "Other Charge:",
-    otherCharge
-);
-
-console.log(
-    "Additional:",
-    additionalTotal
-);
-
-console.log(
-    "Others Total:",
+    "OTHERS TOTAL:",
     othersTotal
 );
 
 console.log(
-    "Subtotal:",
+    "SUBTOTAL:",
     subtotal
 );
 
 console.log(
-    "Discount:",
+    "DISCOUNT:",
     discount
 );
 
 console.log(
-    "Grand Total:",
+    "GRAND TOTAL:",
     grandTotal
 );
 
 console.log(
-    "Advance:",
+    "ADVANCE:",
     advanceAmount
 );
 
 console.log(
-    "Balance:",
+    "BALANCE:",
     balanceAmount
 );
 
@@ -1955,7 +1789,7 @@ console.log(
 
 
 // ============================================================
-// PRINT
+// PRINT BILL
 // ============================================================
 
 const printBtn =
@@ -1981,33 +1815,7 @@ if (
 
 
 // ============================================================
-// BACK
-// ============================================================
-
-const backBtn =
-    document.getElementById(
-        "backBtn"
-    );
-
-
-if (
-    backBtn
-) {
-
-    backBtn.addEventListener(
-        "click",
-        function () {
-
-            history.back();
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// EDIT
+// EDIT BILL
 // ============================================================
 
 const editBtn =
@@ -2040,7 +1848,7 @@ if (
 
 
 // ============================================================
-// CLEAR
+// CLEAR BILL
 // ============================================================
 
 const clearBtn =
@@ -2057,14 +1865,14 @@ if (
         "click",
         function () {
 
-            const answer =
+            const confirmClear =
                 confirm(
                     "Are you sure you want to clear this bill?"
                 );
 
 
             if (
-                !answer
+                !confirmClear
             ) {
 
                 return;
@@ -2098,7 +1906,7 @@ if (
 
 
 // ============================================================
-// CONFIRM BILL
+// CONFIRM
 // ============================================================
 
 const confirmBill =
@@ -2127,8 +1935,8 @@ if (
             );
 
 
-            console.log(
-                "BILL CONFIRMED"
+            alert(
+                "Bill confirmed successfully."
             );
 
         }
@@ -2155,18 +1963,14 @@ if (
         "click",
         function () {
 
-            console.log(
-                "WHATSAPP BUTTON CLICKED"
-            );
-
-
             let mobile =
-                personalData.mobile || "";
-
-
-            mobile =
-                String(mobile)
-                    .replace(/\D/g, "");
+                String(
+                    customerMobile || ""
+                )
+                .replace(
+                    /\D/g,
+                    ""
+                );
 
 
             if (
@@ -2174,8 +1978,7 @@ if (
             ) {
 
                 alert(
-                    "Customer mobile number is not valid.\n\n" +
-                    "Please enter a valid 10-digit mobile number."
+                    "Customer mobile number is not valid."
                 );
 
                 return;
@@ -2210,19 +2013,23 @@ Customer: ${customerName || "-"}
 Mobile: ${customerMobile || "-"}
 Place: ${customerPlace || "-"}
 
-------------------------------
+----------------------------
 
-Wood Total: ${money(woodTotal)}
+Wood Details Total: ${money(woodTotal)}
+
 Others Total: ${money(othersTotal)}
+
 Subtotal: ${money(subtotal)}
+
 Discount: ${money(discount)}
 
 *Grand Total: ${money(grandTotal)}*
 
 Advance Amount: ${money(advanceAmount)}
+
 Balance Amount: ${money(balanceAmount)}
 
-------------------------------
+----------------------------
 
 Thank you 🙏
 ஸ்ரீ அம்மன் சாமில்`;
@@ -2248,12 +2055,24 @@ Thank you 🙏
 }
 
 
+// ============================================================
+// READY
+// ============================================================
+
 console.log(
     "===================================="
 );
 
 console.log(
     "BILL.JS READY"
+);
+
+console.log(
+    "WOOD CALCULATIONS DISPLAYED SEPARATELY:"
+);
+
+console.log(
+    woodCalculations.length
 );
 
 console.log(

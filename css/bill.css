@@ -383,4 +383,35 @@ table td{
         width: 100%;
     }
 
+}/* =========================================
+   SEPARATE WOOD DETAILS TOTAL
+========================================= */
+
+.wood-details-total {
+    width: 100%;
+    margin-top: -10px;
+    margin-bottom: 25px;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 30px;
+
+    padding: 12px 15px;
+
+    border: 1px solid #000;
+    background: #f5f5f5;
+
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.wood-details-total span {
+    font-weight: bold;
+}
+
+.wood-details-total strong {
+    font-size: 19px;
+    color: #000;
 }

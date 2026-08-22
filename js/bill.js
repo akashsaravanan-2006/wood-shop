@@ -257,7 +257,6 @@ console.log(
 // GRAND TOTAL BEFORE DISCOUNT
 // ============================================================
 //
-// This is the same calculation used by labour.js:
 // Wood Total + Others Total
 // ============================================================
 
@@ -876,6 +875,248 @@ if (
         money(
             balanceAmount
         );
+
+}
+
+
+// ============================================================
+// WOOD DETAILS TABLE
+// ============================================================
+//
+// THIS IS THE IMPORTANT FIX.
+//
+// Reads the existing woodData saved by wood.js.
+// Does NOT change woodTotal calculation.
+// ============================================================
+
+const woodTable =
+    document.getElementById(
+        "woodTable"
+    );
+
+
+if (
+    woodTable
+) {
+
+    woodTable.innerHTML = "";
+
+
+    const woodData =
+        readJSON(
+            "woodData"
+        );
+
+
+    console.log(
+        "===================================="
+    );
+
+    console.log(
+        "WOOD DATA FOR BILL TABLE:"
+    );
+
+    console.log(
+        woodData
+    );
+
+    console.log(
+        "===================================="
+    );
+
+
+    if (
+        Array.isArray(
+            woodData
+        ) &&
+        woodData.length > 0
+    ) {
+
+
+        woodData.forEach(
+            function(item, index) {
+
+                if (!item) {
+                    return;
+                }
+
+
+                // ------------------------------------------------
+                // WOOD NAME
+                // ------------------------------------------------
+
+                const woodName =
+                    item.wood ??
+                    item.name ??
+                    item.woodName ??
+                    "-";
+
+
+                // ------------------------------------------------
+                // SIZE
+                // ------------------------------------------------
+
+                const size =
+                    item.size ??
+                    item.dimension ??
+                    item.dimensions ??
+                    "-";
+
+
+                // ------------------------------------------------
+                // LENGTH
+                // ------------------------------------------------
+
+                const length =
+                    item.length ??
+                    item.len ??
+                    item.lengthValue ??
+                    0;
+
+
+                // ------------------------------------------------
+                // QUANTITY
+                // ------------------------------------------------
+
+                const qty =
+                    item.qty ??
+                    item.quantity ??
+                    0;
+
+
+                // ------------------------------------------------
+                // TOTAL LENGTH
+                // ------------------------------------------------
+
+                const totalLength =
+                    item.totalLength ??
+                    item.total_length ??
+                    (
+                        num(length) *
+                        num(qty)
+                    );
+
+
+                // ------------------------------------------------
+                // CFT
+                // ------------------------------------------------
+
+                const cft =
+                    item.cft ??
+                    item.totalCFT ??
+                    item.cftValue ??
+                    0;
+
+
+                // ------------------------------------------------
+                // RATE
+                // ------------------------------------------------
+
+                const rate =
+                    item.rate ??
+                    item.ratePerCft ??
+                    item.price ??
+                    0;
+
+
+                // ------------------------------------------------
+                // AMOUNT
+                // ------------------------------------------------
+
+                const amount =
+                    item.amount ??
+                    item.totalAmount ??
+                    item.total ??
+                    0;
+
+
+                // ------------------------------------------------
+                // QUALITY
+                // ------------------------------------------------
+
+                const quality =
+                    item.quality ??
+                    item.grade ??
+                    "-";
+
+
+                // ------------------------------------------------
+                // DISPLAY ROW
+                // ------------------------------------------------
+
+                woodTable.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            ${woodName}
+                        </td>
+
+                        <td>
+                            ${size}
+                        </td>
+
+                        <td>
+                            ${length}
+                        </td>
+
+                        <td>
+                            ${qty}
+                        </td>
+
+                        <td>
+                            ${totalLength}
+                        </td>
+
+                        <td>
+                            ${num(cft).toFixed(2)}
+                        </td>
+
+                        <td>
+                            ${money(rate)}
+                        </td>
+
+                        <td>
+                            ${money(amount)}
+                        </td>
+
+                        <td>
+                            ${quality}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+    }
+    else {
+
+        woodTable.innerHTML = `
+
+            <tr>
+
+                <td colspan="10">
+                    -
+                </td>
+
+            </tr>
+
+        `;
+
+
+        console.warn(
+            "WOOD DATA NOT FOUND"
+        );
+
+    }
 
 }
 

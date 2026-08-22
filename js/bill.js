@@ -1919,25 +1919,38 @@ if (
         "click",
         function () {
 
+            console.log(
+                "CONFIRM BUTTON CLICKED"
+            );
+
+
+            // Save confirmation status
             localStorage.setItem(
                 "billConfirmed",
                 "true"
             );
 
 
+            // Save confirmation time
             localStorage.setItem(
                 "billConfirmedAt",
                 new Date().toISOString()
             );
 
 
-            alert(
-                "Bill confirmed successfully."
+            console.log(
+                "Bill confirmed successfully"
             );
+
+
+            // Go to Confirm Page
+            window.location.href =
+                "./confirm.html";
 
         }
     );
 
+}
 }
 
 

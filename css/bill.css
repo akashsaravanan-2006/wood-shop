@@ -237,10 +237,6 @@ table td{
 }
 
 
-/* =========================
-   BUTTONS
-========================= */
-
 /* =========================================
    BILL BUTTONS
 ========================================= */
@@ -253,7 +249,9 @@ table td{
 }
 
 
-/* ALL BUTTONS */
+/* =========================================
+   ALL BUTTONS
+========================================= */
 
 .buttons button {
     flex: 1;
@@ -263,8 +261,7 @@ table td{
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    color: white;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 
@@ -274,11 +271,15 @@ table td{
 
 #confirmBill {
     background: #ffc107;
-    color: #000;
+    color: #000000;
 }
 
 #confirmBill:hover {
     background: #e0a800;
+}
+
+#confirmBill:active {
+    transform: scale(0.97);
 }
 
 
@@ -287,11 +288,16 @@ table td{
 ========================================= */
 
 #printBtn {
-    background: #00b050;
+    background: #16a34a;
+    color: #ffffff;
 }
 
 #printBtn:hover {
-    background: #008f40;
+    background: #15803d;
+}
+
+#printBtn:active {
+    transform: scale(0.97);
 }
 
 
@@ -300,11 +306,16 @@ table td{
 ========================================= */
 
 #editBtn {
-    background: #7e3fc5;
+    background: #7c3aed;
+    color: #ffffff;
 }
 
 #editBtn:hover {
-    background: #652da3;
+    background: #6d28d9;
+}
+
+#editBtn:active {
+    transform: scale(0.97);
 }
 
 
@@ -313,11 +324,16 @@ table td{
 ========================================= */
 
 #clearBtn {
-    background: #6c757d;
+    background: #dc2626;
+    color: #ffffff;
 }
 
 #clearBtn:hover {
-    background: #545b62;
+    background: #b91c1c;
+}
+
+#clearBtn:active {
+    transform: scale(0.97);
 }
 
 
@@ -326,20 +342,29 @@ table td{
 ========================================= */
 
 #whatsappBtn {
-    background: #25d366;
+    background: #25D366;
+    color: #ffffff;
 }
 
 #whatsappBtn:hover {
-    background: #1da851;
+    background: #1ebe5d;
+}
+
+#whatsappBtn:active {
+    transform: scale(0.97);
 }
 
 
 /* =========================================
-   CLICK EFFECT
+   DISABLED BUTTON
 ========================================= */
 
-.buttons button:active {
-    transform: scale(0.97);
+.buttons button:disabled {
+    background: #d1d5db !important;
+    color: #ffffff !important;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
 }
 
 
@@ -351,6 +376,7 @@ table td{
 
     .buttons {
         flex-direction: column;
+        gap: 10px;
     }
 
     .buttons button {

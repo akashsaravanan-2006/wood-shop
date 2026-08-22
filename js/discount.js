@@ -1,37 +1,54 @@
 // ============================================================
-// LABOUR.JS
+// DISCOUNT.JS
 // FLOW:
 // WOOD → LABOUR → PERSONAL → DISCOUNT → ADVANCE → BILL
 // ============================================================
 
-console.log("LABOUR.JS LOADED");
+console.log("========================================");
+console.log("DISCOUNT.JS LOADED");
+console.log("========================================");
 
 
 // ============================================================
 // ELEMENTS
 // ============================================================
 
-const woodTotalEl = document.getElementById("woodTotal");
-const labourChargeEl = document.getElementById("labourCharge");
-const otherChargeEl = document.getElementById("otherCharge");
-const othersContainerEl = document.getElementById("othersContainer");
-const othersTotalEl = document.getElementById("othersTotal");
-const grandTotalEl = document.getElementById("grandTotal");
+const currentTotalEl =
+    document.getElementById("currentTotal");
 
-const addOtherBtn = document.getElementById("addOtherBtn");
-const confirmBtn = document.getElementById("confirmBtn");
-const nextBtn = document.getElementById("nextBtn");
-const backBtn = document.getElementById("backBtn");
+const discountAmountEl =
+    document.getElementById("discountAmount");
+
+const newGrandTotalEl =
+    document.getElementById("newGrandTotal");
+
+const calculateDiscountBtn =
+    document.getElementById("calculateDiscountBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+const discountSection =
+    document.getElementById("discountSection");
+
+const discountOptions =
+    document.querySelectorAll(
+        'input[name="discountOption"]'
+    );
 
 
 // ============================================================
 // DATA
 // ============================================================
 
-let woodTotal = 0;
-let labourCharge = 0;
-let otherCharge = 0;
-let additionalOthers = [];
+let currentGrandTotal = 0;
+
+let discountAmount = 0;
+
+let newGrandTotal = 0;
 
 
 // ============================================================
@@ -40,88 +57,104 @@ let additionalOthers = [];
 
 function getNumber(value) {
 
-    const n = parseFloat(value);
+    const number =
+        parseFloat(value);
 
-    return Number.isFinite(n) ? n : 0;
+    return Number.isFinite(number)
+        ? number
+        : 0;
 
 }
 
 
 // ============================================================
-// MONEY
+// ROUND MONEY
 // ============================================================
 
 function roundMoney(value) {
 
     return Math.round(
-        (getNumber(value) + Number.EPSILON) * 100
+        (
+            getNumber(value) +
+            Number.EPSILON
+        ) * 100
     ) / 100;
 
 }
 
 
+// ============================================================
+// DISPLAY MONEY
+// ============================================================
+
 function formatMoney(value) {
 
-    return "₹ " + roundMoney(value).toFixed(2);
+    return (
+        "₹ " +
+        roundMoney(value).toFixed(2)
+    );
 
 }
 
 
 // ============================================================
-// GET WOOD TOTAL
+// GET CURRENT GRAND TOTAL
+// ============================================================
+//
+// Priority:
+//
+// 1. labourData.grandTotal
+// 2. labourFinalTotal
+// 3. labourBaseTotal
+// 4. grandTotal
+// 5. finalTotal
+// 6. central bill totals
+//
 // ============================================================
 
-function loadWoodTotal() {
+function getCurrentGrandTotal() {
 
     let value = 0;
 
 
-    // --------------------------------------------------------
-    // First: woodData
-    // --------------------------------------------------------
+    // ========================================================
+    // 1. LABOUR DATA
+    // ========================================================
 
-    const woodDataText =
-        localStorage.getItem("woodData");
+    const labourDataText =
+        localStorage.getItem(
+            "labourData"
+        );
 
 
-    if (woodDataText) {
+    if (
+        labourDataText
+    ) {
 
         try {
 
-            const woodData =
-                JSON.parse(woodDataText);
+            const labourData =
+                JSON.parse(
+                    labourDataText
+                );
 
 
             console.log(
-                "WOOD DATA:",
-                woodData
+                "LABOUR DATA:",
+                labourData
             );
 
 
-            value =
-                getNumber(woodData.grandTotal);
-
-
-            if (value === 0) {
-
-                value =
-                    getNumber(woodData.finalTotal);
-
-            }
-
-
-            if (value === 0) {
+            if (
+                labourData &&
+                labourData.grandTotal !==
+                undefined
+            ) {
 
                 value =
-                    getNumber(woodData.totalAmount);
-
-            }
-
-
-            if (value === 0) {
-
-                value =
-                    getNumber(woodData.amount);
+                    getNumber(
+                        labourData.grandTotal
+                    );
 
             }
 
@@ -129,7 +162,7 @@ function loadWoodTotal() {
         catch (error) {
 
             console.error(
-                "WOOD DATA ERROR:",
+                "LABOUR DATA ERROR:",
                 error
             );
 
@@ -138,46 +171,671 @@ function loadWoodTotal() {
     }
 
 
-    // --------------------------------------------------------
-    // Other possible saved keys
-    // --------------------------------------------------------
+    // ========================================================
+    // 2. LABOUR FINAL TOTAL
+    // ========================================================
 
-    if (value === 0) {
+    if (
+        value === 0
+    ) {
 
-        const possibleKeys = [
+        value =
+            getNumber(
+                localStorage.getItem(
+                    "labourFinalTotal"
+                )
+            );
 
-            "woodFinalTotal",
-            "woodTotal",
-            "woodGrandTotal"
-
-        ];
+    }
 
 
-        for (
-            const key of possibleKeys
-        ) {
+    // ========================================================
+    // 3. LABOUR BASE TOTAL
+    // ========================================================
 
-            const saved =
-                localStorage.getItem(key);
+    if (
+        value === 0
+    ) {
+
+        value =
+            getNumber(
+                localStorage.getItem(
+                    "labourBaseTotal"
+                )
+            );
+
+    }
+
+
+    // ========================================================
+    // 4. GRAND TOTAL
+    // ========================================================
+
+    if (
+        value === 0
+    ) {
+
+        value =
+            getNumber(
+                localStorage.getItem(
+                    "grandTotal"
+                )
+            );
+
+    }
+
+
+    // ========================================================
+    // 5. FINAL TOTAL
+    // ========================================================
+
+    if (
+        value === 0
+    ) {
+
+        value =
+            getNumber(
+                localStorage.getItem(
+                    "finalTotal"
+                )
+            );
+
+    }
+
+
+    // ========================================================
+    // 6. CENTRAL BILL DATA
+    // ========================================================
+
+    if (
+        value === 0 &&
+        typeof getTotals ===
+        "function"
+    ) {
+
+        try {
+
+            const totals =
+                getTotals();
+
+
+            console.log(
+                "CENTRAL TOTALS:",
+                totals
+            );
 
 
             if (
-                saved !== null &&
-                saved !== ""
+                totals &&
+                totals.grandTotal !==
+                undefined
             ) {
 
-                const numberValue =
-                    getNumber(saved);
+                value =
+                    getNumber(
+                        totals.grandTotal
+                    );
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "CENTRAL TOTAL ERROR:",
+                error
+            );
+
+        }
+
+    }
 
 
-                if (numberValue > 0) {
+    // ========================================================
+    // FINAL VALUE
+    // ========================================================
 
-                    value =
-                        numberValue;
+    currentGrandTotal =
+        roundMoney(value);
 
-                    break;
 
-                }
+    console.log(
+        "CURRENT GRAND TOTAL:",
+        currentGrandTotal
+    );
+
+
+    return currentGrandTotal;
+
+}
+
+
+// ============================================================
+// DISPLAY CURRENT TOTAL
+// ============================================================
+
+function displayCurrentTotal() {
+
+    if (
+        currentTotalEl
+    ) {
+
+        currentTotalEl.textContent =
+            formatMoney(
+                currentGrandTotal
+            );
+
+    }
+
+}
+
+
+// ============================================================
+// GET SELECTED DISCOUNT OPTION
+// ============================================================
+
+function getDiscountOption() {
+
+    const selected =
+        document.querySelector(
+            'input[name="discountOption"]:checked'
+        );
+
+
+    if (
+        !selected
+    ) {
+
+        return "no";
+
+    }
+
+
+    return selected.value;
+
+}
+
+
+// ============================================================
+// SHOW / HIDE DISCOUNT SECTION
+// ============================================================
+
+function updateDiscountSection() {
+
+    const option =
+        getDiscountOption();
+
+
+    if (
+        discountSection
+    ) {
+
+        if (
+            option === "yes"
+        ) {
+
+            discountSection.style.display =
+                "block";
+
+        }
+        else {
+
+            discountSection.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    // ========================================================
+    // NO DISCOUNT
+    // ========================================================
+
+    if (
+        option === "no"
+    ) {
+
+        discountAmount =
+            0;
+
+
+        newGrandTotal =
+            currentGrandTotal;
+
+
+        if (
+            discountAmountEl
+        ) {
+
+            discountAmountEl.value =
+                "";
+
+        }
+
+
+        if (
+            newGrandTotalEl
+        ) {
+
+            newGrandTotalEl.textContent =
+                formatMoney(
+                    newGrandTotal
+                );
+
+        }
+
+
+        saveDiscountData();
+
+    }
+
+
+    // ========================================================
+    // YES DISCOUNT
+    // ========================================================
+
+    if (
+        option === "yes"
+    ) {
+
+        calculateDiscount();
+
+    }
+
+
+    printDiscountData();
+
+}
+
+
+// ============================================================
+// CALCULATE DISCOUNT
+// ============================================================
+//
+// New Grand Total =
+// Current Grand Total - Discount
+//
+// ============================================================
+
+function calculateDiscount() {
+
+    // --------------------------------------------------------
+    // CURRENT TOTAL
+    // --------------------------------------------------------
+
+    currentGrandTotal =
+        getCurrentGrandTotal();
+
+
+    // --------------------------------------------------------
+    // DISCOUNT
+    // --------------------------------------------------------
+
+    discountAmount =
+        roundMoney(
+            discountAmountEl
+                ? discountAmountEl.value
+                : 0
+        );
+
+
+    // ========================================================
+    // NO DISCOUNT
+    // ========================================================
+
+    if (
+        getDiscountOption() === "no"
+    ) {
+
+        discountAmount =
+            0;
+
+        newGrandTotal =
+            currentGrandTotal;
+
+    }
+
+
+    // ========================================================
+    // DISCOUNT CANNOT BE NEGATIVE
+    // ========================================================
+
+    if (
+        discountAmount < 0
+    ) {
+
+        discountAmount =
+            0;
+
+    }
+
+
+    // ========================================================
+    // DISCOUNT CANNOT BE GREATER THAN TOTAL
+    // ========================================================
+
+    if (
+        discountAmount >
+        currentGrandTotal
+    ) {
+
+        discountAmount =
+            currentGrandTotal;
+
+
+        if (
+            discountAmountEl
+        ) {
+
+            discountAmountEl.value =
+                currentGrandTotal;
+
+        }
+
+
+        console.warn(
+            "Discount cannot be greater than Grand Total."
+        );
+
+    }
+
+
+    // ========================================================
+    // FINAL CALCULATION
+    // ========================================================
+
+    newGrandTotal =
+        roundMoney(
+            currentGrandTotal -
+            discountAmount
+        );
+
+
+    // ========================================================
+    // DISPLAY
+    // ========================================================
+
+    if (
+        newGrandTotalEl
+    ) {
+
+        newGrandTotalEl.textContent =
+            formatMoney(
+                newGrandTotal
+            );
+
+    }
+
+
+    // ========================================================
+    // CONSOLE
+    // ========================================================
+
+    console.log(
+        "----------------------------------------"
+    );
+
+    console.log(
+        "DISCOUNT CALCULATION"
+    );
+
+    console.log(
+        "CURRENT GRAND TOTAL:",
+        currentGrandTotal
+    );
+
+    console.log(
+        "DISCOUNT:",
+        discountAmount
+    );
+
+    console.log(
+        "NEW GRAND TOTAL:",
+        newGrandTotal
+    );
+
+    console.log(
+        "----------------------------------------"
+    );
+
+
+    // ========================================================
+    // SAVE
+    // ========================================================
+
+    saveDiscountData();
+
+
+    return newGrandTotal;
+
+}
+
+
+// ============================================================
+// SAVE DISCOUNT DATA
+// ============================================================
+
+function saveDiscountData() {
+
+    const option =
+        getDiscountOption();
+
+
+    const data = {
+
+        option:
+            option,
+
+        currentGrandTotal:
+            roundMoney(
+                currentGrandTotal
+            ),
+
+        discountAmount:
+            roundMoney(
+                discountAmount
+            ),
+
+        newGrandTotal:
+            roundMoney(
+                newGrandTotal
+            )
+
+    };
+
+
+    // ========================================================
+    // OLD / COMPATIBILITY STORAGE
+    // ========================================================
+
+    localStorage.setItem(
+        "discountData",
+        JSON.stringify(data)
+    );
+
+
+    localStorage.setItem(
+        "discountAmount",
+        String(
+            roundMoney(
+                discountAmount
+            )
+        )
+    );
+
+
+    localStorage.setItem(
+        "discountApplied",
+        option === "yes"
+            ? "true"
+            : "false"
+    );
+
+
+    localStorage.setItem(
+        "finalGrandTotal",
+        String(
+            roundMoney(
+                newGrandTotal
+            )
+        )
+    );
+
+
+    // ========================================================
+    // CENTRAL STORE
+    // ========================================================
+
+    if (
+        typeof savePageData ===
+        "function"
+    ) {
+
+        savePageData(
+            "discount",
+            data
+        );
+
+    }
+
+
+    // ========================================================
+    // SAVE TOTALS
+    // ========================================================
+
+    if (
+        typeof saveTotals ===
+        "function"
+    ) {
+
+        const oldTotals =
+            typeof getTotals ===
+            "function"
+                ? getTotals()
+                : {};
+
+
+        saveTotals({
+
+            ...oldTotals,
+
+            currentGrandTotal:
+                roundMoney(
+                    currentGrandTotal
+                ),
+
+            discount:
+                roundMoney(
+                    discountAmount
+                ),
+
+            grandTotal:
+                roundMoney(
+                    newGrandTotal
+                ),
+
+            finalGrandTotal:
+                roundMoney(
+                    newGrandTotal
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "DISCOUNT DATA SAVED:",
+        data
+    );
+
+}
+
+
+// ============================================================
+// LOAD DISCOUNT DATA
+// ============================================================
+
+function loadDiscountData() {
+
+    let data = null;
+
+
+    // ========================================================
+    // CENTRAL STORE FIRST
+    // ========================================================
+
+    if (
+        typeof getPageData ===
+        "function"
+    ) {
+
+        try {
+
+            const centralData =
+                getPageData(
+                    "discount"
+                );
+
+
+            if (
+                centralData &&
+                Object.keys(
+                    centralData
+                ).length > 0
+            ) {
+
+                data =
+                    centralData;
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "CENTRAL DISCOUNT LOAD ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ========================================================
+    // OLD STORAGE FALLBACK
+    // ========================================================
+
+    if (
+        !data
+    ) {
+
+        const saved =
+            localStorage.getItem(
+                "discountData"
+            );
+
+
+        if (
+            saved
+        ) {
+
+            try {
+
+                data =
+                    JSON.parse(
+                        saved
+                    );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "DISCOUNT DATA LOAD ERROR:",
+                    error
+                );
 
             }
 
@@ -186,284 +844,12 @@ function loadWoodTotal() {
     }
 
 
-    woodTotal =
-        roundMoney(value);
-
-
-    console.log(
-        "WOOD TOTAL:",
-        woodTotal
-    );
-
-
-    if (woodTotalEl) {
-
-        woodTotalEl.textContent =
-            formatMoney(woodTotal);
-
-    }
-
-}
-
-
-// ============================================================
-// CALCULATE OTHERS TOTAL
-//
-// Other Charge
-// +
-// Additional Others
-// =
-// Others Total
-// ============================================================
-
-function calculateOthersTotal() {
-
-    // Main Other Charge
-
-    otherCharge =
-        roundMoney(
-            getNumber(
-                otherChargeEl.value
-            )
-        );
-
-
-    // Additional Others
-
-    let additionalTotal = 0;
-
-
-    additionalOthers.forEach(
-        function (value) {
-
-            additionalTotal +=
-                getNumber(value);
-
-        }
-    );
-
-
-    additionalTotal =
-        roundMoney(
-            additionalTotal
-        );
-
-
-    // FINAL OTHERS TOTAL
-
-    const othersTotal =
-        roundMoney(
-            otherCharge +
-            additionalTotal
-        );
-
-
-    // --------------------------------------------------------
-    // THIS IS THE IMPORTANT FIX
-    // --------------------------------------------------------
-
-    if (othersTotalEl) {
-
-        othersTotalEl.textContent =
-            formatMoney(othersTotal);
-
-    }
-
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "OTHER CALCULATION"
-    );
-
-    console.log(
-        "OTHER CHARGE:",
-        otherCharge
-    );
-
-    console.log(
-        "ADDITIONAL OTHERS:",
-        additionalTotal
-    );
-
-    console.log(
-        "OTHERS TOTAL:",
-        othersTotal
-    );
-
-    console.log(
-        "================================"
-    );
-
-
-    return othersTotal;
-
-}
-
-
-// ============================================================
-// CALCULATE GRAND TOTAL
-// ============================================================
-
-function calculateGrandTotal() {
-
-    labourCharge =
-        roundMoney(
-            getNumber(
-                labourChargeEl.value
-            )
-        );
-
-
-    const othersTotal =
-        calculateOthersTotal();
-
-
-    const grandTotal =
-        roundMoney(
-            woodTotal +
-            labourCharge +
-            othersTotal
-        );
-
-
-    if (grandTotalEl) {
-
-        grandTotalEl.textContent =
-            formatMoney(grandTotal);
-
-    }
-
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "GRAND TOTAL CALCULATION"
-    );
-
-    console.log(
-        "WOOD TOTAL:",
-        woodTotal
-    );
-
-    console.log(
-        "LABOUR:",
-        labourCharge
-    );
-
-    console.log(
-        "OTHERS:",
-        othersTotal
-    );
-
-    console.log(
-        "GRAND TOTAL:",
-        grandTotal
-    );
-
-    console.log(
-        "================================"
-    );
-
-
-    return grandTotal;
-
-}
-
-
-// ============================================================
-// SAVE LABOUR DATA
-// ============================================================
-
-function saveLabourData() {
-
-    const othersTotal =
-        calculateOthersTotal();
-
-
-    const grandTotal =
-        roundMoney(
-            woodTotal +
-            labourCharge +
-            othersTotal
-        );
-
-
-    const data = {
-
-        woodTotal:
-            woodTotal,
-
-        labourCharge:
-            labourCharge,
-
-        otherCharge:
-            otherCharge,
-
-        additionalOthers:
-            additionalOthers,
-
-        othersTotal:
-            othersTotal,
-
-        grandTotal:
-            grandTotal
-
-    };
-
-
-    // Main Labour object
-
-    localStorage.setItem(
-        "labourData",
-        JSON.stringify(data)
-    );
-
-
-    // Source value for Personal / Discount
-
-    localStorage.setItem(
-        "labourFinalTotal",
-        grandTotal.toFixed(2)
-    );
-
-
-    // Separate base value
-
-    localStorage.setItem(
-        "labourBaseTotal",
-        grandTotal.toFixed(2)
-    );
-
-
-    console.log(
-        "LABOUR DATA SAVED:",
-        data
-    );
-
-}
-
-
-// ============================================================
-// LOAD LABOUR DATA
-// ============================================================
-
-function loadLabourData() {
-
-    const saved =
-        localStorage.getItem(
-            "labourData"
-        );
-
-
-    if (!saved) {
+    if (
+        !data
+    ) {
 
         console.log(
-            "NO OLD LABOUR DATA"
+            "NO PREVIOUS DISCOUNT DATA"
         );
 
         return;
@@ -471,377 +857,466 @@ function loadLabourData() {
     }
 
 
-    try {
-
-        const data =
-            JSON.parse(saved);
-
-
-        console.log(
-            "LOADED LABOUR DATA:",
-            data
-        );
+    console.log(
+        "LOADED DISCOUNT DATA:",
+        data
+    );
 
 
-        // Labour
+    // ========================================================
+    // RESTORE OPTION
+    // ========================================================
+
+    if (
+        data.option
+    ) {
+
+        const radio =
+            document.querySelector(
+                `input[name="discountOption"][value="${data.option}"]`
+            );
+
 
         if (
-            data.labourCharge !== undefined
+            radio
         ) {
 
-            labourChargeEl.value =
-                data.labourCharge;
+            radio.checked =
+                true;
 
         }
 
+    }
 
-        // Other Charge
+
+    // ========================================================
+    // RESTORE DISCOUNT
+    // ========================================================
+
+    if (
+        discountAmountEl &&
+        data.discountAmount !==
+        undefined
+    ) {
+
+        discountAmountEl.value =
+            data.discountAmount;
+
+    }
+
+
+    // ========================================================
+    // RESTORE FINAL TOTAL
+    // ========================================================
+
+    if (
+        data.newGrandTotal !==
+        undefined
+    ) {
+
+        newGrandTotal =
+            roundMoney(
+                data.newGrandTotal
+            );
+
+    }
+
+
+    // ========================================================
+    // UPDATE SECTION
+    // ========================================================
+
+    const option =
+        getDiscountOption();
+
+
+    if (
+        option === "yes"
+    ) {
 
         if (
-            data.otherCharge !== undefined
+            discountSection
         ) {
 
-            otherChargeEl.value =
-                data.otherCharge;
+            discountSection.style.display =
+                "block";
 
         }
 
+        calculateDiscount();
 
-        // Additional Others
+    }
+    else {
 
         if (
-            Array.isArray(
-                data.additionalOthers
-            )
+            discountSection
         ) {
 
-            additionalOthers =
-                data.additionalOthers.map(
-                    function (value) {
+            discountSection.style.display =
+                "none";
 
-                        return roundMoney(
-                            value
-                        );
+        }
 
-                    }
+        discountAmount =
+            0;
+
+        newGrandTotal =
+            currentGrandTotal;
+
+
+        if (
+            newGrandTotalEl
+        ) {
+
+            newGrandTotalEl.textContent =
+                formatMoney(
+                    newGrandTotal
                 );
 
         }
 
-
-        renderAdditionalOthers();
-
-    }
-    catch (error) {
-
-        console.error(
-            "LABOUR DATA LOAD ERROR:",
-            error
-        );
-
     }
 
 }
 
 
 // ============================================================
-// RENDER ADDITIONAL OTHERS
+// PRINT ALL DISCOUNT DATA
 // ============================================================
 
-function renderAdditionalOthers() {
+function printDiscountData() {
 
-    if (!othersContainerEl) {
+    console.log(
+        "========================================"
+    );
 
-        return;
+    console.log(
+        "          DISCOUNT PAGE DATA"
+    );
 
-    }
+    console.log(
+        "========================================"
+    );
 
+    console.log(
+        "Current Grand Total :",
+        currentGrandTotal
+    );
 
-    othersContainerEl.innerHTML = "";
+    console.log(
+        "Discount Option     :",
+        getDiscountOption()
+    );
 
+    console.log(
+        "Discount Amount     :",
+        discountAmount
+    );
 
-    additionalOthers.forEach(
-        function (value, index) {
+    console.log(
+        "New Grand Total     :",
+        newGrandTotal
+    );
 
-            const div =
-                document.createElement("div");
-
-
-            div.className =
-                "other-item";
-
-
-            div.innerHTML = `
-
-                <span class="other-item-name">
-                    Other ${index + 1}
-                </span>
-
-                <span class="other-item-value">
-                    ${formatMoney(value)}
-                </span>
-
-                <button
-                    type="button"
-                    class="remove-other-btn"
-                    data-index="${index}">
-                    Remove
-                </button>
-
-            `;
-
-
-            othersContainerEl.appendChild(
-                div
-            );
-
-        }
+    console.log(
+        "========================================"
     );
 
 
-    // Remove buttons
+    // ========================================================
+    // COMPLETE BILL DATA
+    // ========================================================
 
-    const removeButtons =
-        document.querySelectorAll(
-            ".remove-other-btn"
+    if (
+        typeof getBillData ===
+        "function"
+    ) {
+
+        console.log(
+            "COMPLETE BILL DATA:"
         );
 
+        console.log(
+            getBillData()
+        );
 
-    removeButtons.forEach(
-        function (button) {
+    }
 
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const index =
-                        parseInt(
-                            button.dataset.index,
-                            10
-                        );
-
-
-                    if (
-                        !Number.isNaN(index)
-                    ) {
-
-                        additionalOthers.splice(
-                            index,
-                            1
-                        );
-
-                    }
-
-
-                    renderAdditionalOthers();
-
-                    calculateGrandTotal();
-
-                    saveLabourData();
-
-                }
-            );
-
-        }
+    console.log(
+        "========================================"
     );
 
 }
 
 
 // ============================================================
-// ADD OTHER
+// DISCOUNT OPTION CHANGE
 // ============================================================
 
-function addOther() {
+discountOptions.forEach(
+    function (radio) {
 
-    const value =
-        roundMoney(
-            getNumber(
-                otherChargeEl.value
-            )
+        radio.addEventListener(
+            "change",
+            function () {
+
+                console.log(
+                    "DISCOUNT OPTION CHANGED:",
+                    this.value
+                );
+
+
+                updateDiscountSection();
+
+            }
         );
-
-
-    if (value <= 0) {
-
-        alert(
-            "Please enter Other Charge first."
-        );
-
-        otherChargeEl.focus();
-
-        return;
-
-    }
-
-
-    additionalOthers.push(
-        value
-    );
-
-
-    // Clear input
-
-    otherChargeEl.value = "";
-
-
-    renderAdditionalOthers();
-
-    calculateGrandTotal();
-
-    saveLabourData();
-
-}
-
-
-// ============================================================
-// LABOUR INPUT
-// ============================================================
-
-labourChargeEl.addEventListener(
-    "input",
-    function () {
-
-        calculateGrandTotal();
-
-        saveLabourData();
 
     }
 );
 
 
 // ============================================================
-// OTHER INPUT
+// DISCOUNT INPUT
+// ============================================================
 //
-// THIS WILL UPDATE OTHERS TOTAL IMMEDIATELY
+// Automatically calculates while typing.
+//
 // ============================================================
 
-otherChargeEl.addEventListener(
-    "input",
-    function () {
+if (
+    discountAmountEl
+) {
 
-        calculateGrandTotal();
+    discountAmountEl.addEventListener(
+        "input",
+        function () {
 
-        saveLabourData();
+            calculateDiscount();
 
-    }
-);
+        }
+    );
 
-
-// ============================================================
-// ADD OTHER BUTTON
-// ============================================================
-
-addOtherBtn.addEventListener(
-    "click",
-    function () {
-
-        addOther();
-
-    }
-);
+}
 
 
 // ============================================================
-// CONFIRM
+// CALCULATE BUTTON
+// ============================================================
+//
+// Kept for your existing HTML.
+// Calculation also happens automatically while typing.
+//
 // ============================================================
 
-confirmBtn.addEventListener(
-    "click",
-    function () {
+if (
+    calculateDiscountBtn
+) {
 
-        calculateGrandTotal();
+    calculateDiscountBtn.addEventListener(
+        "click",
+        function (event) {
 
-        saveLabourData();
+            event.preventDefault();
 
+            calculateDiscount();
 
-        alert(
-            "Labour details saved successfully."
-        );
+        }
+    );
 
-    }
-);
+}
 
 
 // ============================================================
 // NEXT
 //
-// LABOUR → PERSONAL
+// DISCOUNT → ADVANCE
 // ============================================================
 
-nextBtn.addEventListener(
-    "click",
-    function () {
+if (
+    nextBtn
+) {
 
-        calculateGrandTotal();
+    nextBtn.addEventListener(
+        "click",
+        function (event) {
 
-        saveLabourData();
+            event.preventDefault();
+
+            event.stopImmediatePropagation();
 
 
-        console.log(
-            "GOING TO PERSONAL PAGE"
-        );
+            console.log(
+                "NEXT CLICKED"
+            );
 
 
-        window.location.href =
-            "personal.html";
+            // ------------------------------------------------
+            // Make sure latest discount is calculated
+            // ------------------------------------------------
 
-    }
-);
+            if (
+                getDiscountOption() ===
+                "yes"
+            ) {
+
+                calculateDiscount();
+
+            }
+            else {
+
+                discountAmount =
+                    0;
+
+                newGrandTotal =
+                    currentGrandTotal;
+
+                saveDiscountData();
+
+            }
+
+
+            // ------------------------------------------------
+            // Print before leaving
+            // ------------------------------------------------
+
+            printDiscountData();
+
+
+            console.log(
+                "GOING TO ADVANCE.HTML"
+            );
+
+
+            // ------------------------------------------------
+            // NEXT PAGE
+            // ------------------------------------------------
+
+            window.location.href =
+                "./advance.html";
+
+        }
+    );
+
+}
 
 
 // ============================================================
 // BACK
 //
-// LABOUR → WOOD
+// DISCOUNT → PERSONAL
 // ============================================================
 
-backBtn.addEventListener(
-    "click",
-    function () {
+if (
+    backBtn
+) {
 
-        calculateGrandTotal();
+    backBtn.addEventListener(
+        "click",
+        function (event) {
 
-        saveLabourData();
+            event.preventDefault();
+
+            event.stopImmediatePropagation();
 
 
-        window.location.href =
-            "wood.html";
+            console.log(
+                "BACK CLICKED"
+            );
 
-    }
-);
+
+            // Save current state
+
+            if (
+                getDiscountOption() ===
+                "yes"
+            ) {
+
+                calculateDiscount();
+
+            }
+            else {
+
+                discountAmount =
+                    0;
+
+                newGrandTotal =
+                    currentGrandTotal;
+
+                saveDiscountData();
+
+            }
+
+
+            console.log(
+                "GOING TO PERSONAL.HTML"
+            );
+
+
+            window.location.href =
+                "./personal.html";
+
+        }
+    );
+
+}
 
 
 // ============================================================
 // INITIALIZE
 // ============================================================
 
-function initialize() {
+function initializeDiscountPage() {
 
     console.log(
-        "================================"
+        "========================================"
     );
 
     console.log(
-        "LABOUR PAGE INITIALIZING"
+        "DISCOUNT PAGE INITIALIZING"
     );
 
     console.log(
-        "================================"
+        "========================================"
     );
 
 
-    loadWoodTotal();
+    // --------------------------------------------------------
+    // GET CURRENT GRAND TOTAL
+    // --------------------------------------------------------
 
-    loadLabourData();
+    getCurrentGrandTotal();
 
-    renderAdditionalOthers();
 
-    calculateGrandTotal();
+    // --------------------------------------------------------
+    // DISPLAY CURRENT TOTAL
+    // --------------------------------------------------------
+
+    displayCurrentTotal();
+
+
+    // --------------------------------------------------------
+    // LOAD PREVIOUS DISCOUNT
+    // --------------------------------------------------------
+
+    loadDiscountData();
+
+
+    // --------------------------------------------------------
+    // FINAL DISPLAY
+    // --------------------------------------------------------
+
+    displayCurrentTotal();
+
+
+    // --------------------------------------------------------
+    // PRINT EVERYTHING
+    // --------------------------------------------------------
+
+    printDiscountData();
 
 
     console.log(
-        "LABOUR PAGE READY"
+        "DISCOUNT PAGE READY"
     );
 
 }
@@ -852,17 +1327,18 @@ function initialize() {
 // ============================================================
 
 if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
 ) {
 
     document.addEventListener(
         "DOMContentLoaded",
-        initialize
+        initializeDiscountPage
     );
 
 }
 else {
 
-    initialize();
+    initializeDiscountPage();
 
 }

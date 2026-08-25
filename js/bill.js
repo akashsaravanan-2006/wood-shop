@@ -2090,42 +2090,384 @@ if (clearBtn) {
 
 
 // ============================================================
-// CONFIRM BILL
+// CONFIRM BILL + SAVE TO TIDB
 // ============================================================
 
 const confirmBill =
-    document.getElementById(
-        "confirmBill"
-    );
+    document.getElementById("confirmBill");
 
 
 if (confirmBill) {
 
     confirmBill.addEventListener(
         "click",
-        function () {
+        async function () {
 
-            localStorage.setItem(
-                "billConfirmed",
-                "true"
+            console.log(
+                "===================================="
+            );
+
+            console.log(
+                "CONFIRM BILL - SAVING TO DATABASE"
+            );
+
+            console.log(
+                "===================================="
             );
 
 
-            localStorage.setItem(
-                "billConfirmedAt",
-                new Date().toISOString()
+            // ==================================================
+            // GET PAYMENT DATA
+            // ==================================================
+
+            const paymentType =
+                advanceCentral.paymentType ||
+                localStorage.getItem("paymentType") ||
+                "cash";
+
+
+            const paymentMode =
+                advanceCentral.paymentMode ||
+                localStorage.getItem("paymentMode") ||
+                "cash";
+
+
+            // ==================================================
+            // CREATE COMPLETE BILL OBJECT
+            // ==================================================
+
+            const billToSave = {
+
+                // CUSTOMER
+                customerName:
+                    customerName,
+
+                customerMobile:
+                    customerMobile,
+
+                customerPlace:
+                    customerPlace,
+
+
+                // DATE / TIME
+                billDate:
+                    new Date().toISOString().slice(0, 10),
+
+                billTime:
+                    new Date().toTimeString().slice(0, 8),
+
+
+                // PAYMENT
+                paymentType:
+                    paymentType,
+
+                paymentMode:
+                    paymentMode,
+
+
+                // AMOUNTS
+                advanceAmount:
+                    Math.round(advanceAmount),
+
+                balanceAmount:
+                    Math.round(balanceAmount),
+
+                totalCFT:
+                    Number(
+                        woodCalculations.reduce(
+                            function (total, item) {
+
+                                return total +
+                                    toNumber(
+                                        item?.cubicFeet
+                                    );
+
+                            },
+                            0
+                        )
+                    ),
+
+
+                woodTotal:
+                    Math.round(woodTotal),
+
+                labourCharge:
+                    Math.round(labourCharge),
+
+                otherCharge:
+                    Math.round(otherCharge),
+
+                othersTotal:
+                    Math.round(othersTotal),
+
+                discountAmount:
+                    Math.round(discount),
+
+                grandTotal:
+                    Math.round(grandTotal),
+
+
+                // COMPLETE WOOD DETAILS
+                woodData:
+                    woodCalculations,
+
+
+                // COMPLETE OTHER CHARGE DETAILS
+                othersData:
+                    otherItems,
+
+
+                // REMARK
+                remark:
+                    ""
+
+            };
+
+
+            // ==================================================
+            // DEBUG
+            // ==================================================
+
+            console.log(
+                "BILL DATA BEING SENT TO SERVER:"
+            );
+
+            console.log(
+                JSON.stringify(
+                    billToSave,
+                    null,
+                    2
+                )
             );
 
 
-            window.location.href =
-                "./confirm.html";
+            // ==================================================
+            // DISABLE BUTTON
+            // ==================================================
+
+            const oldText =
+                confirmBill.textContent;
+
+            confirmBill.disabled =
+                true;
+
+            confirmBill.textContent =
+                "Saving...";
+
+
+            try {
+
+                // ==================================================
+                // SEND TO BACKEND
+                // ==================================================
+
+                const response =
+                    await fetch(
+                        "https://wood-shop-backend.vercel.app/api/save-bill",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    billToSave
+                                )
+
+                        }
+                    );
+
+
+                // ==================================================
+                // READ RESPONSE
+                // ==================================================
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "SAVE BILL RESPONSE:",
+                    result
+                );
+
+
+                // ==================================================
+                // ERROR
+                // ==================================================
+
+                if (
+                    !response.ok ||
+                    !result.success
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        result.error ||
+                        "Unable to save bill"
+                    );
+
+                }
+
+
+                // ==================================================
+                // SAVE GENERATED BILL INFORMATION
+                // ==================================================
+
+                localStorage.setItem(
+                    "savedBillId",
+                    String(
+                        result.billId || ""
+                    )
+                );
+
+
+                localStorage.setItem(
+                    "savedBillNo",
+                    result.billNo || ""
+                );
+
+
+                localStorage.setItem(
+                    "savedCustomerId",
+                    result.customerId || ""
+                );
+
+
+                localStorage.setItem(
+                    "billConfirmed",
+                    "true"
+                );
+
+
+                localStorage.setItem(
+                    "billConfirmedAt",
+                    new Date().toISOString()
+                );
+
+
+                // ==================================================
+                // UPDATE CENTRAL STORAGE
+                // ==================================================
+
+                if (
+                    typeof getBillData ===
+                    "function" &&
+                    typeof saveBillData ===
+                    "function"
+                ) {
+
+                    const completeBill =
+                        getBillData();
+
+
+                    completeBill.billNo =
+                        result.billNo;
+
+
+                    completeBill.customerId =
+                        result.customerId;
+
+
+                    completeBill.totals = {
+
+                        woodTotal:
+                            Math.round(
+                                woodTotal
+                            ),
+
+                        othersTotal:
+                            Math.round(
+                                othersTotal
+                            ),
+
+                        subtotal:
+                            Math.round(
+                                subtotal
+                            ),
+
+                        discount:
+                            Math.round(
+                                discount
+                            ),
+
+                        grandTotal:
+                            Math.round(
+                                grandTotal
+                            ),
+
+                        advanceAmount:
+                            Math.round(
+                                advanceAmount
+                            ),
+
+                        balanceAmount:
+                            Math.round(
+                                balanceAmount
+                            )
+
+                    };
+
+
+                    saveBillData(
+                        completeBill
+                    );
+
+                }
+
+
+                // ==================================================
+                // SUCCESS
+                // ==================================================
+
+                alert(
+                    "Bill saved successfully.\n\n" +
+                    "Bill No: " +
+                    result.billNo
+                );
+
+
+                // ==================================================
+                // GO TO CONFIRM PAGE
+                // ==================================================
+
+                window.location.href =
+                    "./confirm.html";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "SAVE BILL ERROR:",
+                    error
+                );
+
+
+                alert(
+                    "Bill could not be saved.\n\n" +
+                    error.message
+                );
+
+
+                confirmBill.disabled =
+                    false;
+
+                confirmBill.textContent =
+                    oldText;
+
+            }
 
         }
     );
 
 }
-
-
 // ============================================================
 // WHATSAPP + PDF
 // ============================================================

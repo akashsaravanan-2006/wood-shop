@@ -2026,264 +2026,436 @@ async function loadFinalBill() {
 // LOAD WOOD DATA
 // ============================================================
 //
-// FORMAT:
+// SAME DISPLAY AS BILL.JS
 //
-// S.No | Wood | Size | Length | Qty | CFT | Rate | Amount | Quality
+// Length column:
 //
-// Length and Qty:
+// 7
+// 4
 //
-// 7 -> 2
-// 4 -> 2
+// Qty column:
 //
+// 2
+// 2
+//
+// Each piece gets its own line.
 // ============================================================
 
-function loadWoodData(
-    woodData
-) {
+function loadWoodData(woodData) {
 
-    if (
-        !woodTable
-    ) {
+    if (!woodTable) {
 
         console.error(
             "woodTable not found."
         );
 
         return;
-
     }
 
-
-    woodTable.innerHTML =
-        "";
-
+    woodTable.innerHTML = "";
 
     if (
-        !Array.isArray(
-            woodData
-        ) ||
+        !Array.isArray(woodData) ||
         woodData.length === 0
     ) {
 
         woodTable.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="9"
-                    style="
-                        text-align:center;
-                        padding:12px;
-                    "
-                >
+                <td colspan="9">
                     No wood data
                 </td>
-
             </tr>
-
         `;
 
         return;
-
     }
-
 
     let sno = 1;
 
+    woodData.forEach(function(item) {
 
-    woodData.forEach(
-        function (
-            item
-        ) {
-
-            if (
-                !item
-            ) {
-
-                return;
-
-            }
+        if (!item) {
+            return;
+        }
 
 
-            // =================================================
-            // WOOD NAME
-            // =================================================
+        // ====================================================
+        // WOOD NAME
+        // ====================================================
 
-            let woodName =
-                item.woodType ||
-                item.wood ||
-                item.woodName ||
-                "";
+        let woodName =
+            item.woodType ||
+            item.wood ||
+            item.woodName ||
+            "";
 
+        if (woodName === "Other") {
 
-            if (
-                woodName ===
-                "Other"
-            ) {
+            woodName =
+                item.otherWood ||
+                "Other";
+        }
 
-                woodName =
-                    item.otherWood ||
-                    "Other";
+        if (!woodName) {
 
-            }
-
-
-            if (
-                !woodName
-            ) {
-
-                woodName =
-                    "-";
-
-            }
+            woodName = "-";
+        }
 
 
-            // =================================================
-            // SIZE
-            // =================================================
+        // ====================================================
+        // SIZE
+        // ====================================================
 
-            const breadth =
-                numberValue(
-                    item.breadth
-                );
-
-
-            const thickness =
-                numberValue(
-                    item.thickness
-                );
-
-
-            let size =
-                "-";
-
-
-            if (
-                breadth > 0 &&
-                thickness > 0
-            ) {
-
-                size =
-                    `${breadth} × ${thickness}`;
-
-            }
-
-            else if (
-                breadth > 0
-            ) {
-
-                size =
-                    String(
-                        breadth
-                    );
-
-            }
-
-            else if (
-                thickness > 0
-            ) {
-
-                size =
-                    String(
-                        thickness
-                    );
-
-            }
-
-
-            // =================================================
-            // QUALITY
-            // =================================================
-
-            const quality =
-                item.quality !==
-                    undefined &&
-                item.quality !==
-                    null &&
-                item.quality !==
-                    ""
-                    ? String(
-                        item.quality
-                    )
-                    : "-";
-
-
-            // =================================================
-            // PIECES
-            // =================================================
-
-            const pieces =
-                Array.isArray(
-                    item.pieces
-                )
-                    ? item.pieces
-                    : [];
-
-
-            // =================================================
-            // LENGTH -> QTY
-            // =================================================
-
-            let lengthValues =
-                [];
-
-
-            pieces.forEach(
-                function (
-                    piece
-                ) {
-
-                    if (
-                        !piece
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const length =
-                        numberValue(
-                            piece.length
-                        );
-
-
-                    const extraLength =
-                        numberValue(
-                            piece.extraLength
-                        );
-
-
-                    const finalLength =
-                        length +
-                        extraLength;
-
-
-                    const qty =
-                        numberValue(
-                            piece.qty
-                        );
-
-
-                    if (
-                        finalLength > 0
-                    ) {
-
-                        lengthValues.push({
-
-                            length:
-                                finalLength,
-
-                            qty:
-                                qty
-
-                        });
-
-                    }
-
-                }
+        const breadth =
+            numberValue(
+                item.breadth
             );
 
+        const thickness =
+            numberValue(
+                item.thickness
+            );
+
+        let size = "-";
+
+        if (
+            breadth > 0 &&
+            thickness > 0
+        ) {
+
+            size =
+                `${breadth} × ${thickness}`;
+
+        }
+        else if (
+            breadth > 0
+        ) {
+
+            size =
+                String(breadth);
+
+        }
+        else if (
+            thickness > 0
+        ) {
+
+            size =
+                String(thickness);
+        }
+
+
+        // ====================================================
+        // QUALITY
+        // ====================================================
+
+        const quality =
+            item.quality !== undefined &&
+            item.quality !== null &&
+            item.quality !== ""
+                ? item.quality
+                : "-";
+
+
+        // ====================================================
+        // PIECES
+        // ====================================================
+
+        const pieces =
+            Array.isArray(item.pieces)
+                ? item.pieces
+                : [];
+
+
+        // ====================================================
+        // LENGTH VALUES
+        // ====================================================
+
+        let lengthValues = [];
+
+        pieces.forEach(function(piece) {
+
+            if (!piece) {
+                return;
+            }
+
+            const length =
+                numberValue(
+                    piece.length
+                );
+
+            const extraLength =
+                numberValue(
+                    piece.extraLength
+                );
+
+            const finalLength =
+                length +
+                extraLength;
+
+            const qty =
+                numberValue(
+                    piece.qty
+                );
+
+
+            if (
+                finalLength > 0
+            ) {
+
+                lengthValues.push({
+
+                    length:
+                        finalLength,
+
+                    qty:
+                        qty
+
+                });
+            }
+
+        });
+
+
+        // ====================================================
+        // DIRECT LENGTH FALLBACK
+        // ====================================================
+
+        if (
+            lengthValues.length === 0 &&
+            item.length !== undefined
+        ) {
+
+            const directLength =
+                numberValue(
+                    item.length
+                );
+
+            const directQty =
+                numberValue(
+                    item.qty
+                );
+
+
+            if (
+                directLength > 0
+            ) {
+
+                lengthValues.push({
+
+                    length:
+                        directLength,
+
+                    qty:
+                        directQty
+
+                });
+            }
+        }
+
+
+        // ====================================================
+        // LENGTH DISPLAY
+        // ====================================================
+
+        let lengthText = "-";
+
+        if (
+            lengthValues.length > 0
+        ) {
+
+            lengthText =
+                lengthValues
+                    .map(function(value) {
+
+                        return `
+                            <div
+                                class="wood-length-item"
+                            >
+
+                                <span>
+                                    ${escapeHTML(
+                                        value.length
+                                    )}
+                                </span>
+
+                            </div>
+                        `;
+
+                    })
+                    .join("");
+        }
+
+
+        // ====================================================
+        // QTY DISPLAY
+        // ====================================================
+
+        let qtyText = "-";
+
+        if (
+            lengthValues.length > 0
+        ) {
+
+            qtyText =
+                lengthValues
+                    .map(function(value) {
+
+                        return `
+                            <div
+                                class="wood-qty-item"
+                            >
+
+                                <span>
+                                    ${escapeHTML(
+                                        value.qty
+                                    )}
+                                </span>
+
+                            </div>
+                        `;
+
+                    })
+                    .join("");
+        }
+
+
+        // ====================================================
+        // TOTAL QTY
+        // ====================================================
+
+        let totalQty = 0;
+
+        pieces.forEach(function(piece) {
+
+            if (!piece) {
+                return;
+            }
+
+            totalQty +=
+                numberValue(
+                    piece.qty
+                );
+
+        });
+
+
+        if (
+            totalQty === 0 &&
+            item.qty !== undefined
+        ) {
+
+            totalQty =
+                numberValue(
+                    item.qty
+                );
+        }
+
+
+        // ====================================================
+        // CFT
+        // ====================================================
+
+        const cubicFeet =
+            numberValue(
+                item.cubicFeet
+            );
+
+
+        // ====================================================
+        // RATE
+        // ====================================================
+
+        const rate =
+            numberValue(
+                item.rate
+            );
+
+
+        // ====================================================
+        // AMOUNT
+        // ====================================================
+
+        const amount =
+            numberValue(
+                item.amount
+            );
+
+
+        // ====================================================
+        // CREATE ROW
+        // ====================================================
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.innerHTML = `
+
+            <td>
+                ${sno}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    woodName
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    size
+                )}
+            </td>
+
+            <td
+                class="wood-length-cell"
+            >
+                ${lengthText}
+            </td>
+
+            <td
+                class="wood-qty-cell"
+            >
+                ${qtyText}
+            </td>
+
+            <td>
+                ${cubicFeet.toFixed(2)}
+            </td>
+
+            <td>
+                ${money(
+                    rate
+                )}
+            </td>
+
+            <td>
+                ${money(
+                    amount
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    quality
+                )}
+            </td>
+
+        `;
+
+
+        woodTable.appendChild(
+            row
+        );
+
+
+        sno++;
+
+    });
+
+}
 
             // =================================================
             // DIRECT LENGTH FALLBACK

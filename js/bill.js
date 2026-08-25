@@ -2609,7 +2609,17 @@ else {
 
 
 // ============================================================
-// WHATSAPP
+// WHATSAPP + PDF
+// ============================================================
+//
+// Click WhatsApp:
+//
+// 1. Get customer details
+// 2. Generate complete bill PDF
+// 3. Create greeting message
+// 4. Share PDF through device share
+// 5. WhatsApp can be selected from share sheet
+//
 // ============================================================
 
 const whatsappBtn =
@@ -2624,16 +2634,47 @@ if (
 
     whatsappBtn.addEventListener(
         "click",
-        function () {
+        async function () {
 
             console.log(
-                "WHATSAPP BUTTON CLICKED"
+                "===================================="
+            );
+
+            console.log(
+                "WHATSAPP BILL BUTTON CLICKED"
+            );
+
+            console.log(
+                "===================================="
             );
 
 
-            let mobile =
+            // ==================================================
+            // CUSTOMER NAME
+            // ==================================================
+
+            const customerNameForWhatsApp =
+                personalData.name ||
+                personalData.customerName ||
+                customerName ||
+                "";
+
+
+            // ==================================================
+            // CUSTOMER MOBILE
+            // ==================================================
+
+            let customerMobileForWhatsApp =
+                personalData.mobile ||
+                personalData.customerMobile ||
+                customerMobile ||
+                "";
+
+
+            // Remove spaces, +91, -, brackets etc.
+            customerMobileForWhatsApp =
                 String(
-                    customerMobile || ""
+                    customerMobileForWhatsApp
                 )
                 .replace(
                     /\D/g,
@@ -2642,10 +2683,663 @@ if (
 
 
             console.log(
-                "WHATSAPP MOBILE:",
-                mobile
+                "CUSTOMER NAME:",
+                customerNameForWhatsApp
             );
 
+            console.log(
+                "CUSTOMER MOBILE:",
+                customerMobileForWhatsApp
+            );
+
+
+            // ==================================================
+            // VALIDATE CUSTOMER NAME
+            // ==================================================
+
+            if (
+                !customerNameForWhatsApp
+            ) {
+
+                alert(
+                    "Customer name is missing.\n\n" +
+                    "Please enter the customer name in Personal Details."
+                );
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // VALIDATE MOBILE
+            // ==================================================
+
+            if (
+                customerMobileForWhatsApp.length === 12 &&
+                customerMobileForWhatsApp.startsWith("91")
+            ) {
+
+                customerMobileForWhatsApp =
+                    customerMobileForWhatsApp.substring(
+                        2
+                    );
+
+            }
+
+
+            if (
+                customerMobileForWhatsApp.length !== 10
+            ) {
+
+                alert(
+                    "Customer mobile number is not valid.\n\n" +
+                    "Please enter a valid 10-digit mobile number."
+                );
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // CREATE DISPLAY NAME
+            //
+            // Example:
+            //
+            // Akash Saravanan
+            //
+            // becomes:
+            //
+            // Mr. Akash Saravanan
+            // ==================================================
+
+            const greetingName =
+                customerNameForWhatsApp
+                    .trim();
+
+
+            // ==================================================
+            // PROFESSIONAL MESSAGE
+            // ==================================================
+
+            const whatsappMessage =
+
+`Dear Mr. ${greetingName},
+
+Please find your bill attached.
+
+Thank you for shopping with us.
+We look forward to serving you again.
+
+— Amman Saw Mill`;
+
+
+            console.log(
+                "WHATSAPP MESSAGE:"
+            );
+
+            console.log(
+                whatsappMessage
+            );
+
+
+            // ==================================================
+            // CONFIRM
+            // ==================================================
+
+            const sendConfirmation =
+                confirm(
+                    "Generate the bill PDF and send it to " +
+                    customerNameForWhatsApp +
+                    " on WhatsApp?"
+                );
+
+
+            if (
+                !sendConfirmation
+            ) {
+
+                console.log(
+                    "WHATSAPP SEND CANCELLED"
+                );
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // CHECK HTML2PDF
+            // ==================================================
+
+            if (
+                typeof html2pdf ===
+                "undefined"
+            ) {
+
+                alert(
+                    "PDF generator is not loaded.\n\n" +
+                    "Please check your internet connection and reload the page."
+                );
+
+                console.error(
+                    "html2pdf.js NOT FOUND"
+                );
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // SHOW LOADING
+            // ==================================================
+
+            const oldButtonText =
+                whatsappBtn.textContent;
+
+
+            whatsappBtn.disabled =
+                true;
+
+
+            whatsappBtn.textContent =
+                "Creating PDF...";
+
+
+            try {
+
+                // ==================================================
+                // BILL CONTAINER
+                // ==================================================
+
+                const billElement =
+                    document.querySelector(
+                        ".bill-container"
+                    );
+
+
+                if (
+                    !billElement
+                ) {
+
+                    throw new Error(
+                        "Bill container not found."
+                    );
+
+                }
+
+
+                // ==================================================
+                // PDF FILE NAME
+                // ==================================================
+
+                const billNumber =
+                    billData.billNo ||
+                    billData.billNumber ||
+                    document.getElementById(
+                        "billNo"
+                    )?.textContent?.trim() ||
+                    "Bill";
+
+
+                const safeCustomerName =
+                    customerNameForWhatsApp
+                        .replace(
+                            /[^a-zA-Z0-9 ]/g,
+                            ""
+                        )
+                        .trim()
+                        .replace(
+                            /\s+/g,
+                            "_"
+                        );
+
+
+                const pdfFileName =
+                    `${safeCustomerName}_${billNumber}.pdf`;
+
+
+                // ==================================================
+                // CLONE BILL
+                //
+                // We clone instead of modifying the actual bill.
+                // ==================================================
+
+                const billClone =
+                    billElement.cloneNode(
+                        true
+                    );
+
+
+                // ==================================================
+                // HIDE BUTTONS IN PDF
+                // ==================================================
+
+                const clonedButtons =
+                    billClone.querySelector(
+                        ".buttons"
+                    );
+
+
+                if (
+                    clonedButtons
+                ) {
+
+                    clonedButtons.remove();
+
+                }
+
+
+                // ==================================================
+                // HIDE ANY OTHER NON-BILL ELEMENTS
+                // ==================================================
+
+                billClone
+                    .querySelectorAll(
+                        "button"
+                    )
+                    .forEach(
+                        function (
+                            button
+                        ) {
+
+                            button.remove();
+
+                        }
+                    );
+
+
+                // ==================================================
+                // PDF WRAPPER
+                // ==================================================
+
+                const pdfWrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                pdfWrapper.style.position =
+                    "absolute";
+
+                pdfWrapper.style.left =
+                    "-100000px";
+
+                pdfWrapper.style.top =
+                    "0";
+
+                pdfWrapper.style.width =
+                    "794px";
+
+                pdfWrapper.style.background =
+                    "#ffffff";
+
+                pdfWrapper.style.padding =
+                    "20px";
+
+                pdfWrapper.style.boxSizing =
+                    "border-box";
+
+
+                pdfWrapper.appendChild(
+                    billClone
+                );
+
+
+                document.body.appendChild(
+                    pdfWrapper
+                );
+
+
+                // ==================================================
+                // PDF OPTIONS
+                // ==================================================
+
+                const pdfOptions = {
+
+                    margin: 8,
+
+                    filename:
+                        pdfFileName,
+
+                    image: {
+
+                        type: "jpeg",
+
+                        quality: 0.98
+
+                    },
+
+                    html2canvas: {
+
+                        scale: 2,
+
+                        useCORS: true,
+
+                        backgroundColor:
+                            "#ffffff"
+
+                    },
+
+                    jsPDF: {
+
+                        unit: "mm",
+
+                        format: "a4",
+
+                        orientation:
+                            "portrait"
+
+                    },
+
+                    pagebreak: {
+
+                        mode: [
+                            "css",
+                            "legacy"
+                        ]
+
+                    }
+
+                };
+
+
+                // ==================================================
+                // GENERATE PDF BLOB
+                // ==================================================
+
+                whatsappBtn.textContent =
+                    "Generating PDF...";
+
+
+                const pdfBlob =
+                    await html2pdf()
+                        .set(
+                            pdfOptions
+                        )
+                        .from(
+                            pdfWrapper
+                        )
+                        .outputPdf(
+                            "blob"
+                        );
+
+
+                // ==================================================
+                // REMOVE CLONE
+                // ==================================================
+
+                pdfWrapper.remove();
+
+
+                // ==================================================
+                // CREATE PDF FILE
+                // ==================================================
+
+                const pdfFile =
+                    new File(
+                        [
+                            pdfBlob
+                        ],
+                        pdfFileName,
+                        {
+                            type:
+                                "application/pdf"
+                        }
+                    );
+
+
+                console.log(
+                    "PDF CREATED:",
+                    pdfFileName
+                );
+
+                console.log(
+                    "PDF SIZE:",
+                    pdfFile.size
+                );
+
+
+                // ==================================================
+                // CHECK FILE SHARING SUPPORT
+                // ==================================================
+
+                const shareData = {
+
+                    title:
+                        `Bill - ${customerNameForWhatsApp}`,
+
+                    text:
+                        whatsappMessage,
+
+                    files: [
+                        pdfFile
+                    ]
+
+                };
+
+
+                // ==================================================
+                // NATIVE FILE SHARE
+                // ==================================================
+
+                if (
+                    navigator.share &&
+                    navigator.canShare &&
+                    navigator.canShare(
+                        {
+                            files: [
+                                pdfFile
+                            ]
+                        }
+                    )
+                ) {
+
+                    whatsappBtn.textContent =
+                        "Opening WhatsApp...";
+
+
+                    await navigator.share(
+                        shareData
+                    );
+
+
+                    console.log(
+                        "PDF SHARED SUCCESSFULLY"
+                    );
+
+                }
+
+
+                // ==================================================
+                // FALLBACK
+                //
+                // Desktop browsers may not support file sharing.
+                // In that case:
+                //
+                // 1. Download PDF
+                // 2. Open WhatsApp chat
+                // 3. Message is pre-filled
+                // 4. User attaches downloaded PDF
+                // ==================================================
+
+                else {
+
+                    console.log(
+                        "FILE SHARING NOT SUPPORTED"
+                    );
+
+
+                    // ----------------------------------------------
+                    // DOWNLOAD PDF
+                    // ----------------------------------------------
+
+                    const downloadURL =
+                        URL.createObjectURL(
+                            pdfBlob
+                        );
+
+
+                    const downloadLink =
+                        document.createElement(
+                            "a"
+                        );
+
+
+                    downloadLink.href =
+                        downloadURL;
+
+
+                    downloadLink.download =
+                        pdfFileName;
+
+
+                    document.body.appendChild(
+                        downloadLink
+                    );
+
+
+                    downloadLink.click();
+
+
+                    downloadLink.remove();
+
+
+                    URL.revokeObjectURL(
+                        downloadURL
+                    );
+
+
+                    // ----------------------------------------------
+                    // OPEN WHATSAPP
+                    // ----------------------------------------------
+
+                    const whatsappNumber =
+                        "91" +
+                        customerMobileForWhatsApp;
+
+
+                    const whatsappURL =
+                        "https://wa.me/" +
+                        whatsappNumber +
+                        "?text=" +
+                        encodeURIComponent(
+                            whatsappMessage
+                        );
+
+
+                    window.open(
+                        whatsappURL,
+                        "_blank"
+                    );
+
+
+                    alert(
+                        "The bill PDF has been downloaded.\n\n" +
+                        "WhatsApp has been opened for the customer.\n\n" +
+                        "Please attach the downloaded PDF to the WhatsApp message."
+                    );
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "WHATSAPP PDF ERROR:",
+                    error
+                );
+
+
+                // ==================================================
+                // REMOVE CLONE IF ERROR OCCURRED
+                // ==================================================
+
+                const remainingWrapper =
+                    document.querySelector(
+                        'body > div[style*="-100000px"]'
+                    );
+
+
+                if (
+                    remainingWrapper
+                ) {
+
+                    remainingWrapper.remove();
+
+                }
+
+
+                // ==================================================
+                // USER CANCELLED SHARE
+                // ==================================================
+
+                if (
+                    error &&
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    console.log(
+                        "User cancelled sharing."
+                    );
+
+                }
+                else {
+
+                    alert(
+                        "Unable to create or share the bill PDF.\n\n" +
+                        "Please try again."
+                    );
+
+                }
+
+            }
+            finally {
+
+                // ==================================================
+                // RESTORE BUTTON
+                // ==================================================
+
+                whatsappBtn.disabled =
+                    false;
+
+
+                whatsappBtn.textContent =
+                    oldButtonText ||
+                    "WhatsApp";
+
+            }
+
+        }
+    );
+
+}
+else {
+
+    console.warn(
+        "WhatsApp button not found."
+    );
+}
+
+
+// ============================================================
+// FINAL READY
+// ============================================================
+
+console.log(
+    "===================================="
+);
+
+console.log(
+    "          BILL.JS READY"
+);
+
+console.log(
+    "===================================="
+);
 
             // ==================================================
             // VALIDATE MOBILE

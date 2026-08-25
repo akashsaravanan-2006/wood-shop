@@ -564,3 +564,73 @@ tbody tr:hover {
     white-space: nowrap;
 
 }
+/* =======================================
+   ACTION COLUMN
+   ======================================= */
+
+.return-action-block,
+.pdf-action-block {
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+
+/* =======================================
+   RETURN BUTTON
+   ======================================= */
+
+.return-btn {
+    width: 100%;
+
+    padding: 7px 12px;
+
+    border-radius: 6px;
+
+    border: 1px solid #ffc477;
+
+    background: #fff3e0;
+
+    color: #c76a00;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.return-btn:hover {
+    background: #ffe3bd;
+}
+
+
+/* =======================================
+   PDF BUTTON
+   ======================================= */
+
+.pdf-btn {
+    width: 100%;
+
+    padding: 7px 12px;
+
+    border-radius: 6px;
+
+    border: 1px solid #bbb;
+
+    background: #eeeeee;
+
+    color: #222;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.pdf-btn:hover {
+    background: #dddddd;
+}

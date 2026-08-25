@@ -1,6 +1,7 @@
 // ============================================================
 // BILL.JS
-// FINAL CLEAN VERSION
+// WOOD BILL - FULL DEBUG VERSION
+// ============================================================
 //
 // FEATURES
 // ------------------------------------------------------------
@@ -466,20 +467,6 @@ console.table(
 
 // ============================================================
 // WOOD TABLE
-//
-// 9 COLUMNS:
-//
-// S.No
-// Wood
-// Size
-// Length
-// Qty
-// CFT
-// Rate
-// Amount
-// Quality
-//
-// TOTAL LENGTH IS NOT DISPLAYED
 // ============================================================
 
 const woodTable =
@@ -492,10 +479,6 @@ if (woodTable) {
 
     woodTable.innerHTML = "";
 
-
-    // ========================================================
-    // NO WOOD
-    // ========================================================
 
     if (
         woodCalculations.length === 0
@@ -518,10 +501,6 @@ if (woodTable) {
 
     }
 
-
-    // ========================================================
-    // WOOD DATA
-    // ========================================================
 
     else {
 
@@ -623,19 +602,6 @@ if (woodTable) {
 
                 // ==================================================
                 // PIECES
-                //
-                // Example:
-                //
-                // 4 -> 3
-                // 5 -> 6
-                // 2 -> 10
-                //
-                // DISPLAY:
-                //
-                // Length | Qty
-                // 4      | 3
-                // 5      | 6
-                // 2      | 10
                 // ==================================================
 
                 const pieces =
@@ -1055,19 +1021,7 @@ if (
 
 // ============================================================
 // CFT SUMMARY
-//
 // SAME WOOD + SAME QUALITY = COMBINE
-//
-// Example:
-//
-// Teak (1) = 3.06
-// Teak (2) = 3.65
-// Teak (2) = 8.00
-//
-// RESULT:
-//
-// Teak (1) = 3.06 CFT
-// Teak (2) = 11.65 CFT
 // ============================================================
 
 const cftSummary =
@@ -1114,10 +1068,6 @@ if (cftSummary) {
                 }
 
 
-                // ==================================================
-                // WOOD NAME
-                // ==================================================
-
                 let woodName =
                     item.woodType ||
                     item.wood ||
@@ -1143,10 +1093,6 @@ if (cftSummary) {
                 }
 
 
-                // ==================================================
-                // QUALITY
-                // ==================================================
-
                 const quality =
                     item.quality !== undefined &&
                     item.quality !== ""
@@ -1156,21 +1102,11 @@ if (cftSummary) {
                         : "1";
 
 
-                // ==================================================
-                // CFT
-                // ==================================================
-
                 const cubicFeet =
                     toNumber(
                         item.cubicFeet
                     );
 
-
-                // ==================================================
-                // GROUP KEY
-                //
-                // WOOD + QUALITY
-                // ==================================================
 
                 const groupKey =
                     woodName
@@ -1181,10 +1117,6 @@ if (cftSummary) {
                         .trim()
                         .toLowerCase();
 
-
-                // ==================================================
-                // EXISTING GROUP
-                // ==================================================
 
                 if (
                     groupedCFT.has(
@@ -1202,12 +1134,6 @@ if (cftSummary) {
                         cubicFeet;
 
                 }
-
-
-                // ==================================================
-                // NEW GROUP
-                // ==================================================
-
                 else {
 
                     groupedCFT.set(
@@ -1231,10 +1157,6 @@ if (cftSummary) {
             }
         );
 
-
-        // ========================================================
-        // DISPLAY GROUPED CFT
-        // ========================================================
 
         let serialNumber = 1;
 
@@ -1439,10 +1361,6 @@ if (
     let serialNumber = 1;
 
 
-    // ========================================================
-    // LABOUR
-    // ========================================================
-
     if (
         labourCharge > 0
     ) {
@@ -1472,10 +1390,6 @@ if (
     }
 
 
-    // ========================================================
-    // OTHER CHARGE
-    // ========================================================
-
     if (
         otherCharge > 0
     ) {
@@ -1504,10 +1418,6 @@ if (
 
     }
 
-
-    // ========================================================
-    // ADDITIONAL ITEMS
-    // ========================================================
 
     otherItems.forEach(
         function (
@@ -1569,10 +1479,6 @@ if (
         }
     );
 
-
-    // ========================================================
-    // NO CHARGES
-    // ========================================================
 
     if (
         serialNumber === 1
@@ -1693,6 +1599,7 @@ const woodTotalElement =
         "woodTotal"
     );
 
+
 if (woodTotalElement) {
 
     woodTotalElement.textContent =
@@ -1708,6 +1615,7 @@ const othersTotalElement =
         "othersTotal"
     );
 
+
 if (othersTotalElement) {
 
     othersTotalElement.textContent =
@@ -1722,6 +1630,7 @@ const subtotalElement =
     document.getElementById(
         "subtotal"
     );
+
 
 if (subtotalElement) {
 
@@ -2261,11 +2170,19 @@ else {
 // WHATSAPP + PDF
 // ============================================================
 //
-// IMPORTANT:
+// IMPORTANT
+// ------------------------------------------------------------
+// This creates the PDF correctly first.
+// Then sends the PDF to the backend.
 //
-// This is the ONLY WhatsApp handler.
+// The backend endpoint must be:
 //
-// No duplicate WhatsApp code below this section.
+// POST /api/whatsapp/send-bill
+//
+// FormData:
+//   bill
+//   customerName
+//   mobile
 //
 // ============================================================
 
@@ -2320,14 +2237,14 @@ if (whatsappBtn) {
                 String(
                     customerMobileForWhatsApp
                 )
-                    .replace(
-                        /\D/g,
-                        ""
-                    );
+                .replace(
+                    /\D/g,
+                    ""
+                );
 
 
             // ==================================================
-            // REMOVE INDIA PREFIX
+            // INDIA PREFIX
             // ==================================================
 
             if (
@@ -2391,59 +2308,6 @@ if (whatsappBtn) {
 
 
             // ==================================================
-            // MESSAGE
-            // ==================================================
-
-            const greetingName =
-                customerNameForWhatsApp
-                    .trim();
-
-
-            const whatsappMessage =
-
-`Dear Mr. ${greetingName},
-
-Please find your bill attached.
-
-Thank you for shopping with us.
-We look forward to serving you again.
-
-— Amman Saw Mill`;
-
-
-            console.log(
-                "WHATSAPP MESSAGE:"
-            );
-
-            console.log(
-                whatsappMessage
-            );
-
-
-            // ==================================================
-            // CONFIRM
-            // ==================================================
-
-            const confirmSend =
-                confirm(
-                    "Generate the bill PDF and send it to " +
-                    customerNameForWhatsApp +
-                    " on WhatsApp?"
-                );
-
-
-            if (!confirmSend) {
-
-                console.log(
-                    "WHATSAPP SEND CANCELLED"
-                );
-
-                return;
-
-            }
-
-
-            // ==================================================
             // CHECK PDF LIBRARY
             // ==================================================
 
@@ -2454,7 +2318,7 @@ We look forward to serving you again.
 
                 alert(
                     "PDF generator is not loaded.\n\n" +
-                    "Please check the html2pdf.js script in bill.html and reload the page."
+                    "Please add html2pdf.js to bill.html."
                 );
 
                 console.error(
@@ -2467,7 +2331,7 @@ We look forward to serving you again.
 
 
             // ==================================================
-            // DISABLE BUTTON
+            // BUTTON STATE
             // ==================================================
 
             const oldButtonText =
@@ -2488,7 +2352,7 @@ We look forward to serving you again.
             try {
 
                 // ==================================================
-                // BILL ELEMENT
+                // GET ORIGINAL BILL
                 // ==================================================
 
                 const billElement =
@@ -2523,7 +2387,7 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // SAFE FILE NAME
+                // FILE NAME
                 // ==================================================
 
                 const safeCustomerName =
@@ -2536,21 +2400,74 @@ We look forward to serving you again.
                         .replace(
                             /\s+/g,
                             "_"
-                        );
+                        ) ||
+                    "Customer";
 
 
                 const safeBillNumber =
                     String(
                         billNumber
                     )
-                        .replace(
-                            /[^a-zA-Z0-9_-]/g,
-                            "_"
-                        );
+                    .replace(
+                        /[^a-zA-Z0-9_-]/g,
+                        "_"
+                    );
 
 
                 const pdfFileName =
                     `${safeCustomerName}_${safeBillNumber}.pdf`;
+
+
+                // ==================================================
+                // CREATE PDF WRAPPER
+                //
+                // IMPORTANT:
+                // Do NOT use left:-100000px.
+                // It can cause html2canvas to render blank.
+                // ==================================================
+
+                pdfWrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                pdfWrapper.id =
+                    "temporaryBillPdf";
+
+
+                pdfWrapper.style.position =
+                    "fixed";
+
+                pdfWrapper.style.left =
+                    "0";
+
+                pdfWrapper.style.top =
+                    "0";
+
+                pdfWrapper.style.width =
+                    "794px";
+
+                pdfWrapper.style.minHeight =
+                    "1123px";
+
+                pdfWrapper.style.background =
+                    "#ffffff";
+
+                pdfWrapper.style.zIndex =
+                    "-9999";
+
+                pdfWrapper.style.opacity =
+                    "0.01";
+
+                pdfWrapper.style.pointerEvents =
+                    "none";
+
+                pdfWrapper.style.overflow =
+                    "visible";
+
+                pdfWrapper.style.boxSizing =
+                    "border-box";
 
 
                 // ==================================================
@@ -2561,6 +2478,19 @@ We look forward to serving you again.
                     billElement.cloneNode(
                         true
                     );
+
+
+                billClone.style.width =
+                    "100%";
+
+                billClone.style.maxWidth =
+                    "none";
+
+                billClone.style.margin =
+                    "0 auto";
+
+                billClone.style.background =
+                    "#ffffff";
 
 
                 // ==================================================
@@ -2596,36 +2526,36 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // PDF WRAPPER
+                // REMOVE UNNECESSARY BREAK
                 // ==================================================
 
-                pdfWrapper =
-                    document.createElement(
-                        "div"
+                billClone
+                    .querySelectorAll(
+                        "br"
+                    )
+                    .forEach(
+                        function (
+                            br
+                        ) {
+
+                            if (
+                                br.parentElement &&
+                                br.parentElement.classList.contains(
+                                    "bill-container"
+                                )
+                            ) {
+
+                                br.remove();
+
+                            }
+
+                        }
                     );
 
 
-                pdfWrapper.style.position =
-                    "absolute";
-
-                pdfWrapper.style.left =
-                    "-100000px";
-
-                pdfWrapper.style.top =
-                    "0";
-
-                pdfWrapper.style.width =
-                    "794px";
-
-                pdfWrapper.style.background =
-                    "#ffffff";
-
-                pdfWrapper.style.padding =
-                    "20px";
-
-                pdfWrapper.style.boxSizing =
-                    "border-box";
-
+                // ==================================================
+                // APPEND CLONE
+                // ==================================================
 
                 pdfWrapper.appendChild(
                     billClone
@@ -2638,43 +2568,214 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // PDF OPTIONS
+                // COPY IMPORTANT TABLE STYLES
                 // ==================================================
+
+                const clonedTables =
+                    pdfWrapper.querySelectorAll(
+                        "table"
+                    );
+
+
+                clonedTables.forEach(
+                    function (
+                        table
+                    ) {
+
+                        table.style.width =
+                            "100%";
+
+                        table.style.borderCollapse =
+                            "collapse";
+
+                    }
+                );
+
+
+                // ==================================================
+                // WAIT FOR DOM
+                // ==================================================
+
+                await new Promise(
+                    function (
+                        resolve
+                    ) {
+
+                        requestAnimationFrame(
+                            function () {
+
+                                requestAnimationFrame(
+                                    resolve
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                // ==================================================
+                // WAIT FOR IMAGES
+                // ==================================================
+
+                const images =
+                    pdfWrapper.querySelectorAll(
+                        "img"
+                    );
+
+
+                await Promise.all(
+                    Array.from(
+                        images
+                    ).map(
+                        function (
+                            img
+                        ) {
+
+                            if (
+                                img.complete
+                            ) {
+
+                                return Promise.resolve();
+
+                            }
+
+
+                            return new Promise(
+                                function (
+                                    resolve
+                                ) {
+
+                                    img.onload =
+                                        resolve;
+
+                                    img.onerror =
+                                        resolve;
+
+                                }
+                            );
+
+                        }
+                    )
+                );
+
+
+                // ==================================================
+                // SMALL RENDER DELAY
+                // ==================================================
+
+                await new Promise(
+                    function (
+                        resolve
+                    ) {
+
+                        setTimeout(
+                            resolve,
+                            500
+                        );
+
+                    }
+                );
+
+
+                console.log(
+                    "PDF SOURCE WIDTH:",
+                    pdfWrapper.offsetWidth
+                );
+
+                console.log(
+                    "PDF SOURCE HEIGHT:",
+                    pdfWrapper.offsetHeight
+                );
+
+
+                if (
+                    pdfWrapper.offsetWidth === 0 ||
+                    pdfWrapper.offsetHeight === 0
+                ) {
+
+                    throw new Error(
+                        "PDF source has zero width or height."
+                    );
+
+                }
+
+
+                // ==================================================
+                // GENERATE PDF
+                // ==================================================
+
+                whatsappBtn.textContent =
+                    "Generating PDF...";
+
 
                 const pdfOptions = {
 
-                    margin: 8,
+                    margin:
+                        8,
 
                     filename:
                         pdfFileName,
 
                     image: {
 
-                        type: "jpeg",
+                        type:
+                            "jpeg",
 
-                        quality: 0.98
+                        quality:
+                            0.98
 
                     },
 
                     html2canvas: {
 
-                        scale: 2,
+                        scale:
+                            2,
 
-                        useCORS: true,
+                        useCORS:
+                            true,
+
+                        allowTaint:
+                            false,
 
                         backgroundColor:
-                            "#ffffff"
+                            "#ffffff",
+
+                        logging:
+                            false,
+
+                        scrollX:
+                            0,
+
+                        scrollY:
+                            0,
+
+                        windowWidth:
+                            794,
+
+                        windowHeight:
+                            Math.max(
+                                1123,
+                                pdfWrapper
+                                    .scrollHeight
+                            )
 
                     },
 
                     jsPDF: {
 
-                        unit: "mm",
+                        unit:
+                            "mm",
 
-                        format: "a4",
+                        format:
+                            "a4",
 
                         orientation:
-                            "portrait"
+                            "portrait",
+
+                        compress:
+                            true
 
                     },
 
@@ -2690,14 +2791,6 @@ We look forward to serving you again.
                 };
 
 
-                // ==================================================
-                // GENERATE PDF
-                // ==================================================
-
-                whatsappBtn.textContent =
-                    "Generating PDF...";
-
-
                 const pdfBlob =
                     await html2pdf()
                         .set(
@@ -2711,15 +2804,42 @@ We look forward to serving you again.
                         );
 
 
+                console.log(
+                    "PDF GENERATED"
+                );
+
+                console.log(
+                    "PDF SIZE:",
+                    pdfBlob.size
+                );
+
+
                 // ==================================================
-                // REMOVE TEMPORARY PDF ELEMENT
+                // VALIDATE PDF
+                // ==================================================
+
+                if (
+                    !pdfBlob ||
+                    pdfBlob.size < 1000
+                ) {
+
+                    throw new Error(
+                        "Generated PDF is empty or invalid."
+                    );
+
+                }
+
+
+                // ==================================================
+                // REMOVE TEMPORARY ELEMENT
                 // ==================================================
 
                 if (pdfWrapper) {
 
                     pdfWrapper.remove();
 
-                    pdfWrapper = null;
+                    pdfWrapper =
+                        null;
 
                 }
 
@@ -2742,176 +2862,153 @@ We look forward to serving you again.
 
 
                 console.log(
-                    "PDF CREATED:",
-                    pdfFileName
+                    "PDF FILE CREATED:",
+                    pdfFile.name
                 );
 
-
                 console.log(
-                    "PDF SIZE:",
+                    "PDF FILE SIZE:",
                     pdfFile.size
                 );
 
 
                 // ==================================================
-                // SHARE DATA
+                // SEND TO BACKEND
                 // ==================================================
 
-                const shareData = {
+                whatsappBtn.textContent =
+                    "Sending WhatsApp...";
 
-                    title:
-                        `Bill - ${customerNameForWhatsApp}`,
 
-                    text:
-                        whatsappMessage,
+                const formData =
+                    new FormData();
 
-                    files: [
-                        pdfFile
-                    ]
 
-                };
+                formData.append(
+                    "bill",
+                    pdfFile
+                );
+
+
+                formData.append(
+                    "customerName",
+                    customerNameForWhatsApp
+                );
+
+
+                formData.append(
+                    "mobile",
+                    customerMobileForWhatsApp
+                );
+
+
+                console.log(
+                    "Sending bill to backend..."
+                );
+
+
+                const response =
+                    await fetch(
+                        "/api/whatsapp/send-bill",
+                        {
+
+                            method:
+                                "POST",
+
+                            body:
+                                formData
+
+                        }
+                    );
+
+
+                console.log(
+                    "BACKEND STATUS:",
+                    response.status
+                );
+
+
+                let result;
+
+
+                try {
+
+                    result =
+                        await response.json();
+
+                }
+                catch (
+                    jsonError
+                ) {
+
+                    throw new Error(
+                        "Backend returned an invalid response."
+                    );
+
+                }
+
+
+                console.log(
+                    "BACKEND RESULT:",
+                    result
+                );
 
 
                 // ==================================================
-                // NATIVE SHARE
-                //
-                // Works best on mobile.
+                // SUCCESS
                 // ==================================================
 
                 if (
-                    navigator.share &&
-                    navigator.canShare &&
-                    navigator.canShare(
-                        {
-                            files: [
-                                pdfFile
-                            ]
-                        }
-                    )
+                    response.ok &&
+                    result.success
                 ) {
 
-                    whatsappBtn.textContent =
-                        "Opening WhatsApp...";
-
-
-                    await navigator.share(
-                        shareData
-                    );
-
-
-                    console.log(
-                        "PDF SHARED SUCCESSFULLY"
-                    );
-
-                }
-
-
-                // ==================================================
-                // DESKTOP FALLBACK
-                //
-                // Download PDF + open WhatsApp
-                // ==================================================
-
-                else {
-
-                    console.log(
-                        "FILE SHARE NOT SUPPORTED."
-                    );
-
-
-                    // ==================================================
-                    // DOWNLOAD PDF
-                    // ==================================================
-
-                    const downloadURL =
-                        URL.createObjectURL(
-                            pdfBlob
-                        );
-
-
-                    const downloadLink =
-                        document.createElement(
-                            "a"
-                        );
-
-
-                    downloadLink.href =
-                        downloadURL;
-
-
-                    downloadLink.download =
-                        pdfFileName;
-
-
-                    document.body.appendChild(
-                        downloadLink
-                    );
-
-
-                    downloadLink.click();
-
-
-                    downloadLink.remove();
-
-
-                    setTimeout(
-                        function () {
-
-                            URL.revokeObjectURL(
-                                downloadURL
-                            );
-
-                        },
-                        1000
-                    );
-
-
-                    // ==================================================
-                    // WHATSAPP NUMBER
-                    // ==================================================
-
-                    const whatsappNumber =
-                        "91" +
-                        customerMobileForWhatsApp;
-
-
-                    // ==================================================
-                    // WHATSAPP URL
-                    // ==================================================
-
-                    const whatsappURL =
-                        "https://wa.me/" +
-                        whatsappNumber +
-                        "?text=" +
-                        encodeURIComponent(
-                            whatsappMessage
-                        );
-
-
-                    // ==================================================
-                    // OPEN WHATSAPP
-                    // ==================================================
-
-                    window.open(
-                        whatsappURL,
-                        "_blank"
-                    );
-
-
                     alert(
-                        "Bill PDF downloaded successfully.\n\n" +
-                        "WhatsApp has been opened for the customer.\n\n" +
-                        "Please attach the downloaded PDF."
+                        "Bill sent successfully to " +
+                        customerNameForWhatsApp +
+                        " on WhatsApp."
                     );
 
+
+                    console.log(
+                        "WHATSAPP MESSAGE SENT:",
+                        result.messageId || ""
+                    );
+
+
+                    return;
+
                 }
+
+
+                // ==================================================
+                // ERROR
+                // ==================================================
+
+                throw new Error(
+                    result.message ||
+                    "Unable to send the bill through WhatsApp."
+                );
 
             }
-            catch (error) {
+            catch (
+                error
+            ) {
 
                 console.error(
-                    "WHATSAPP PDF ERROR:",
+                    "===================================="
+                );
+
+                console.error(
+                    "WHATSAPP PDF ERROR:"
+                );
+
+                console.error(
                     error
+                );
+
+                console.error(
+                    "===================================="
                 );
 
 
@@ -2923,34 +3020,16 @@ We look forward to serving you again.
 
                     pdfWrapper.remove();
 
-                    pdfWrapper = null;
+                    pdfWrapper =
+                        null;
 
                 }
 
 
-                // ==================================================
-                // USER CANCELLED
-                // ==================================================
-
-                if (
-                    error &&
-                    error.name ===
-                    "AbortError"
-                ) {
-
-                    console.log(
-                        "User cancelled WhatsApp sharing."
-                    );
-
-                }
-                else {
-
-                    alert(
-                        "Unable to create or share the bill PDF.\n\n" +
-                        "Please check the browser console for details."
-                    );
-
-                }
+                alert(
+                    "Unable to send the bill through WhatsApp.\n\n" +
+                    error.message
+                );
 
             }
             finally {

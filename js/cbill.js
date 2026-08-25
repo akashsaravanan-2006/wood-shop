@@ -1,35 +1,25 @@
 // ============================================================
-// CBILL.JS
-// FINAL SAVED BILL
-// UPDATED VERSION
+// CBILL.JS - FINAL BILL
+// CLEAN + CORRECTED VERSION
+// BASED ON bill.js TABLE DESIGN
 //
-// IMPORTANT:
-// Bill No comes from DATABASE.
-// Customer details come from DATABASE.
-// No new Bill No is generated here.
+// WOOD TABLE:
 //
-// UPDATED:
-// 1. Wood details displayed correctly
-// 2. Length -> Qty displayed separately
-// 3. Wood Total calculated from wood item amounts
-// 4. Other Charges displayed correctly
-// 5. Labour Charge displayed
-// 6. Additional charges displayed
-// 7. Others Total calculated from actual charges
-// 8. Subtotal / Grand Total recalculated
-// 9. CFT grouped by Wood + Quality
-// 10. Print / Clear / Home preserved
+// S.No | Wood | Size | Length | Qty | CFT | Rate | Amount | Quality
+//
+// Multiple Length + Qty values are displayed as separate rows.
+// S.No, Wood, Size, CFT, Rate, Amount and Quality use rowspan.
 // ============================================================
 
 console.clear();
 
-console.log("==========================================");
-console.log("              CBILL.JS LOADED");
-console.log("==========================================");
+console.log("====================================");
+console.log("        CBILL.JS LOADED");
+console.log("====================================");
 
 
 // ============================================================
-// API
+// API URL
 // ============================================================
 
 const API_URL =
@@ -37,92 +27,94 @@ const API_URL =
 
 
 // ============================================================
-// ELEMENTS
+// ELEMENT HELPER
+// ============================================================
+
+const $ = (id) =>
+    document.getElementById(id);
+
+
+// ============================================================
+// PAGE ELEMENTS
 // ============================================================
 
 const billNoElement =
-    document.getElementById("billNo");
+    $("billNo");
 
 const billDateElement =
-    document.getElementById("billDate");
+    $("billDate");
 
 const billDayTimeElement =
-    document.getElementById("billDayTime");
+    $("billDayTime");
+
 
 const customerNameElement =
-    document.getElementById("customerName");
+    $("customerName");
 
 const customerMobileElement =
-    document.getElementById("customerMobile");
+    $("customerMobile");
 
 const customerPlaceElement =
-    document.getElementById("customerPlace");
+    $("customerPlace");
+
 
 const woodTable =
-    document.getElementById("woodTable");
+    $("woodTable");
 
 const chargeTable =
-    document.getElementById("chargeTable");
+    $("chargeTable");
+
 
 const woodTotalElement =
-    document.getElementById("woodTotal");
+    $("woodTotal");
 
 const woodDetailsTotalElement =
-    document.getElementById("woodDetailsTotal");
+    $("woodDetailsTotal");
 
 const othersTotalElement =
-    document.getElementById("othersTotal");
+    $("othersTotal");
+
 
 const subtotalAmountElement =
-    document.getElementById("subtotalAmount");
+    $("subtotalAmount");
 
 const subtotalElement =
-    document.getElementById("subtotal");
+    $("subtotal");
+
 
 const discountRow =
-    document.getElementById("discountRow");
+    $("discountRow");
 
 const discountAmountElement =
-    document.getElementById("discountAmount");
+    $("discountAmount");
+
 
 const grandTotalElement =
-    document.getElementById("grandTotal");
+    $("grandTotal");
+
 
 const advanceRow =
-    document.getElementById("advanceRow");
+    $("advanceRow");
 
 const advanceAmountElement =
-    document.getElementById("advanceAmount");
+    $("advanceAmount");
 
 const balanceAmountElement =
-    document.getElementById("balanceAmount");
+    $("balanceAmount");
+
 
 const cftSummary =
-    document.getElementById("cftSummary");
+    $("cftSummary");
+
 
 const printBtn =
-    document.getElementById("printBtn");
+    $("printBtn");
 
 const clearBtn =
-    document.getElementById("clearBtn");
+    $("clearBtn");
 
 const homeBtn =
-    document.getElementById("homeBtn");
-
-
-// ============================================================
-// SAVED BILL ID
-// ============================================================
-
-let savedBillId =
-    localStorage.getItem(
-        "savedBillId"
-    );
-
-console.log(
-    "SAVED BILL ID:",
-    savedBillId
-);
+    $("homeBtn");
 
 
 // ============================================================
@@ -142,10 +134,7 @@ function numberValue(value) {
     const number =
         parseFloat(
             String(value)
-                .replace(
-                    /[₹,\s]/g,
-                    ""
-                )
+                .replace(/[₹,\s]/g, "")
         );
 
     return Number.isFinite(number)
@@ -155,17 +144,15 @@ function numberValue(value) {
 
 
 // ============================================================
-// MONEY
+// MONEY FORMAT
 // ============================================================
 
 function money(value) {
 
     return (
         "₹ " +
-        numberValue(value)
-            .toFixed(2)
+        numberValue(value).toFixed(2)
     );
-
 }
 
 
@@ -175,35 +162,17 @@ function money(value) {
 
 function escapeHTML(value) {
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 // ============================================================
-// SAFE JSON
+// SAFE JSON PARSER
 // ============================================================
 
 function parseJSON(
@@ -227,9 +196,7 @@ function parseJSON(
 
     try {
 
-        return JSON.parse(
-            value
-        );
+        return JSON.parse(value);
 
     }
     catch (error) {
@@ -240,28 +207,25 @@ function parseJSON(
         );
 
         return fallback;
-
     }
-
 }
 
 
 // ============================================================
-// LOCAL BILL DATA
+// GET LOCAL BILL DATA
 // ============================================================
 
 function getLocalBillData() {
 
     try {
 
-        const data =
+        return (
             JSON.parse(
                 localStorage.getItem(
                     "current_bill_data"
                 ) || "{}"
-            );
-
-        return data || {};
+            ) || {}
+        );
 
     }
     catch (error) {
@@ -272,15 +236,40 @@ function getLocalBillData() {
         );
 
         return {};
-
     }
-
 }
 
+
+// ============================================================
+// LOCAL BILL DATA
+// ============================================================
 
 const localBillData =
     getLocalBillData();
 
+
+// ============================================================
+// LOCAL PERSONAL DATA
+// ============================================================
+
+const localPersonal =
+    localBillData.personal || {};
+
+
+// ============================================================
+// SAVED BILL ID
+// ============================================================
+
+const savedBillId =
+    localStorage.getItem(
+        "savedBillId"
+    );
+
+
+console.log(
+    "SAVED BILL ID:",
+    savedBillId
+);
 
 console.log(
     "LOCAL BILL DATA:",
@@ -289,57 +278,110 @@ console.log(
 
 
 // ============================================================
-// LOCAL PERSONAL DATA
-// ============================================================
-
-const localPersonal =
-    localBillData.personal ||
-    {};
-
-
-// ============================================================
 // LOCAL CUSTOMER FALLBACK
 // ============================================================
 
 function getLocalCustomer() {
 
-    const name =
-        localPersonal.name ||
-        localPersonal.customerName ||
-        localStorage.getItem(
-            "customerName"
-        ) ||
-        "";
-
-    const mobile =
-        localPersonal.mobile ||
-        localPersonal.customerMobile ||
-        localStorage.getItem(
-            "customerMobile"
-        ) ||
-        "";
-
-    const place =
-        localPersonal.place ||
-        localPersonal.customerPlace ||
-        localStorage.getItem(
-            "customerPlace"
-        ) ||
-        "";
-
     return {
 
         name:
-            name,
+            localPersonal.name ||
+            localPersonal.customerName ||
+            localStorage.getItem(
+                "customerName"
+            ) ||
+            "",
 
         mobile:
-            mobile,
+            localPersonal.mobile ||
+            localPersonal.customerMobile ||
+            localStorage.getItem(
+                "customerMobile"
+            ) ||
+            "",
 
         place:
-            place
+            localPersonal.place ||
+            localPersonal.customerPlace ||
+            localStorage.getItem(
+                "customerPlace"
+            ) ||
+            ""
 
     };
+}
 
+
+// ============================================================
+// DATE FORMAT
+// ============================================================
+
+function formatDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+    }
+
+    return [
+
+        String(
+            date.getDate()
+        ).padStart(2, "0"),
+
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0"),
+
+        date.getFullYear()
+
+    ].join("/");
+}
+
+
+// ============================================================
+// TIME FORMAT
+// ============================================================
+
+function formatTime(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "-";
+    }
+
+    return date.toLocaleTimeString(
+        "en-IN",
+        {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        }
+    );
 }
 
 
@@ -347,46 +389,51 @@ function getLocalCustomer() {
 // DISCOUNT
 // ============================================================
 
-function getDiscount(
-    bill
-) {
+function getDiscount(bill) {
 
     let discount = 0;
 
+    const discountData =
+        bill.discount || {};
 
-    if (
-        bill.discount_amount !==
-            undefined &&
-        bill.discount_amount !==
-            null &&
-        bill.discount_amount !==
-            ""
-    ) {
 
-        discount =
-            numberValue(
-                bill.discount_amount
-            );
+    // DATABASE
+    discount =
+        numberValue(
+            bill.discount_amount
+        );
 
-    }
 
-    else if (
-        bill.discount !==
-            undefined &&
-        bill.discount !==
-            null &&
-        bill.discount !==
-            ""
-    ) {
+    if (discount === 0) {
 
         discount =
             numberValue(
                 bill.discount
             );
-
     }
 
-    else {
+
+    // CENTRAL DISCOUNT DATA
+    if (discount === 0) {
+
+        discount =
+            numberValue(
+                discountData.discountAmount
+            );
+    }
+
+
+    if (discount === 0) {
+
+        discount =
+            numberValue(
+                discountData.amount
+            );
+    }
+
+
+    // LOCAL STORAGE
+    if (discount === 0) {
 
         discount =
             numberValue(
@@ -394,13 +441,10 @@ function getDiscount(
                     "discountAmount"
                 )
             );
-
     }
 
 
-    if (
-        discount === 0
-    ) {
+    if (discount === 0) {
 
         discount =
             numberValue(
@@ -408,21 +452,13 @@ function getDiscount(
                     "discount"
                 )
             );
-
     }
 
 
-    if (
-        discount < 0
-    ) {
-
-        discount = 0;
-
-    }
-
-
-    return discount;
-
+    return Math.max(
+        0,
+        discount
+    );
 }
 
 
@@ -430,52 +466,51 @@ function getDiscount(
 // ADVANCE
 // ============================================================
 
-function getAdvanceAmount(
-    bill
-) {
+function getAdvanceAmount(bill) {
 
-    let advance = null;
+    let advance = 0;
+
+    const advanceData =
+        bill.advance || {};
 
 
-    if (
-        bill.advance_amount !==
-            undefined &&
-        bill.advance_amount !==
-            null &&
-        bill.advance_amount !==
-            ""
-    ) {
+    // DATABASE
+    advance =
+        numberValue(
+            bill.advance_amount
+        );
 
-        advance =
-            numberValue(
-                bill.advance_amount
-            );
 
-    }
-
-    else if (
-        bill.advance !==
-            undefined &&
-        bill.advance !==
-            null &&
-        bill.advance !==
-            ""
-    ) {
+    if (advance === 0) {
 
         advance =
             numberValue(
                 bill.advance
             );
-
     }
 
 
-    if (
-        advance === null ||
-        !Number.isFinite(
-            advance
-        )
-    ) {
+    // CENTRAL ADVANCE DATA
+    if (advance === 0) {
+
+        advance =
+            numberValue(
+                advanceData.advanceAmount
+            );
+    }
+
+
+    if (advance === 0) {
+
+        advance =
+            numberValue(
+                advanceData.amount
+            );
+    }
+
+
+    // LOCAL STORAGE
+    if (advance === 0) {
 
         advance =
             numberValue(
@@ -483,136 +518,13 @@ function getAdvanceAmount(
                     "advanceAmount"
                 )
             );
-
     }
 
 
-    if (
-        advance < 0
-    ) {
-
-        advance = 0;
-
-    }
-
-
-    return advance;
-
-}
-
-
-// ============================================================
-// DATE
-// ============================================================
-
-function formatDate(
-    value
-) {
-
-    if (!value) {
-        return "-";
-    }
-
-
-    const date =
-        new Date(
-            value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return String(
-            value
-        );
-
-    }
-
-
-    return (
-
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        )
-
-        +
-
-        "/" +
-
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        )
-
-        +
-
-        "/" +
-
-        date.getFullYear()
-
+    return Math.max(
+        0,
+        advance
     );
-
-}
-
-
-// ============================================================
-// TIME
-// ============================================================
-
-function formatTime(
-    value
-) {
-
-    if (!value) {
-        return "-";
-    }
-
-
-    const date =
-        new Date(
-            value
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "-";
-
-    }
-
-
-    return date.toLocaleTimeString(
-        "en-IN",
-        {
-
-            hour:
-                "2-digit",
-
-            minute:
-                "2-digit",
-
-            second:
-                "2-digit",
-
-            hour12:
-                true
-
-        }
-    );
-
 }
 
 
@@ -620,159 +532,154 @@ function formatTime(
 // GET WOOD DATA
 // ============================================================
 
-function getWoodData(
-    bill
-) {
+function getWoodData(bill) {
 
-    let woodData =
-        bill.wood_data;
-
-
-    woodData =
+    let data =
         parseJSON(
-            woodData,
+            bill.wood_data,
             []
         );
 
 
+    // --------------------------------------------
+    // woodData
+    // --------------------------------------------
+
     if (
-        !Array.isArray(
-            woodData
-        )
+        !Array.isArray(data) ||
+        data.length === 0
     ) {
 
-        woodData =
-            bill.woodData;
-
-
-        woodData =
+        data =
             parseJSON(
-                woodData,
+                bill.woodData,
                 []
             );
-
     }
 
 
+    // --------------------------------------------
+    // wood
+    // --------------------------------------------
+
     if (
-        !Array.isArray(
-            woodData
-        )
+        !Array.isArray(data) ||
+        data.length === 0
     ) {
 
-        woodData =
-            bill.wood;
-
-
-        woodData =
+        data =
             parseJSON(
-                woodData,
+                bill.wood,
                 []
             );
-
     }
 
+
+    // --------------------------------------------
+    // LOCAL BILL DATA
+    // --------------------------------------------
 
     if (
-        !Array.isArray(
-            woodData
-        )
+        !Array.isArray(data) ||
+        data.length === 0
     ) {
 
-        woodData = [];
+        const localWood =
+            localBillData.wood || {};
 
+
+        // calculations
+        if (
+            Array.isArray(
+                localWood.calculations
+            )
+        ) {
+
+            data =
+                localWood.calculations;
+        }
+
+
+        // woodCalculations
+        if (
+            (
+                !Array.isArray(data) ||
+                data.length === 0
+            ) &&
+            Array.isArray(
+                localBillData.woodCalculations
+            )
+        ) {
+
+            data =
+                localBillData.woodCalculations;
+        }
+
+
+        // woodData
+        if (
+            (
+                !Array.isArray(data) ||
+                data.length === 0
+            ) &&
+            Array.isArray(
+                localBillData.woodData
+            )
+        ) {
+
+            data =
+                localBillData.woodData;
+        }
     }
 
 
-    return woodData;
-
+    return Array.isArray(data)
+        ? data
+        : [];
 }
 
 
 // ============================================================
-// GET OTHER CHARGES
+// GET OTHER DATA
 // ============================================================
 
-function getOthersData(
-    bill
-) {
+function getOthersData(bill) {
 
-    let othersData =
-        [];
+    const keys = [
+
+        "others_data",
+
+        "other_data",
+
+        "charges",
+
+        "additional_charges"
+
+    ];
 
 
-    if (
-        bill.others_data !==
-            undefined
+    for (
+        const key of keys
     ) {
 
-        othersData =
+        const value =
             parseJSON(
-                bill.others_data,
+                bill[key],
                 []
             );
 
+
+        if (
+            Array.isArray(value) &&
+            value.length > 0
+        ) {
+
+            return value;
+        }
     }
 
 
-    if (
-        !Array.isArray(
-            othersData
-        )
-    ) {
-
-        othersData =
-            parseJSON(
-                bill.other_data,
-                []
-            );
-
-    }
-
-
-    if (
-        !Array.isArray(
-            othersData
-        )
-    ) {
-
-        othersData =
-            parseJSON(
-                bill.charges,
-                []
-            );
-
-    }
-
-
-    if (
-        !Array.isArray(
-            othersData
-        )
-    ) {
-
-        othersData =
-            parseJSON(
-                bill.additional_charges,
-                []
-            );
-
-    }
-
-
-    if (
-        !Array.isArray(
-            othersData
-        )
-    ) {
-
-        othersData = [];
-
-    }
-
-
-    return othersData;
-
+    return [];
 }
 
 
@@ -780,19 +687,19 @@ function getOthersData(
 // GET LABOUR DATA
 // ============================================================
 
-function getLocalLabourData() {
-
-    let labourData =
-        {};
+function getLabourData() {
 
     try {
 
-        labourData =
+        return (
+
             JSON.parse(
                 localStorage.getItem(
                     "labourData"
                 ) || "{}"
-            );
+            ) || {}
+
+        );
 
     }
     catch (error) {
@@ -802,26 +709,13 @@ function getLocalLabourData() {
             error
         );
 
+        return {};
     }
-
-
-    if (
-        !labourData ||
-        typeof labourData !== "object"
-    ) {
-
-        labourData = {};
-
-    }
-
-
-    return labourData;
-
 }
 
 
 // ============================================================
-// GET LABOUR CHARGE
+// LABOUR CHARGE
 // ============================================================
 
 function getLabourCharge(
@@ -829,61 +723,22 @@ function getLabourCharge(
     labourData
 ) {
 
-    let value = 0;
+    return numberValue(
 
+        bill.labour_charge ??
 
-    if (
-        bill.labour_charge !==
-            undefined &&
-        bill.labour_charge !==
-            null &&
-        bill.labour_charge !==
-            ""
-    ) {
+        bill.labourCharge ??
 
-        value =
-            numberValue(
-                bill.labour_charge
-            );
+        labourData.labourCharge ??
 
-    }
+        0
 
-
-    if (
-        value === 0 &&
-        bill.labourCharge !==
-            undefined
-    ) {
-
-        value =
-            numberValue(
-                bill.labourCharge
-            );
-
-    }
-
-
-    if (
-        value === 0 &&
-        labourData.labourCharge !==
-            undefined
-    ) {
-
-        value =
-            numberValue(
-                labourData.labourCharge
-            );
-
-    }
-
-
-    return value;
-
+    );
 }
 
 
 // ============================================================
-// GET OTHER CHARGE
+// OTHER CHARGE
 // ============================================================
 
 function getOtherCharge(
@@ -891,77 +746,46 @@ function getOtherCharge(
     labourData
 ) {
 
-    let value = 0;
+    return numberValue(
 
+        bill.other_charge ??
 
-    if (
-        bill.other_charge !==
-            undefined &&
-        bill.other_charge !==
-            null &&
-        bill.other_charge !==
-            ""
-    ) {
+        bill.otherCharge ??
 
-        value =
-            numberValue(
-                bill.other_charge
-            );
+        labourData.otherCharge ??
 
-    }
+        0
 
-
-    if (
-        value === 0 &&
-        bill.otherCharge !==
-            undefined
-    ) {
-
-        value =
-            numberValue(
-                bill.otherCharge
-            );
-
-    }
-
-
-    if (
-        value === 0 &&
-        labourData.otherCharge !==
-            undefined
-    ) {
-
-        value =
-            numberValue(
-                labourData.otherCharge
-            );
-
-    }
-
-
-    return value;
-
+    );
 }
 
 
 // ============================================================
-// GET ADDITIONAL ITEMS
+// ADDITIONAL ITEMS
 // ============================================================
 
 function getAdditionalItems(
+    bill,
     othersData,
     labourData
 ) {
 
     if (
-        Array.isArray(
-            othersData
-        ) &&
+        Array.isArray(othersData) &&
         othersData.length > 0
     ) {
 
         return othersData;
+    }
 
+
+    if (
+        Array.isArray(
+            bill.otherItems
+        )
+    ) {
+
+        return bill.otherItems;
     }
 
 
@@ -972,7 +796,6 @@ function getAdditionalItems(
     ) {
 
         return labourData.otherItems;
-
     }
 
 
@@ -983,7 +806,6 @@ function getAdditionalItems(
     ) {
 
         return labourData.items;
-
     }
 
 
@@ -994,7 +816,6 @@ function getAdditionalItems(
     ) {
 
         return localBillData.others;
-
     }
 
 
@@ -1005,61 +826,44 @@ function getAdditionalItems(
     ) {
 
         return localBillData.otherCharges;
-
     }
 
 
     return [];
-
 }
 
 
 // ============================================================
 // CALCULATE WOOD TOTAL
 // ============================================================
-//
-// IMPORTANT:
-// Do NOT use bill.wood_total.
-// Calculate directly from wood item amounts.
-// ============================================================
 
 function calculateWoodTotal(
     woodData
 ) {
 
-    let total = 0;
+    return woodData.reduce(
 
-
-    if (
-        !Array.isArray(
-            woodData
-        )
-    ) {
-
-        return 0;
-
-    }
-
-
-    woodData.forEach(
-        function (item) {
+        function(
+            total,
+            item
+        ) {
 
             if (!item) {
-                return;
+                return total;
             }
 
-
-            total +=
+            return (
+                total +
                 numberValue(
                     item.amount
-                );
+                )
+            );
 
-        }
+        },
+
+        0
+
     );
-
-
-    return total;
-
 }
 
 
@@ -1068,44 +872,1074 @@ function calculateWoodTotal(
 // ============================================================
 
 function calculateAdditionalTotal(
-    additionalItems
+    items
 ) {
 
-    let total = 0;
-
-
     if (
-        !Array.isArray(
-            additionalItems
-        )
+        !Array.isArray(items)
     ) {
 
         return 0;
-
     }
 
 
-    additionalItems.forEach(
-        function (item) {
+    return items.reduce(
+
+        function(
+            total,
+            item
+        ) {
+
+            if (!item) {
+                return total;
+            }
+
+            return (
+
+                total +
+
+                numberValue(
+
+                    item.amount ??
+
+                    item.charge ??
+
+                    item.value ??
+
+                    0
+
+                )
+
+            );
+
+        },
+
+        0
+
+    );
+}
+
+
+// ============================================================
+// LOAD WOOD DATA
+//
+// SAME DESIGN AS bill.js
+//
+// S.No | Wood | Size | Length | Qty | CFT | Rate | Amount | Quality
+// ============================================================
+
+function loadWoodData(
+    woodData
+) {
+
+    if (!woodTable) {
+
+        console.error(
+            "woodTable not found."
+        );
+
+        return;
+    }
+
+
+    woodTable.innerHTML = "";
+
+
+    // ========================================================
+    // NO WOOD DATA
+    // ========================================================
+
+    if (
+        !Array.isArray(woodData) ||
+        woodData.length === 0
+    ) {
+
+        woodTable.innerHTML = `
+
+            <tr>
+
+                <td colspan="9">
+
+                    No wood data
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    let calculationNumber = 0;
+
+
+    // ========================================================
+    // EACH WOOD CALCULATION
+    // ========================================================
+
+    woodData.forEach(
+        function(item) {
 
             if (!item) {
                 return;
             }
 
 
-            total +=
+            calculationNumber++;
+
+
+            // ==================================================
+            // WOOD NAME
+            // ==================================================
+
+            let woodName =
+
+                item.woodType ||
+
+                item.wood ||
+
+                item.woodName ||
+
+                "-";
+
+
+            if (
+                woodName === "Other"
+            ) {
+
+                woodName =
+
+                    item.otherWood ||
+
+                    "Other";
+            }
+
+
+            // ==================================================
+            // BREADTH
+            // ==================================================
+
+            const breadth =
                 numberValue(
-                    item.amount ||
-                    item.charge ||
-                    item.value
+                    item.breadth
                 );
+
+
+            // ==================================================
+            // THICKNESS
+            // ==================================================
+
+            const thickness =
+                numberValue(
+                    item.thickness
+                );
+
+
+            // ==================================================
+            // SIZE
+            // ==================================================
+
+            let size = "-";
+
+
+            if (
+                breadth > 0 &&
+                thickness > 0
+            ) {
+
+                size =
+                    `${breadth} × ${thickness}`;
+            }
+
+            else if (
+                breadth > 0
+            ) {
+
+                size =
+                    String(breadth);
+            }
+
+            else if (
+                thickness > 0
+            ) {
+
+                size =
+                    String(thickness);
+            }
+
+
+            // ==================================================
+            // QUALITY
+            // ==================================================
+
+            const quality =
+
+                item.quality !== undefined &&
+
+                item.quality !== null &&
+
+                item.quality !== ""
+
+                    ? String(
+                        item.quality
+                    )
+
+                    : "1";
+
+
+            // ==================================================
+            // PIECES
+            // ==================================================
+
+            const pieces =
+
+                Array.isArray(
+                    item.pieces
+                )
+
+                    ? item.pieces
+
+                    : [];
+
+
+            // ==================================================
+            // LENGTH + QTY
+            //
+            // Example:
+            //
+            // Length = 7, Qty = 2
+            // Length = 5, Qty = 3
+            // Length = 4, Qty = 2
+            //
+            // Display:
+            //
+            // 7 | 2
+            // 5 | 3
+            // 4 | 2
+            // ==================================================
+
+            let lengthValues = [];
+
+
+            pieces.forEach(
+                function(piece) {
+
+                    if (!piece) {
+                        return;
+                    }
+
+
+                    const length =
+                        numberValue(
+                            piece.length
+                        );
+
+
+                    const extraLength =
+                        numberValue(
+                            piece.extraLength
+                        );
+
+
+                    const finalLength =
+
+                        length +
+                        extraLength;
+
+
+                    const qty =
+                        numberValue(
+                            piece.qty
+                        );
+
+
+                    if (
+                        finalLength > 0
+                    ) {
+
+                        lengthValues.push({
+
+                            length:
+                                finalLength,
+
+                            qty:
+                                qty
+
+                        });
+                    }
+
+                }
+            );
+
+
+            // ==================================================
+            // DIRECT LENGTH FALLBACK
+            // ==================================================
+
+            if (
+
+                lengthValues.length === 0 &&
+
+                item.length !== undefined
+
+            ) {
+
+                const directLength =
+                    numberValue(
+                        item.length
+                    );
+
+
+                const directQty =
+                    numberValue(
+                        item.qty
+                    );
+
+
+                if (
+                    directLength > 0
+                ) {
+
+                    lengthValues.push({
+
+                        length:
+                            directLength,
+
+                        qty:
+                            directQty
+
+                    });
+                }
+            }
+
+
+            // ==================================================
+            // TOTAL QTY
+            // ==================================================
+
+            let totalQty = 0;
+
+
+            pieces.forEach(
+                function(piece) {
+
+                    if (!piece) {
+                        return;
+                    }
+
+
+                    totalQty +=
+
+                        numberValue(
+                            piece.qty
+                        );
+
+                }
+            );
+
+
+            // ==================================================
+            // DIRECT QTY FALLBACK
+            // ==================================================
+
+            if (
+
+                totalQty === 0 &&
+
+                item.qty !== undefined
+
+            ) {
+
+                totalQty =
+
+                    numberValue(
+                        item.qty
+                    );
+            }
+
+
+            // ==================================================
+            // NO LENGTH DATA
+            // ==================================================
+
+            if (
+                lengthValues.length === 0
+            ) {
+
+                lengthValues.push({
+
+                    length: 0,
+
+                    qty:
+                        totalQty
+
+                });
+            }
+
+
+            // ==================================================
+            // CFT
+            // ==================================================
+
+            const cubicFeet =
+                numberValue(
+                    item.cubicFeet
+                );
+
+
+            // ==================================================
+            // RATE
+            // ==================================================
+
+            const rate =
+                numberValue(
+                    item.rate
+                );
+
+
+            // ==================================================
+            // AMOUNT
+            // ==================================================
+
+            const amount =
+                numberValue(
+                    item.amount
+                );
+
+
+            // ==================================================
+            // ROW COUNT
+            // ==================================================
+
+            const rowCount =
+                lengthValues.length;
+
+
+            // ==================================================
+            // CREATE ROW FOR EACH LENGTH + QTY
+            // ==================================================
+
+            lengthValues.forEach(
+
+                function(
+                    lengthItem,
+                    pieceIndex
+                ) {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    // =================================================
+                    // FIRST ROW
+                    // =================================================
+
+                    if (
+                        pieceIndex === 0
+                    ) {
+
+                        row.innerHTML = `
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="sno-cell">
+
+                                ${calculationNumber}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="wood-cell">
+
+                                ${escapeHTML(
+                                    woodName
+                                )}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="size-cell">
+
+                                ${escapeHTML(
+                                    size
+                                )}
+
+                            </td>
+
+
+                            <td
+                                class="length-cell">
+
+                                ${lengthItem.length}
+
+                            </td>
+
+
+                            <td
+                                class="qty-cell">
+
+                                ${lengthItem.qty}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="cft-cell">
+
+                                ${cubicFeet.toFixed(2)}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="rate-cell">
+
+                                ${money(rate)}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="amount-cell">
+
+                                ${money(amount)}
+
+                            </td>
+
+
+                            <td
+                                rowspan="${rowCount}"
+                                class="quality-cell">
+
+                                ${escapeHTML(
+                                    quality
+                                )}
+
+                            </td>
+
+                        `;
+                    }
+
+
+                    // =================================================
+                    // ADDITIONAL ROW
+                    //
+                    // ONLY LENGTH + QTY
+                    // =================================================
+
+                    else {
+
+                        row.innerHTML = `
+
+                            <td
+                                class="length-cell">
+
+                                ${lengthItem.length}
+
+                            </td>
+
+
+                            <td
+                                class="qty-cell">
+
+                                ${lengthItem.qty}
+
+                            </td>
+
+                        `;
+                    }
+
+
+                    // =================================================
+                    // APPEND ROW
+                    // =================================================
+
+                    woodTable.appendChild(
+                        row
+                    );
+
+                }
+
+            );
+
+        }
+    );
+}
+
+
+// ============================================================
+// OTHER CHARGES TABLE
+// ============================================================
+
+function loadOtherCharges(
+
+    additionalItems,
+
+    labourCharge,
+
+    otherCharge
+
+) {
+
+    if (!chargeTable) {
+
+        console.error(
+            "chargeTable not found."
+        );
+
+        return;
+    }
+
+
+    chargeTable.innerHTML = "";
+
+
+    let serialNumber = 1;
+
+    let hasCharge = false;
+
+
+    // ========================================================
+    // LABOUR
+    // ========================================================
+
+    if (
+        labourCharge > 0
+    ) {
+
+        hasCharge = true;
+
+
+        chargeTable.innerHTML += `
+
+            <tr>
+
+                <td>
+
+                    ${serialNumber++}
+
+                </td>
+
+
+                <td>
+
+                    Labour Charge
+
+                </td>
+
+
+                <td>
+
+                    ${money(
+                        labourCharge
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+    }
+
+
+    // ========================================================
+    // OTHER CHARGE
+    // ========================================================
+
+    if (
+        otherCharge > 0
+    ) {
+
+        hasCharge = true;
+
+
+        chargeTable.innerHTML += `
+
+            <tr>
+
+                <td>
+
+                    ${serialNumber++}
+
+                </td>
+
+
+                <td>
+
+                    Other Charge
+
+                </td>
+
+
+                <td>
+
+                    ${money(
+                        otherCharge
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+    }
+
+
+    // ========================================================
+    // ADDITIONAL ITEMS
+    // ========================================================
+
+    if (
+        Array.isArray(
+            additionalItems
+        )
+    ) {
+
+        additionalItems.forEach(
+            function(item) {
+
+                if (!item) {
+                    return;
+                }
+
+
+                const amount =
+
+                    numberValue(
+
+                        item.amount ??
+
+                        item.charge ??
+
+                        item.value ??
+
+                        0
+
+                    );
+
+
+                if (
+                    amount <= 0
+                ) {
+
+                    return;
+                }
+
+
+                const name =
+
+                    item.reason ||
+
+                    item.name ||
+
+                    item.title ||
+
+                    item.description ||
+
+                    "Other Charge";
+
+
+                hasCharge = true;
+
+
+                chargeTable.innerHTML += `
+
+                    <tr>
+
+                        <td>
+
+                            ${serialNumber++}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                name
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${money(
+                                amount
+                            )}
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+    }
+
+
+    // ========================================================
+    // EMPTY
+    // ========================================================
+
+    if (!hasCharge) {
+
+        chargeTable.innerHTML = `
+
+            <tr>
+
+                <td>-</td>
+
+                <td>-</td>
+
+                <td>-</td>
+
+            </tr>
+
+        `;
+    }
+}
+
+
+// ============================================================
+// CFT SUMMARY
+//
+// SAME WOOD + SAME QUALITY
+// = COMBINED CFT
+// ============================================================
+
+function loadCftSummary(
+    woodData
+) {
+
+    if (!cftSummary) {
+
+        console.error(
+            "cftSummary not found."
+        );
+
+        return;
+    }
+
+
+    cftSummary.innerHTML = "";
+
+
+    if (
+
+        !Array.isArray(woodData) ||
+
+        woodData.length === 0
+
+    ) {
+
+        cftSummary.innerHTML =
+
+            `<div class="cft-item">-</div>`;
+
+        return;
+    }
+
+
+    const groupedCFT =
+        new Map();
+
+
+    woodData.forEach(
+        function(item) {
+
+            if (!item) {
+                return;
+            }
+
+
+            // ----------------------------------------
+            // WOOD NAME
+            // ----------------------------------------
+
+            let woodName =
+
+                item.woodType ||
+
+                item.wood ||
+
+                item.woodName ||
+
+                "-";
+
+
+            if (
+                woodName === "Other"
+            ) {
+
+                woodName =
+
+                    item.otherWood ||
+
+                    "Other";
+            }
+
+
+            // ----------------------------------------
+            // QUALITY
+            // ----------------------------------------
+
+            const quality =
+
+                item.quality !== undefined &&
+
+                item.quality !== null &&
+
+                item.quality !== ""
+
+                    ? String(
+                        item.quality
+                    )
+
+                    : "1";
+
+
+            // ----------------------------------------
+            // CFT
+            // ----------------------------------------
+
+            const cubicFeet =
+
+                numberValue(
+                    item.cubicFeet
+                );
+
+
+            // ----------------------------------------
+            // GROUP KEY
+            // ----------------------------------------
+
+            const key =
+
+                woodName
+                    .trim()
+                    .toLowerCase()
+
+                +
+
+                "|||"
+
+                +
+
+                quality
+                    .trim()
+                    .toLowerCase();
+
+
+            // ----------------------------------------
+            // CREATE GROUP
+            // ----------------------------------------
+
+            if (
+                !groupedCFT.has(key)
+            ) {
+
+                groupedCFT.set(
+
+                    key,
+
+                    {
+
+                        woodName:
+                            woodName,
+
+                        quality:
+                            quality,
+
+                        cft:
+                            0
+
+                    }
+
+                );
+            }
+
+
+            // ----------------------------------------
+            // ADD CFT
+            // ----------------------------------------
+
+            groupedCFT.get(key).cft +=
+                cubicFeet;
 
         }
     );
 
 
-    return total;
+    // ========================================================
+    // DISPLAY
+    // ========================================================
 
+    let serialNumber = 1;
+
+
+    groupedCFT.forEach(
+        function(group) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "cft-item";
+
+
+            div.innerHTML = `
+
+                <strong>
+
+                    ${serialNumber}.
+
+                    ${escapeHTML(
+                        group.woodName
+                    )}
+
+                    (${escapeHTML(
+                        group.quality
+                    )})
+
+                </strong>
+
+
+                <span>
+
+                    ${group.cft.toFixed(2)}
+
+                    CFT
+
+                </span>
+
+            `;
+
+
+            cftSummary.appendChild(
+                div
+            );
+
+
+            serialNumber++;
+
+        }
+    );
 }
 
 
@@ -1115,26 +1949,11 @@ function calculateAdditionalTotal(
 
 async function loadFinalBill() {
 
-    console.log(
-        "=========================================="
-    );
-
-    console.log(
-        "STARTING CBILL"
-    );
-
-    console.log(
-        "=========================================="
-    );
-
-
     // ========================================================
-    // CHECK SAVED BILL ID
+    // CHECK BILL ID
     // ========================================================
 
-    if (
-        !savedBillId
-    ) {
+    if (!savedBillId) {
 
         console.error(
             "savedBillId is missing."
@@ -1142,30 +1961,43 @@ async function loadFinalBill() {
 
 
         alert(
+
             "Saved bill ID is missing.\n\n" +
+
             "Please open the Final Bill from Confirm Bill."
+
         );
 
 
         return;
-
     }
 
 
     try {
 
+        console.log(
+            "Loading bill:",
+            savedBillId
+        );
+
+
         // ====================================================
-        // FETCH DATABASE BILL
+        // API REQUEST
         // ====================================================
 
         const response =
+
             await fetch(
-                `${API_URL}/bill/${savedBillId}`
+
+                `${API_URL}/bill/${encodeURIComponent(
+                    savedBillId
+                )}`
+
             );
 
 
         console.log(
-            "HTTP STATUS:",
+            "API STATUS:",
             response.status
         );
 
@@ -1177,12 +2009,11 @@ async function loadFinalBill() {
             throw new Error(
                 `HTTP ${response.status}`
             );
-
         }
 
 
         // ====================================================
-        // DATABASE RESPONSE
+        // API RESPONSE
         // ====================================================
 
         const result =
@@ -1196,41 +2027,40 @@ async function loadFinalBill() {
 
 
         const bill =
+
             result.bill ||
+
             result.data ||
+
             result;
 
 
-        if (
-            !bill
-        ) {
+        if (!bill) {
 
             throw new Error(
                 "Bill not found."
             );
-
         }
-
-
-        console.log(
-            "FINAL BILL OBJECT:",
-            bill
-        );
 
 
         // ====================================================
         // BILL NUMBER
-        // ====================================================
         //
-        // DATABASE VALUE ONLY.
-        // NEVER GENERATE A NEW NUMBER.
+        // IMPORTANT:
+        // Uses database bill number.
+        // Does NOT generate a new bill number.
         // ====================================================
 
         const databaseBillNo =
+
             bill.bill_no ||
+
             bill.billNo ||
+
             bill.bill_number ||
+
             bill.billNumber ||
+
             "";
 
 
@@ -1239,9 +2069,10 @@ async function loadFinalBill() {
         ) {
 
             billNoElement.textContent =
-                databaseBillNo ||
-                "---";
 
+                databaseBillNo ||
+
+                "---";
         }
 
 
@@ -1250,15 +2081,17 @@ async function loadFinalBill() {
         ) {
 
             localStorage.setItem(
-                "savedBillNo",
-                databaseBillNo
-            );
 
+                "savedBillNo",
+
+                databaseBillNo
+
+            );
         }
 
 
         // ====================================================
-        // CUSTOMER
+        // CUSTOMER DETAILS
         // ====================================================
 
         const localCustomer =
@@ -1266,82 +2099,113 @@ async function loadFinalBill() {
 
 
         const customerName =
+
             bill.customer_name ||
+
             bill.customerName ||
+
             bill.customer ||
+
             localCustomer.name ||
+
             "-";
 
 
         const customerMobile =
+
             bill.customer_mobile ||
+
             bill.customerMobile ||
+
             bill.mobile ||
+
             localCustomer.mobile ||
+
             "-";
 
 
         const customerPlace =
+
             bill.customer_place ||
+
             bill.customerPlace ||
+
             bill.place ||
+
             localCustomer.place ||
+
             "-";
 
 
-        console.log(
-            "CUSTOMER:",
-            customerName
-        );
-
-        console.log(
-            "MOBILE:",
-            customerMobile
-        );
-
-        console.log(
-            "PLACE:",
-            customerPlace
-        );
-
+        // ====================================================
+        // DISPLAY CUSTOMER NAME
+        // ====================================================
 
         if (
             customerNameElement
         ) {
 
             customerNameElement.textContent =
-                customerName;
 
+                customerName;
         }
 
+
+        // ====================================================
+        // DISPLAY CUSTOMER MOBILE
+        // ====================================================
 
         if (
             customerMobileElement
         ) {
 
             customerMobileElement.textContent =
-                customerMobile;
 
+                customerMobile;
         }
 
+
+        // ====================================================
+        // DISPLAY CUSTOMER PLACE
+        // ====================================================
 
         if (
             customerPlaceElement
         ) {
 
             customerPlaceElement.textContent =
-                customerPlace;
 
+                customerPlace;
         }
 
 
         // ====================================================
-        // DATE
+        // BILL DATE
         // ====================================================
 
         const billDate =
+
             bill.bill_date ||
+
+            bill.billDate ||
+
             bill.date ||
+
+            bill.created_at;
+
+
+        // ====================================================
+        // BILL TIME
+        // ====================================================
+
+        const billTime =
+
+            bill.bill_time ||
+
+            bill.billTime ||
+
+            bill.time ||
+
             bill.created_at;
 
 
@@ -1350,21 +2214,11 @@ async function loadFinalBill() {
         ) {
 
             billDateElement.textContent =
+
                 formatDate(
                     billDate
                 );
-
         }
-
-
-        // ====================================================
-        // TIME
-        // ====================================================
-
-        const billTime =
-            bill.bill_time ||
-            bill.time ||
-            bill.created_at;
 
 
         if (
@@ -1372,10 +2226,10 @@ async function loadFinalBill() {
         ) {
 
             billDayTimeElement.textContent =
+
                 formatTime(
                     billTime
                 );
-
         }
 
 
@@ -1383,63 +2237,10 @@ async function loadFinalBill() {
         // WOOD DATA
         // ====================================================
 
-        let woodData =
+        const woodData =
             getWoodData(
                 bill
             );
-
-
-        // ====================================================
-        // LOCAL WOOD FALLBACK
-        // ====================================================
-
-        if (
-            woodData.length === 0
-        ) {
-
-            const localWood =
-                localBillData.wood ||
-                {};
-
-
-            if (
-                Array.isArray(
-                    localWood.calculations
-                )
-            ) {
-
-                woodData =
-                    localWood.calculations;
-
-            }
-
-
-            if (
-                woodData.length === 0 &&
-                Array.isArray(
-                    localBillData.woodCalculations
-                )
-            ) {
-
-                woodData =
-                    localBillData.woodCalculations;
-
-            }
-
-
-            if (
-                woodData.length === 0 &&
-                Array.isArray(
-                    localBillData.woodData
-                )
-            ) {
-
-                woodData =
-                    localBillData.woodData;
-
-            }
-
-        }
 
 
         console.log(
@@ -1448,38 +2249,34 @@ async function loadFinalBill() {
         );
 
 
-        console.log(
-            "WOOD COUNT:",
-            woodData.length
-        );
-
-
         // ====================================================
         // LABOUR DATA
         // ====================================================
 
         const labourData =
-            getLocalLabourData();
+            getLabourData();
 
 
         // ====================================================
-        // OTHER CHARGES DATA
+        // OTHER CHARGES
         // ====================================================
 
-        let othersData =
+        const othersData =
             getOthersData(
                 bill
             );
 
 
-        // ====================================================
-        // ADDITIONAL ITEMS
-        // ====================================================
-
         const additionalItems =
+
             getAdditionalItems(
+
+                bill,
+
                 othersData,
+
                 labourData
+
             );
 
 
@@ -1488,9 +2285,13 @@ async function loadFinalBill() {
         // ====================================================
 
         const labourCharge =
+
             getLabourCharge(
+
                 bill,
+
                 labourData
+
             );
 
 
@@ -1499,60 +2300,57 @@ async function loadFinalBill() {
         // ====================================================
 
         const otherCharge =
+
             getOtherCharge(
+
                 bill,
+
                 labourData
+
             );
 
 
         // ====================================================
-        // CALCULATE WOOD TOTAL
+        // WOOD TOTAL
         // ====================================================
 
         const woodTotal =
+
             calculateWoodTotal(
+
                 woodData
+
             );
 
 
-        console.log(
-            "CALCULATED WOOD TOTAL:",
-            woodTotal
-        );
-
-
         // ====================================================
-        // CALCULATE ADDITIONAL TOTAL
+        // ADDITIONAL TOTAL
         // ====================================================
 
         const additionalTotal =
+
             calculateAdditionalTotal(
+
                 additionalItems
+
             );
 
 
-        console.log(
-            "ADDITIONAL TOTAL:",
-            additionalTotal
-        );
-
-
         // ====================================================
-        // CALCULATE OTHERS TOTAL
+        // OTHERS TOTAL
         // ====================================================
 
         let othersTotal =
+
             labourCharge +
+
             otherCharge +
+
             additionalTotal;
 
 
         // ====================================================
-        // DATABASE TOTAL FALLBACK
-        // ====================================================
-        //
-        // Only use DB others_total when there are no individual
-        // charge values available.
+        // DATABASE OTHERS TOTAL FALLBACK
         // ====================================================
 
         if (
@@ -1560,8 +2358,11 @@ async function loadFinalBill() {
         ) {
 
             const databaseOthersTotal =
+
                 numberValue(
+
                     bill.others_total
+
                 );
 
 
@@ -1570,17 +2371,10 @@ async function loadFinalBill() {
             ) {
 
                 othersTotal =
+
                     databaseOthersTotal;
-
             }
-
         }
-
-
-        console.log(
-            "CALCULATED OTHERS TOTAL:",
-            othersTotal
-        );
 
 
         // ====================================================
@@ -1588,7 +2382,9 @@ async function loadFinalBill() {
         // ====================================================
 
         const subtotal =
+
             woodTotal +
+
             othersTotal;
 
 
@@ -1597,6 +2393,7 @@ async function loadFinalBill() {
         // ====================================================
 
         const discount =
+
             getDiscount(
                 bill
             );
@@ -1607,7 +2404,9 @@ async function loadFinalBill() {
         // ====================================================
 
         let grandTotal =
+
             subtotal -
+
             discount;
 
 
@@ -1616,8 +2415,18 @@ async function loadFinalBill() {
         ) {
 
             grandTotal = 0;
-
         }
+
+
+        // ====================================================
+        // ROUND GRAND TOTAL
+        // ====================================================
+
+        grandTotal =
+
+            Math.round(
+                grandTotal
+            );
 
 
         // ====================================================
@@ -1625,10 +2434,15 @@ async function loadFinalBill() {
         // ====================================================
 
         let advanceAmount =
+
             getAdvanceAmount(
                 bill
             );
 
+
+        // ====================================================
+        // ADVANCE CANNOT EXCEED GRAND TOTAL
+        // ====================================================
 
         if (
             advanceAmount >
@@ -1637,7 +2451,6 @@ async function loadFinalBill() {
 
             advanceAmount =
                 grandTotal;
-
         }
 
 
@@ -1645,22 +2458,21 @@ async function loadFinalBill() {
         // BALANCE
         // ====================================================
 
-        let balanceAmount =
-            grandTotal -
-            advanceAmount;
+        const balanceAmount =
 
+            Math.max(
 
-        if (
-            balanceAmount < 0
-        ) {
+                0,
 
-            balanceAmount = 0;
+                grandTotal -
 
-        }
+                advanceAmount
+
+            );
 
 
         // ====================================================
-        // DISPLAY WOOD
+        // LOAD WOOD TABLE
         // ====================================================
 
         loadWoodData(
@@ -1669,19 +2481,22 @@ async function loadFinalBill() {
 
 
         // ====================================================
-        // DISPLAY OTHER CHARGES
+        // LOAD OTHER CHARGES TABLE
         // ====================================================
 
         loadOtherCharges(
-            bill,
+
             additionalItems,
+
             labourCharge,
+
             otherCharge
+
         );
 
 
         // ====================================================
-        // CFT SUMMARY
+        // LOAD CFT SUMMARY
         // ====================================================
 
         loadCftSummary(
@@ -1690,7 +2505,7 @@ async function loadFinalBill() {
 
 
         // ====================================================
-        // DISPLAY WOOD TOTAL
+        // WOOD TOTAL DISPLAY
         // ====================================================
 
         if (
@@ -1698,27 +2513,31 @@ async function loadFinalBill() {
         ) {
 
             woodTotalElement.textContent =
+
                 money(
                     woodTotal
                 );
-
         }
 
+
+        // ====================================================
+        // WOOD DETAILS TOTAL DISPLAY
+        // ====================================================
 
         if (
             woodDetailsTotalElement
         ) {
 
             woodDetailsTotalElement.textContent =
+
                 money(
                     woodTotal
                 );
-
         }
 
 
         // ====================================================
-        // DISPLAY OTHERS TOTAL
+        // OTHERS TOTAL DISPLAY
         // ====================================================
 
         if (
@@ -1726,15 +2545,15 @@ async function loadFinalBill() {
         ) {
 
             othersTotalElement.textContent =
+
                 money(
                     othersTotal
                 );
-
         }
 
 
         // ====================================================
-        // DISPLAY SUBTOTAL
+        // SUBTOTAL AMOUNT DISPLAY
         // ====================================================
 
         if (
@@ -1742,27 +2561,31 @@ async function loadFinalBill() {
         ) {
 
             subtotalAmountElement.textContent =
+
                 money(
                     subtotal
                 );
-
         }
 
+
+        // ====================================================
+        // SUBTOTAL DISPLAY
+        // ====================================================
 
         if (
             subtotalElement
         ) {
 
             subtotalElement.textContent =
+
                 money(
                     subtotal
                 );
-
         }
 
 
         // ====================================================
-        // DISPLAY DISCOUNT
+        // DISCOUNT DISPLAY
         // ====================================================
 
         if (
@@ -1775,7 +2598,6 @@ async function loadFinalBill() {
 
                 discountRow.style.display =
                     "flex";
-
             }
 
 
@@ -1784,11 +2606,12 @@ async function loadFinalBill() {
             ) {
 
                 discountAmountElement.textContent =
+
                     "- " +
+
                     money(
                         discount
                     );
-
             }
 
         }
@@ -1801,14 +2624,12 @@ async function loadFinalBill() {
 
                 discountRow.style.display =
                     "none";
-
             }
-
         }
 
 
         // ====================================================
-        // DISPLAY GRAND TOTAL
+        // GRAND TOTAL DISPLAY
         // ====================================================
 
         if (
@@ -1816,15 +2637,15 @@ async function loadFinalBill() {
         ) {
 
             grandTotalElement.textContent =
+
                 money(
                     grandTotal
                 );
-
         }
 
 
         // ====================================================
-        // DISPLAY ADVANCE
+        // ADVANCE DISPLAY
         // ====================================================
 
         if (
@@ -1832,10 +2653,10 @@ async function loadFinalBill() {
         ) {
 
             advanceAmountElement.textContent =
+
                 money(
                     advanceAmount
                 );
-
         }
 
 
@@ -1844,15 +2665,17 @@ async function loadFinalBill() {
         ) {
 
             advanceRow.style.display =
-                advanceAmount > 0
-                    ? "flex"
-                    : "none";
 
+                advanceAmount > 0
+
+                    ? "flex"
+
+                    : "none";
         }
 
 
         // ====================================================
-        // DISPLAY BALANCE
+        // BALANCE DISPLAY
         // ====================================================
 
         if (
@@ -1860,75 +2683,63 @@ async function loadFinalBill() {
         ) {
 
             balanceAmountElement.textContent =
+
                 money(
                     balanceAmount
                 );
-
         }
 
 
         // ====================================================
-        // SAVE CALCULATED TOTALS
+        // SAVE TOTALS
         // ====================================================
 
         localStorage.setItem(
             "woodTotal",
-            String(
-                woodTotal
-            )
+            String(woodTotal)
         );
 
 
         localStorage.setItem(
             "othersTotal",
-            String(
-                othersTotal
-            )
+            String(othersTotal)
         );
 
 
         localStorage.setItem(
             "subtotal",
-            String(
-                subtotal
-            )
+            String(subtotal)
         );
 
 
         localStorage.setItem(
             "grandTotal",
-            String(
-                grandTotal
-            )
+            String(grandTotal)
         );
 
 
         localStorage.setItem(
             "finalTotal",
-            String(
-                grandTotal
-            )
+            String(grandTotal)
         );
 
 
         localStorage.setItem(
             "balanceAmount",
-            String(
-                balanceAmount
-            )
+            String(balanceAmount)
         );
 
 
         // ====================================================
-        // LOG
+        // DEBUG
         // ====================================================
 
         console.log(
-            "=========================================="
+            "===================================="
         );
 
         console.log(
-            "CBILL LOADED SUCCESSFULLY"
+            "FINAL BILL DATA"
         );
 
         console.log(
@@ -1942,6 +2753,16 @@ async function loadFinalBill() {
         );
 
         console.log(
+            "Mobile:",
+            customerMobile
+        );
+
+        console.log(
+            "Place:",
+            customerPlace
+        );
+
+        console.log(
             "Wood Count:",
             woodData.length
         );
@@ -1952,7 +2773,7 @@ async function loadFinalBill() {
         );
 
         console.log(
-            "Labour Charge:",
+            "Labour:",
             labourCharge
         );
 
@@ -1962,7 +2783,7 @@ async function loadFinalBill() {
         );
 
         console.log(
-            "Additional Total:",
+            "Additional:",
             additionalTotal
         );
 
@@ -1997,14 +2818,12 @@ async function loadFinalBill() {
         );
 
         console.log(
-            "=========================================="
+            "===================================="
         );
 
     }
 
-    catch (
-        error
-    ) {
+    catch (error) {
 
         console.error(
             "CBILL ERROR:",
@@ -2013,1292 +2832,18 @@ async function loadFinalBill() {
 
 
         alert(
+
             "Unable to load final bill.\n\n" +
+
             error.message
+
         );
-
     }
-
 }
 
 
 // ============================================================
-// LOAD WOOD DATA
-// ============================================================
-//
-// SAME DISPLAY AS BILL.JS
-//
-// Length column:
-//
-// 7
-// 4
-//
-// Qty column:
-//
-// 2
-// 2
-//
-// Each piece gets its own line.
-// ============================================================
-
-function loadWoodData(woodData) {
-
-    if (!woodTable) {
-
-        console.error(
-            "woodTable not found."
-        );
-
-        return;
-    }
-
-    woodTable.innerHTML = "";
-
-    if (
-        !Array.isArray(woodData) ||
-        woodData.length === 0
-    ) {
-
-        woodTable.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    No wood data
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    let sno = 1;
-
-    woodData.forEach(function(item) {
-
-        if (!item) {
-            return;
-        }
-
-
-        // ====================================================
-        // WOOD NAME
-        // ====================================================
-
-        let woodName =
-            item.woodType ||
-            item.wood ||
-            item.woodName ||
-            "";
-
-        if (woodName === "Other") {
-
-            woodName =
-                item.otherWood ||
-                "Other";
-        }
-
-        if (!woodName) {
-
-            woodName = "-";
-        }
-
-
-        // ====================================================
-        // SIZE
-        // ====================================================
-
-        const breadth =
-            numberValue(
-                item.breadth
-            );
-
-        const thickness =
-            numberValue(
-                item.thickness
-            );
-
-        let size = "-";
-
-        if (
-            breadth > 0 &&
-            thickness > 0
-        ) {
-
-            size =
-                `${breadth} × ${thickness}`;
-
-        }
-        else if (
-            breadth > 0
-        ) {
-
-            size =
-                String(breadth);
-
-        }
-        else if (
-            thickness > 0
-        ) {
-
-            size =
-                String(thickness);
-        }
-
-
-        // ====================================================
-        // QUALITY
-        // ====================================================
-
-        const quality =
-            item.quality !== undefined &&
-            item.quality !== null &&
-            item.quality !== ""
-                ? item.quality
-                : "-";
-
-
-        // ====================================================
-        // PIECES
-        // ====================================================
-
-        const pieces =
-            Array.isArray(item.pieces)
-                ? item.pieces
-                : [];
-
-
-        // ====================================================
-        // LENGTH VALUES
-        // ====================================================
-
-        let lengthValues = [];
-
-        pieces.forEach(function(piece) {
-
-            if (!piece) {
-                return;
-            }
-
-            const length =
-                numberValue(
-                    piece.length
-                );
-
-            const extraLength =
-                numberValue(
-                    piece.extraLength
-                );
-
-            const finalLength =
-                length +
-                extraLength;
-
-            const qty =
-                numberValue(
-                    piece.qty
-                );
-
-
-            if (
-                finalLength > 0
-            ) {
-
-                lengthValues.push({
-
-                    length:
-                        finalLength,
-
-                    qty:
-                        qty
-
-                });
-            }
-
-        });
-
-
-        // ====================================================
-        // DIRECT LENGTH FALLBACK
-        // ====================================================
-
-        if (
-            lengthValues.length === 0 &&
-            item.length !== undefined
-        ) {
-
-            const directLength =
-                numberValue(
-                    item.length
-                );
-
-            const directQty =
-                numberValue(
-                    item.qty
-                );
-
-
-            if (
-                directLength > 0
-            ) {
-
-                lengthValues.push({
-
-                    length:
-                        directLength,
-
-                    qty:
-                        directQty
-
-                });
-            }
-        }
-
-
-        // ====================================================
-        // LENGTH DISPLAY
-        // ====================================================
-
-        let lengthText = "-";
-
-        if (
-            lengthValues.length > 0
-        ) {
-
-            lengthText =
-                lengthValues
-                    .map(function(value) {
-
-                        return `
-                            <div
-                                class="wood-length-item"
-                            >
-
-                                <span>
-                                    ${escapeHTML(
-                                        value.length
-                                    )}
-                                </span>
-
-                            </div>
-                        `;
-
-                    })
-                    .join("");
-        }
-
-
-        // ====================================================
-        // QTY DISPLAY
-        // ====================================================
-
-        let qtyText = "-";
-
-        if (
-            lengthValues.length > 0
-        ) {
-
-            qtyText =
-                lengthValues
-                    .map(function(value) {
-
-                        return `
-                            <div
-                                class="wood-qty-item"
-                            >
-
-                                <span>
-                                    ${escapeHTML(
-                                        value.qty
-                                    )}
-                                </span>
-
-                            </div>
-                        `;
-
-                    })
-                    .join("");
-        }
-
-
-        // ====================================================
-        // TOTAL QTY
-        // ====================================================
-
-        let totalQty = 0;
-
-        pieces.forEach(function(piece) {
-
-            if (!piece) {
-                return;
-            }
-
-            totalQty +=
-                numberValue(
-                    piece.qty
-                );
-
-        });
-
-
-        if (
-            totalQty === 0 &&
-            item.qty !== undefined
-        ) {
-
-            totalQty =
-                numberValue(
-                    item.qty
-                );
-        }
-
-
-        // ====================================================
-        // CFT
-        // ====================================================
-
-        const cubicFeet =
-            numberValue(
-                item.cubicFeet
-            );
-
-
-        // ====================================================
-        // RATE
-        // ====================================================
-
-        const rate =
-            numberValue(
-                item.rate
-            );
-
-
-        // ====================================================
-        // AMOUNT
-        // ====================================================
-
-        const amount =
-            numberValue(
-                item.amount
-            );
-
-
-        // ====================================================
-        // CREATE ROW
-        // ====================================================
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${sno}
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    woodName
-                )}
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    size
-                )}
-            </td>
-
-            <td
-                class="wood-length-cell"
-            >
-                ${lengthText}
-            </td>
-
-            <td
-                class="wood-qty-cell"
-            >
-                ${qtyText}
-            </td>
-
-            <td>
-                ${cubicFeet.toFixed(2)}
-            </td>
-
-            <td>
-                ${money(
-                    rate
-                )}
-            </td>
-
-            <td>
-                ${money(
-                    amount
-                )}
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    quality
-                )}
-            </td>
-
-        `;
-
-
-        woodTable.appendChild(
-            row
-        );
-
-
-        sno++;
-
-    });
-
-}
-
-            // =================================================
-            // DIRECT LENGTH FALLBACK
-            // =================================================
-
-            if (
-                lengthValues.length === 0 &&
-                item.length !==
-                    undefined
-            ) {
-
-                const directLength =
-                    numberValue(
-                        item.length
-                    );
-
-
-                const directQty =
-                    numberValue(
-                        item.qty
-                    );
-
-
-                if (
-                    directLength > 0
-                ) {
-
-                    lengthValues.push({
-
-                        length:
-                            directLength,
-
-                        qty:
-                            directQty
-
-                    });
-
-                }
-
-            }
-
-
-            // =================================================
-            // TOTAL QTY
-            // =================================================
-
-            let totalQty =
-                0;
-
-
-            pieces.forEach(
-                function (
-                    piece
-                ) {
-
-                    if (
-                        !piece
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    totalQty +=
-                        numberValue(
-                            piece.qty
-                        );
-
-                }
-            );
-
-
-            if (
-                totalQty === 0 &&
-                item.qty !==
-                    undefined
-            ) {
-
-                totalQty =
-                    numberValue(
-                        item.qty
-                    );
-
-            }
-
-
-            // =================================================
-            // CFT
-            // =================================================
-
-            const cubicFeet =
-                numberValue(
-                    item.cubicFeet
-                );
-
-
-            // =================================================
-            // RATE
-            // =================================================
-
-            const rate =
-                numberValue(
-                    item.rate
-                );
-
-
-            // =================================================
-            // AMOUNT
-            // =================================================
-
-            const amount =
-                numberValue(
-                    item.amount
-                );
-
-
-            // =================================================
-            // NO LENGTH
-            // =================================================
-
-            if (
-                lengthValues.length === 0
-            ) {
-
-                lengthValues.push({
-
-                    length:
-                        0,
-
-                    qty:
-                        totalQty
-
-                });
-
-            }
-
-
-            // =================================================
-            // LENGTH HTML
-            // =================================================
-
-            let lengthText =
-                "-";
-
-
-            if (
-                lengthValues.length > 0
-            ) {
-
-                lengthText =
-                    lengthValues
-                        .map(
-                            function (
-                                value
-                            ) {
-
-                                return `
-
-                                    <div
-                                        class="wood-length-item"
-                                    >
-
-                                        <span>
-                                            ${escapeHTML(
-                                                value.length
-                                            )}
-                                        </span>
-
-                                        <span>
-                                            →
-                                        </span>
-
-                                        <span>
-                                            ${escapeHTML(
-                                                value.qty
-                                            )}
-                                        </span>
-
-                                    </div>
-
-                                `;
-
-                            }
-                        )
-                        .join("");
-
-            }
-
-
-            // =================================================
-            // CREATE ROW
-            // =================================================
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${sno}
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        woodName
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        size
-                    )}
-                </td>
-
-
-                <td
-                    class="wood-length-cell"
-                >
-                    ${lengthText}
-                </td>
-
-
-                <td>
-                    ${totalQty}
-                </td>
-
-
-                <td>
-                    ${cubicFeet.toFixed(2)}
-                </td>
-
-
-                <td>
-                    ${money(
-                        rate
-                    )}
-                </td>
-
-
-                <td>
-                    ${money(
-                        amount
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        quality
-                    )}
-                </td>
-
-            `;
-
-
-            woodTable.appendChild(
-                row
-            );
-
-
-            console.log(
-                "WOOD ROW:",
-                {
-
-                    sno:
-                        sno,
-
-                    wood:
-                        woodName,
-
-                    size:
-                        size,
-
-                    lengths:
-                        lengthValues,
-
-                    qty:
-                        totalQty,
-
-                    cft:
-                        cubicFeet,
-
-                    rate:
-                        rate,
-
-                    amount:
-                        amount,
-
-                    quality:
-                        quality
-
-                }
-            );
-
-
-            sno++;
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// LOAD OTHER CHARGES
-// ============================================================
-//
-// Displays:
-//
-// 1. Labour Charge
-// 2. Other Charge
-// 3. Additional Charges
-//
-// ============================================================
-
-function loadOtherCharges(
-    bill,
-    additionalItems,
-    labourCharge,
-    otherCharge
-) {
-
-    if (
-        !chargeTable
-    ) {
-
-        console.error(
-            "chargeTable not found."
-        );
-
-        return;
-
-    }
-
-
-    chargeTable.innerHTML =
-        "";
-
-
-    let sno =
-        1;
-
-
-    let hasCharge =
-        false;
-
-
-    // ========================================================
-    // LABOUR CHARGE
-    // ========================================================
-
-    if (
-        labourCharge > 0
-    ) {
-
-        hasCharge =
-            true;
-
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${sno++}
-            </td>
-
-
-            <td>
-                Labour Charge
-            </td>
-
-
-            <td>
-                ${money(
-                    labourCharge
-                )}
-            </td>
-
-        `;
-
-
-        chargeTable.appendChild(
-            row
-        );
-
-    }
-
-
-    // ========================================================
-    // OTHER CHARGE
-    // ========================================================
-
-    if (
-        otherCharge > 0
-    ) {
-
-        hasCharge =
-            true;
-
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${sno++}
-            </td>
-
-
-            <td>
-                Other Charge
-            </td>
-
-
-            <td>
-                ${money(
-                    otherCharge
-                )}
-            </td>
-
-        `;
-
-
-        chargeTable.appendChild(
-            row
-        );
-
-    }
-
-
-    // ========================================================
-    // ADDITIONAL CHARGES
-    // ========================================================
-
-    if (
-        Array.isArray(
-            additionalItems
-        )
-    ) {
-
-        additionalItems.forEach(
-            function (
-                item
-            ) {
-
-                if (
-                    !item
-                ) {
-
-                    return;
-
-                }
-
-
-                const amount =
-                    numberValue(
-                        item.amount ||
-                        item.charge ||
-                        item.value
-                    );
-
-
-                if (
-                    amount <= 0
-                ) {
-
-                    return;
-
-                }
-
-
-                const name =
-                    item.name ||
-                    item.reason ||
-                    item.title ||
-                    item.description ||
-                    "Other Charge";
-
-
-                hasCharge =
-                    true;
-
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${sno++}
-                    </td>
-
-
-                    <td>
-                        ${escapeHTML(
-                            name
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${money(
-                            amount
-                        )}
-                    </td>
-
-                `;
-
-
-                chargeTable.appendChild(
-                    row
-                );
-
-            }
-        );
-
-    }
-
-
-    // ========================================================
-    // NO CHARGES
-    // ========================================================
-
-    if (
-        !hasCharge
-    ) {
-
-        chargeTable.innerHTML = `
-
-            <tr>
-
-                <td>
-                    -
-                </td>
-
-                <td>
-                    -
-                </td>
-
-                <td>
-                    -
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-
-    console.log(
-        "OTHER CHARGES DISPLAYED:",
-        hasCharge
-    );
-
-}
-
-
-// ============================================================
-// CFT SUMMARY
-// ============================================================
-//
-// Same Wood + Same Quality
-// ========================
-//
-// Teak (1) = 3.06 CFT
-// Teak (2) = 3.65 + 8.00
-//
-// Result:
-//
-// Teak (1) = 3.06 CFT
-// Teak (2) = 11.65 CFT
-//
-// ============================================================
-
-function loadCftSummary(
-    woodData
-) {
-
-    if (
-        !cftSummary
-    ) {
-
-        console.error(
-            "cftSummary not found."
-        );
-
-        return;
-
-    }
-
-
-    cftSummary.innerHTML =
-        "";
-
-
-    if (
-        !Array.isArray(
-            woodData
-        ) ||
-        woodData.length === 0
-    ) {
-
-        cftSummary.innerHTML =
-            `<p>-</p>`;
-
-        return;
-
-    }
-
-
-    const groups =
-        new Map();
-
-
-    woodData.forEach(
-        function (
-            item
-        ) {
-
-            if (
-                !item
-            ) {
-
-                return;
-
-            }
-
-
-            // ==================================================
-            // WOOD NAME
-            // ==================================================
-
-            let woodName =
-                item.woodType ||
-                item.wood ||
-                item.woodName ||
-                "-";
-
-
-            if (
-                woodName ===
-                "Other"
-            ) {
-
-                woodName =
-                    item.otherWood ||
-                    "Other";
-
-            }
-
-
-            // ==================================================
-            // QUALITY
-            // ==================================================
-
-            const quality =
-                item.quality !==
-                    undefined &&
-                item.quality !==
-                    null &&
-                item.quality !==
-                    ""
-                    ? String(
-                        item.quality
-                    )
-                    : "-";
-
-
-            // ==================================================
-            // CFT
-            // ==================================================
-
-            const cft =
-                numberValue(
-                    item.cubicFeet
-                );
-
-
-            // ==================================================
-            // GROUP KEY
-            // ==================================================
-
-            const key =
-                String(
-                    woodName
-                )
-                    .trim()
-                    .toLowerCase()
-                +
-                "|||"
-                +
-                String(
-                    quality
-                )
-                    .trim()
-                    .toLowerCase();
-
-
-            // ==================================================
-            // CREATE GROUP
-            // ==================================================
-
-            if (
-                !groups.has(
-                    key
-                )
-            ) {
-
-                groups.set(
-                    key,
-                    {
-
-                        wood:
-                            woodName,
-
-                        quality:
-                            quality,
-
-                        cft:
-                            0
-
-                    }
-                );
-
-            }
-
-
-            // ==================================================
-            // ADD CFT
-            // ==================================================
-
-            const group =
-                groups.get(
-                    key
-                );
-
-
-            group.cft +=
-                cft;
-
-        }
-    );
-
-
-    // ========================================================
-    // DISPLAY GROUPS
-    // ========================================================
-
-    let index =
-        1;
-
-
-    groups.forEach(
-        function (
-            group
-        ) {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "cft-summary-row";
-
-
-            row.innerHTML = `
-
-                <span
-                    class="cft-name"
-                >
-
-                    <b>
-
-                        ${index}.
-                        ${escapeHTML(
-                            group.wood
-                        )}
-
-                        (${escapeHTML(
-                            group.quality
-                        )})
-
-                    </b>
-
-                </span>
-
-
-                <span
-                    class="cft-value"
-                >
-
-                    ${group.cft.toFixed(2)}
-                    CFT
-
-                </span>
-
-            `;
-
-
-            cftSummary.appendChild(
-                row
-            );
-
-
-            index++;
-
-        }
-    );
-
-
-    console.log(
-        "GROUPED CFT:",
-        Array.from(
-            groups.values()
-        )
-    );
-
-}
-
-
-// ============================================================
-// PRINT
+// PRINT BILL
 // ============================================================
 
 if (
@@ -3306,8 +2851,10 @@ if (
 ) {
 
     printBtn.addEventListener(
+
         "click",
-        function () {
+
+        function() {
 
             console.log(
                 "PRINT BILL"
@@ -3317,13 +2864,13 @@ if (
             window.print();
 
         }
-    );
 
+    );
 }
 
 
 // ============================================================
-// HOME
+// HOME BUTTON
 // ============================================================
 
 if (
@@ -3331,18 +2878,18 @@ if (
 ) {
 
     homeBtn.addEventListener(
+
         "click",
-        function () {
+
+        function() {
 
             localStorage.removeItem(
                 "savedBillId"
             );
 
-
             localStorage.removeItem(
                 "savedBillNo"
             );
-
 
             localStorage.removeItem(
                 "savedCustomerId"
@@ -3353,13 +2900,13 @@ if (
                 "../html/index.html";
 
         }
-    );
 
+    );
 }
 
 
 // ============================================================
-// CLEAR
+// CLEAR BILL
 // ============================================================
 
 if (
@@ -3367,213 +2914,118 @@ if (
 ) {
 
     clearBtn.addEventListener(
+
         "click",
-        function () {
+
+        function() {
+
 
             const ok =
                 confirm(
+
                     "Are you sure you want to clear ALL bill data?"
+
                 );
 
 
-            if (
-                !ok
-            ) {
+            if (!ok) {
 
                 return;
-
             }
 
 
-            // ================================================
-            // CURRENT BILL
-            // ================================================
+            // --------------------------------------------
+            // ALL BILL RELATED LOCAL STORAGE
+            // --------------------------------------------
 
-            localStorage.removeItem(
-                "current_bill_data"
-            );
+            const keys = [
 
+                "current_bill_data",
 
-            // ================================================
-            // SAVED BILL
-            // ================================================
+                "savedBillId",
 
-            localStorage.removeItem(
-                "savedBillId"
-            );
+                "savedBillNo",
 
+                "savedCustomerId",
 
-            localStorage.removeItem(
-                "savedBillNo"
-            );
 
+                "woodData",
 
-            localStorage.removeItem(
-                "savedCustomerId"
-            );
+                "wood_page_data",
 
+                "wood",
 
-            // ================================================
-            // WOOD
-            // ================================================
+                "woodDataStorage",
 
-            localStorage.removeItem(
-                "woodData"
-            );
+                "woodTotal",
 
 
-            localStorage.removeItem(
-                "wood_page_data"
-            );
+                "customerName",
 
+                "customerMobile",
 
-            localStorage.removeItem(
-                "wood"
-            );
+                "customerPlace",
 
 
-            localStorage.removeItem(
-                "woodDataStorage"
-            );
+                "labour",
 
+                "labourData",
 
-            localStorage.removeItem(
-                "woodTotal"
-            );
+                "labourCharge",
 
+                "otherCharge",
 
-            // ================================================
-            // CUSTOMER
-            // ================================================
+                "othersData",
 
-            localStorage.removeItem(
-                "customerName"
-            );
+                "othersTotal",
 
 
-            localStorage.removeItem(
-                "customerMobile"
-            );
+                "discount",
 
+                "discountAmount",
 
-            localStorage.removeItem(
-                "customerPlace"
-            );
+                "discountApplied",
 
 
-            // ================================================
-            // LABOUR
-            // ================================================
+                "advance",
 
-            localStorage.removeItem(
-                "labour"
-            );
+                "advanceAmount",
 
+                "balanceAmount",
 
-            localStorage.removeItem(
-                "labourData"
-            );
 
+                "grandTotal",
 
-            localStorage.removeItem(
-                "labourCharge"
-            );
+                "finalTotal",
 
+                "subtotal",
 
-            localStorage.removeItem(
-                "otherCharge"
-            );
 
+                "billConfirmed",
 
-            localStorage.removeItem(
-                "othersData"
-            );
+                "billConfirmedAt",
 
-
-            localStorage.removeItem(
-                "othersTotal"
-            );
-
-
-            // ================================================
-            // DISCOUNT
-            // ================================================
-
-            localStorage.removeItem(
-                "discount"
-            );
-
-
-            localStorage.removeItem(
-                "discountAmount"
-            );
-
-
-            localStorage.removeItem(
-                "discountApplied"
-            );
-
-
-            // ================================================
-            // ADVANCE
-            // ================================================
-
-            localStorage.removeItem(
-                "advance"
-            );
-
-
-            localStorage.removeItem(
-                "advanceAmount"
-            );
-
-
-            localStorage.removeItem(
-                "balanceAmount"
-            );
-
-
-            // ================================================
-            // TOTALS
-            // ================================================
-
-            localStorage.removeItem(
-                "grandTotal"
-            );
-
-
-            localStorage.removeItem(
-                "finalTotal"
-            );
-
-
-            localStorage.removeItem(
-                "subtotal"
-            );
-
-
-            // ================================================
-            // BILL STATUS
-            // ================================================
-
-            localStorage.removeItem(
-                "billConfirmed"
-            );
-
-
-            localStorage.removeItem(
-                "billConfirmedAt"
-            );
-
-
-            localStorage.removeItem(
                 "editingBill"
+
+            ];
+
+
+            keys.forEach(
+
+                function(key) {
+
+                    localStorage.removeItem(
+                        key
+                    );
+
+                }
+
             );
 
 
-            // ================================================
-            // SESSION
-            // ================================================
+            // --------------------------------------------
+            // CLEAR SESSION STORAGE
+            // --------------------------------------------
 
             sessionStorage.clear();
 
@@ -3583,22 +3035,21 @@ if (
             );
 
 
+            // --------------------------------------------
+            // GO HOME
+            // --------------------------------------------
+
             window.location.href =
                 "../html/index.html";
 
         }
-    );
 
+    );
 }
 
 
 // ============================================================
-// START
+// START APPLICATION
 // ============================================================
-
-console.log(
-    "STARTING CBILL..."
-);
-
 
 loadFinalBill();

@@ -15,21 +15,29 @@
         content="Amman Saw Mill - Bill History"
     >
 
+    <meta
+        name="theme-color"
+        content="#111827"
+    >
+
     <title>Bill History | Amman Saw Mill</title>
 
 
     <!-- =====================================================
          HISTORY CSS
-         
-         history.html is inside /html/
-         history.css is in the ROOT folder
-         
-         Therefore: ../history.css
+
+         File structure:
+
+         /html/history.html
+         /css/history.css
+
+         Therefore:
+         ../css/history.css
          ===================================================== -->
 
     <link
         rel="stylesheet"
-        href="../history.css?v=4"
+        href="../css/history.css?v=5"
     >
 
 </head>
@@ -37,9 +45,8 @@
 
 <body>
 
-
     <!-- =====================================================
-         MAIN PAGE
+         PAGE WRAPPER
          ===================================================== -->
 
     <div class="page-shell">
@@ -57,7 +64,6 @@
                     ₹
                 </div>
 
-
                 <div class="brand-text">
 
                     <h1>
@@ -65,7 +71,7 @@
                     </h1>
 
                     <p>
-                        View and manage all customer bills
+                        Manage, search and view customer bills
                     </p>
 
                 </div>
@@ -92,7 +98,7 @@
         <section class="summary-grid">
 
 
-            <!-- TOTAL -->
+            <!-- TOTAL BILLS -->
 
             <div class="summary-card total-card">
 
@@ -116,7 +122,7 @@
 
 
 
-            <!-- PENDING -->
+            <!-- PENDING BILLS -->
 
             <div class="summary-card pending-card">
 
@@ -140,7 +146,7 @@
 
 
 
-            <!-- DELIVERED -->
+            <!-- DELIVERED BILLS -->
 
             <div class="summary-card delivered-card">
 
@@ -164,7 +170,7 @@
 
 
 
-            <!-- RETURN -->
+            <!-- RETURN BILLS -->
 
             <div class="summary-card return-card">
 
@@ -192,7 +198,7 @@
 
 
         <!-- =================================================
-             SEARCH AND FILTER
+             SEARCH + FILTER
              ================================================= -->
 
         <section class="control-panel">
@@ -201,7 +207,7 @@
             <div class="control-row">
 
 
-                <!-- SEARCH -->
+                <!-- SEARCH BOX -->
 
                 <div class="search-wrapper">
 
@@ -213,12 +219,12 @@
                         placeholder="Search Bill No / Customer ID / Name / Mobile / Place"
                     >
 
-
                     <button
                         id="clearSearchBtn"
                         class="clear-search"
                         type="button"
                         title="Clear Search"
+                        aria-label="Clear Search"
                     >
                         ×
                     </button>
@@ -227,7 +233,7 @@
 
 
 
-                <!-- SEARCH -->
+                <!-- SEARCH BUTTON -->
 
                 <button
                     id="searchBtn"
@@ -239,7 +245,7 @@
 
 
 
-                <!-- FILTER -->
+                <!-- STATUS FILTER -->
 
                 <select
                     id="statusFilter"
@@ -281,7 +287,7 @@
 
 
 
-            <!-- RESULT -->
+            <!-- SEARCH RESULT INFORMATION -->
 
             <div class="result-info">
 
@@ -290,11 +296,11 @@
                 </span>
 
                 <span class="separator">
-                    |
+                    •
                 </span>
 
                 <span>
-                    PDF opens directly as a bill document
+                    Payment Type and Payment Mode are shown separately
                 </span>
 
             </div>
@@ -305,18 +311,20 @@
 
 
         <!-- =================================================
-             BILL TABLE
+             BILL RECORDS
              ================================================= -->
 
         <section class="table-card">
 
+
+            <!-- TABLE HEADER -->
 
             <div class="table-header">
 
                 <div>
 
                     <h2>
-                        Bill Records
+                        All Bills
                     </h2>
 
                     <p>
@@ -330,7 +338,7 @@
 
 
             <!-- =================================================
-                 TABLE
+                 TABLE CONTAINER
                  ================================================= -->
 
             <div class="table-container">
@@ -338,6 +346,7 @@
 
                 <table
                     class="history-table"
+                    id="historyTable"
                 >
 
 
@@ -419,7 +428,7 @@
                                 colspan="15"
                                 class="loading-cell"
                             >
-                                Loading bill history...
+                                Loading bills...
                             </td>
 
                         </tr>
@@ -459,7 +468,9 @@
 
 
     <!-- =====================================================
-         HTML2PDF
+         HTML2PDF LIBRARY
+
+         PDF button should be handled by history.js.
          ===================================================== -->
 
     <script
@@ -473,14 +484,17 @@
     <!-- =====================================================
          HISTORY JS
 
-         history.html = /html/history.html
-         history.js  = /history.js
+         File structure:
 
-         Therefore: ../history.js
+         /html/history.html
+         /js/history.js
+
+         Therefore:
+         ../js/history.js
          ===================================================== -->
 
     <script
-        src="../history.js?v=4"
+        src="../js/history.js?v=5"
     ></script>
 
 

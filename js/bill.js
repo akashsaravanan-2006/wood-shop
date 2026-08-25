@@ -1,37 +1,37 @@
 // ============================================================
 // BILL.JS
-// WOOD BILL - FULL DEBUG VERSION
+// AMMAN SAW MILL - FINAL VERSION
 // ============================================================
 //
 // FEATURES
 // ------------------------------------------------------------
-// Customer details
-// Bill number
-// Date and time
-// Wood details
+// Customer Details
+// Bill Number
+// Date / Time
+// Wood Details
 // Length + Quantity separately
 // Total Length NOT displayed
 // CFT calculation
 // Same Wood + Same Quality CFT grouped
-// Other charges
-// Wood total
-// Others total
+// Other Charges
+// Wood Total
+// Others Total
 // Subtotal
 // Discount
-// Grand total
+// Grand Total
 // Advance
 // Balance
 // Print
 // Edit
 // Clear
 // Confirm
-// WhatsApp + PDF
+// Automatic WhatsApp PDF Sending
 // ============================================================
 
 console.clear();
 
 console.log("====================================");
-console.log("        BILL.JS LOADED");
+console.log("       AMMAN SAW MILL BILL.JS");
 console.log("====================================");
 
 
@@ -50,8 +50,7 @@ function toNumber(value) {
     }
 
     const number = parseFloat(
-        String(value)
-            .replace(/[₹,\s]/g, "")
+        String(value).replace(/[₹,\s]/g, "")
     );
 
     return Number.isFinite(number)
@@ -66,8 +65,7 @@ function toNumber(value) {
 
 function money(value) {
 
-    return "₹ " +
-        toNumber(value).toFixed(2);
+    return "₹ " + toNumber(value).toFixed(2);
 
 }
 
@@ -96,7 +94,7 @@ let billData = {};
 
 
 // ============================================================
-// GET DATA FROM STORE
+// GET FROM STORE DATA
 // ============================================================
 
 if (
@@ -112,7 +110,7 @@ if (
     catch (error) {
 
         console.error(
-            "ERROR IN getBillData():",
+            "getBillData ERROR:",
             error
         );
 
@@ -124,7 +122,7 @@ if (
 
 
 // ============================================================
-// FALLBACK LOCAL STORAGE
+// LOCAL STORAGE FALLBACK
 // ============================================================
 
 if (
@@ -145,7 +143,7 @@ if (
     catch (error) {
 
         console.error(
-            "ERROR READING current_bill_data:",
+            "LOCAL STORAGE BILL DATA ERROR:",
             error
         );
 
@@ -156,10 +154,10 @@ if (
 }
 
 
-console.log("====================================");
-console.log("COMPLETE BILL DATA:");
-console.log(billData);
-console.log("====================================");
+console.log(
+    "COMPLETE BILL DATA:",
+    billData
+);
 
 
 // ============================================================
@@ -263,7 +261,7 @@ if (customerPlaceElement) {
 
 
 // ============================================================
-// DATE
+// DATE AND TIME
 // ============================================================
 
 const billDateElement =
@@ -360,9 +358,12 @@ const billNoElement =
     );
 
 
+let currentBillNumber = "---";
+
+
 if (billNoElement) {
 
-    const billNumber =
+    currentBillNumber =
         billData.billNo ||
         billData.billNumber ||
         billData.savedBillNo ||
@@ -371,35 +372,22 @@ if (billNoElement) {
         ) ||
         localStorage.getItem(
             "savedBillNo"
-        );
+        ) ||
+        "---";
 
 
-    if (billNumber) {
-
-        billNoElement.textContent =
-            billNumber;
-
-    }
-    else {
-
-        billNoElement.textContent =
-            "---";
-
-    }
+    billNoElement.textContent =
+        currentBillNumber;
 
 }
 
 
 // ============================================================
-// WOOD DATA
+// WOOD CALCULATIONS
 // ============================================================
 
 let woodCalculations = [];
 
-
-// ============================================================
-// PRIMARY WOOD DATA
-// ============================================================
 
 if (
     Array.isArray(
@@ -414,7 +402,7 @@ if (
 
 
 // ============================================================
-// FALLBACK WOOD DATA
+// WOOD DATA FALLBACK
 // ============================================================
 
 if (
@@ -446,7 +434,7 @@ if (
     catch (error) {
 
         console.error(
-            "ERROR READING woodData:",
+            "WOOD DATA ERROR:",
             error
         );
 
@@ -456,17 +444,28 @@ if (
 
 
 console.log(
-    "WOOD CALCULATIONS COUNT:",
-    woodCalculations.length
-);
-
-console.table(
+    "WOOD CALCULATIONS:",
     woodCalculations
 );
 
 
 // ============================================================
 // WOOD TABLE
+// ============================================================
+//
+// Columns:
+//
+// S.No
+// Wood
+// Size
+// Length
+// Qty
+// CFT
+// Rate
+// Amount
+// Quality
+//
+// Total Length removed.
 // ============================================================
 
 const woodTable =
@@ -490,7 +489,10 @@ if (woodTable) {
 
                 <td
                     colspan="9"
-                    style="text-align:center;"
+                    style="
+                        text-align:center;
+                        padding:12px;
+                    "
                 >
                     No wood data
                 </td>
@@ -500,8 +502,6 @@ if (woodTable) {
         `;
 
     }
-
-
     else {
 
         woodCalculations.forEach(
@@ -541,7 +541,8 @@ if (woodTable) {
 
                 if (!woodName) {
 
-                    woodName = "-";
+                    woodName =
+                        "-";
 
                 }
 
@@ -570,7 +571,8 @@ if (woodTable) {
                 // SIZE
                 // ==================================================
 
-                let size = "-";
+                let size =
+                    "-";
 
 
                 if (
@@ -587,7 +589,9 @@ if (woodTable) {
                 ) {
 
                     size =
-                        `${breadth}`;
+                        String(
+                            breadth
+                        );
 
                 }
                 else if (
@@ -595,13 +599,28 @@ if (woodTable) {
                 ) {
 
                     size =
-                        `${thickness}`;
+                        String(
+                            thickness
+                        );
 
                 }
 
 
                 // ==================================================
                 // PIECES
+                //
+                // Example:
+                //
+                // 4 -> 3
+                // 5 -> 6
+                // 2 -> 10
+                //
+                // Display:
+                //
+                // Length | Qty
+                // 4      | 3
+                // 5      | 6
+                // 2      | 10
                 // ==================================================
 
                 const pieces =
@@ -714,7 +733,8 @@ if (woodTable) {
                 // TOTAL QUANTITY
                 // ==================================================
 
-                let totalQty = 0;
+                let totalQty =
+                    0;
 
 
                 pieces.forEach(
@@ -737,10 +757,6 @@ if (woodTable) {
                     }
                 );
 
-
-                // ==================================================
-                // FALLBACK TOTAL QUANTITY
-                // ==================================================
 
                 if (
                     totalQty === 0 &&
@@ -799,7 +815,7 @@ if (woodTable) {
 
 
                 // ==================================================
-                // NO LENGTH DATA
+                // NO LENGTH
                 // ==================================================
 
                 if (
@@ -808,9 +824,11 @@ if (woodTable) {
 
                     lengthValues.push({
 
-                        length: 0,
+                        length:
+                            0,
 
-                        qty: totalQty
+                        qty:
+                            totalQty
 
                     });
 
@@ -826,7 +844,7 @@ if (woodTable) {
 
 
                 // ==================================================
-                // CREATE EACH LENGTH + QTY ROW
+                // CREATE ROWS
                 // ==================================================
 
                 lengthValues.forEach(
@@ -899,14 +917,18 @@ if (woodTable) {
                                     rowspan="${rowCount}"
                                     class="rate-cell"
                                 >
-                                    ${money(rate)}
+                                    ${money(
+                                        rate
+                                    )}
                                 </td>
 
                                 <td
                                     rowspan="${rowCount}"
                                     class="amount-cell"
                                 >
-                                    ${money(amount)}
+                                    ${money(
+                                        amount
+                                    )}
                                 </td>
 
                                 <td
@@ -922,9 +944,8 @@ if (woodTable) {
 
                         }
 
-
                         // ==================================================
-                        // ADDITIONAL ROW
+                        // ADDITIONAL LENGTH/QUANTITY ROW
                         // ==================================================
 
                         else {
@@ -967,7 +988,8 @@ if (woodTable) {
 // WOOD TOTAL
 // ============================================================
 
-let woodTotal = 0;
+let woodTotal =
+    0;
 
 
 woodCalculations.forEach(
@@ -998,7 +1020,7 @@ console.log(
 
 
 // ============================================================
-// DISPLAY WOOD DETAILS TOTAL
+// WOOD DETAILS TOTAL
 // ============================================================
 
 const woodDetailsTotalElement =
@@ -1021,7 +1043,21 @@ if (
 
 // ============================================================
 // CFT SUMMARY
-// SAME WOOD + SAME QUALITY = COMBINE
+// ============================================================
+//
+// SAME WOOD + SAME QUALITY
+// = COMBINE CFT
+//
+// Example:
+//
+// Teak (1) = 3.06
+// Teak (2) = 3.65
+// Teak (2) = 8.00
+//
+// Result:
+//
+// Teak (1) = 3.06 CFT
+// Teak (2) = 11.65 CFT
 // ============================================================
 
 const cftSummary =
@@ -1032,7 +1068,8 @@ const cftSummary =
 
 if (cftSummary) {
 
-    cftSummary.innerHTML = "";
+    cftSummary.innerHTML =
+        "";
 
 
     if (
@@ -1088,7 +1125,8 @@ if (cftSummary) {
 
                 if (!woodName) {
 
-                    woodName = "-";
+                    woodName =
+                        "-";
 
                 }
 
@@ -1124,13 +1162,11 @@ if (cftSummary) {
                     )
                 ) {
 
-                    const existing =
-                        groupedCFT.get(
+                    groupedCFT
+                        .get(
                             groupKey
-                        );
-
-
-                    existing.cft +=
+                        )
+                        .cft +=
                         cubicFeet;
 
                 }
@@ -1158,7 +1194,8 @@ if (cftSummary) {
         );
 
 
-        let serialNumber = 1;
+        let serialNumber =
+            1;
 
 
         groupedCFT.forEach(
@@ -1184,7 +1221,6 @@ if (cftSummary) {
                         ${escapeHTML(
                             group.woodName
                         )}
-
                         (${escapeHTML(
                             group.quality
                         )})
@@ -1220,7 +1256,8 @@ if (cftSummary) {
 // LABOUR DATA
 // ============================================================
 
-let labourData = {};
+let labourData =
+    {};
 
 
 try {
@@ -1255,12 +1292,6 @@ if (
 }
 
 
-console.log(
-    "LABOUR DATA:",
-    labourData
-);
-
-
 // ============================================================
 // LABOUR CHARGE
 // ============================================================
@@ -1293,7 +1324,8 @@ const otherItems =
         : [];
 
 
-let additionalTotal = 0;
+let additionalTotal =
+    0;
 
 
 otherItems.forEach(
@@ -1351,14 +1383,14 @@ const chargeTable =
     );
 
 
-if (
-    chargeTable
-) {
+if (chargeTable) {
 
-    chargeTable.innerHTML = "";
+    chargeTable.innerHTML =
+        "";
 
 
-    let serialNumber = 1;
+    let serialNumber =
+        1;
 
 
     if (
@@ -1512,12 +1544,6 @@ const subtotal =
     othersTotal;
 
 
-console.log(
-    "SUBTOTAL:",
-    subtotal
-);
-
-
 // ============================================================
 // DISCOUNT
 // ============================================================
@@ -1554,12 +1580,6 @@ if (
 }
 
 
-console.log(
-    "DISCOUNT:",
-    discount
-);
-
-
 // ============================================================
 // GRAND TOTAL
 // ============================================================
@@ -1573,7 +1593,8 @@ if (
     grandTotal < 0
 ) {
 
-    grandTotal = 0;
+    grandTotal =
+        0;
 
 }
 
@@ -1582,12 +1603,6 @@ grandTotal =
     Math.round(
         grandTotal
     );
-
-
-console.log(
-    "GRAND TOTAL:",
-    grandTotal
-);
 
 
 // ============================================================
@@ -1669,7 +1684,9 @@ if (
     }
 
 
-    if (discountAmountElement) {
+    if (
+        discountAmountElement
+    ) {
 
         discountAmountElement.textContent =
             "- " +
@@ -1750,10 +1767,6 @@ if (
 }
 
 
-// ============================================================
-// ADVANCE CANNOT EXCEED GRAND TOTAL
-// ============================================================
-
 if (
     advanceAmount > grandTotal
 ) {
@@ -1762,12 +1775,6 @@ if (
         grandTotal;
 
 }
-
-
-console.log(
-    "ADVANCE:",
-    advanceAmount
-);
 
 
 // ============================================================
@@ -1782,14 +1789,8 @@ const balanceAmount =
     );
 
 
-console.log(
-    "BALANCE:",
-    balanceAmount
-);
-
-
 // ============================================================
-// DISPLAY ADVANCE
+// ADVANCE DISPLAY
 // ============================================================
 
 const advanceRow =
@@ -1840,7 +1841,7 @@ else {
 
 
 // ============================================================
-// DISPLAY BALANCE
+// BALANCE DISPLAY
 // ============================================================
 
 const balanceAmountElement =
@@ -1872,14 +1873,12 @@ localStorage.setItem(
     )
 );
 
-
 localStorage.setItem(
     "othersTotal",
     String(
         othersTotal
     )
 );
-
 
 localStorage.setItem(
     "subtotal",
@@ -1888,7 +1887,6 @@ localStorage.setItem(
     )
 );
 
-
 localStorage.setItem(
     "grandTotal",
     String(
@@ -1896,14 +1894,12 @@ localStorage.setItem(
     )
 );
 
-
 localStorage.setItem(
     "finalTotal",
     String(
         grandTotal
     )
 );
-
 
 localStorage.setItem(
     "balanceAmount",
@@ -1918,7 +1914,7 @@ localStorage.setItem(
 // ============================================================
 
 console.log("====================================");
-console.log("           FINAL BILL DEBUG");
+console.log("          FINAL BILL DEBUG");
 console.log("====================================");
 
 console.log(
@@ -1937,7 +1933,7 @@ console.log(
 );
 
 console.log(
-    "Wood Calculations:",
+    "Wood Count:",
     woodCalculations.length
 );
 
@@ -1980,7 +1976,7 @@ console.log("====================================");
 
 
 // ============================================================
-// PRINT BILL
+// PRINT
 // ============================================================
 
 const printBtn =
@@ -2008,7 +2004,7 @@ if (printBtn) {
 
 
 // ============================================================
-// EDIT BILL
+// EDIT
 // ============================================================
 
 const editBtn =
@@ -2022,11 +2018,6 @@ if (editBtn) {
     editBtn.addEventListener(
         "click",
         function () {
-
-            console.log(
-                "EDIT BUTTON CLICKED"
-            );
-
 
             localStorage.setItem(
                 "editingBill",
@@ -2044,7 +2035,7 @@ if (editBtn) {
 
 
 // ============================================================
-// CLEAR BILL
+// CLEAR
 // ============================================================
 
 const clearBtn =
@@ -2058,11 +2049,6 @@ if (clearBtn) {
     clearBtn.addEventListener(
         "click",
         function () {
-
-            console.log(
-                "CLEAR BUTTON CLICKED"
-            );
-
 
             const confirmClear =
                 confirm(
@@ -2094,11 +2080,6 @@ if (clearBtn) {
             }
 
 
-            console.log(
-                "ALL BILL DATA CLEARED"
-            );
-
-
             window.location.href =
                 "./index.html";
 
@@ -2124,15 +2105,6 @@ if (confirmBill) {
         "click",
         function () {
 
-            console.log(
-                "===================================="
-            );
-
-            console.log(
-                "CONFIRM BUTTON CLICKED"
-            );
-
-
             localStorage.setItem(
                 "billConfirmed",
                 "true"
@@ -2145,22 +2117,10 @@ if (confirmBill) {
             );
 
 
-            console.log(
-                "Bill confirmed successfully"
-            );
-
-
             window.location.href =
                 "./confirm.html";
 
         }
-    );
-
-}
-else {
-
-    console.warn(
-        "confirmBill button not found."
     );
 
 }
@@ -2172,17 +2132,25 @@ else {
 //
 // IMPORTANT
 // ------------------------------------------------------------
-// This creates the PDF correctly first.
-// Then sends the PDF to the backend.
+// This version does NOT:
+// - open wa.me
+// - download the PDF manually
+// - ask the user to attach the PDF
+// - check whether WhatsApp exists
 //
-// The backend endpoint must be:
+// It does:
 //
+// Personal Details
+//       ↓
+// Customer Name + Mobile
+//       ↓
+// Generate PDF
+//       ↓
+// Convert PDF to Base64
+//       ↓
 // POST /api/whatsapp/send-bill
-//
-// FormData:
-//   bill
-//   customerName
-//   mobile
+//       ↓
+// Backend sends through WhatsApp Cloud API
 //
 // ============================================================
 
@@ -2244,7 +2212,7 @@ if (whatsappBtn) {
 
 
             // ==================================================
-            // INDIA PREFIX
+            // REMOVE +91
             // ==================================================
 
             if (
@@ -2272,7 +2240,7 @@ if (whatsappBtn) {
 
 
             // ==================================================
-            // VALIDATE NAME
+            // VALIDATE CUSTOMER
             // ==================================================
 
             if (
@@ -2289,10 +2257,6 @@ if (whatsappBtn) {
             }
 
 
-            // ==================================================
-            // VALIDATE MOBILE
-            // ==================================================
-
             if (
                 customerMobileForWhatsApp.length !== 10
             ) {
@@ -2308,7 +2272,7 @@ if (whatsappBtn) {
 
 
             // ==================================================
-            // CHECK PDF LIBRARY
+            // CHECK HTML2PDF
             // ==================================================
 
             if (
@@ -2318,11 +2282,11 @@ if (whatsappBtn) {
 
                 alert(
                     "PDF generator is not loaded.\n\n" +
-                    "Please add html2pdf.js to bill.html."
+                    "Please check html2pdf.js in bill.html."
                 );
 
                 console.error(
-                    "ERROR: html2pdf.js NOT FOUND"
+                    "html2pdf.js NOT FOUND"
                 );
 
                 return;
@@ -2346,13 +2310,14 @@ if (whatsappBtn) {
                 "Creating PDF...";
 
 
-            let pdfWrapper = null;
+            let pdfWrapper =
+                null;
 
 
             try {
 
                 // ==================================================
-                // GET ORIGINAL BILL
+                // BILL CONTAINER
                 // ==================================================
 
                 const billElement =
@@ -2418,56 +2383,10 @@ if (whatsappBtn) {
                     `${safeCustomerName}_${safeBillNumber}.pdf`;
 
 
-                // ==================================================
-                // CREATE PDF WRAPPER
-                //
-                // IMPORTANT:
-                // Do NOT use left:-100000px.
-                // It can cause html2canvas to render blank.
-                // ==================================================
-
-                pdfWrapper =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                pdfWrapper.id =
-                    "temporaryBillPdf";
-
-
-                pdfWrapper.style.position =
-                    "fixed";
-
-                pdfWrapper.style.left =
-                    "0";
-
-                pdfWrapper.style.top =
-                    "0";
-
-                pdfWrapper.style.width =
-                    "794px";
-
-                pdfWrapper.style.minHeight =
-                    "1123px";
-
-                pdfWrapper.style.background =
-                    "#ffffff";
-
-                pdfWrapper.style.zIndex =
-                    "-9999";
-
-                pdfWrapper.style.opacity =
-                    "0.01";
-
-                pdfWrapper.style.pointerEvents =
-                    "none";
-
-                pdfWrapper.style.overflow =
-                    "visible";
-
-                pdfWrapper.style.boxSizing =
-                    "border-box";
+                console.log(
+                    "PDF FILE:",
+                    pdfFileName
+                );
 
 
                 // ==================================================
@@ -2478,19 +2397,6 @@ if (whatsappBtn) {
                     billElement.cloneNode(
                         true
                     );
-
-
-                billClone.style.width =
-                    "100%";
-
-                billClone.style.maxWidth =
-                    "none";
-
-                billClone.style.margin =
-                    "0 auto";
-
-                billClone.style.background =
-                    "#ffffff";
 
 
                 // ==================================================
@@ -2526,36 +2432,64 @@ if (whatsappBtn) {
 
 
                 // ==================================================
-                // REMOVE UNNECESSARY BREAK
+                // CREATE PDF WRAPPER
+                //
+                // DO NOT PUT IT AT -100000px.
                 // ==================================================
 
-                billClone
-                    .querySelectorAll(
-                        "br"
-                    )
-                    .forEach(
-                        function (
-                            br
-                        ) {
-
-                            if (
-                                br.parentElement &&
-                                br.parentElement.classList.contains(
-                                    "bill-container"
-                                )
-                            ) {
-
-                                br.remove();
-
-                            }
-
-                        }
+                pdfWrapper =
+                    document.createElement(
+                        "div"
                     );
 
 
+                pdfWrapper.style.position =
+                    "fixed";
+
+                pdfWrapper.style.left =
+                    "0";
+
+                pdfWrapper.style.top =
+                    "0";
+
+                pdfWrapper.style.width =
+                    "794px";
+
+                pdfWrapper.style.minHeight =
+                    "1123px";
+
+                pdfWrapper.style.background =
+                    "#ffffff";
+
+                pdfWrapper.style.zIndex =
+                    "-9999";
+
+                pdfWrapper.style.opacity =
+                    "0.01";
+
+                pdfWrapper.style.pointerEvents =
+                    "none";
+
+                pdfWrapper.style.boxSizing =
+                    "border-box";
+
+
                 // ==================================================
-                // APPEND CLONE
+                // CLONE WIDTH
                 // ==================================================
+
+                billClone.style.width =
+                    "100%";
+
+                billClone.style.maxWidth =
+                    "none";
+
+                billClone.style.margin =
+                    "0";
+
+                billClone.style.background =
+                    "#ffffff";
+
 
                 pdfWrapper.appendChild(
                     billClone
@@ -2568,32 +2502,30 @@ if (whatsappBtn) {
 
 
                 // ==================================================
-                // COPY IMPORTANT TABLE STYLES
+                // TABLE FIX
                 // ==================================================
 
-                const clonedTables =
-                    pdfWrapper.querySelectorAll(
+                pdfWrapper
+                    .querySelectorAll(
                         "table"
+                    )
+                    .forEach(
+                        function (
+                            table
+                        ) {
+
+                            table.style.width =
+                                "100%";
+
+                            table.style.borderCollapse =
+                                "collapse";
+
+                        }
                     );
 
 
-                clonedTables.forEach(
-                    function (
-                        table
-                    ) {
-
-                        table.style.width =
-                            "100%";
-
-                        table.style.borderCollapse =
-                            "collapse";
-
-                    }
-                );
-
-
                 // ==================================================
-                // WAIT FOR DOM
+                // WAIT FOR BROWSER RENDER
                 // ==================================================
 
                 await new Promise(
@@ -2626,6 +2558,7 @@ if (whatsappBtn) {
 
 
                 await Promise.all(
+
                     Array.from(
                         images
                     ).map(
@@ -2658,11 +2591,12 @@ if (whatsappBtn) {
 
                         }
                     )
+
                 );
 
 
                 // ==================================================
-                // SMALL RENDER DELAY
+                // WAIT 500ms
                 // ==================================================
 
                 await new Promise(
@@ -2690,25 +2624,9 @@ if (whatsappBtn) {
                 );
 
 
-                if (
-                    pdfWrapper.offsetWidth === 0 ||
-                    pdfWrapper.offsetHeight === 0
-                ) {
-
-                    throw new Error(
-                        "PDF source has zero width or height."
-                    );
-
-                }
-
-
                 // ==================================================
-                // GENERATE PDF
+                // PDF OPTIONS
                 // ==================================================
-
-                whatsappBtn.textContent =
-                    "Generating PDF...";
-
 
                 const pdfOptions = {
 
@@ -2757,8 +2675,7 @@ if (whatsappBtn) {
                         windowHeight:
                             Math.max(
                                 1123,
-                                pdfWrapper
-                                    .scrollHeight
+                                pdfWrapper.scrollHeight
                             )
 
                     },
@@ -2791,6 +2708,14 @@ if (whatsappBtn) {
                 };
 
 
+                // ==================================================
+                // GENERATE PDF
+                // ==================================================
+
+                whatsappBtn.textContent =
+                    "Generating PDF...";
+
+
                 const pdfBlob =
                     await html2pdf()
                         .set(
@@ -2815,6 +2740,20 @@ if (whatsappBtn) {
 
 
                 // ==================================================
+                // REMOVE PDF WRAPPER
+                // ==================================================
+
+                if (pdfWrapper) {
+
+                    pdfWrapper.remove();
+
+                    pdfWrapper =
+                        null;
+
+                }
+
+
+                // ==================================================
                 // VALIDATE PDF
                 // ==================================================
 
@@ -2824,22 +2763,8 @@ if (whatsappBtn) {
                 ) {
 
                     throw new Error(
-                        "Generated PDF is empty or invalid."
+                        "Generated PDF is empty."
                     );
-
-                }
-
-
-                // ==================================================
-                // REMOVE TEMPORARY ELEMENT
-                // ==================================================
-
-                if (pdfWrapper) {
-
-                    pdfWrapper.remove();
-
-                    pdfWrapper =
-                        null;
 
                 }
 
@@ -2873,33 +2798,65 @@ if (whatsappBtn) {
 
 
                 // ==================================================
-                // SEND TO BACKEND
+                // CONVERT PDF TO BASE64
+                // ==================================================
+
+                whatsappBtn.textContent =
+                    "Preparing WhatsApp...";
+
+
+                const pdfBase64 =
+                    await new Promise(
+                        function (
+                            resolve,
+                            reject
+                        ) {
+
+                            const reader =
+                                new FileReader();
+
+
+                            reader.onload =
+                                function () {
+
+                                    resolve(
+                                        reader.result
+                                    );
+
+                                };
+
+
+                            reader.onerror =
+                                function (
+                                    error
+                                ) {
+
+                                    reject(
+                                        error
+                                    );
+
+                                };
+
+
+                            reader.readAsDataURL(
+                                pdfFile
+                            );
+
+                        }
+                    );
+
+
+                console.log(
+                    "PDF BASE64 READY"
+                );
+
+
+                // ==================================================
+                // SEND TO VERCEL API
                 // ==================================================
 
                 whatsappBtn.textContent =
                     "Sending WhatsApp...";
-
-
-                const formData =
-                    new FormData();
-
-
-                formData.append(
-                    "bill",
-                    pdfFile
-                );
-
-
-                formData.append(
-                    "customerName",
-                    customerNameForWhatsApp
-                );
-
-
-                formData.append(
-                    "mobile",
-                    customerMobileForWhatsApp
-                );
 
 
                 console.log(
@@ -2915,8 +2872,29 @@ if (whatsappBtn) {
                             method:
                                 "POST",
 
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
                             body:
-                                formData
+                                JSON.stringify({
+
+                                    pdfBase64:
+                                        pdfBase64,
+
+                                    fileName:
+                                        pdfFileName,
+
+                                    customerName:
+                                        customerNameForWhatsApp,
+
+                                    mobile:
+                                        customerMobileForWhatsApp
+
+                                })
 
                         }
                     );
@@ -2928,6 +2906,10 @@ if (whatsappBtn) {
                 );
 
 
+                // ==================================================
+                // READ RESPONSE
+                // ==================================================
+
                 let result;
 
 
@@ -2938,7 +2920,7 @@ if (whatsappBtn) {
 
                 }
                 catch (
-                    jsonError
+                    responseError
                 ) {
 
                     throw new Error(
@@ -2971,8 +2953,8 @@ if (whatsappBtn) {
 
 
                     console.log(
-                        "WHATSAPP MESSAGE SENT:",
-                        result.messageId || ""
+                        "MESSAGE ID:",
+                        result.messageId
                     );
 
 
@@ -2982,7 +2964,24 @@ if (whatsappBtn) {
 
 
                 // ==================================================
-                // ERROR
+                // API ROUTE NOT FOUND
+                // ==================================================
+
+                if (
+                    response.status === 404
+                ) {
+
+                    throw new Error(
+                        "API route not found.\n\n" +
+                        "Make sure api/whatsapp/send-bill.js " +
+                        "exists in the project root and Vercel has redeployed."
+                    );
+
+                }
+
+
+                // ==================================================
+                // API ERROR
                 // ==================================================
 
                 throw new Error(
@@ -2991,9 +2990,7 @@ if (whatsappBtn) {
                 );
 
             }
-            catch (
-                error
-            ) {
+            catch (error) {
 
                 console.error(
                     "===================================="
@@ -3013,7 +3010,7 @@ if (whatsappBtn) {
 
 
                 // ==================================================
-                // REMOVE TEMP ELEMENT
+                // REMOVE TEMPORARY WRAPPER
                 // ==================================================
 
                 if (pdfWrapper) {
@@ -3065,6 +3062,14 @@ else {
 // FINAL READY
 // ============================================================
 
-console.log("====================================");
-console.log("          BILL.JS READY");
-console.log("====================================");
+console.log(
+    "===================================="
+);
+
+console.log(
+    "          BILL.JS READY"
+);
+
+console.log(
+    "===================================="
+);

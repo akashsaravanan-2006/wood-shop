@@ -1,18 +1,18 @@
-// =======================================
+// ======================================================
 // HISTORY.JS
-// =======================================
+// ======================================================
 
-// =======================================
+// ======================================================
 // BACKEND API
-// =======================================
+// ======================================================
 
 const API_URL =
     "https://wood-shop-backend.vercel.app/api";
 
 
-// =======================================
+// ======================================================
 // ELEMENTS
-// =======================================
+// ======================================================
 
 const historyBody =
     document.getElementById("historyBody");
@@ -39,85 +39,363 @@ const paidBills =
     document.getElementById("paidBills");
 
 
+// ======================================================
+// GLOBAL DATA
+// ======================================================
+
 let allBills = [];
 
 
-// =======================================
+// ======================================================
 // LOAD HTML2PDF
-// =======================================
+// ======================================================
 
 function loadHtml2Pdf() {
 
-    return new Promise(
-        function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-            if (
-                typeof html2pdf !==
-                "undefined"
-            ) {
+        if (
+            typeof html2pdf !== "undefined"
+        ) {
+
+            resolve();
+
+            return;
+        }
+
+
+        const script =
+            document.createElement("script");
+
+        script.src =
+            "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+
+
+        script.onload =
+            function () {
 
                 resolve();
 
-                return;
-
-            }
+            };
 
 
-            const script =
-                document.createElement(
-                    "script"
+        script.onerror =
+            function () {
+
+                reject(
+                    new Error(
+                        "Unable to load PDF library"
+                    )
                 );
 
-            script.src =
-                "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+            };
 
-            script.onload =
-                function () {
 
-                    resolve();
+        document.head.appendChild(script);
 
-                };
+    });
 
-            script.onerror =
-                function () {
+}
 
-                    reject(
-                        new Error(
-                            "Unable to load PDF library"
-                        )
-                    );
 
-                };
+// ======================================================
+// NUMBER
+// ======================================================
 
-            document.head.appendChild(
-                script
-            );
+function numberValue(value) {
 
-        }
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    const number =
+        parseFloat(
+            String(value)
+                .replace(/[₹,\s]/g, "")
+        );
+
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+
+}
+
+
+// ======================================================
+// MONEY
+// ======================================================
+
+function money(value) {
+
+    return (
+        "₹ " +
+        numberValue(value).toFixed(2)
     );
 
 }
 
 
-// =======================================
+// ======================================================
+// ESCAPE HTML
+// ======================================================
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ======================================================
+// PARSE JSON
+// ======================================================
+
+function parseJSON(
+    value,
+    fallback = []
+) {
+
+    if (
+        Array.isArray(value)
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value !== "string"
+    ) {
+
+        return fallback;
+
+    }
+
+
+    try {
+
+        const parsed =
+            JSON.parse(value);
+
+        return parsed;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "JSON PARSE ERROR:",
+            error
+        );
+
+        return fallback;
+
+    }
+
+}
+
+
+// ======================================================
+// GET BILL ID
+// ======================================================
+
+function getBillId(bill) {
+
+    return (
+        bill.id ||
+        bill.bill_id ||
+        bill.billId ||
+        null
+    );
+
+}
+
+
+// ======================================================
+// GET PAYMENT MODE
+// ======================================================
+
+function getPaymentMode(bill) {
+
+    let mode =
+        bill.payment_mode ||
+        bill.paymentMode ||
+        bill.mode ||
+        "CASH";
+
+
+    mode =
+        String(mode)
+            .trim()
+            .toUpperCase();
+
+
+    if (
+        mode === "UPI"
+    ) {
+
+        return "UPI";
+
+    }
+
+
+    return "CASH";
+
+}
+
+
+// ======================================================
+// GET STATUS
+//
+// STATUS FLOW:
+//
+// BALANCE > 0      = PENDING
+// BALANCE = 0      = DELIVERED
+// RETURN > 0       = RETURN
+// ======================================================
+
+function getBillStatus(bill) {
+
+    const returnAmount =
+        numberValue(
+            bill.return_amount
+        );
+
+
+    const explicitStatus =
+        String(
+            bill.status ||
+            bill.bill_status ||
+            bill.delivery_status ||
+            ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    // RETURN HAS HIGHEST PRIORITY
+
+    if (
+        returnAmount > 0 ||
+        explicitStatus === "RETURN" ||
+        explicitStatus === "RETURNED"
+    ) {
+
+        return "RETURN";
+
+    }
+
+
+    const balance =
+        numberValue(
+            bill.balance_amount
+        );
+
+
+    if (
+        balance > 0
+    ) {
+
+        return "PENDING";
+
+    }
+
+
+    return "DELIVERED";
+
+}
+
+
+// ======================================================
+// STATUS CLASS
+// ======================================================
+
+function getStatusClass(status) {
+
+    if (
+        status === "RETURN"
+    ) {
+
+        return "returned";
+
+    }
+
+
+    if (
+        status === "PENDING"
+    ) {
+
+        return "pending";
+
+    }
+
+
+    return "delivered";
+
+}
+
+
+// ======================================================
 // LOAD ALL BILLS
-// =======================================
+// ======================================================
 
 async function loadBills() {
 
     try {
 
-        historyBody.innerHTML = `
-            <tr>
-                <td colspan="15">
-                    Loading...
-                </td>
-            </tr>
-        `;
+        if (historyBody) {
+
+            historyBody.innerHTML = `
+                <tr>
+                    <td colspan="15">
+                        Loading...
+                    </td>
+                </tr>
+            `;
+
+        }
 
 
         console.log(
-            "Loading history..."
+            "================================="
+        );
+
+        console.log(
+            "LOADING BILL HISTORY"
         );
 
         console.log(
@@ -141,20 +419,23 @@ async function loadBills() {
 
 
         console.log(
-            "History response status:",
+            "History response:",
             response.status
         );
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
             const errorText =
                 await response.text();
 
             console.error(
-                "Server response:",
+                "SERVER ERROR:",
                 errorText
             );
+
 
             throw new Error(
                 `Server returned HTTP ${response.status}`
@@ -168,14 +449,14 @@ async function loadBills() {
 
 
         console.log(
-            "History API response:",
+            "HISTORY DATA:",
             data
         );
 
 
-        // ===================================
-        // SUPPORT ALL RESPONSE FORMATS
-        // ===================================
+        // --------------------------------------
+        // RESPONSE FORMAT 1
+        // --------------------------------------
 
         if (
             Array.isArray(data)
@@ -185,12 +466,14 @@ async function loadBills() {
 
         }
 
+
+        // --------------------------------------
+        // RESPONSE FORMAT 2
+        // --------------------------------------
+
         else if (
             data &&
-            data.success &&
-            Array.isArray(
-                data.bills
-            )
+            Array.isArray(data.bills)
         ) {
 
             allBills =
@@ -198,17 +481,21 @@ async function loadBills() {
 
         }
 
+
+        // --------------------------------------
+        // RESPONSE FORMAT 3
+        // --------------------------------------
+
         else if (
             data &&
-            Array.isArray(
-                data.result
-            )
+            Array.isArray(data.result)
         ) {
 
             allBills =
                 data.result;
 
         }
+
 
         else {
 
@@ -220,11 +507,18 @@ async function loadBills() {
         }
 
 
+        console.log(
+            "TOTAL BILLS:",
+            allBills.length
+        );
+
+
         displayBills(
             allBills
         );
 
     }
+
 
     catch (error) {
 
@@ -234,13 +528,17 @@ async function loadBills() {
         );
 
 
-        historyBody.innerHTML = `
-            <tr>
-                <td colspan="15">
-                    ❌ Unable to load bill history
-                </td>
-            </tr>
-        `;
+        if (historyBody) {
+
+            historyBody.innerHTML = `
+                <tr>
+                    <td colspan="15">
+                        ❌ Unable to load bill history
+                    </td>
+                </tr>
+            `;
+
+        }
 
 
         updateSummary(
@@ -254,21 +552,29 @@ async function loadBills() {
 }
 
 
-// =======================================
+// ======================================================
 // DISPLAY BILLS
-// =======================================
+// ======================================================
 
 function displayBills(
     bills
 ) {
 
-    historyBody.innerHTML =
-        "";
+    if (!historyBody) {
+
+        return;
+
+    }
+
+
+    historyBody.innerHTML = "";
 
 
     let pendingCount = 0;
 
-    let paidCount = 0;
+    let deliveredCount = 0;
+
+    let returnCount = 0;
 
 
     if (
@@ -280,9 +586,9 @@ function displayBills(
     }
 
 
-    // ===================================
+    // ==================================================
     // NO BILLS
-    // ===================================
+    // ==================================================
 
     if (
         bills.length === 0
@@ -309,9 +615,9 @@ function displayBills(
     }
 
 
-    // ===================================
-    // DISPLAY EACH BILL
-    // ===================================
+    // ==================================================
+    // EACH BILL
+    // ==================================================
 
     bills.forEach(
         function (
@@ -319,61 +625,92 @@ function displayBills(
             index
         ) {
 
+            // ------------------------------------------
+            // BASIC VALUES
+            // ------------------------------------------
+
+            const billId =
+                getBillId(bill);
+
+
             const balance =
-                Number(
+                numberValue(
                     bill.balance_amount
-                ) || 0;
+                );
 
 
             const grandTotal =
-                Number(
+                numberValue(
                     bill.grand_total
-                ) || 0;
+                );
 
 
             const advance =
-                Number(
+                numberValue(
                     bill.advance_amount
-                ) || 0;
+                );
 
 
             const returnAmount =
-                Number(
+                numberValue(
                     bill.return_amount
-                ) || 0;
+                );
 
 
-            const isPending =
-                balance > 0;
+            const paymentType =
+                bill.payment_type ||
+                bill.paymentType ||
+                "-";
 
 
-            let statusText;
+            const paymentMode =
+                getPaymentMode(
+                    bill
+                );
 
+
+            const status =
+                getBillStatus(
+                    bill
+                );
+
+
+            const statusClass =
+                getStatusClass(
+                    status
+                );
+
+
+            // ------------------------------------------
+            // SUMMARY
+            // ------------------------------------------
 
             if (
-                isPending
+                status === "PENDING"
             ) {
-
-                statusText =
-                    "PENDING";
 
                 pendingCount++;
 
             }
 
+            else if (
+                status === "RETURN"
+            ) {
+
+                returnCount++;
+
+            }
+
             else {
 
-                statusText =
-                    "PAID";
-
-                paidCount++;
+                deliveredCount++;
 
             }
 
 
-            // ===================================
+            // ------------------------------------------
             // DATE
-            // ===================================
+            // ------------------------------------------
 
             let date = "-";
 
@@ -411,59 +748,9 @@ function displayBills(
             }
 
 
-            // ===================================
-            // PAYMENT TYPE
-            // ===================================
-
-            const paymentType =
-                bill.payment_type ||
-                bill.paymentType ||
-                "-";
-
-
-            // ===================================
-            // PAYMENT MODE
-            //
-            // CASH / UPI
-            // ===================================
-
-            let paymentMode =
-                bill.payment_mode ||
-                bill.paymentMode ||
-                "";
-
-
-            paymentMode =
-                String(
-                    paymentMode
-                )
-                .trim()
-                .toUpperCase();
-
-
-            if (
-                paymentMode !== "UPI"
-            ) {
-
-                paymentMode =
-                    "CASH";
-
-            }
-
-
-            // ===================================
-            // DATABASE BILL ID
-            // ===================================
-
-            const billId =
-                bill.id ||
-                bill.bill_id ||
-                bill.billId;
-
-
-            // ===================================
+            // ------------------------------------------
             // CREATE ROW
-            // ===================================
+            // ------------------------------------------
 
             const row =
                 document.createElement(
@@ -472,7 +759,7 @@ function displayBills(
 
 
             if (
-                isPending
+                status === "PENDING"
             ) {
 
                 row.classList.add(
@@ -481,6 +768,21 @@ function displayBills(
 
             }
 
+
+            if (
+                status === "RETURN"
+            ) {
+
+                row.classList.add(
+                    "returnRow"
+                );
+
+            }
+
+
+            // ==================================================
+            // ROW HTML
+            // ==================================================
 
             row.innerHTML = `
 
@@ -555,7 +857,9 @@ function displayBills(
 
                 <td>
 
-                    ${date}
+                    ${escapeHtml(
+                        date
+                    )}
 
                 </td>
 
@@ -603,7 +907,9 @@ function displayBills(
 
                 <td>
 
-                    ₹ ${grandTotal.toFixed(2)}
+                    ${money(
+                        grandTotal
+                    )}
 
                 </td>
 
@@ -612,7 +918,9 @@ function displayBills(
 
                 <td>
 
-                    ₹ ${advance.toFixed(2)}
+                    ${money(
+                        advance
+                    )}
 
                 </td>
 
@@ -621,80 +929,133 @@ function displayBills(
 
                 <td>
 
-                    ₹ ${balance.toFixed(2)}
+                    ${money(
+                        balance
+                    )}
 
                 </td>
 
 
-                <!-- RETURN -->
+                <!-- RETURN AMOUNT -->
 
                 <td>
 
-                    ₹ ${returnAmount.toFixed(2)}
+                    ${
+                        returnAmount > 0
+                            ? `
+                                <span
+                                    class="return-amount"
+                                >
+                                    ${money(
+                                        returnAmount
+                                    )}
+                                </span>
+                            `
+                            : `
+                                ${money(0)}
+                            `
+                    }
 
                 </td>
 
 
                 <!-- STATUS -->
 
-                <td
-                    class="
-                        status
-                        ${
-                            isPending
-                                ? "pending"
-                                : "paid"
-                        }
-                    "
-                >
+                <td>
 
-                    ${statusText}
+                    <span
+                        class="
+                            status
+                            ${statusClass}
+                        "
+                    >
+
+                        ${status}
+
+                    </span>
 
                 </td>
 
 
-                <!-- ACTION -->
+                <!-- ACTIONS -->
 
                 <td>
 
-                    <div
-                        class="history-actions"
-                    >
-
-                        ${
-                            billId
-                                ? `
-                                    <button
-                                        type="button"
-                                        class="return-btn"
-                                        onclick="openReturnPage(${Number(
-                                            billId
-                                        )})"
-                                    >
-                                        Return
-                                    </button>
-                                `
-                                : ""
-                        }
+                    <div class="history-action-column">
 
 
-                        ${
-                            billId
-                                ? `
-                                    <button
-                                        type="button"
-                                        class="pdf-btn"
-                                        onclick="downloadBillPDF(
-                                            ${Number(
-                                                billId
-                                            )}
-                                        )"
-                                    >
-                                        PDF
-                                    </button>
-                                `
-                                : ""
-                        }
+                        <!-- RETURN BLOCK -->
+
+                        <div
+                            class="
+                                action-block
+                                return-action-block
+                            "
+                        >
+
+                            ${
+                                billId &&
+                                status !== "RETURN"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="return-btn"
+                                            onclick="openReturnPage(
+                                                '${String(
+                                                    billId
+                                                ).replace(
+                                                    /'/g,
+                                                    "\\'"
+                                                )}'
+                                            "
+                                        >
+                                            Return
+                                        </button>
+                                    `
+                                    : `
+                                        <span
+                                            class="returned-label"
+                                        >
+                                            Returned
+                                        </span>
+                                    `
+                            }
+
+                        </div>
+
+
+                        <!-- PDF BLOCK -->
+
+                        <div
+                            class="
+                                action-block
+                                pdf-action-block
+                            "
+                        >
+
+                            ${
+                                billId
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="pdf-btn"
+                                            onclick="downloadBillPDF(
+                                                '${String(
+                                                    billId
+                                                ).replace(
+                                                    /'/g,
+                                                    "\\'"
+                                                )}'
+                                            "
+                                        >
+                                            PDF
+                                        </button>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
 
                     </div>
 
@@ -711,63 +1072,43 @@ function displayBills(
     );
 
 
+    // ==================================================
+    // SUMMARY
+    // ==================================================
+
     updateSummary(
         bills.length,
         pendingCount,
-        paidCount
+        deliveredCount
+    );
+
+
+    console.log(
+        "PENDING:",
+        pendingCount
+    );
+
+    console.log(
+        "DELIVERED:",
+        deliveredCount
+    );
+
+    console.log(
+        "RETURN:",
+        returnCount
     );
 
 }
 
 
-// =======================================
-// ESCAPE HTML
-// =======================================
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-// =======================================
+// ======================================================
 // SUMMARY
-// =======================================
+// ======================================================
 
 function updateSummary(
     total,
     pending,
-    paid
+    delivered
 ) {
 
     if (
@@ -795,18 +1136,25 @@ function updateSummary(
     ) {
 
         paidBills.textContent =
-            paid;
+            delivered;
 
     }
 
 }
 
 
-// =======================================
+// ======================================================
 // SEARCH
-// =======================================
+// ======================================================
 
 function searchBills() {
+
+    if (!searchInput) {
+
+        return;
+
+    }
+
 
     const search =
         searchInput.value
@@ -839,62 +1187,86 @@ function searchBills() {
                         bill.bill_no ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.customer_id ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.customer_name ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.customer_mobile ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.customer_place ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.payment_type ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
 
                     ||
+
 
                     String(
                         bill.payment_mode ||
                         ""
                     )
-                    .toLowerCase()
-                    .includes(search)
+                        .toLowerCase()
+                        .includes(search)
+
+
+                    ||
+
+
+                    String(
+                        bill.status ||
+                        bill.bill_status ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(search)
 
                 );
 
@@ -909,9 +1281,9 @@ function searchBills() {
 }
 
 
-// =======================================
+// ======================================================
 // SEARCH BUTTON
-// =======================================
+// ======================================================
 
 if (
     searchBtn
@@ -925,9 +1297,9 @@ if (
 }
 
 
-// =======================================
+// ======================================================
 // LIVE SEARCH
-// =======================================
+// ======================================================
 
 if (
     searchInput
@@ -941,9 +1313,9 @@ if (
 }
 
 
-// =======================================
+// ======================================================
 // ENTER KEY
-// =======================================
+// ======================================================
 
 if (
     searchInput
@@ -956,8 +1328,7 @@ if (
         ) {
 
             if (
-                event.key ===
-                "Enter"
+                event.key === "Enter"
             ) {
 
                 searchBills();
@@ -970,9 +1341,9 @@ if (
 }
 
 
-// =======================================
+// ======================================================
 // REFRESH
-// =======================================
+// ======================================================
 
 if (
     refreshBtn
@@ -990,9 +1361,9 @@ if (
 }
 
 
-// =======================================
+// ======================================================
 // HOME
-// =======================================
+// ======================================================
 
 if (
     homeBtn
@@ -1011,9 +1382,9 @@ if (
 }
 
 
-// =======================================
-// RETURN PAGE
-// =======================================
+// ======================================================
+// OPEN RETURN PAGE
+// ======================================================
 
 function openReturnPage(
     billId
@@ -1032,6 +1403,12 @@ function openReturnPage(
     }
 
 
+    console.log(
+        "Opening return page for:",
+        billId
+    );
+
+
     window.location.href =
         `return.html?id=${encodeURIComponent(
             billId
@@ -1040,140 +1417,23 @@ function openReturnPage(
 }
 
 
-// =======================================
-// PARSE JSON
-// =======================================
-
-function parseJSON(
-    value,
-    fallback = []
-) {
-
-    if (
-        Array.isArray(value)
-    ) {
-
-        return value;
-
-    }
-
-
-    if (
-        typeof value !==
-        "string"
-    ) {
-
-        return fallback;
-
-    }
-
-
-    try {
-
-        const parsed =
-            JSON.parse(
-                value
-            );
-
-
-        return parsed;
-
-    }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            "JSON PARSE ERROR:",
-            error
-        );
-
-
-        return fallback;
-
-    }
-
-}
-
-
-// =======================================
-// NUMBER
-// =======================================
-
-function numberValue(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
-        return 0;
-
-    }
-
-
-    const n =
-        parseFloat(
-            String(value)
-                .replace(
-                    /[₹,\s]/g,
-                    ""
-                )
-        );
-
-
-    return Number.isFinite(n)
-        ? n
-        : 0;
-
-}
-
-
-// =======================================
-// MONEY
-// =======================================
-
-function money(
-    value
-) {
-
-    return (
-        "₹ " +
-        numberValue(
-            value
-        ).toFixed(2)
-    );
-
-}
-
-
-// =======================================
+// ======================================================
 // GET WOOD DATA
-// =======================================
+// ======================================================
 
 function getWoodData(
     bill
 ) {
 
     let woodData =
-        bill.wood_data;
-
-
-    woodData =
         parseJSON(
-            woodData,
+            bill.wood_data,
             []
         );
 
 
     if (
-        !Array.isArray(
-            woodData
-        )
+        !Array.isArray(woodData)
     ) {
 
         woodData =
@@ -1186,9 +1446,7 @@ function getWoodData(
 
 
     if (
-        !Array.isArray(
-            woodData
-        )
+        !Array.isArray(woodData)
     ) {
 
         woodData =
@@ -1209,21 +1467,17 @@ function getWoodData(
 }
 
 
-// =======================================
+// ======================================================
 // GET OTHER DATA
-// =======================================
+// ======================================================
 
 function getOthersData(
     bill
 ) {
 
     let othersData =
-        bill.others_data;
-
-
-    othersData =
         parseJSON(
-            othersData,
+            bill.others_data,
             []
         );
 
@@ -1282,9 +1536,9 @@ function getOthersData(
 }
 
 
-// =======================================
-// GET WOOD NAME
-// =======================================
+// ======================================================
+// WOOD NAME
+// ======================================================
 
 function getWoodName(
     item
@@ -1313,9 +1567,9 @@ function getWoodName(
 }
 
 
-// =======================================
-// GET WOOD SIZE
-// =======================================
+// ======================================================
+// WOOD SIZE
+// ======================================================
 
 function getWoodSize(
     item
@@ -1338,7 +1592,9 @@ function getWoodSize(
         thickness > 0
     ) {
 
-        return `${breadth} × ${thickness}`;
+        return (
+            `${breadth} × ${thickness}`
+        );
 
     }
 
@@ -1370,9 +1626,9 @@ function getWoodSize(
 }
 
 
-// =======================================
-// GET WOOD LENGTH / QTY
-// =======================================
+// ======================================================
+// LENGTH / QTY
+// ======================================================
 
 function getLengthQty(
     item
@@ -1442,8 +1698,7 @@ function getLengthQty(
 
     if (
         result.length === 0 &&
-        item.length !==
-        undefined
+        item.length !== undefined
     ) {
 
         result.push(
@@ -1464,9 +1719,9 @@ function getLengthQty(
 }
 
 
-// =======================================
-// BUILD PDF
-// =======================================
+// ======================================================
+// DOWNLOAD BILL PDF
+// ======================================================
 
 async function downloadBillPDF(
     billId
@@ -1485,10 +1740,13 @@ async function downloadBillPDF(
     }
 
 
+    let pdfContainer = null;
+
+
     try {
 
         console.log(
-            "Preparing PDF for bill:",
+            "Preparing PDF:",
             billId
         );
 
@@ -1496,9 +1754,9 @@ async function downloadBillPDF(
         await loadHtml2Pdf();
 
 
-        // ===================================
+        // ------------------------------------------
         // GET EXACT BILL
-        // ===================================
+        // ------------------------------------------
 
         const response =
             await fetch(
@@ -1524,7 +1782,7 @@ async function downloadBillPDF(
 
 
         if (
-            !data.success ||
+            !data ||
             !data.bill
         ) {
 
@@ -1541,51 +1799,33 @@ async function downloadBillPDF(
 
 
         console.log(
-            "PDF BILL DATA:",
+            "PDF BILL:",
             bill
         );
 
 
-        // ===================================
+        // ------------------------------------------
         // BILL NUMBER
-        // ===================================
+        // ------------------------------------------
 
         const billNo =
             bill.bill_no ||
             `BILL-${billId}`;
 
 
-        // ===================================
-        // PAYMENT MODE
-        // ===================================
+        // ------------------------------------------
+        // PAYMENT
+        // ------------------------------------------
 
-        let paymentMode =
-            bill.payment_mode ||
-            bill.paymentMode ||
-            "CASH";
-
-
-        paymentMode =
-            String(
-                paymentMode
-            )
-            .toUpperCase();
+        const paymentMode =
+            getPaymentMode(
+                bill
+            );
 
 
-        if (
-            paymentMode !==
-            "UPI"
-        ) {
-
-            paymentMode =
-                "CASH";
-
-        }
-
-
-        // ===================================
+        // ------------------------------------------
         // DATA
-        // ===================================
+        // ------------------------------------------
 
         const woodData =
             getWoodData(
@@ -1667,21 +1907,42 @@ async function downloadBillPDF(
             );
 
 
-        // ===================================
-        // CREATE PDF CONTAINER
-        // ===================================
+        const status =
+            getBillStatus(
+                bill
+            );
 
-        const pdfContainer =
+
+        // ==========================================
+        // CREATE PDF CONTAINER
+        // ==========================================
+
+        pdfContainer =
             document.createElement(
                 "div"
             );
 
 
+        pdfContainer.style.position =
+            "fixed";
+
+        pdfContainer.style.left =
+            "0";
+
+        pdfContainer.style.top =
+            "0";
+
         pdfContainer.style.width =
             "794px";
 
+        pdfContainer.style.minHeight =
+            "1123px";
+
         pdfContainer.style.background =
             "#ffffff";
+
+        pdfContainer.style.color =
+            "#111111";
 
         pdfContainer.style.padding =
             "35px";
@@ -1689,28 +1950,18 @@ async function downloadBillPDF(
         pdfContainer.style.boxSizing =
             "border-box";
 
-        pdfContainer.style.position =
-            "fixed";
-
-        pdfContainer.style.left =
-            "-10000px";
-
-        pdfContainer.style.top =
-            "0";
-
         pdfContainer.style.fontFamily =
             "Arial, sans-serif";
 
-        pdfContainer.style.color =
-            "#111111";
+        pdfContainer.style.zIndex =
+            "999999";
 
 
-        // ===================================
+        // ==========================================
         // WOOD ROWS
-        // ===================================
+        // ==========================================
 
-        let woodRows =
-            "";
+        let woodRows = "";
 
 
         if (
@@ -1719,13 +1970,21 @@ async function downloadBillPDF(
 
             woodRows = `
                 <tr>
-                    <td colspan="9">
+                    <td
+                        colspan="9"
+                        style="
+                            border:1px solid #222;
+                            padding:6px;
+                            text-align:center;
+                        "
+                    >
                         No wood data
                     </td>
                 </tr>
             `;
 
         }
+
 
         else {
 
@@ -1817,47 +2076,88 @@ async function downloadBillPDF(
 
                         <tr>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${index + 1}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${escapeHtml(
                                     woodName
                                 )}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${escapeHtml(
                                     size
                                 )}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${lengthQty}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${totalQty}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${cft.toFixed(2)}
                             </td>
 
-                            <td>
-                                ${money(
-                                    rate
-                                )}
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
+                                ${money(rate)}
                             </td>
 
-                            <td>
-                                ${money(
-                                    amount
-                                )}
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
+                                ${money(amount)}
                             </td>
 
-                            <td>
+                            <td
+                                style="
+                                    border:1px solid #222;
+                                    padding:6px;
+                                "
+                            >
                                 ${escapeHtml(
                                     quality
                                 )}
@@ -1873,12 +2173,11 @@ async function downloadBillPDF(
         }
 
 
-        // ===================================
-        // OTHER CHARGE ROWS
-        // ===================================
+        // ==========================================
+        // CHARGE ROWS
+        // ==========================================
 
-        let chargeRows =
-            "";
+        let chargeRows = "";
 
 
         if (
@@ -1889,11 +2188,22 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td>
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                        "
+                    >
                         Labour Charge
                     </td>
 
-                    <td>
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                            text-align:right;
+                        "
+                    >
                         ${money(
                             labourCharge
                         )}
@@ -1914,11 +2224,22 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td>
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                        "
+                    >
                         Other Charge
                     </td>
 
-                    <td>
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                            text-align:right;
+                        "
+                    >
                         ${money(
                             otherCharge
                         )}
@@ -1974,13 +2295,24 @@ async function downloadBillPDF(
 
                     <tr>
 
-                        <td>
+                        <td
+                            style="
+                                border:1px solid #222;
+                                padding:7px;
+                            "
+                        >
                             ${escapeHtml(
                                 name
                             )}
                         </td>
 
-                        <td>
+                        <td
+                            style="
+                                border:1px solid #222;
+                                padding:7px;
+                                text-align:right;
+                            "
+                        >
                             ${money(
                                 amount
                             )}
@@ -2002,11 +2334,22 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td>
-                        -
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                        "
+                    >
+                        No Additional Charges
                     </td>
 
-                    <td>
+                    <td
+                        style="
+                            border:1px solid #222;
+                            padding:7px;
+                            text-align:right;
+                        "
+                    >
                         ₹ 0.00
                     </td>
 
@@ -2017,16 +2360,16 @@ async function downloadBillPDF(
         }
 
 
-        // ===================================
+        // ==========================================
         // PDF HTML
-        // ===================================
+        // ==========================================
 
         pdfContainer.innerHTML = `
 
             <div
                 style="
                     text-align:center;
-                    margin-bottom:20px;
+                    margin-bottom:15px;
                 "
             >
 
@@ -2041,8 +2384,8 @@ async function downloadBillPDF(
 
                 <div
                     style="
+                        margin-top:5px;
                         font-size:13px;
-                        margin-top:6px;
                     "
                 >
                     BILL
@@ -2054,54 +2397,32 @@ async function downloadBillPDF(
             <hr>
 
 
+            <!-- BILL INFORMATION -->
+
             <table
                 style="
                     width:100%;
                     border-collapse:collapse;
                     margin-top:15px;
-                    margin-bottom:20px;
-                    font-size:13px;
+                    font-size:12px;
                 "
             >
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Bill No</b>
                     </td>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
-                        ${escapeHtml(
-                            billNo
-                        )}
+                    <td style="border:1px solid #ddd;padding:7px;">
+                        ${escapeHtml(billNo)}
                     </td>
 
-
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Date</b>
                     </td>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         ${escapeHtml(
                             bill.bill_date ||
                             "-"
@@ -2113,41 +2434,25 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Customer ID</b>
                     </td>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         ${escapeHtml(
                             bill.customer_id ||
                             "-"
                         )}
                     </td>
 
-
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Payment</b>
                     </td>
 
                     <td
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                             font-weight:bold;
                         "
                     >
@@ -2159,43 +2464,22 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Customer Name</b>
                     </td>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         ${escapeHtml(
                             bill.customer_name ||
                             "-"
                         )}
                     </td>
 
-
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Mobile</b>
                     </td>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         ${escapeHtml(
                             bill.customer_mobile ||
                             "-"
@@ -2207,20 +2491,15 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         <b>Place</b>
                     </td>
 
                     <td
                         colspan="3"
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                         "
                     >
                         ${escapeHtml(
@@ -2231,10 +2510,36 @@ async function downloadBillPDF(
 
                 </tr>
 
+
+                <tr>
+
+                    <td style="border:1px solid #ddd;padding:7px;">
+                        <b>Status</b>
+                    </td>
+
+                    <td
+                        colspan="3"
+                        style="
+                            border:1px solid #ddd;
+                            padding:7px;
+                            font-weight:bold;
+                        "
+                    >
+                        ${status}
+                    </td>
+
+                </tr>
+
             </table>
 
 
-            <h3>
+            <!-- WOOD -->
+
+            <h3
+                style="
+                    margin-top:22px;
+                "
+            >
                 Wood Details
             </h3>
 
@@ -2243,7 +2548,7 @@ async function downloadBillPDF(
                 style="
                     width:100%;
                     border-collapse:collapse;
-                    font-size:11px;
+                    font-size:10px;
                 "
             >
 
@@ -2251,39 +2556,39 @@ async function downloadBillPDF(
 
                     <tr>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             S.No
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Wood
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Size
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Length → Qty
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Qty
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             CFT
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Rate
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Amount
                         </th>
 
-                        <th style="border:1px solid #222;padding:6px">
+                        <th style="border:1px solid #222;padding:6px;">
                             Quality
                         </th>
 
@@ -2301,9 +2606,11 @@ async function downloadBillPDF(
             </table>
 
 
+            <!-- OTHER CHARGES -->
+
             <h3
                 style="
-                    margin-top:25px;
+                    margin-top:22px;
                 "
             >
                 Other Charges
@@ -2356,31 +2663,28 @@ async function downloadBillPDF(
             </table>
 
 
+            <!-- TOTALS -->
+
             <table
                 style="
                     width:55%;
                     margin-left:auto;
-                    margin-top:25px;
+                    margin-top:20px;
                     border-collapse:collapse;
-                    font-size:13px;
+                    font-size:12px;
                 "
             >
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         Wood Total
                     </td>
 
                     <td
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                             text-align:right;
                         "
                     >
@@ -2394,19 +2698,14 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         Others Total
                     </td>
 
                     <td
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                             text-align:right;
                         "
                     >
@@ -2424,19 +2723,14 @@ async function downloadBillPDF(
 
                             <tr>
 
-                                <td
-                                    style="
-                                        padding:7px;
-                                        border:1px solid #ddd;
-                                    "
-                                >
+                                <td style="border:1px solid #ddd;padding:7px;">
                                     Discount
                                 </td>
 
                                 <td
                                     style="
-                                        padding:7px;
                                         border:1px solid #ddd;
+                                        padding:7px;
                                         text-align:right;
                                     "
                                 >
@@ -2456,8 +2750,8 @@ async function downloadBillPDF(
 
                     <td
                         style="
-                            padding:9px;
                             border:1px solid #222;
+                            padding:8px;
                             font-weight:bold;
                         "
                     >
@@ -2466,8 +2760,8 @@ async function downloadBillPDF(
 
                     <td
                         style="
-                            padding:9px;
                             border:1px solid #222;
+                            padding:8px;
                             text-align:right;
                             font-weight:bold;
                         "
@@ -2488,18 +2782,20 @@ async function downloadBillPDF(
 
                                 <td
                                     style="
-                                        padding:9px;
                                         border:1px solid #ddd;
+                                        padding:8px;
+                                        font-weight:bold;
                                     "
                                 >
-                                    Return
+                                    Return Amount
                                 </td>
 
                                 <td
                                     style="
-                                        padding:9px;
                                         border:1px solid #ddd;
+                                        padding:8px;
                                         text-align:right;
+                                        font-weight:bold;
                                     "
                                 >
                                     ${money(
@@ -2518,8 +2814,8 @@ async function downloadBillPDF(
 
                     <td
                         style="
-                            padding:11px;
                             border:2px solid #222;
+                            padding:10px;
                             font-weight:bold;
                             font-size:16px;
                         "
@@ -2529,8 +2825,8 @@ async function downloadBillPDF(
 
                     <td
                         style="
-                            padding:11px;
                             border:2px solid #222;
+                            padding:10px;
                             text-align:right;
                             font-weight:bold;
                             font-size:16px;
@@ -2546,19 +2842,14 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         Advance / Paid
                     </td>
 
                     <td
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                             text-align:right;
                         "
                     >
@@ -2572,19 +2863,14 @@ async function downloadBillPDF(
 
                 <tr>
 
-                    <td
-                        style="
-                            padding:7px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                    <td style="border:1px solid #ddd;padding:7px;">
                         Balance
                     </td>
 
                     <td
                         style="
-                            padding:7px;
                             border:1px solid #ddd;
+                            padding:7px;
                             text-align:right;
                         "
                     >
@@ -2604,10 +2890,10 @@ async function downloadBillPDF(
 
                         <div
                             style="
-                                margin-top:25px;
+                                margin-top:20px;
                                 border-top:1px solid #ddd;
-                                padding-top:10px;
-                                font-size:12px;
+                                padding-top:8px;
+                                font-size:11px;
                             "
                         >
 
@@ -2626,7 +2912,7 @@ async function downloadBillPDF(
 
             <div
                 style="
-                    margin-top:35px;
+                    margin-top:30px;
                     text-align:center;
                     font-size:10px;
                 "
@@ -2637,29 +2923,57 @@ async function downloadBillPDF(
         `;
 
 
+        // ==========================================
+        // ADD TO DOM
+        //
+        // IMPORTANT:
+        // Keep visible while html2canvas captures.
+        // ==========================================
+
         document.body.appendChild(
             pdfContainer
         );
 
 
-        // ===================================
-        // PDF FILENAME
-        // ===================================
+        // ==========================================
+        // WAIT FOR BROWSER PAINT
+        // ==========================================
+
+        await new Promise(
+            function (resolve) {
+
+                requestAnimationFrame(
+                    function () {
+
+                        requestAnimationFrame(
+                            resolve
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ==========================================
+        // SAFE FILE NAME
+        // ==========================================
 
         const safeFileName =
             String(
                 billNo
             )
-            .replace(
-                /[<>:"/\\|?*]+/g,
-                "_"
-            )
-            .trim();
+                .replace(
+                    /[<>:"/\\|?*]+/g,
+                    "_"
+                )
+                .trim();
 
 
-        // ===================================
+        // ==========================================
         // GENERATE PDF
-        // ===================================
+        // ==========================================
 
         await html2pdf()
             .set({
@@ -2670,15 +2984,25 @@ async function downloadBillPDF(
                     `${safeFileName}.pdf`,
 
                 image: {
+
                     type: "jpeg",
+
                     quality: 0.98
+
                 },
 
                 html2canvas: {
 
                     scale: 2,
 
-                    useCORS: true
+                    useCORS: true,
+
+                    allowTaint: true,
+
+                    backgroundColor:
+                        "#ffffff",
+
+                    logging: false
 
                 },
 
@@ -2694,11 +3018,12 @@ async function downloadBillPDF(
                 },
 
                 pagebreak: {
+
                     mode: [
-                        "avoid-all",
                         "css",
                         "legacy"
                     ]
+
                 }
 
             })
@@ -2710,24 +3035,15 @@ async function downloadBillPDF(
             .save();
 
 
-        // ===================================
-        // REMOVE TEMP PDF HTML
-        // ===================================
-
-        document.body.removeChild(
-            pdfContainer
-        );
-
-
         console.log(
-            `PDF saved as ${safeFileName}.pdf`
+            `PDF SAVED: ${safeFileName}.pdf`
         );
+
 
     }
 
-    catch (
-        error
-    ) {
+
+    catch (error) {
 
         console.error(
             "PDF ERROR:",
@@ -2742,16 +3058,40 @@ async function downloadBillPDF(
 
     }
 
+
+    finally {
+
+        // ==========================================
+        // REMOVE PDF CONTAINER
+        // ==========================================
+
+        if (
+            pdfContainer &&
+            pdfContainer.parentNode
+        ) {
+
+            pdfContainer.parentNode.removeChild(
+                pdfContainer
+            );
+
+        }
+
+    }
+
 }
 
 
-// =======================================
+// ======================================================
 // START
-// =======================================
+// ======================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
+        console.log(
+            "HISTORY PAGE READY"
+        );
 
         loadBills();
 

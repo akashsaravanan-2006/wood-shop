@@ -443,11 +443,17 @@ if (
 }
 
 
+console.log("WOOD CALCULATIONS:", woodCalculations);
+
 console.log(
-    "WOOD CALCULATIONS:",
-    woodCalculations
+    "FULL WOOD JSON:",
+    JSON.stringify(woodCalculations, null, 2)
 );
 
+console.log(
+    "FULL OTHER JSON:",
+    JSON.stringify(otherItems, null, 2)
+);
 
 // ============================================================
 // WOOD TABLE

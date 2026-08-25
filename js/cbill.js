@@ -1,17 +1,31 @@
 // ============================================================
 // CBILL.JS
-// FINAL SAVED BILL
-// SAME DATA LOGIC AS BILL.JS
+// FINAL / SAVED BILL
+// ============================================================
 //
-// IMPORTANT:
-// Bill number is NEVER generated here.
-// Database-generated bill_no is displayed.
+// IMPORTANT
+// ------------------------------------------------------------
+// 1. BILL NUMBER IS NEVER GENERATED HERE.
+//    It always comes from the DATABASE.
+//
+// 2. CUSTOMER NUMBER / CUSTOMER ID IS NOT GENERATED HERE.
+//    Existing DB value is left untouched.
+//
+// 3. Wood Length is displayed separately:
+//       4 → 3
+//       5 → 6
+//       2 → 10
+//
+// 4. Total Length column is NOT displayed.
+//
+// 5. CFT summary groups:
+//       SAME WOOD + SAME QUALITY
 // ============================================================
 
 console.clear();
 
 console.log("==========================================");
-console.log("              CBILL.JS LOADED");
+console.log("             CBILL.JS LOADED");
 console.log("==========================================");
 
 
@@ -99,10 +113,7 @@ const clearBtn =
 // ============================================================
 
 const savedBillId =
-    localStorage.getItem(
-        "savedBillId"
-    );
-
+    localStorage.getItem("savedBillId");
 
 console.log(
     "SAVED BILL ID:",
@@ -121,11 +132,8 @@ function numberValue(value) {
         value === undefined ||
         value === ""
     ) {
-
         return 0;
-
     }
-
 
     const number =
         parseFloat(
@@ -133,11 +141,9 @@ function numberValue(value) {
                 .replace(/[₹,\s]/g, "")
         );
 
-
     return Number.isFinite(number)
         ? number
         : 0;
-
 }
 
 
@@ -161,30 +167,12 @@ function money(value) {
 
 function escapeHTML(value) {
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -192,105 +180,66 @@ function escapeHTML(value) {
 // SAFE JSON
 // ============================================================
 
-function parseJSON(
-    value,
-    fallback
-) {
+function parseJSON(value, fallback = []) {
 
     if (
         value === null ||
         value === undefined ||
         value === ""
     ) {
-
         return fallback;
-
     }
-
 
     if (
         typeof value !== "string"
     ) {
-
         return value;
-
     }
-
 
     try {
 
-        return JSON.parse(
-            value
-        );
+        return JSON.parse(value);
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "JSON ERROR:",
+            "JSON PARSE ERROR:",
             error
         );
 
         return fallback;
-
     }
-
 }
 
 
 // ============================================================
 // LOCAL BILL DATA
-// SAME SOURCE USED BY BILL.JS
 // ============================================================
 
 function getLocalBillData() {
 
-    let data = {};
-
-
-    // --------------------------------------------------------
-    // current_bill_data
-    // --------------------------------------------------------
-
     try {
 
-        data =
-            JSON.parse(
-                localStorage.getItem(
-                    "current_bill_data"
-                ) || "{}"
-            );
+        return JSON.parse(
+            localStorage.getItem(
+                "current_bill_data"
+            ) || "{}"
+        );
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "current_bill_data ERROR:",
             error
         );
 
-        data = {};
-
+        return {};
     }
-
-
-    return data || {};
-
 }
 
 
-// ============================================================
-// LOCAL DATA
-// ============================================================
-
 const localBillData =
     getLocalBillData();
-
-
-console.log(
-    "LOCAL BILL DATA:",
-    localBillData
-);
 
 
 // ============================================================
@@ -298,17 +247,16 @@ console.log(
 // ============================================================
 
 const localPersonal =
-    localBillData.personal ||
-    {};
+    localBillData.personal || {};
 
 
 // ============================================================
-// GET CUSTOMER FROM LOCAL STORAGE
+// LOCAL CUSTOMER
 // ============================================================
 
 function getLocalCustomer() {
 
-    let name =
+    const name =
         localPersonal.name ||
         localPersonal.customerName ||
         localStorage.getItem(
@@ -316,8 +264,7 @@ function getLocalCustomer() {
         ) ||
         "";
 
-
-    let mobile =
+    const mobile =
         localPersonal.mobile ||
         localPersonal.customerMobile ||
         localStorage.getItem(
@@ -325,8 +272,7 @@ function getLocalCustomer() {
         ) ||
         "";
 
-
-    let place =
+    const place =
         localPersonal.place ||
         localPersonal.customerPlace ||
         localStorage.getItem(
@@ -334,40 +280,28 @@ function getLocalCustomer() {
         ) ||
         "";
 
-
     return {
-
-        name:
-            name,
-
-        mobile:
-            mobile,
-
-        place:
-            place
-
+        name,
+        mobile,
+        place
     };
-
 }
 
 
 // ============================================================
-// GET DISCOUNT
+// DISCOUNT
 // ============================================================
 
-function getDiscount(
-    bill
-) {
+function getDiscount(bill) {
 
     let discount = 0;
 
 
-    // DATABASE
+    // DATABASE FIELD 1
+
     if (
-        bill.discount_amount !==
-            undefined &&
-        bill.discount_amount !==
-            null &&
+        bill.discount_amount !== undefined &&
+        bill.discount_amount !== null &&
         bill.discount_amount !== ""
     ) {
 
@@ -378,12 +312,12 @@ function getDiscount(
 
     }
 
-    // DATABASE SECOND FIELD
+
+    // DATABASE FIELD 2
+
     else if (
-        bill.discount !==
-            undefined &&
-        bill.discount !==
-            null &&
+        bill.discount !== undefined &&
+        bill.discount !== null &&
         bill.discount !== ""
     ) {
 
@@ -394,7 +328,9 @@ function getDiscount(
 
     }
 
+
     // LOCAL STORAGE
+
     else {
 
         discount =
@@ -403,9 +339,10 @@ function getDiscount(
                     "discountAmount"
                 )
             );
-
     }
 
+
+    // SECOND LOCAL FALLBACK
 
     if (
         discount === 0
@@ -417,7 +354,6 @@ function getDiscount(
                     "discount"
                 )
             );
-
     }
 
 
@@ -426,32 +362,27 @@ function getDiscount(
     ) {
 
         discount = 0;
-
     }
 
 
     return discount;
-
 }
 
 
 // ============================================================
-// GET ADVANCE
+// ADVANCE
 // ============================================================
 
-function getAdvanceAmount(
-    bill
-) {
+function getAdvanceAmount(bill) {
 
     let advance = null;
 
 
     // DATABASE
+
     if (
-        bill.advance_amount !==
-            undefined &&
-        bill.advance_amount !==
-            null &&
+        bill.advance_amount !== undefined &&
+        bill.advance_amount !== null &&
         bill.advance_amount !== ""
     ) {
 
@@ -459,15 +390,14 @@ function getAdvanceAmount(
             numberValue(
                 bill.advance_amount
             );
-
     }
 
+
     // DATABASE SECOND FIELD
+
     else if (
-        bill.advance !==
-            undefined &&
-        bill.advance !==
-            null &&
+        bill.advance !== undefined &&
+        bill.advance !== null &&
         bill.advance !== ""
     ) {
 
@@ -475,16 +405,14 @@ function getAdvanceAmount(
             numberValue(
                 bill.advance
             );
-
     }
 
 
-    // LOCAL STORAGE FALLBACK
+    // LOCAL FALLBACK
+
     if (
         advance === null ||
-        !Number.isFinite(
-            advance
-        )
+        !Number.isFinite(advance)
     ) {
 
         advance =
@@ -493,7 +421,6 @@ function getAdvanceAmount(
                     "advanceAmount"
                 )
             );
-
     }
 
 
@@ -502,12 +429,10 @@ function getAdvanceAmount(
     ) {
 
         advance = 0;
-
     }
 
 
     return advance;
-
 }
 
 
@@ -515,22 +440,14 @@ function getAdvanceAmount(
 // DATE
 // ============================================================
 
-function formatDate(
-    value
-) {
+function formatDate(value) {
 
     if (!value) {
-
         return "-";
-
     }
 
-
     const date =
-        new Date(
-            value
-        );
-
+        new Date(value);
 
     if (
         isNaN(
@@ -538,37 +455,20 @@ function formatDate(
         )
     ) {
 
-        return String(
-            value
-        );
-
+        return String(value);
     }
 
-
     return (
-
         String(
             date.getDate()
-        ).padStart(
-            2,
-            "0"
-        )
-
-        + "/" +
-
+        ).padStart(2, "0") +
+        "/" +
         String(
             date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        )
-
-        + "/" +
-
+        ).padStart(2, "0") +
+        "/" +
         date.getFullYear()
-
     );
-
 }
 
 
@@ -576,22 +476,14 @@ function formatDate(
 // TIME
 // ============================================================
 
-function formatTime(
-    value
-) {
+function formatTime(value) {
 
     if (!value) {
-
         return "-";
-
     }
 
-
     const date =
-        new Date(
-            value
-        );
-
+        new Date(value);
 
     if (
         isNaN(
@@ -600,32 +492,848 @@ function formatTime(
     ) {
 
         return "-";
-
     }
-
 
     return date.toLocaleTimeString(
         "en-IN",
         {
-            hour:
-                "2-digit",
-
-            minute:
-                "2-digit",
-
-            second:
-                "2-digit",
-
-            hour12:
-                true
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
         }
     );
-
 }
 
 
 // ============================================================
-// LOAD BILL
+// GET WOOD NAME
+// ============================================================
+
+function getWoodName(item) {
+
+    let name =
+        item.woodType ||
+        item.wood ||
+        item.woodName ||
+        "";
+
+    if (
+        name === "Other"
+    ) {
+
+        name =
+            item.otherWood ||
+            "Other";
+    }
+
+    return name || "-";
+}
+
+
+// ============================================================
+// GET QUALITY
+// ============================================================
+
+function getQuality(item) {
+
+    if (
+        item.quality !== undefined &&
+        item.quality !== null &&
+        item.quality !== ""
+    ) {
+
+        return String(
+            item.quality
+        );
+    }
+
+    return "-";
+}
+
+
+// ============================================================
+// GET SIZE
+// ============================================================
+
+function getSize(item) {
+
+    const breadth =
+        numberValue(
+            item.breadth
+        );
+
+    const thickness =
+        numberValue(
+            item.thickness
+        );
+
+
+    if (
+        breadth > 0 &&
+        thickness > 0
+    ) {
+
+        return (
+            breadth +
+            " × " +
+            thickness
+        );
+    }
+
+
+    if (
+        breadth > 0
+    ) {
+
+        return String(
+            breadth
+        );
+    }
+
+
+    if (
+        thickness > 0
+    ) {
+
+        return String(
+            thickness
+        );
+    }
+
+
+    return "-";
+}
+
+
+// ============================================================
+// GET LENGTH / QUANTITY
+// ============================================================
+//
+// Output:
+// 4 → 3
+// 5 → 6
+// 2 → 10
+//
+// ============================================================
+
+function getLengthValues(item) {
+
+    const pieces =
+        Array.isArray(item.pieces)
+            ? item.pieces
+            : [];
+
+
+    const values = [];
+
+
+    pieces.forEach(
+        function(piece) {
+
+            if (!piece) {
+                return;
+            }
+
+
+            const length =
+                numberValue(
+                    piece.length
+                );
+
+            const extraLength =
+                numberValue(
+                    piece.extraLength
+                );
+
+            const finalLength =
+                length +
+                extraLength;
+
+
+            const qty =
+                numberValue(
+                    piece.qty
+                );
+
+
+            if (
+                finalLength > 0
+            ) {
+
+                values.push({
+                    length: finalLength,
+                    qty: qty
+                });
+            }
+        }
+    );
+
+
+    // DIRECT FALLBACK
+
+    if (
+        values.length === 0 &&
+        item.length !== undefined
+    ) {
+
+        const length =
+            numberValue(
+                item.length
+            );
+
+        const qty =
+            numberValue(
+                item.qty
+            );
+
+
+        if (
+            length > 0
+        ) {
+
+            values.push({
+                length,
+                qty
+            });
+        }
+    }
+
+
+    return values;
+}
+
+
+// ============================================================
+// TOTAL QUANTITY
+// ============================================================
+
+function getTotalQty(item) {
+
+    const pieces =
+        Array.isArray(item.pieces)
+            ? item.pieces
+            : [];
+
+
+    let totalQty = 0;
+
+
+    pieces.forEach(
+        function(piece) {
+
+            if (!piece) {
+                return;
+            }
+
+            totalQty +=
+                numberValue(
+                    piece.qty
+                );
+        }
+    );
+
+
+    if (
+        totalQty === 0 &&
+        item.qty !== undefined
+    ) {
+
+        totalQty =
+            numberValue(
+                item.qty
+            );
+    }
+
+
+    return totalQty;
+}
+
+
+// ============================================================
+// LOAD WOOD DATA
+// ============================================================
+//
+// IMPORTANT:
+// Total Length column removed.
+// ============================================================
+
+function loadWoodData(woodData) {
+
+    if (!woodTable) {
+
+        console.error(
+            "woodTable not found."
+        );
+
+        return;
+    }
+
+
+    woodTable.innerHTML = "";
+
+
+    if (
+        !Array.isArray(woodData) ||
+        woodData.length === 0
+    ) {
+
+        woodTable.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    No wood data
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    let sno = 1;
+
+
+    woodData.forEach(
+        function(item) {
+
+            if (!item) {
+                return;
+            }
+
+
+            const woodName =
+                getWoodName(item);
+
+
+            const size =
+                getSize(item);
+
+
+            const quality =
+                getQuality(item);
+
+
+            const lengthValues =
+                getLengthValues(item);
+
+
+            const totalQty =
+                getTotalQty(item);
+
+
+            const cubicFeet =
+                numberValue(
+                    item.cubicFeet
+                );
+
+
+            const rate =
+                numberValue(
+                    item.rate
+                );
+
+
+            const amount =
+                numberValue(
+                    item.amount
+                );
+
+
+            // ----------------------------------------------------
+            // LENGTH DISPLAY
+            // ----------------------------------------------------
+
+            let lengthText = "-";
+
+
+            if (
+                lengthValues.length > 0
+            ) {
+
+                lengthText =
+                    lengthValues
+                        .map(
+                            function(value) {
+
+                                return `
+                                    <div class="wood-length-item">
+                                        ${escapeHTML(value.length)}
+                                        → 
+                                        ${escapeHTML(value.qty)}
+                                    </div>
+                                `;
+                            }
+                        )
+                        .join("");
+            }
+
+
+            // ----------------------------------------------------
+            // ROW
+            // ----------------------------------------------------
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${sno}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        woodName
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        size
+                    )}
+                </td>
+
+                <td class="length-cell">
+                    ${lengthText}
+                </td>
+
+                <td>
+                    ${totalQty}
+                </td>
+
+                <td>
+                    ${cubicFeet.toFixed(2)}
+                </td>
+
+                <td>
+                    ${money(rate)}
+                </td>
+
+                <td>
+                    ${money(amount)}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        quality
+                    )}
+                </td>
+
+            `;
+
+
+            woodTable.appendChild(
+                row
+            );
+
+
+            console.log(
+                "WOOD ROW:",
+                {
+                    sno,
+                    woodName,
+                    size,
+                    lengths:
+                        lengthValues,
+                    qty:
+                        totalQty,
+                    cft:
+                        cubicFeet,
+                    rate,
+                    amount,
+                    quality
+                }
+            );
+
+
+            sno++;
+        }
+    );
+}
+
+
+// ============================================================
+// OTHER CHARGES
+// ============================================================
+
+function loadOtherCharges(
+    bill,
+    othersData
+) {
+
+    if (!chargeTable) {
+
+        console.error(
+            "chargeTable not found."
+        );
+
+        return;
+    }
+
+
+    chargeTable.innerHTML = "";
+
+
+    let sno = 1;
+
+    let hasCharge = false;
+
+
+    // ========================================================
+    // LABOUR CHARGE
+    // ========================================================
+
+    const labour =
+        numberValue(
+            bill.labour_charge
+        );
+
+
+    if (
+        labour > 0
+    ) {
+
+        hasCharge = true;
+
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.innerHTML = `
+
+            <td>
+                ${sno++}
+            </td>
+
+            <td>
+                Labour Charge
+            </td>
+
+            <td>
+                ${money(labour)}
+            </td>
+
+        `;
+
+
+        chargeTable.appendChild(
+            row
+        );
+    }
+
+
+    // ========================================================
+    // OTHER CHARGE
+    // ========================================================
+
+    const otherCharge =
+        numberValue(
+            bill.other_charge
+        );
+
+
+    if (
+        otherCharge > 0
+    ) {
+
+        hasCharge = true;
+
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.innerHTML = `
+
+            <td>
+                ${sno++}
+            </td>
+
+            <td>
+                Other Charge
+            </td>
+
+            <td>
+                ${money(otherCharge)}
+            </td>
+
+        `;
+
+
+        chargeTable.appendChild(
+            row
+        );
+    }
+
+
+    // ========================================================
+    // ADDITIONAL CHARGES
+    // ========================================================
+
+    if (
+        Array.isArray(othersData)
+    ) {
+
+        othersData.forEach(
+            function(item) {
+
+                if (!item) {
+                    return;
+                }
+
+
+                const amount =
+                    numberValue(
+                        item.amount ||
+                        item.charge ||
+                        item.value
+                    );
+
+
+                if (
+                    amount <= 0
+                ) {
+
+                    return;
+                }
+
+
+                const name =
+                    item.name ||
+                    item.reason ||
+                    item.title ||
+                    item.description ||
+                    "Other Charge";
+
+
+                hasCharge = true;
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${sno++}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(name)}
+                    </td>
+
+                    <td>
+                        ${money(amount)}
+                    </td>
+
+                `;
+
+
+                chargeTable.appendChild(
+                    row
+                );
+            }
+        );
+    }
+
+
+    // ========================================================
+    // NO CHARGES
+    // ========================================================
+
+    if (
+        !hasCharge
+    ) {
+
+        chargeTable.innerHTML = `
+
+            <tr>
+
+                <td>-</td>
+
+                <td>-</td>
+
+                <td>-</td>
+
+            </tr>
+
+        `;
+    }
+}
+
+
+// ============================================================
+// CFT SUMMARY
+// ============================================================
+//
+// SAME WOOD + SAME QUALITY = ONE LINE
+//
+// Example:
+//
+// Teak (1)   3.06 CFT
+// Teak (2)  11.65 CFT
+//
+// ============================================================
+
+function loadCftSummary(woodData) {
+
+    if (!cftSummary) {
+
+        console.error(
+            "cftSummary not found."
+        );
+
+        return;
+    }
+
+
+    cftSummary.innerHTML = "";
+
+
+    if (
+        !Array.isArray(woodData) ||
+        woodData.length === 0
+    ) {
+
+        cftSummary.innerHTML =
+            "<p>-</p>";
+
+        return;
+    }
+
+
+    // ========================================================
+    // GROUP
+    // ========================================================
+
+    const groups =
+        new Map();
+
+
+    woodData.forEach(
+        function(item) {
+
+            if (!item) {
+                return;
+            }
+
+
+            const woodName =
+                getWoodName(item);
+
+
+            const quality =
+                getQuality(item);
+
+
+            const cft =
+                numberValue(
+                    item.cubicFeet
+                );
+
+
+            const key =
+                woodName +
+                "||" +
+                quality;
+
+
+            if (
+                !groups.has(key)
+            ) {
+
+                groups.set(
+                    key,
+                    {
+                        wood:
+                            woodName,
+
+                        quality:
+                            quality,
+
+                        cft:
+                            0
+                    }
+                );
+            }
+
+
+            groups.get(key).cft +=
+                cft;
+        }
+    );
+
+
+    // ========================================================
+    // DISPLAY
+    // ========================================================
+
+    let index = 1;
+
+
+    groups.forEach(
+        function(group) {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "cft-summary-row";
+
+
+            row.innerHTML = `
+
+                <span class="cft-name">
+
+                    <b>
+                        ${index}.
+                        ${escapeHTML(
+                            group.wood
+                        )}
+                        (${escapeHTML(
+                            group.quality
+                        )})
+                    </b>
+
+                </span>
+
+                <span class="cft-value">
+
+                    ${group.cft.toFixed(2)}
+                    CFT
+
+                </span>
+
+            `;
+
+
+            cftSummary.appendChild(
+                row
+            );
+
+
+            index++;
+        }
+    );
+}
+
+
+// ============================================================
+// LOAD FINAL BILL
 // ============================================================
 
 async function loadFinalBill() {
@@ -643,12 +1351,16 @@ async function loadFinalBill() {
     );
 
 
+    // ========================================================
+    // SAVED BILL ID
+    // ========================================================
+
     if (
         !savedBillId
     ) {
 
         console.error(
-            "savedBillId is missing"
+            "savedBillId is missing."
         );
 
 
@@ -658,7 +1370,6 @@ async function loadFinalBill() {
 
             billNoElement.textContent =
                 "---";
-
         }
 
 
@@ -666,9 +1377,7 @@ async function loadFinalBill() {
             "Saved bill ID is missing."
         );
 
-
         return;
-
     }
 
 
@@ -697,7 +1406,6 @@ async function loadFinalBill() {
             throw new Error(
                 `HTTP ${response.status}`
             );
-
         }
 
 
@@ -721,19 +1429,16 @@ async function loadFinalBill() {
             result;
 
 
-        if (
-            !bill
-        ) {
+        if (!bill) {
 
             throw new Error(
                 "Bill not found."
             );
-
         }
 
 
         console.log(
-            "FINAL BILL OBJECT:",
+            "FINAL DATABASE BILL:",
             bill
         );
 
@@ -743,8 +1448,8 @@ async function loadFinalBill() {
         // ====================================================
         //
         // DO NOT GENERATE.
-        //
-        // Database-generated number only.
+        // DO NOT MODIFY.
+        // DATABASE ONLY.
         //
         // ====================================================
 
@@ -755,7 +1460,6 @@ async function loadFinalBill() {
             billNoElement.textContent =
                 bill.bill_no ||
                 "---";
-
         }
 
 
@@ -767,7 +1471,6 @@ async function loadFinalBill() {
                 "savedBillNo",
                 bill.bill_no
             );
-
         }
 
 
@@ -775,8 +1478,10 @@ async function loadFinalBill() {
         // CUSTOMER
         // ====================================================
         //
-        // FIRST DATABASE
-        // THEN LOCAL BILL.JS DATA
+        // DATABASE FIRST.
+        // LOCAL STORAGE SECOND.
+        //
+        // CUSTOMER NUMBER / CUSTOMER ID IS NOT GENERATED.
         //
         // ====================================================
 
@@ -805,29 +1510,12 @@ async function loadFinalBill() {
             "-";
 
 
-        console.log(
-            "CUSTOMER FINAL:",
-            customerName
-        );
-
-        console.log(
-            "MOBILE FINAL:",
-            customerMobile
-        );
-
-        console.log(
-            "PLACE FINAL:",
-            customerPlace
-        );
-
-
         if (
             customerNameElement
         ) {
 
             customerNameElement.textContent =
                 customerName;
-
         }
 
 
@@ -837,7 +1525,6 @@ async function loadFinalBill() {
 
             customerMobileElement.textContent =
                 customerMobile;
-
         }
 
 
@@ -847,7 +1534,6 @@ async function loadFinalBill() {
 
             customerPlaceElement.textContent =
                 customerPlace;
-
         }
 
 
@@ -869,7 +1555,6 @@ async function loadFinalBill() {
                 formatDate(
                     billDate
                 );
-
         }
 
 
@@ -891,7 +1576,6 @@ async function loadFinalBill() {
                 formatTime(
                     billTime
                 );
-
         }
 
 
@@ -948,7 +1632,6 @@ async function loadFinalBill() {
         ) {
 
             grandTotal = 0;
-
         }
 
 
@@ -968,7 +1651,6 @@ async function loadFinalBill() {
 
             advanceAmount =
                 grandTotal;
-
         }
 
 
@@ -986,12 +1668,11 @@ async function loadFinalBill() {
         ) {
 
             balanceAmount = 0;
-
         }
 
 
         // ====================================================
-        // DISPLAY TOTALS
+        // DISPLAY WOOD TOTAL
         // ====================================================
 
         if (
@@ -1002,9 +1683,12 @@ async function loadFinalBill() {
                 money(
                     woodTotal
                 );
-
         }
 
+
+        // ====================================================
+        // DISPLAY OTHER TOTAL
+        // ====================================================
 
         if (
             othersTotalElement
@@ -1014,9 +1698,12 @@ async function loadFinalBill() {
                 money(
                     othersTotal
                 );
-
         }
 
+
+        // ====================================================
+        // DISPLAY SUBTOTAL
+        // ====================================================
 
         if (
             subtotalAmountElement
@@ -1026,7 +1713,6 @@ async function loadFinalBill() {
                 money(
                     subtotal
                 );
-
         }
 
 
@@ -1038,7 +1724,6 @@ async function loadFinalBill() {
                 money(
                     subtotal
                 );
-
         }
 
 
@@ -1056,7 +1741,6 @@ async function loadFinalBill() {
 
                 discountRow.style.display =
                     "flex";
-
             }
 
 
@@ -1069,11 +1753,9 @@ async function loadFinalBill() {
                     money(
                         discount
                     );
-
             }
 
-        }
-        else {
+        } else {
 
             if (
                 discountRow
@@ -1081,9 +1763,7 @@ async function loadFinalBill() {
 
                 discountRow.style.display =
                     "none";
-
             }
-
         }
 
 
@@ -1099,7 +1779,6 @@ async function loadFinalBill() {
                 money(
                     grandTotal
                 );
-
         }
 
 
@@ -1115,7 +1794,6 @@ async function loadFinalBill() {
                 money(
                     advanceAmount
                 );
-
         }
 
 
@@ -1127,7 +1805,6 @@ async function loadFinalBill() {
                 advanceAmount > 0
                     ? "flex"
                     : "none";
-
         }
 
 
@@ -1143,7 +1820,6 @@ async function loadFinalBill() {
                 money(
                     balanceAmount
                 );
-
         }
 
 
@@ -1165,7 +1841,6 @@ async function loadFinalBill() {
                     woodData,
                     []
                 );
-
         }
 
 
@@ -1176,13 +1851,11 @@ async function loadFinalBill() {
         ) {
 
             woodData = [];
-
         }
 
 
         // ====================================================
-        // FALLBACK TO LOCAL BILL DATA
-        // SAME AS BILL.JS
+        // LOCAL WOOD FALLBACK
         // ====================================================
 
         if (
@@ -1202,9 +1875,7 @@ async function loadFinalBill() {
 
                 woodData =
                     localWood.calculations;
-
             }
-
         }
 
 
@@ -1220,11 +1891,6 @@ async function loadFinalBill() {
         );
 
 
-        console.table(
-            woodData
-        );
-
-
         // ====================================================
         // DISPLAY WOOD
         // ====================================================
@@ -1235,7 +1901,7 @@ async function loadFinalBill() {
 
 
         // ====================================================
-        // OTHER CHARGES
+        // OTHER CHARGES DATA
         // ====================================================
 
         let othersData =
@@ -1252,7 +1918,6 @@ async function loadFinalBill() {
                     othersData,
                     []
                 );
-
         }
 
 
@@ -1263,12 +1928,11 @@ async function loadFinalBill() {
         ) {
 
             othersData = [];
-
         }
 
 
         // ====================================================
-        // FALLBACK TO LOCAL BILL.JS DATA
+        // LOCAL OTHER DATA FALLBACK
         // ====================================================
 
         if (
@@ -1286,10 +1950,6 @@ async function loadFinalBill() {
                 [];
 
 
-            // ------------------------------------------------
-            // CREATE CHARGES FROM BILL.JS DATA
-            // ------------------------------------------------
-
             if (
                 Array.isArray(
                     localOthers
@@ -1298,13 +1958,8 @@ async function loadFinalBill() {
 
                 othersData =
                     localOthers;
-
             }
 
-
-            // ------------------------------------------------
-            // IF LABOUR DATA EXISTS
-            // ------------------------------------------------
 
             if (
                 Array.isArray(
@@ -1314,25 +1969,12 @@ async function loadFinalBill() {
 
                 othersData =
                     localLabour.charges;
-
             }
-
         }
 
 
-        console.log(
-            "OTHER CHARGES DATA:",
-            othersData
-        );
-
-
-        console.table(
-            othersData
-        );
-
-
         // ====================================================
-        // DISPLAY OTHER CHARGES
+        // DISPLAY CHARGES
         // ====================================================
 
         loadOtherCharges(
@@ -1342,7 +1984,7 @@ async function loadFinalBill() {
 
 
         // ====================================================
-        // CFT
+        // CFT SUMMARY
         // ====================================================
 
         loadCftSummary(
@@ -1378,8 +2020,32 @@ async function loadFinalBill() {
         );
 
 
+        localStorage.setItem(
+            "subtotal",
+            String(
+                subtotal
+            )
+        );
+
+
+        localStorage.setItem(
+            "woodTotal",
+            String(
+                woodTotal
+            )
+        );
+
+
+        localStorage.setItem(
+            "othersTotal",
+            String(
+                othersTotal
+            )
+        );
+
+
         // ====================================================
-        // DEBUG SUMMARY
+        // DEBUG
         // ====================================================
 
         console.log(
@@ -1459,9 +2125,8 @@ async function loadFinalBill() {
             "=========================================="
         );
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "=========================================="
@@ -1480,969 +2145,7 @@ async function loadFinalBill() {
         alert(
             "Unable to load final bill."
         );
-
     }
-
-}
-
-
-// ============================================================
-// LOAD WOOD DATA
-// ============================================================
-//
-// ONE CALCULATION = ONE ROW
-//
-// Length example:
-//
-// 9 → 4
-// 5 → 6
-//
-// ============================================================
-
-function loadWoodData(
-    woodData
-) {
-
-    if (
-        !woodTable
-    ) {
-
-        console.error(
-            "woodTable not found."
-        );
-
-        return;
-
-    }
-
-
-    woodTable.innerHTML =
-        "";
-
-
-    if (
-        !Array.isArray(
-            woodData
-        ) ||
-        woodData.length === 0
-    ) {
-
-        woodTable.innerHTML = `
-
-            <tr>
-
-                <td colspan="10">
-                    No wood data
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    let sno = 1;
-
-
-    woodData.forEach(
-        function (
-            item
-        ) {
-
-            if (
-                !item
-            ) {
-
-                return;
-
-            }
-
-
-            // =================================================
-            // WOOD NAME
-            // =================================================
-
-            let woodName =
-                item.woodType ||
-                item.wood ||
-                item.woodName ||
-                "";
-
-
-            if (
-                woodName ===
-                "Other"
-            ) {
-
-                woodName =
-                    item.otherWood ||
-                    "Other";
-
-            }
-
-
-            if (
-                !woodName
-            ) {
-
-                woodName =
-                    "-";
-
-            }
-
-
-            // =================================================
-            // SIZE
-            // =================================================
-
-            const breadth =
-                numberValue(
-                    item.breadth
-                );
-
-
-            const thickness =
-                numberValue(
-                    item.thickness
-                );
-
-
-            let size =
-                "-";
-
-
-            if (
-                breadth > 0 &&
-                thickness > 0
-            ) {
-
-                size =
-                    `${breadth} × ${thickness}`;
-
-            }
-            else if (
-                breadth > 0
-            ) {
-
-                size =
-                    String(
-                        breadth
-                    );
-
-            }
-            else if (
-                thickness > 0
-            ) {
-
-                size =
-                    String(
-                        thickness
-                    );
-
-            }
-
-
-            // =================================================
-            // QUALITY
-            // =================================================
-
-            const quality =
-                item.quality !==
-                    undefined &&
-                item.quality !== ""
-                    ? item.quality
-                    : "-";
-
-
-            // =================================================
-            // PIECES
-            // =================================================
-
-            const pieces =
-                Array.isArray(
-                    item.pieces
-                )
-                    ? item.pieces
-                    : [];
-
-
-            // =================================================
-            // LENGTH VALUES
-            // =================================================
-
-            let lengthValues =
-                [];
-
-
-            pieces.forEach(
-                function (
-                    piece
-                ) {
-
-                    if (
-                        !piece
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const length =
-                        numberValue(
-                            piece.length
-                        );
-
-
-                    const extraLength =
-                        numberValue(
-                            piece.extraLength
-                        );
-
-
-                    const finalLength =
-                        length +
-                        extraLength;
-
-
-                    const qty =
-                        numberValue(
-                            piece.qty
-                        );
-
-
-                    if (
-                        finalLength > 0
-                    ) {
-
-                        lengthValues.push({
-
-                            length:
-                                finalLength,
-
-                            qty:
-                                qty
-
-                        });
-
-                    }
-
-                }
-            );
-
-
-            // =================================================
-            // DIRECT LENGTH FALLBACK
-            // =================================================
-
-            if (
-                lengthValues.length === 0 &&
-                item.length !==
-                    undefined
-            ) {
-
-                const directLength =
-                    numberValue(
-                        item.length
-                    );
-
-
-                const directQty =
-                    numberValue(
-                        item.qty
-                    );
-
-
-                if (
-                    directLength > 0
-                ) {
-
-                    lengthValues.push({
-
-                        length:
-                            directLength,
-
-                        qty:
-                            directQty
-
-                    });
-
-                }
-
-            }
-
-
-            // =================================================
-            // LENGTH DISPLAY
-            // =================================================
-
-            let lengthText =
-                "-";
-
-
-            if (
-                lengthValues.length > 0
-            ) {
-
-                lengthText =
-                    lengthValues
-                        .map(
-                            function (
-                                value
-                            ) {
-
-                                return (
-                                    `${value.length} → ${value.qty}`
-                                );
-
-                            }
-                        )
-                        .join(
-                            "<br>"
-                        );
-
-            }
-
-
-            // =================================================
-            // TOTAL QTY
-            // =================================================
-
-            let totalQty =
-                0;
-
-
-            pieces.forEach(
-                function (
-                    piece
-                ) {
-
-                    if (
-                        !piece
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    totalQty +=
-                        numberValue(
-                            piece.qty
-                        );
-
-                }
-            );
-
-
-            if (
-                totalQty === 0 &&
-                item.qty !==
-                    undefined
-            ) {
-
-                totalQty =
-                    numberValue(
-                        item.qty
-                    );
-
-            }
-
-
-            // =================================================
-            // TOTAL LENGTH
-            // =================================================
-
-            let totalLength =
-                numberValue(
-                    item.totalLength
-                );
-
-
-            if (
-                totalLength === 0
-            ) {
-
-                pieces.forEach(
-                    function (
-                        piece
-                    ) {
-
-                        if (
-                            !piece
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        const length =
-                            numberValue(
-                                piece.length
-                            );
-
-
-                        const extraLength =
-                            numberValue(
-                                piece.extraLength
-                            );
-
-
-                        const qty =
-                            numberValue(
-                                piece.qty
-                            );
-
-
-                        totalLength +=
-                            (
-                                length +
-                                extraLength
-                            ) *
-                            qty;
-
-                    }
-                );
-
-            }
-
-
-            // =================================================
-            // CFT
-            // =================================================
-
-            const cubicFeet =
-                numberValue(
-                    item.cubicFeet
-                );
-
-
-            // =================================================
-            // RATE
-            // =================================================
-
-            const rate =
-                numberValue(
-                    item.rate
-                );
-
-
-            // =================================================
-            // AMOUNT
-            // =================================================
-
-            const amount =
-                numberValue(
-                    item.amount
-                );
-
-
-            // =================================================
-            // CREATE ROW
-            // =================================================
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${sno}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        woodName
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        size
-                    )}
-                </td>
-
-                <td>
-                    ${lengthText}
-                </td>
-
-                <td>
-                    ${totalQty}
-                </td>
-
-                <td>
-                    ${totalLength.toFixed(2)}
-                </td>
-
-                <td>
-                    ${cubicFeet.toFixed(2)}
-                </td>
-
-                <td>
-                    ${money(
-                        rate
-                    )}
-                </td>
-
-                <td>
-                    ${money(
-                        amount
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        quality
-                    )}
-                </td>
-
-            `;
-
-
-            woodTable.appendChild(
-                row
-            );
-
-
-            console.log(
-                "WOOD CALCULATION:",
-                sno,
-                {
-                    wood:
-                        woodName,
-
-                    size:
-                        size,
-
-                    lengths:
-                        lengthValues,
-
-                    qty:
-                        totalQty,
-
-                    totalLength:
-                        totalLength,
-
-                    cft:
-                        cubicFeet,
-
-                    rate:
-                        rate,
-
-                    amount:
-                        amount,
-
-                    quality:
-                        quality
-                }
-            );
-
-
-            sno++;
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// LOAD OTHER CHARGES
-// ============================================================
-//
-// IMPORTANT:
-//
-// Database charges are used first.
-// If database does not contain charge details,
-// bill.js local data is used.
-//
-// ============================================================
-
-function loadOtherCharges(
-    bill,
-    othersData
-) {
-
-    if (
-        !chargeTable
-    ) {
-
-        console.error(
-            "chargeTable not found."
-        );
-
-        return;
-
-    }
-
-
-    chargeTable.innerHTML =
-        "";
-
-
-    let sno = 1;
-
-    let hasCharge =
-        false;
-
-
-    // =================================================
-    // LABOUR CHARGE
-    // =================================================
-
-    const labour =
-        numberValue(
-            bill.labour_charge
-        );
-
-
-    if (
-        labour > 0
-    ) {
-
-        hasCharge =
-            true;
-
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${sno++}
-            </td>
-
-            <td>
-                Labour Charge
-            </td>
-
-            <td>
-                ${money(
-                    labour
-                )}
-            </td>
-
-        `;
-
-
-        chargeTable.appendChild(
-            row
-        );
-
-    }
-
-
-    // =================================================
-    // OTHER CHARGE
-    // =================================================
-
-    const otherCharge =
-        numberValue(
-            bill.other_charge
-        );
-
-
-    if (
-        otherCharge > 0
-    ) {
-
-        hasCharge =
-            true;
-
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-
-        row.innerHTML = `
-
-            <td>
-                ${sno++}
-            </td>
-
-            <td>
-                Other Charge
-            </td>
-
-            <td>
-                ${money(
-                    otherCharge
-                )}
-            </td>
-
-        `;
-
-
-        chargeTable.appendChild(
-            row
-        );
-
-    }
-
-
-    // =================================================
-    // ADDITIONAL CHARGES
-    // =================================================
-
-    if (
-        Array.isArray(
-            othersData
-        )
-    ) {
-
-        othersData.forEach(
-            function (
-                item
-            ) {
-
-                if (
-                    !item
-                ) {
-
-                    return;
-
-                }
-
-
-                const amount =
-                    numberValue(
-                        item.amount ||
-                        item.charge ||
-                        item.value
-                    );
-
-
-                if (
-                    amount <= 0
-                ) {
-
-                    return;
-
-                }
-
-
-                const name =
-                    item.name ||
-                    item.reason ||
-                    item.title ||
-                    item.description ||
-                    "Other Charge";
-
-
-                hasCharge =
-                    true;
-
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${sno++}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            name
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(
-                            amount
-                        )}
-                    </td>
-
-                `;
-
-
-                chargeTable.appendChild(
-                    row
-                );
-
-            }
-        );
-
-    }
-
-
-    // =================================================
-    // IF NO CHARGE
-    // =================================================
-
-    if (
-        !hasCharge
-    ) {
-
-        chargeTable.innerHTML = `
-
-            <tr>
-
-                <td>
-                    -
-                </td>
-
-                <td>
-                    -
-                </td>
-
-                <td>
-                    -
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-
-    console.log(
-        "OTHER CHARGES DISPLAYED:",
-        hasCharge
-    );
-
-}
-
-
-// ============================================================
-// CFT SUMMARY
-// ============================================================
-//
-// EACH CALCULATION SEPARATE
-//
-// ============================================================
-
-function loadCftSummary(
-    woodData
-) {
-
-    if (
-        !cftSummary
-    ) {
-
-        return;
-
-    }
-
-
-    cftSummary.innerHTML =
-        "";
-
-
-    if (
-        !Array.isArray(
-            woodData
-        ) ||
-        woodData.length === 0
-    ) {
-
-        cftSummary.innerHTML =
-            "<p>-</p>";
-
-        return;
-
-    }
-
-
-    woodData.forEach(
-        function (
-            item,
-            index
-        ) {
-
-            if (
-                !item
-            ) {
-
-                return;
-
-            }
-
-
-            let woodName =
-                item.woodType ||
-                item.wood ||
-                item.woodName ||
-                "-";
-
-
-            if (
-                woodName ===
-                "Other"
-            ) {
-
-                woodName =
-                    item.otherWood ||
-                    "Other";
-
-            }
-
-
-            const quality =
-                item.quality !==
-                    undefined &&
-                item.quality !== ""
-                    ? item.quality
-                    : "-";
-
-
-            const cft =
-                numberValue(
-                    item.cubicFeet
-                );
-
-
-            const p =
-                document.createElement(
-                    "p"
-                );
-
-
-            p.innerHTML = `
-
-                <b>
-                    ${index + 1}.
-                    ${escapeHTML(
-                        woodName
-                    )}
-                    (${escapeHTML(
-                        quality
-                    )})
-                </b>
-
-                <span>
-                    : ${cft.toFixed(2)}
-                    CFT
-                </span>
-
-            `;
-
-
-            cftSummary.appendChild(
-                p
-            );
-
-        }
-    );
-
 }
 
 
@@ -2456,18 +2159,15 @@ if (
 
     printBtn.addEventListener(
         "click",
-        function () {
+        function() {
 
             console.log(
                 "PRINT BILL"
             );
 
-
             window.print();
-
         }
     );
-
 }
 
 
@@ -2481,7 +2181,7 @@ if (
 
     homeBtn.addEventListener(
         "click",
-        function () {
+        function() {
 
             localStorage.removeItem(
                 "savedBillId"
@@ -2498,10 +2198,8 @@ if (
 
             window.location.href =
                 "../html/index.html";
-
         }
     );
-
 }
 
 
@@ -2515,7 +2213,7 @@ if (
 
     clearBtn.addEventListener(
         "click",
-        function () {
+        function() {
 
             const ok =
                 confirm(
@@ -2523,12 +2221,8 @@ if (
                 );
 
 
-            if (
-                !ok
-            ) {
-
+            if (!ok) {
                 return;
-
             }
 
 
@@ -2552,6 +2246,12 @@ if (
             localStorage.removeItem(
                 "savedBillNo"
             );
+
+
+            // IMPORTANT:
+            // Existing customer ID is only cleared
+            // because this is the existing CLEAR behavior.
+            // No new customer ID is generated.
 
             localStorage.removeItem(
                 "savedCustomerId"
@@ -2707,10 +2407,8 @@ if (
 
             window.location.href =
                 "../html/index.html";
-
         }
     );
-
 }
 
 
@@ -2721,6 +2419,5 @@ if (
 console.log(
     "STARTING CBILL..."
 );
-
 
 loadFinalBill();

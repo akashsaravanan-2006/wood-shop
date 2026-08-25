@@ -13,119 +13,258 @@
 
     <link
         rel="stylesheet"
-        href="../css/history.css">
+        href="../css/history.css?v=30">
 
 </head>
 
+
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <!-- ===================================
-             HEADER
-        ==================================== -->
 
-        <div class="header">
+    <!-- =========================================
+         HEADER
+    ========================================== -->
 
-            <h1>Bill History</h1>
+    <div class="header">
 
-            <button id="homeBtn">
-                Home
-            </button>
+        <h1>
+            Bill History
+        </h1>
+
+        <button
+            type="button"
+            id="homeBtn">
+
+            Home
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================================
+         SEARCH
+    ========================================== -->
+
+    <div class="searchBox">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search Bill No / Customer ID / Name / Mobile / Place"
+            autocomplete="off">
+
+        <button
+            type="button"
+            id="searchBtn">
+
+            Search
+
+        </button>
+
+
+        <button
+            type="button"
+            id="refreshBtn">
+
+            Refresh
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================================
+         FILTER
+    ========================================== -->
+
+    <div class="filterBox">
+
+        <label for="statusFilter">
+            Filter Bills
+        </label>
+
+        <select id="statusFilter">
+
+            <option value="all">
+                All Bills
+            </option>
+
+            <option value="pending">
+                Pending Bills
+            </option>
+
+            <option value="finished">
+                Finished / Delivered
+            </option>
+
+            <option value="return">
+                Return Bills
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- =========================================
+         SUMMARY
+    ========================================== -->
+
+    <div class="summary">
+
+
+        <div class="summaryCard">
+
+            <span>
+                Total Bills
+            </span>
+
+            <strong id="totalBills">
+                0
+            </strong>
 
         </div>
 
 
-        <!-- ===================================
-             SEARCH
-        ==================================== -->
+        <div class="summaryCard pendingSummary">
 
-        <div class="searchBox">
+            <span>
+                Pending Bills
+            </span>
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search Bill No / Customer ID / Name / Mobile">
-
-            <button id="searchBtn">
-                Search
-            </button>
-
-            <button id="refreshBtn">
-                Refresh
-            </button>
+            <strong id="pendingBills">
+                0
+            </strong>
 
         </div>
 
 
-        <!-- ===================================
-             SUMMARY
-        ==================================== -->
+        <div class="summaryCard finishedSummary">
 
-        <div class="summary">
+            <span>
+                Finished Bills
+            </span>
 
-            <div>
-                <span>Total Bills</span>
-                <strong id="totalBills">0</strong>
-            </div>
-
-            <div>
-                <span>Pending Bills</span>
-                <strong id="pendingBills">0</strong>
-            </div>
-
-            <div>
-                <span>Paid Bills</span>
-                <strong id="paidBills">0</strong>
-            </div>
+            <strong id="finishedBills">
+                0
+            </strong>
 
         </div>
 
 
-        <!-- ===================================
-             TABLE
-        ==================================== -->
+        <div class="summaryCard returnSummary">
 
-        <div class="tableContainer">
+            <span>
+                Return Bills
+            </span>
 
-            <table id="historyTable">
-
-               <thead>
-
-<thead>
-    <tr>
-        <th>S.No</th>
-        <th>Bill No</th>
-        <th>Customer ID</th>
-        <th>Customer Name</th>
-        <th>Mobile</th>
-        <th>Place</th>
-        <th>Date</th>
-        <th>Payment Type</th>
-        <th>Payment Mode</th>
-        <th>Grand Total</th>
-        <th>Advance</th>
-        <th>Balance</th>
-        <th>Return</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-</thead>
-
-<tbody id="historyBody"></tbody>
-
-                    <!-- MySQL data -->
-
-                </tbody>
-
-            </table>
+            <strong id="returnBills">
+                0
+            </strong>
 
         </div>
 
     </div>
 
 
-    <script src="../js/history.js"></script>
+    <!-- =========================================
+         TABLE
+    ========================================== -->
+
+    <div class="tableContainer">
+
+        <table id="historyTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        S.No
+                    </th>
+
+                    <th>
+                        Bill No
+                    </th>
+
+                    <th>
+                        Customer ID
+                    </th>
+
+                    <th>
+                        Customer Name
+                    </th>
+
+                    <th>
+                        Mobile
+                    </th>
+
+                    <th>
+                        Place
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Payment Mode
+                    </th>
+
+                    <th>
+                        Grand Total
+                    </th>
+
+                    <th>
+                        Advance
+                    </th>
+
+                    <th>
+                        Balance
+                    </th>
+
+                    <th>
+                        Return
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="historyBody">
+
+                <tr>
+
+                    <td colspan="14">
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+<script src="../js/history.js?v=30"></script>
+
 
 </body>
 

@@ -1,14 +1,16 @@
 // =====================================================
 // HISTORY.JS
+// BILL HISTORY + PDF
 // =====================================================
 
-console.log("=======================================");
+console.log("======================================");
 console.log("HISTORY.JS LOADED");
-console.log("=======================================");
+console.log("HISTORY VERSION 50");
+console.log("======================================");
 
 
 // =====================================================
-// BACKEND API
+// BACKEND
 // =====================================================
 
 const API_URL =
@@ -37,7 +39,6 @@ const homeBtn =
 const statusFilter =
     document.getElementById("statusFilter");
 
-
 const totalBills =
     document.getElementById("totalBills");
 
@@ -59,10 +60,10 @@ let allBills = [];
 
 
 // =====================================================
-// NUMBER HELPER
+// NUMBER
 // =====================================================
 
-function money(value) {
+function numberValue(value) {
 
     const number =
         Number(value);
@@ -81,7 +82,29 @@ function money(value) {
 
 
 // =====================================================
-// HTML ESCAPE
+// MONEY
+// =====================================================
+
+function money(value) {
+
+    return numberValue(value);
+
+}
+
+
+// =====================================================
+// FORMAT MONEY
+// =====================================================
+
+function formatMoney(value) {
+
+    return money(value).toFixed(2);
+
+}
+
+
+// =====================================================
+// ESCAPE HTML
 // =====================================================
 
 function escapeHtml(value) {
@@ -97,7 +120,71 @@ function escapeHtml(value) {
 
 
 // =====================================================
-// GET BILL ID
+// PARSE JSON SAFELY
+// =====================================================
+
+function parseJSON(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return [];
+
+    }
+
+
+    if (
+        Array.isArray(value)
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value === "object"
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value === "string"
+    ) {
+
+        try {
+
+            return JSON.parse(value);
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "JSON PARSE ERROR:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+
+    return [];
+
+}
+
+
+// =====================================================
+// BILL ID
 // =====================================================
 
 function getBillId(bill) {
@@ -107,14 +194,14 @@ function getBillId(bill) {
         bill.bill_id ??
         bill.billId ??
         bill._id ??
-        bill.bill_no
+        ""
     );
 
 }
 
 
 // =====================================================
-// GET RETURN AMOUNT
+// RETURN AMOUNT
 // =====================================================
 
 function getReturnAmount(bill) {
@@ -122,8 +209,6 @@ function getReturnAmount(bill) {
     return money(
         bill.return_amount ??
         bill.returnAmount ??
-        bill.return_total ??
-        bill.returnTotal ??
         0
     );
 
@@ -131,53 +216,19 @@ function getReturnAmount(bill) {
 
 
 // =====================================================
-// CHECK RETURN
+// STATUS
 // =====================================================
 
-function isReturned(bill) {
-
-    const status =
-        String(
-            bill.status ??
-            bill.bill_status ??
-            bill.billStatus ??
-            ""
-        )
-        .trim()
-        .toLowerCase();
+function getStatus(bill) {
 
     const returnAmount =
         getReturnAmount(bill);
 
 
-    return (
-        status === "return" ||
-        status === "returned" ||
-        status === "return bill" ||
-        returnAmount > 0
-    );
-
-}
-
-
-// =====================================================
-// CHECK PENDING
-// =====================================================
-
-function isPending(bill) {
-
-    if (isReturned(bill)) {
-
-        return false;
-
-    }
-
-
-    const explicitStatus =
+    const status =
         String(
             bill.status ??
             bill.bill_status ??
-            bill.billStatus ??
             ""
         )
         .trim()
@@ -185,61 +236,9 @@ function isPending(bill) {
 
 
     if (
-        explicitStatus === "pending"
-    ) {
-
-        return true;
-
-    }
-
-
-    if (
-        explicitStatus === "delivered" ||
-        explicitStatus === "finished" ||
-        explicitStatus === "paid" ||
-        explicitStatus === "completed"
-    ) {
-
-        return false;
-
-    }
-
-
-    const balance =
-        money(
-            bill.balance_amount ??
-            bill.balanceAmount ??
-            0
-        );
-
-
-    return balance > 0;
-
-}
-
-
-// =====================================================
-// CHECK FINISHED
-// =====================================================
-
-function isFinished(bill) {
-
-    return (
-        !isReturned(bill) &&
-        !isPending(bill)
-    );
-
-}
-
-
-// =====================================================
-// GET STATUS
-// =====================================================
-
-function getStatus(bill) {
-
-    if (
-        isReturned(bill)
+        returnAmount > 0 ||
+        status === "return" ||
+        status === "returned"
     ) {
 
         return "return";
@@ -247,8 +246,14 @@ function getStatus(bill) {
     }
 
 
+    const balance =
+        money(
+            bill.balance_amount
+        );
+
+
     if (
-        isPending(bill)
+        balance > 0
     ) {
 
         return "pending";
@@ -262,7 +267,7 @@ function getStatus(bill) {
 
 
 // =====================================================
-// GET STATUS TEXT
+// STATUS TEXT
 // =====================================================
 
 function getStatusText(bill) {
@@ -295,26 +300,35 @@ function getStatusText(bill) {
 
 
 // =====================================================
-// GET PAYMENT MODE
+// PAYMENT TYPE
+// =====================================================
+
+function getPaymentType(bill) {
+
+    return (
+        bill.payment_type ??
+        bill.paymentType ??
+        "-"
+    );
+
+}
+
+
+// =====================================================
+// PAYMENT MODE
 // =====================================================
 
 function getPaymentMode(bill) {
 
     const mode =
-        String(
-            bill.payment_mode ??
-            bill.paymentMode ??
-            bill.payment_method ??
-            bill.paymentMethod ??
-            bill.mode ??
-            ""
-        )
-        .trim()
-        .toLowerCase();
+        bill.payment_mode ??
+        bill.paymentMode ??
+        "";
 
 
     if (
-        mode === "upi"
+        String(mode)
+            .toLowerCase() === "upi"
     ) {
 
         return "UPI";
@@ -323,7 +337,8 @@ function getPaymentMode(bill) {
 
 
     if (
-        mode === "cash"
+        String(mode)
+            .toLowerCase() === "cash"
     ) {
 
         return "CASH";
@@ -372,31 +387,126 @@ function formatDate(value) {
 
 
 // =====================================================
-// LOAD BILLS
+// GET WOOD DATA
+// =====================================================
+
+function getWoodData(bill) {
+
+    return parseJSON(
+        bill.wood_data ??
+        bill.woodData ??
+        []
+    );
+
+}
+
+
+// =====================================================
+// GET OTHERS DATA
+// =====================================================
+
+function getOthersData(bill) {
+
+    return parseJSON(
+        bill.others_data ??
+        bill.othersData ??
+        []
+    );
+
+}
+
+
+// =====================================================
+// GET DISCOUNT
+// =====================================================
+
+function getDiscount(bill) {
+
+    return money(
+        bill.discount_amount ??
+        bill.discountAmount ??
+        bill.discount ??
+        0
+    );
+
+}
+
+
+// =====================================================
+// GET CUSTOMER NAME
+// =====================================================
+
+function getCustomerName(bill) {
+
+    return (
+        bill.customer_name ??
+        bill.customerName ??
+        ""
+    );
+
+}
+
+
+// =====================================================
+// GET CUSTOMER MOBILE
+// =====================================================
+
+function getCustomerMobile(bill) {
+
+    return (
+        bill.customer_mobile ??
+        bill.customerMobile ??
+        ""
+    );
+
+}
+
+
+// =====================================================
+// GET CUSTOMER PLACE
+// =====================================================
+
+function getCustomerPlace(bill) {
+
+    return (
+        bill.customer_place ??
+        bill.customerPlace ??
+        ""
+    );
+
+}
+
+
+// =====================================================
+// LOAD ALL BILLS
 // =====================================================
 
 async function loadBills() {
 
     console.log(
-        "LOADING BILL HISTORY"
+        "Loading bill history..."
     );
 
 
-    historyBody.innerHTML = `
+    if (historyBody) {
 
-        <tr>
+        historyBody.innerHTML = `
 
-            <td
-                colspan="14"
-                class="noData">
+            <tr>
 
-                Loading bills...
+                <td
+                    colspan="14"
+                    class="noData">
 
-            </td>
+                    Loading...
 
-        </tr>
+                </td>
 
-    `;
+            </tr>
+
+        `;
+
+    }
 
 
     try {
@@ -418,21 +528,7 @@ async function loadBills() {
             );
 
 
-        console.log(
-            "History response:",
-            response.status
-        );
-
-
         if (!response.ok) {
-
-            const errorText =
-                await response.text();
-
-            console.error(
-                "Backend error:",
-                errorText
-            );
 
             throw new Error(
                 `HTTP ${response.status}`
@@ -446,20 +542,17 @@ async function loadBills() {
 
 
         console.log(
-            "HISTORY DATA:",
+            "HISTORY RESPONSE:",
             data
         );
 
-
-        // -----------------------------------------
-        // SUPPORT DIFFERENT API RESPONSE FORMATS
-        // -----------------------------------------
 
         if (
             Array.isArray(data)
         ) {
 
-            allBills = data;
+            allBills =
+                data;
 
         }
 
@@ -480,17 +573,6 @@ async function loadBills() {
 
             allBills =
                 data.result;
-
-        }
-
-        else if (
-            data &&
-            data.success &&
-            Array.isArray(data.data)
-        ) {
-
-            allBills =
-                data.data;
 
         }
 
@@ -516,32 +598,30 @@ async function loadBills() {
     catch (error) {
 
         console.error(
-            "HISTORY LOAD ERROR:",
+            "HISTORY ERROR:",
             error
         );
 
 
-        historyBody.innerHTML = `
+        if (historyBody) {
 
-            <tr>
+            historyBody.innerHTML = `
 
-                <td
-                    colspan="14"
-                    class="noData">
+                <tr>
 
-                    ❌ Unable to load bill history
+                    <td
+                        colspan="14"
+                        class="noData">
 
-                </td>
+                        ❌ Unable to load bill history
 
-            </tr>
+                    </td>
 
-        `;
+                </tr>
 
+            `;
 
-        updateSummary(
-            [],
-            allBills
-        );
+        }
 
     }
 
@@ -549,12 +629,19 @@ async function loadBills() {
 
 
 // =====================================================
-// DISPLAY BILLS
+// DISPLAY HISTORY
 // =====================================================
 
 function displayBills(
     bills
 ) {
+
+    if (!historyBody) {
+
+        return;
+
+    }
+
 
     historyBody.innerHTML = "";
 
@@ -594,44 +681,51 @@ function displayBills(
             const status =
                 getStatus(bill);
 
-            const statusText =
-                getStatusText(bill);
+
+            const billId =
+                getBillId(bill);
 
 
             const grandTotal =
                 money(
-                    bill.grand_total ??
-                    bill.grandTotal ??
-                    0
+                    bill.grand_total
                 );
 
 
             const advance =
                 money(
-                    bill.advance_amount ??
-                    bill.advanceAmount ??
-                    0
+                    bill.advance_amount
                 );
 
 
             const balance =
                 money(
-                    bill.balance_amount ??
-                    bill.balanceAmount ??
-                    0
+                    bill.balance_amount
                 );
 
 
             const returnAmount =
-                getReturnAmount(
-                    bill
-                );
+                getReturnAmount(bill);
+
+
+            const paymentType =
+                getPaymentType(bill);
 
 
             const paymentMode =
-                getPaymentMode(
-                    bill
-                );
+                getPaymentMode(bill);
+
+
+            const customerName =
+                getCustomerName(bill);
+
+
+            const customerMobile =
+                getCustomerMobile(bill);
+
+
+            const customerPlace =
+                getCustomerPlace(bill);
 
 
             const row =
@@ -641,7 +735,7 @@ function displayBills(
 
 
             // -----------------------------------------
-            // FIXED ROW COLOUR
+            // ROW COLOUR
             // -----------------------------------------
 
             if (
@@ -671,11 +765,11 @@ function displayBills(
 
 
             // -----------------------------------------
-            // PAYMENT PILL
+            // PAYMENT
             // -----------------------------------------
 
             let paymentHTML =
-                `<span>-</span>`;
+                "-";
 
 
             if (
@@ -695,7 +789,8 @@ function displayBills(
 
             }
 
-            else if (
+
+            if (
                 paymentMode === "UPI"
             ) {
 
@@ -715,12 +810,6 @@ function displayBills(
 
             // -----------------------------------------
             // RETURN AMOUNT
-            //
-            // Normal bill:
-            // blank
-            //
-            // Returned bill:
-            // ₹ amount
             // -----------------------------------------
 
             let returnHTML =
@@ -728,7 +817,6 @@ function displayBills(
 
 
             if (
-                status === "return" &&
                 returnAmount > 0
             ) {
 
@@ -737,7 +825,7 @@ function displayBills(
                     <span
                         class="returnAmount">
 
-                        ₹ ${returnAmount.toFixed(2)}
+                        ₹ ${formatMoney(returnAmount)}
 
                     </span>
 
@@ -750,14 +838,14 @@ function displayBills(
             // RETURN BUTTON
             // -----------------------------------------
 
-            let returnButtonHTML = "";
+            let returnHTMLButton = "";
 
 
             if (
                 status === "return"
             ) {
 
-                returnButtonHTML = `
+                returnHTMLButton = `
 
                     <div class="actionBox">
 
@@ -778,16 +866,14 @@ function displayBills(
 
             else {
 
-                returnButtonHTML = `
+                returnHTMLButton = `
 
                     <div class="actionBox">
 
                         <button
                             type="button"
                             class="returnBtn"
-                            data-bill-id="${escapeHtml(
-                                getBillId(bill)
-                            )}">
+                            data-bill-id="${escapeHtml(billId)}">
 
                             Return
 
@@ -804,16 +890,14 @@ function displayBills(
             // PDF BUTTON
             // -----------------------------------------
 
-            const pdfButtonHTML = `
+            const pdfHTML = `
 
                 <div class="actionBox">
 
                     <button
                         type="button"
                         class="pdfBtn"
-                        data-bill-id="${escapeHtml(
-                            getBillId(bill)
-                        )}">
+                        data-bill-id="${escapeHtml(billId)}">
 
                         PDF
 
@@ -837,78 +921,79 @@ function displayBills(
 
                 <td>
                     ${escapeHtml(
-                        bill.bill_no ??
-                        bill.billNo ??
-                        "-"
+                        bill.bill_no || "-"
                     )}
                 </td>
 
 
                 <td>
                     ${escapeHtml(
-                        bill.customer_id ??
-                        bill.customerId ??
-                        "-"
+                        bill.customer_id || "-"
                     )}
                 </td>
 
 
                 <td>
                     ${escapeHtml(
-                        bill.customer_name ??
-                        bill.customerName ??
-                        "-"
+                        customerName || "-"
                     )}
                 </td>
 
 
                 <td>
                     ${escapeHtml(
-                        bill.customer_mobile ??
-                        bill.customerMobile ??
-                        bill.mobile ??
-                        "-"
+                        customerMobile || "-"
                     )}
                 </td>
 
 
                 <td>
                     ${escapeHtml(
-                        bill.customer_place ??
-                        bill.customerPlace ??
-                        bill.place ??
-                        "-"
+                        customerPlace || "-"
                     )}
                 </td>
 
 
                 <td>
                     ${formatDate(
-                        bill.bill_date ??
-                        bill.billDate ??
-                        bill.created_at ??
-                        bill.createdAt
+                        bill.bill_date
                     )}
                 </td>
 
 
                 <td>
-                    ${paymentHTML}
+
+                    <div>
+                        ${paymentHTML}
+                    </div>
+
+                    <small>
+                        ${escapeHtml(
+                            paymentType
+                        )}
+                    </small>
+
                 </td>
 
 
                 <td>
-                    ₹ ${grandTotal.toFixed(2)}
+                    ₹ ${formatMoney(
+                        grandTotal
+                    )}
                 </td>
 
 
                 <td>
-                    ₹ ${advance.toFixed(2)}
+                    ₹ ${formatMoney(
+                        advance
+                    )}
                 </td>
 
 
                 <td>
-                    ₹ ${balance.toFixed(2)}
+                    ₹ ${formatMoney(
+                        balance
+                    )}
                 </td>
 
 
@@ -922,7 +1007,7 @@ function displayBills(
                     <span
                         class="status ${status}">
 
-                        ${statusText}
+                        ${getStatusText(bill)}
 
                     </span>
 
@@ -933,9 +1018,9 @@ function displayBills(
 
                     <div class="actions">
 
-                        ${returnButtonHTML}
+                        ${returnHTMLButton}
 
-                        ${pdfButtonHTML}
+                        ${pdfHTML}
 
                     </div>
 
@@ -952,29 +1037,18 @@ function displayBills(
     );
 
 
-    // -----------------------------------------
-    // ADD BUTTON EVENTS
-    // -----------------------------------------
-
     attachActionEvents();
+
+    updateSummary();
 
 }
 
 
 // =====================================================
-// UPDATE SUMMARY
+// SUMMARY
 // =====================================================
 
-function updateSummary(
-    displayedBills,
-    sourceBills
-) {
-
-    const bills =
-        Array.isArray(sourceBills)
-            ? sourceBills
-            : [];
-
+function updateSummary() {
 
     let pending = 0;
 
@@ -983,7 +1057,7 @@ function updateSummary(
     let returned = 0;
 
 
-    bills.forEach(
+    allBills.forEach(
         function (bill) {
 
             const status =
@@ -1019,7 +1093,7 @@ function updateSummary(
     if (totalBills) {
 
         totalBills.textContent =
-            bills.length;
+            allBills.length;
 
     }
 
@@ -1046,27 +1120,6 @@ function updateSummary(
             returned;
 
     }
-
-
-    console.log(
-        "TOTAL:",
-        bills.length
-    );
-
-    console.log(
-        "PENDING:",
-        pending
-    );
-
-    console.log(
-        "FINISHED:",
-        finished
-    );
-
-    console.log(
-        "RETURN:",
-        returned
-    );
 
 }
 
@@ -1100,7 +1153,7 @@ function applyFilters() {
     // -----------------------------------------
 
     if (
-        search !== ""
+        search
     ) {
 
         filtered =
@@ -1110,9 +1163,7 @@ function applyFilters() {
                     return (
 
                         String(
-                            bill.bill_no ??
-                            bill.billNo ??
-                            ""
+                            bill.bill_no || ""
                         )
                         .toLowerCase()
                         .includes(search)
@@ -1121,9 +1172,7 @@ function applyFilters() {
                         ||
 
                         String(
-                            bill.customer_id ??
-                            bill.customerId ??
-                            ""
+                            bill.customer_id || ""
                         )
                         .toLowerCase()
                         .includes(search)
@@ -1132,9 +1181,7 @@ function applyFilters() {
                         ||
 
                         String(
-                            bill.customer_name ??
-                            bill.customerName ??
-                            ""
+                            getCustomerName(bill)
                         )
                         .toLowerCase()
                         .includes(search)
@@ -1143,10 +1190,7 @@ function applyFilters() {
                         ||
 
                         String(
-                            bill.customer_mobile ??
-                            bill.customerMobile ??
-                            bill.mobile ??
-                            ""
+                            getCustomerMobile(bill)
                         )
                         .toLowerCase()
                         .includes(search)
@@ -1155,10 +1199,7 @@ function applyFilters() {
                         ||
 
                         String(
-                            bill.customer_place ??
-                            bill.customerPlace ??
-                            bill.place ??
-                            ""
+                            getCustomerPlace(bill)
                         )
                         .toLowerCase()
                         .includes(search)
@@ -1198,21 +1239,1797 @@ function applyFilters() {
         filtered
     );
 
+}
+
+
+// =====================================================
+// ACTION EVENTS
+// =====================================================
+
+function attachActionEvents() {
+
 
     // -----------------------------------------
-    // SUMMARY ALWAYS SHOWS ALL BILLS
+    // RETURN
     // -----------------------------------------
 
-    updateSummary(
-        filtered,
-        allBills
-    );
+    document
+        .querySelectorAll(
+            ".returnBtn:not(.returnedBtn)"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const billId =
+                            button.dataset.billId;
+
+
+                        const bill =
+                            allBills.find(
+                                function (item) {
+
+                                    return String(
+                                        getBillId(item)
+                                    ) ===
+                                    String(billId);
+
+                                }
+                            );
+
+
+                        if (!bill) {
+
+                            alert(
+                                "Bill not found."
+                            );
+
+                            return;
+
+                        }
+
+
+                        handleReturn(
+                            bill
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    // -----------------------------------------
+    // PDF
+    // -----------------------------------------
+
+    document
+        .querySelectorAll(
+            ".pdfBtn"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const billId =
+                            button.dataset.billId;
+
+
+                        console.log(
+                            "PDF CLICK:",
+                            billId
+                        );
+
+
+                        const bill =
+                            allBills.find(
+                                function (item) {
+
+                                    return String(
+                                        getBillId(item)
+                                    ) ===
+                                    String(billId);
+
+                                }
+                            );
+
+
+                        if (!bill) {
+
+                            alert(
+                                "Bill not found."
+                            );
+
+                            return;
+
+                        }
+
+
+                        downloadBillPDF(
+                            billId
+                        );
+
+                    }
+                );
+
+            }
+        );
 
 }
 
 
 // =====================================================
-// SEARCH BUTTON
+// RETURN
+// =====================================================
+
+async function handleReturn(
+    bill
+) {
+
+    const billNo =
+        bill.bill_no ||
+        "-";
+
+
+    const grandTotal =
+        money(
+            bill.grand_total
+        );
+
+
+    const returnAmount =
+        Number(
+            prompt(
+                `Enter Return Amount\n\nBill No: ${billNo}\nGrand Total: ₹ ${formatMoney(grandTotal)}`
+            )
+        );
+
+
+    if (
+        !Number.isFinite(
+            returnAmount
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        returnAmount <= 0
+    ) {
+
+        alert(
+            "Enter a valid return amount."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        returnAmount > grandTotal
+    ) {
+
+        alert(
+            "Return amount cannot be greater than Grand Total."
+        );
+
+        return;
+
+    }
+
+
+    const confirmReturn =
+        confirm(
+            `Confirm return?\n\nBill: ${billNo}\nReturn: ₹ ${formatMoney(returnAmount)}`
+        );
+
+
+    if (
+        !confirmReturn
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/bills/${encodeURIComponent(
+                    getBillId(bill)
+                )}`,
+                {
+
+                    method: "PATCH",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        return_amount:
+                            returnAmount,
+
+                        status:
+                            "return"
+
+                    })
+
+                }
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            const text =
+                await response.text();
+
+
+            throw new Error(
+                `HTTP ${response.status}: ${text}`
+            );
+
+        }
+
+
+        alert(
+            "Return saved successfully."
+        );
+
+
+        await loadBills();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "RETURN ERROR:",
+            error
+        );
+
+
+        alert(
+            "Return update failed.\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// DOWNLOAD / PRINT PDF
+// =====================================================
+
+async function downloadBillPDF(
+    billId
+) {
+
+    console.log(
+        "Preparing PDF for:",
+        billId
+    );
+
+
+    try {
+
+        // =================================================
+        // GET EXACT BILL FROM DATABASE
+        // =================================================
+
+        const response =
+            await fetch(
+                `${API_URL}/bill/${encodeURIComponent(
+                    billId
+                )}`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    cache: "no-store"
+
+                }
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                `Bill API HTTP ${response.status}`
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "EXACT BILL RESPONSE:",
+            result
+        );
+
+
+        const bill =
+            result.bill ||
+            result.data ||
+            result;
+
+
+        if (
+            !bill
+        ) {
+
+            throw new Error(
+                "Bill data not found."
+            );
+
+        }
+
+
+        console.log(
+            "EXACT BILL:",
+            bill
+        );
+
+
+        // =================================================
+        // EXACT CUSTOMER VALUES
+        // =================================================
+
+        const customerName =
+            getCustomerName(
+                bill
+            );
+
+
+        const customerMobile =
+            getCustomerMobile(
+                bill
+            );
+
+
+        const customerPlace =
+            getCustomerPlace(
+                bill
+            );
+
+
+        // =================================================
+        // BILL VALUES
+        // =================================================
+
+        const billNo =
+            bill.bill_no ||
+            `BILL-${billId}`;
+
+
+        const billDate =
+            formatDate(
+                bill.bill_date
+            );
+
+
+        const billTime =
+            bill.bill_time ||
+            "-";
+
+
+        const customerId =
+            bill.customer_id ||
+            "-";
+
+
+        const paymentType =
+            getPaymentType(
+                bill
+            );
+
+
+        const paymentMode =
+            getPaymentMode(
+                bill
+            );
+
+
+        // =================================================
+        // TOTALS
+        // =================================================
+
+        const totalCFT =
+            money(
+                bill.total_cft
+            );
+
+
+        const woodTotal =
+            money(
+                bill.wood_total
+            );
+
+
+        const labourCharge =
+            money(
+                bill.labour_charge
+            );
+
+
+        const otherCharge =
+            money(
+                bill.other_charge
+            );
+
+
+        const othersTotal =
+            money(
+                bill.others_total
+            );
+
+
+        const discount =
+            getDiscount(
+                bill
+            );
+
+
+        const grandTotal =
+            money(
+                bill.grand_total
+            );
+
+
+        const advance =
+            money(
+                bill.advance_amount
+            );
+
+
+        const balance =
+            money(
+                bill.balance_amount
+            );
+
+
+        const returnAmount =
+            money(
+                bill.return_amount
+            );
+
+
+        // =================================================
+        // JSON DATA
+        // =================================================
+
+        const woodData =
+            getWoodData(
+                bill
+            );
+
+
+        const othersData =
+            getOthersData(
+                bill
+            );
+
+
+        console.log(
+            "CUSTOMER NAME:",
+            customerName
+        );
+
+        console.log(
+            "CUSTOMER MOBILE:",
+            customerMobile
+        );
+
+        console.log(
+            "CUSTOMER PLACE:",
+            customerPlace
+        );
+
+        console.log(
+            "WOOD DATA:",
+            woodData
+        );
+
+        console.log(
+            "OTHERS DATA:",
+            othersData
+        );
+
+
+        // =================================================
+        // BUILD WOOD TABLE
+        // =================================================
+
+        let woodRows = "";
+
+
+        if (
+            Array.isArray(
+                woodData
+            ) &&
+            woodData.length > 0
+        ) {
+
+            woodData.forEach(
+                function (
+                    item,
+                    index
+                ) {
+
+                    let woodType =
+                        item.woodType ||
+                        item.wood_type ||
+                        "-";
+
+
+                    if (
+                        String(woodType)
+                            .toLowerCase() ===
+                        "other"
+                    ) {
+
+                        woodType =
+                            item.otherWood ||
+                            item.other_wood ||
+                            "Other";
+
+                    }
+
+
+                    const breadth =
+                        item.breadth ??
+                        item.breadthInch ??
+                        item.breadth_inch ??
+                        "-";
+
+
+                    const thickness =
+                        item.thickness ??
+                        item.thicknessInch ??
+                        item.thickness_inch ??
+                        "-";
+
+
+                    const cubicFeet =
+                        money(
+                            item.cubicFeet ??
+                            item.cubic_feet ??
+                            item.cft ??
+                            0
+                        );
+
+
+                    const amount =
+                        money(
+                            item.amount ??
+                            item.totalAmount ??
+                            item.total_amount ??
+                            0
+                        );
+
+
+                    // -------------------------------------
+                    // LENGTH DATA
+                    // -------------------------------------
+
+                    let lengthText = "-";
+
+
+                    if (
+                        Array.isArray(
+                            item.lengths
+                        )
+                    ) {
+
+                        const parts =
+                            item.lengths.map(
+                                function (
+                                    lengthItem
+                                ) {
+
+                                    const length =
+                                        numberValue(
+                                            lengthItem.length ??
+                                            lengthItem.feet ??
+                                            0
+                                        );
+
+
+                                    const extra =
+                                        numberValue(
+                                            lengthItem.extraLength ??
+                                            lengthItem.extra_length ??
+                                            0
+                                        );
+
+
+                                    const qty =
+                                        numberValue(
+                                            lengthItem.qty ??
+                                            lengthItem.quantity ??
+                                            0
+                                        );
+
+
+                                    const finalLength =
+                                        length +
+                                        extra;
+
+
+                                    return (
+                                        `${formatMoney(
+                                            finalLength
+                                        )} ft × ${qty}`
+                                    );
+
+                                }
+                            );
+
+
+                        if (
+                            parts.length
+                        ) {
+
+                            lengthText =
+                                parts.join(
+                                    "<br>"
+                                );
+
+                        }
+
+                    }
+
+
+                    else if (
+                        item.length !==
+                        undefined
+                    ) {
+
+                        const length =
+                            numberValue(
+                                item.length
+                            );
+
+
+                        const extra =
+                            numberValue(
+                                item.extraLength ??
+                                item.extra_length ??
+                                0
+                            );
+
+
+                        const qty =
+                            numberValue(
+                                item.qty ??
+                                item.quantity ??
+                                0
+                            );
+
+
+                        lengthText =
+                            `${formatMoney(
+                                length + extra
+                            )} ft × ${qty}`;
+
+                    }
+
+
+                    woodRows += `
+
+                        <tr>
+
+                            <td>
+                                ${index + 1}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    woodType
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    String(breadth)
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    String(thickness)
+                                )}
+                            </td>
+
+                            <td>
+                                ${lengthText}
+                            </td>
+
+                            <td>
+                                ${formatMoney(
+                                    cubicFeet
+                                )}
+                            </td>
+
+                            <td>
+                                ₹ ${formatMoney(
+                                    amount
+                                )}
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+        }
+
+        else {
+
+            woodRows = `
+
+                <tr>
+
+                    <td colspan="7">
+                        No wood details
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        // =================================================
+        // OTHER CHARGES TABLE
+        // =================================================
+
+        let otherRows = "";
+
+
+        // Main other charge
+
+        if (
+            otherCharge > 0
+        ) {
+
+            otherRows += `
+
+                <tr>
+
+                    <td>
+                        Other Charge
+                    </td>
+
+                    <td class="right">
+                        ₹ ${formatMoney(
+                            otherCharge
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        // Additional charges
+
+        if (
+            Array.isArray(
+                othersData
+            )
+        ) {
+
+            othersData.forEach(
+                function (
+                    item
+                ) {
+
+                    const name =
+                        item.name ||
+                        item.title ||
+                        item.description ||
+                        "Other";
+
+
+                    const amount =
+                        money(
+                            item.amount
+                        );
+
+
+                    otherRows += `
+
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(
+                                    name
+                                )}
+                            </td>
+
+                            <td class="right">
+                                ₹ ${formatMoney(
+                                    amount
+                                )}
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+        }
+
+
+        if (
+            otherRows === ""
+        ) {
+
+            otherRows = `
+
+                <tr>
+
+                    <td>
+                        No Other Charges
+                    </td>
+
+                    <td class="right">
+                        ₹ 0.00
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        // =================================================
+        // RETURN ROW
+        // =================================================
+
+        let returnRow = "";
+
+
+        if (
+            returnAmount > 0
+        ) {
+
+            returnRow = `
+
+                <tr class="returnRow">
+
+                    <td>
+                        Return Amount
+                    </td>
+
+                    <td class="right">
+                        ₹ ${formatMoney(
+                            returnAmount
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        // =================================================
+        // DISCOUNT ROW
+        // =================================================
+
+        let discountRow = "";
+
+
+        if (
+            discount > 0
+        ) {
+
+            discountRow = `
+
+                <tr>
+
+                    <td>
+                        Discount
+                    </td>
+
+                    <td class="right discount">
+                        - ₹ ${formatMoney(
+                            discount
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+        // =================================================
+        // STATUS
+        // =================================================
+
+        const status =
+            getStatusText(
+                bill
+            );
+
+
+        // =================================================
+        // PRINT WINDOW
+        // =================================================
+
+        const printWindow =
+            window.open(
+                "",
+                "_blank",
+                "width=1000,height=800"
+            );
+
+
+        if (
+            !printWindow
+        ) {
+
+            alert(
+                "Popup blocked. Please allow popups for this website."
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // COMPLETE BILL
+        // =================================================
+
+        const html = `
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+${escapeHtml(billNo)}.pdf
+</title>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    padding: 20px;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #111;
+
+    background: white;
+
+}
+
+
+.bill {
+
+    width: 100%;
+
+    max-width: 900px;
+
+    margin: auto;
+
+}
+
+
+.header {
+
+    text-align: center;
+
+    border-bottom: 2px solid #111;
+
+    padding-bottom: 12px;
+
+}
+
+
+.header h1 {
+
+    margin: 0;
+
+    font-size: 28px;
+
+}
+
+
+.header p {
+
+    margin: 5px 0;
+
+}
+
+
+.billNumber {
+
+    text-align: center;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin: 15px 0;
+
+}
+
+
+.customer {
+
+    border: 1px solid #333;
+
+    margin-top: 15px;
+
+}
+
+
+.customerTitle {
+
+    background: #f1f1f1;
+
+    padding: 8px;
+
+    font-weight: bold;
+
+    border-bottom: 1px solid #333;
+
+}
+
+
+.customerGrid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+}
+
+
+.customerItem {
+
+    padding: 9px;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.customerItem:nth-child(odd) {
+
+    border-right: 1px solid #ddd;
+
+}
+
+
+.label {
+
+    font-weight: bold;
+
+}
+
+
+.sectionTitle {
+
+    margin-top: 22px;
+
+    margin-bottom: 8px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+th,
+td {
+
+    border: 1px solid #333;
+
+    padding: 8px;
+
+    font-size: 12px;
+
+    vertical-align: top;
+
+}
+
+
+th {
+
+    background: #eeeeee;
+
+}
+
+
+.right {
+
+    text-align: right;
+
+}
+
+
+.summary {
+
+    width: 420px;
+
+    margin-left: auto;
+
+    margin-top: 20px;
+
+}
+
+
+.summary td {
+
+    font-size: 14px;
+
+}
+
+
+.summary .grand {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+.discount {
+
+    color: #b91c1c;
+
+}
+
+
+.returnRow {
+
+    color: #a16207;
+
+    font-weight: bold;
+
+}
+
+
+.footer {
+
+    margin-top: 35px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+}
+
+
+@media print {
+
+    body {
+
+        padding: 0;
+
+    }
+
+
+    .bill {
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="bill">
+
+
+    <!-- =================================
+         SHOP HEADER
+    ================================== -->
+
+    <div class="header">
+
+        <h1>
+            ஸ்ரீ அம்மன் சாமில்
+        </h1>
+
+        <p>
+            தேக்கு, வேம்பு, பூவரசு வியாபாரம்
+        </p>
+
+        <p>
+            Mobile : 9443076409 , 9715050908
+        </p>
+
+        <p>
+            GST : 33DLKPK5760D1Z5
+        </p>
+
+    </div>
+
+
+    <!-- =================================
+         BILL NUMBER
+    ================================== -->
+
+    <div class="billNumber">
+
+        BILL NO:
+        ${escapeHtml(billNo)}
+
+    </div>
+
+
+    <!-- =================================
+         CUSTOMER
+    ================================== -->
+
+    <div class="customer">
+
+
+        <div class="customerTitle">
+
+            Customer Information
+
+        </div>
+
+
+        <div class="customerGrid">
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Customer Name:
+                </span>
+
+                ${escapeHtml(
+                    customerName || "-"
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Mobile:
+                </span>
+
+                ${escapeHtml(
+                    customerMobile || "-"
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Place:
+                </span>
+
+                ${escapeHtml(
+                    customerPlace || "-"
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Customer ID:
+                </span>
+
+                ${escapeHtml(
+                    customerId
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Date:
+                </span>
+
+                ${escapeHtml(
+                    billDate
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Time:
+                </span>
+
+                ${escapeHtml(
+                    String(billTime)
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Payment Type:
+                </span>
+
+                ${escapeHtml(
+                    paymentType
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Payment Mode:
+                </span>
+
+                ${escapeHtml(
+                    paymentMode
+                )}
+
+            </div>
+
+
+            <div class="customerItem">
+
+                <span class="label">
+                    Status:
+                </span>
+
+                ${escapeHtml(
+                    status
+                )}
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================
+         WOOD DETAILS
+    ================================== -->
+
+    <div class="sectionTitle">
+
+        Wood Details
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    S.No
+                </th>
+
+                <th>
+                    Wood Type
+                </th>
+
+                <th>
+                    Breadth
+                </th>
+
+                <th>
+                    Thickness
+                </th>
+
+                <th>
+                    Length / Qty
+                </th>
+
+                <th>
+                    CFT
+                </th>
+
+                <th>
+                    Amount
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            ${woodRows}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =================================
+         WOOD SUMMARY
+    ================================== -->
+
+    <div class="sectionTitle">
+
+        Wood Summary
+
+    </div>
+
+
+    <table>
+
+        <tr>
+
+            <td>
+                Total CFT
+            </td>
+
+            <td class="right">
+                ${formatMoney(totalCFT)}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Wood Total
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(woodTotal)}
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- =================================
+         LABOUR
+    ================================== -->
+
+    <div class="sectionTitle">
+
+        Labour & Other Charges
+
+    </div>
+
+
+    <table>
+
+        <tr>
+
+            <td>
+                Labour Charge
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    labourCharge
+                )}
+            </td>
+
+        </tr>
+
+
+        ${otherRows}
+
+
+        <tr>
+
+            <td>
+                Other Charges Total
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    othersTotal
+                )}
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- =================================
+         FINAL SUMMARY
+    ================================== -->
+
+    <div class="sectionTitle">
+
+        Payment Summary
+
+    </div>
+
+
+    <table class="summary">
+
+
+        <tr>
+
+            <td>
+                Wood Total
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    woodTotal
+                )}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Labour Charge
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    labourCharge
+                )}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Other Charge
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    otherCharge
+                )}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Additional Others
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    othersTotal
+                )}
+            </td>
+
+        </tr>
+
+
+        ${discountRow}
+
+
+        <tr class="grand">
+
+            <td>
+                Grand Total
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    grandTotal
+                )}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Advance
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    advance
+                )}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Balance
+            </td>
+
+            <td class="right">
+                ₹ ${formatMoney(
+                    balance
+                )}
+            </td>
+
+        </tr>
+
+
+        ${returnRow}
+
+
+    </table>
+
+
+    <!-- =================================
+         FOOTER
+    ================================== -->
+
+    <div class="footer">
+
+        Thank You
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+window.onload = function () {
+
+    setTimeout(
+        function () {
+
+            window.print();
+
+        },
+        500
+    );
+
+};
+
+</script>
+
+
+</body>
+
+</html>
+
+`;
+
+
+        printWindow.document.open();
+
+        printWindow.document.write(
+            html
+        );
+
+        printWindow.document.close();
+
+
+        console.log(
+            "PDF/PRINT READY:",
+            billNo
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PDF ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to create bill PDF.\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// SEARCH
 // =====================================================
 
 if (
@@ -1226,10 +3043,6 @@ if (
 
 }
 
-
-// =====================================================
-// LIVE SEARCH
-// =====================================================
 
 if (
     searchInput
@@ -1260,7 +3073,7 @@ if (
 
 
 // =====================================================
-// FILTER CHANGE
+// FILTER
 // =====================================================
 
 if (
@@ -1285,11 +3098,7 @@ if (
 
     refreshBtn.addEventListener(
         "click",
-        function () {
-
-            loadBills();
-
-        }
+        loadBills
     );
 
 }
@@ -1317,896 +3126,12 @@ if (
 
 
 // =====================================================
-// ACTION EVENTS
-// =====================================================
-
-function attachActionEvents() {
-
-
-    // -----------------------------------------
-    // RETURN BUTTONS
-    // -----------------------------------------
-
-    document
-        .querySelectorAll(
-            ".returnBtn:not(.returnedBtn)"
-        )
-        .forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        const billId =
-                            button.dataset.billId;
-
-
-                        const bill =
-                            findBill(
-                                billId
-                            );
-
-
-                        if (!bill) {
-
-                            alert(
-                                "Bill not found."
-                            );
-
-                            return;
-
-                        }
-
-
-                        handleReturn(
-                            bill
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    // -----------------------------------------
-    // PDF BUTTONS
-    // -----------------------------------------
-
-    document
-        .querySelectorAll(
-            ".pdfBtn"
-        )
-        .forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        const billId =
-                            button.dataset.billId;
-
-
-                        const bill =
-                            findBill(
-                                billId
-                            );
-
-
-                        if (!bill) {
-
-                            alert(
-                                "Bill not found."
-                            );
-
-                            return;
-
-                        }
-
-
-                        openBillPDF(
-                            bill
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-// =====================================================
-// FIND BILL
-// =====================================================
-
-function findBill(
-    id
-) {
-
-    return allBills.find(
-        function (bill) {
-
-            return String(
-                getBillId(bill)
-            ) === String(id);
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// RETURN BILL
-// =====================================================
-
-async function handleReturn(
-    bill
-) {
-
-    const billNo =
-        bill.bill_no ??
-        bill.billNo ??
-        "-";
-
-
-    const grandTotal =
-        money(
-            bill.grand_total ??
-            bill.grandTotal ??
-            0
-        );
-
-
-    const existingReturn =
-        getReturnAmount(
-            bill
-        );
-
-
-    const availableAmount =
-        Math.max(
-            0,
-            grandTotal -
-            existingReturn
-        );
-
-
-    const input =
-        prompt(
-            `Return Amount for Bill ${billNo}\n\n` +
-            `Bill Total: ₹ ${grandTotal.toFixed(2)}\n\n` +
-            `Enter return amount:`
-        );
-
-
-    if (
-        input === null
-    ) {
-
-        return;
-
-    }
-
-
-    const returnAmount =
-        Number(input);
-
-
-    if (
-        !Number.isFinite(
-            returnAmount
-        ) ||
-        returnAmount <= 0
-    ) {
-
-        alert(
-            "Please enter a valid return amount."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        returnAmount >
-        availableAmount
-    ) {
-
-        alert(
-            `Return amount cannot be greater than ₹ ${availableAmount.toFixed(2)}`
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            `Confirm Return?\n\n` +
-            `Bill No: ${billNo}\n` +
-            `Return Amount: ₹ ${returnAmount.toFixed(2)}`
-        );
-
-
-    if (
-        !confirmed
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await saveReturn(
-            bill,
-            returnAmount
-        );
-
-
-        // -----------------------------------------
-        // UPDATE FRONTEND DATA
-        // -----------------------------------------
-
-        const index =
-            allBills.indexOf(
-                bill
-            );
-
-
-        if (
-            index !== -1
-        ) {
-
-            allBills[index] = {
-
-                ...allBills[index],
-
-                return_amount:
-                    returnAmount,
-
-                status:
-                    "return"
-
-            };
-
-        }
-
-
-        alert(
-            "Return saved successfully."
-        );
-
-
-        applyFilters();
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "RETURN ERROR:",
-            error
-        );
-
-
-        alert(
-            "Unable to save return.\n\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// =====================================================
-// SAVE RETURN TO BACKEND
-// =====================================================
-//
-// IMPORTANT
-// -----------------------------------------------------
-// This expects your backend to support:
-//
-// PATCH /api/bills/:id
-//
-// with:
-//
-// {
-//     "return_amount": 100,
-//     "status": "return"
-// }
-//
-// If your backend uses another route, change ONLY
-// this function.
-// =====================================================
-
-async function saveReturn(
-    bill,
-    returnAmount
-) {
-
-    const billId =
-        getBillId(bill);
-
-
-    if (
-        billId === undefined ||
-        billId === null ||
-        billId === ""
-    ) {
-
-        throw new Error(
-            "Bill ID is missing."
-        );
-
-    }
-
-
-    const url =
-        `${API_URL}/bills/${encodeURIComponent(
-            billId
-        )}`;
-
-
-    console.log(
-        "SAVING RETURN:",
-        url
-    );
-
-
-    const response =
-        await fetch(
-            url,
-            {
-
-                method: "PATCH",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    return_amount:
-                        returnAmount,
-
-                    status:
-                        "return"
-
-                })
-
-            }
-        );
-
-
-    if (
-        !response.ok
-    ) {
-
-        const text =
-            await response.text();
-
-
-        throw new Error(
-            `Backend return update failed: HTTP ${response.status} ${text}`
-        );
-
-    }
-
-
-    return response.json();
-
-}
-
-
-// =====================================================
-// PDF / PRINT BILL
-// =====================================================
-
-function openBillPDF(
-    bill
-) {
-
-    console.log(
-        "OPENING BILL PDF:",
-        bill
-    );
-
-
-    const billNo =
-        bill.bill_no ??
-        bill.billNo ??
-        "Bill";
-
-
-    const customerName =
-        bill.customer_name ??
-        bill.customerName ??
-        "-";
-
-
-    const mobile =
-        bill.customer_mobile ??
-        bill.customerMobile ??
-        bill.mobile ??
-        "-";
-
-
-    const place =
-        bill.customer_place ??
-        bill.customerPlace ??
-        bill.place ??
-        "-";
-
-
-    const date =
-        formatDate(
-            bill.bill_date ??
-            bill.billDate ??
-            bill.created_at ??
-            bill.createdAt
-        );
-
-
-    const paymentMode =
-        getPaymentMode(
-            bill
-        );
-
-
-    const grandTotal =
-        money(
-            bill.grand_total ??
-            bill.grandTotal ??
-            0
-        );
-
-
-    const advance =
-        money(
-            bill.advance_amount ??
-            bill.advanceAmount ??
-            0
-        );
-
-
-    const balance =
-        money(
-            bill.balance_amount ??
-            bill.balanceAmount ??
-            0
-        );
-
-
-    const returnAmount =
-        getReturnAmount(
-            bill
-        );
-
-
-    const status =
-        getStatusText(
-            bill
-        );
-
-
-    // -----------------------------------------
-    // OPEN PRINT WINDOW
-    // -----------------------------------------
-
-    const printWindow =
-        window.open(
-            "",
-            "_blank",
-            "width=900,height=700"
-        );
-
-
-    if (
-        !printWindow
-    ) {
-
-        alert(
-            "Popup was blocked. Please allow popups for this website."
-        );
-
-        return;
-
-    }
-
-
-    const html = `
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>
-Bill-${escapeHtml(billNo)}
-</title>
-
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-
-body {
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    margin: 0;
-
-    padding: 30px;
-
-    color: #111;
-
-}
-
-
-.bill {
-
-    max-width: 800px;
-
-    margin: 0 auto;
-
-}
-
-
-h1 {
-
-    text-align: center;
-
-    margin-bottom: 5px;
-
-}
-
-
-.billNo {
-
-    text-align: center;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    margin-bottom: 25px;
-
-}
-
-
-.info {
-
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 10px;
-
-    margin-bottom: 25px;
-
-}
-
-
-.info div {
-
-    padding: 10px;
-
-    border: 1px solid #ddd;
-
-}
-
-
-table {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-    margin-top: 20px;
-
-}
-
-
-th,
-td {
-
-    border: 1px solid #ccc;
-
-    padding: 12px;
-
-}
-
-
-th {
-
-    background: #f1f1f1;
-
-    text-align: left;
-
-}
-
-
-.amount {
-
-    text-align: right;
-
-}
-
-
-.total {
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-}
-
-
-.return {
-
-    color: #a16207;
-
-    font-weight: bold;
-
-}
-
-
-.footer {
-
-    margin-top: 40px;
-
-    text-align: center;
-
-    color: #666;
-
-}
-
-
-@media print {
-
-    body {
-
-        padding: 0;
-
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="bill">
-
-
-    <h1>
-        WOOD SHOP
-    </h1>
-
-
-    <div class="billNo">
-
-        BILL NO:
-        ${escapeHtml(billNo)}
-
-    </div>
-
-
-    <div class="info">
-
-        <div>
-            <strong>Customer Name:</strong>
-            ${escapeHtml(customerName)}
-        </div>
-
-
-        <div>
-            <strong>Mobile:</strong>
-            ${escapeHtml(mobile)}
-        </div>
-
-
-        <div>
-            <strong>Place:</strong>
-            ${escapeHtml(place)}
-        </div>
-
-
-        <div>
-            <strong>Date:</strong>
-            ${escapeHtml(date)}
-        </div>
-
-
-        <div>
-            <strong>Payment Mode:</strong>
-            ${escapeHtml(paymentMode)}
-        </div>
-
-
-        <div>
-            <strong>Status:</strong>
-            ${escapeHtml(status)}
-        </div>
-
-    </div>
-
-
-    <table>
-
-        <tr>
-
-            <th>
-                Description
-            </th>
-
-            <th class="amount">
-                Amount
-            </th>
-
-        </tr>
-
-
-        <tr>
-
-            <td>
-                Grand Total
-            </td>
-
-            <td class="amount">
-                ₹ ${grandTotal.toFixed(2)}
-            </td>
-
-        </tr>
-
-
-        <tr>
-
-            <td>
-                Advance
-            </td>
-
-            <td class="amount">
-                ₹ ${advance.toFixed(2)}
-            </td>
-
-        </tr>
-
-
-        <tr>
-
-            <td>
-                Balance
-            </td>
-
-            <td class="amount">
-                ₹ ${balance.toFixed(2)}
-            </td>
-
-        </tr>
-
-
-        ${
-            returnAmount > 0
-            ? `
-
-            <tr>
-
-                <td class="return">
-                    Return Amount
-                </td>
-
-                <td class="amount return">
-                    ₹ ${returnAmount.toFixed(2)}
-                </td>
-
-            </tr>
-
-            `
-            : ""
-        }
-
-
-        <tr>
-
-            <td class="total">
-                Grand Total
-            </td>
-
-            <td class="amount total">
-                ₹ ${grandTotal.toFixed(2)}
-            </td>
-
-        </tr>
-
-    </table>
-
-
-    <div class="footer">
-
-        Thank you
-
-    </div>
-
-
-</div>
-
-
-<script>
-
-window.onload = function () {
-
-    setTimeout(
-        function () {
-
-            window.print();
-
-        },
-        300
-    );
-
-};
-
-</script>
-
-
-</body>
-
-</html>
-
-`;
-
-
-    printWindow.document.open();
-
-    printWindow.document.write(
-        html
-    );
-
-    printWindow.document.close();
-
-}
-
-
-// =====================================================
 // START
 // =====================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
-        console.log(
-            "HISTORY PAGE READY"
-        );
-
 
         loadBills();
 

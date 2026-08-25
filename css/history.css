@@ -417,4 +417,150 @@ tbody tr:hover {
 
     }
 
+}/* =======================================
+   PAYMENT PILL
+   ======================================= */
+
+.payment-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 58px;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    border: 1px solid;
+}
+
+
+/* CASH */
+
+.payment-pill.cash {
+
+    background: #eaf7ee;
+
+    color: #16803c;
+
+    border-color: #a9dfbc;
+
+}
+
+
+/* UPI */
+
+.payment-pill.upi {
+
+    background: #eeeaff;
+
+    color: #5b3cc4;
+
+    border-color: #c8b9ff;
+
+}
+
+
+/* =======================================
+   ACTIONS
+   ======================================= */
+
+.history-actions {
+
+    display: flex;
+
+    gap: 6px;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =======================================
+   RETURN BUTTON
+   ======================================= */
+
+.return-btn {
+
+    border: none;
+
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    background: #fff3e0;
+
+    color: #c76a00;
+
+    border: 1px solid #ffc477;
+
+    cursor: pointer;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.return-btn:hover {
+
+    background: #ffe5c2;
+
+}
+
+
+/* =======================================
+   PDF BUTTON
+   ======================================= */
+
+.pdf-btn {
+
+    border: none;
+
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    background: #eeeeee;
+
+    color: #222222;
+
+    border: 1px solid #bbbbbb;
+
+    cursor: pointer;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.pdf-btn:hover {
+
+    background: #dddddd;
+
+}
+
+
+/* =======================================
+   BILL NUMBER
+   ======================================= */
+
+.billNo {
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
 }

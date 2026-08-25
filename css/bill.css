@@ -414,4 +414,84 @@ table td{
 .wood-details-total strong {
     font-size: 19px;
     color: #000;
+}/* ============================================================
+   CFT TOTAL - CLEAN ALIGNMENT
+============================================================ */
+
+.cftTotal {
+    width: 350px;
+    margin-left: auto;
+    margin-top: 15px;
+}
+
+
+/* CFT TITLE */
+
+.cftTotal h3 {
+    margin: 0 0 10px 0;
+    text-align: right;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* CFT LIST BOX */
+
+#cftSummary {
+    width: 100%;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    background: #fff;
+}
+
+
+/* EACH CFT ROW */
+
+#cftSummary .cft-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 3px 0;
+    line-height: 1.4;
+}
+
+
+/* WOOD + QUALITY */
+
+#cftSummary .cft-item strong {
+    flex: 1;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* CFT VALUE */
+
+#cftSummary .cft-item span {
+    min-width: 85px;
+    text-align: right;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media screen and (max-width: 600px) {
+
+    .cftTotal {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    #cftSummary {
+        width: 100%;
+    }
+
 }

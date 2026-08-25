@@ -1,5 +1,6 @@
 // ======================================================
 // WOODSHOP BACKEND - SERVER.JS
+// COMPLETE UPDATED VERSION
 // ======================================================
 
 require("dotenv").config();
@@ -30,12 +31,8 @@ app.use(express.static(path.join(__dirname)));
 app.get("/", (req, res) => {
 
     res.json({
-
         success: true,
-
-        message:
-            "WoodShop Backend is Running..."
-
+        message: "WoodShop Backend is Running..."
     });
 
 });
@@ -54,10 +51,9 @@ app.get("/db-test", (req, res) => {
             if (err) {
 
                 console.error(
-                    "DATABASE CONNECTION ERROR:"
+                    "DATABASE CONNECTION ERROR:",
+                    err
                 );
-
-                console.error(err);
 
                 return res.status(500).json({
 
@@ -75,7 +71,6 @@ app.get("/db-test", (req, res) => {
                 });
 
             }
-
 
             res.json({
 
@@ -116,14 +111,20 @@ app.post("/save-bill", (req, res) => {
         "======================================"
     );
 
-    console.log(bill);
+    console.log(
+        JSON.stringify(
+            bill,
+            null,
+            2
+        )
+    );
 
 
     // ==================================================
     // BASIC VALIDATION
     // ==================================================
 
-    if (!bill) {
+    if (!bill || typeof bill !== "object") {
 
         return res.status(400).json({
 
@@ -140,21 +141,12 @@ app.post("/save-bill", (req, res) => {
     // ==================================================
     // GENERATE BILL NUMBER + CUSTOMER ID
     // ==================================================
-    //
-    // IMPORTANT:
-    // Both use the SAME number.
-    //
-    // Empty database:
-    // COUNT = 0
-    // nextNumber = 1
-    // BILL-0001
-    // CUST-0001
-    //
-    // ==================================================
 
     const getNextNumberSQL = `
+
         SELECT COUNT(*) AS total
         FROM bills
+
     `;
 
 
@@ -165,19 +157,9 @@ app.post("/save-bill", (req, res) => {
             if (numberError) {
 
                 console.error(
-                    "======================================"
+                    "BILL NUMBER GENERATION ERROR:",
+                    numberError
                 );
-
-                console.error(
-                    "BILL NUMBER GENERATION ERROR"
-                );
-
-                console.error(
-                    "======================================"
-                );
-
-                console.error(numberError);
-
 
                 return res.status(500).json({
 
@@ -198,7 +180,7 @@ app.post("/save-bill", (req, res) => {
 
 
             // ==================================================
-            // COUNT + 1
+            // NEXT NUMBER
             // ==================================================
 
             const totalBills =
@@ -223,7 +205,6 @@ app.post("/save-bill", (req, res) => {
 
             // ==================================================
             // CUSTOMER ID
-            // SAME NUMBER
             // ==================================================
 
             const customerId =
@@ -254,42 +235,60 @@ app.post("/save-bill", (req, res) => {
 
 
             // ==================================================
-            // PREPARE BILL VALUES
+            // CUSTOMER INFORMATION
             // ==================================================
 
             const customerName =
                 bill.customerName || "";
 
-
             const customerMobile =
                 bill.customerMobile || "";
-
 
             const customerPlace =
                 bill.customerPlace || "";
 
 
+            // ==================================================
+            // DATE / TIME
+            // ==================================================
+
             const billDate =
                 bill.billDate || null;
-
 
             const billTime =
                 bill.billTime || null;
 
 
+            // ==================================================
+            // PAYMENT TYPE
+            //
+            // cash
+            // advance
+            // ==================================================
+
             const paymentType =
-                bill.paymentType || "";
+                String(
+                    bill.paymentType || ""
+                ).trim();
+
+
+            // ==================================================
+            // PAYMENT MODE
+            //
+            // cash
+            // upi
+            // ==================================================
+
+            const paymentMode =
+                String(
+                    bill.paymentMode || ""
+                ).trim();
 
 
             // ==================================================
             // MONEY VALUES
-            // ==================================================
             //
-            // Database columns are INT.
-            // Therefore round all money values.
-            //
-            // CFT is NOT rounded here.
-            //
+            // ALL MONEY = INTEGER
             // ==================================================
 
             const advanceAmount =
@@ -308,11 +307,21 @@ app.post("/save-bill", (req, res) => {
                 );
 
 
+            // ==================================================
+            // CFT
+            //
+            // CFT CAN HAVE DECIMAL VALUES
+            // ==================================================
+
             const totalCFT =
                 Number(
                     bill.totalCFT
                 ) || 0;
 
+
+            // ==================================================
+            // WOOD TOTAL
+            // ==================================================
 
             const woodTotal =
                 Math.round(
@@ -322,6 +331,10 @@ app.post("/save-bill", (req, res) => {
                 );
 
 
+            // ==================================================
+            // LABOUR CHARGE
+            // ==================================================
+
             const labourCharge =
                 Math.round(
                     Number(
@@ -329,6 +342,10 @@ app.post("/save-bill", (req, res) => {
                     ) || 0
                 );
 
+
+            // ==================================================
+            // MAIN OTHER CHARGE
+            // ==================================================
 
             const otherCharge =
                 Math.round(
@@ -338,6 +355,10 @@ app.post("/save-bill", (req, res) => {
                 );
 
 
+            // ==================================================
+            // ALL OTHER CHARGES TOTAL
+            // ==================================================
+
             const othersTotal =
                 Math.round(
                     Number(
@@ -345,6 +366,22 @@ app.post("/save-bill", (req, res) => {
                     ) || 0
                 );
 
+
+            // ==================================================
+            // DISCOUNT
+            // ==================================================
+
+            const discountAmount =
+                Math.round(
+                    Number(
+                        bill.discountAmount
+                    ) || 0
+                );
+
+
+            // ==================================================
+            // GRAND TOTAL
+            // ==================================================
 
             const grandTotal =
                 Math.round(
@@ -355,7 +392,35 @@ app.post("/save-bill", (req, res) => {
 
 
             // ==================================================
-            // JSON DATA
+            // RETURN AMOUNT
+            //
+            // NEW BILL = 0 RETURN
+            // ==================================================
+
+            const returnAmount = 0;
+
+
+            // ==================================================
+            // STATUS
+            //
+            // BALANCE > 0
+            //     PENDING
+            //
+            // BALANCE = 0
+            //     DELIVERED
+            // ==================================================
+
+            let status = "DELIVERED";
+
+            if (balanceAmount > 0) {
+
+                status = "PENDING";
+
+            }
+
+
+            // ==================================================
+            // WOOD JSON DATA
             // ==================================================
 
             const woodData =
@@ -363,6 +428,10 @@ app.post("/save-bill", (req, res) => {
                     bill.woodData || []
                 );
 
+
+            // ==================================================
+            // OTHER CHARGES JSON DATA
+            // ==================================================
 
             const othersData =
                 JSON.stringify(
@@ -379,133 +448,223 @@ app.post("/save-bill", (req, res) => {
 
 
             // ==================================================
+            // DEBUG
+            // ==================================================
+
+            console.log(
+                "--------------------------------------"
+            );
+
+            console.log(
+                "CUSTOMER NAME:",
+                customerName
+            );
+
+            console.log(
+                "CUSTOMER MOBILE:",
+                customerMobile
+            );
+
+            console.log(
+                "CUSTOMER PLACE:",
+                customerPlace
+            );
+
+            console.log(
+                "PAYMENT TYPE:",
+                paymentType
+            );
+
+            console.log(
+                "PAYMENT MODE:",
+                paymentMode
+            );
+
+            console.log(
+                "TOTAL CFT:",
+                totalCFT
+            );
+
+            console.log(
+                "WOOD TOTAL:",
+                woodTotal
+            );
+
+            console.log(
+                "LABOUR CHARGE:",
+                labourCharge
+            );
+
+            console.log(
+                "OTHER CHARGE:",
+                otherCharge
+            );
+
+            console.log(
+                "OTHERS TOTAL:",
+                othersTotal
+            );
+
+            console.log(
+                "DISCOUNT:",
+                discountAmount
+            );
+
+            console.log(
+                "GRAND TOTAL:",
+                grandTotal
+            );
+
+            console.log(
+                "ADVANCE:",
+                advanceAmount
+            );
+
+            console.log(
+                "BALANCE:",
+                balanceAmount
+            );
+
+            console.log(
+                "STATUS:",
+                status
+            );
+
+            console.log(
+                "--------------------------------------"
+            );
+
+
+            // ==================================================
             // INSERT BILL
+            //
+            // 25-COLUMN TABLE
             // ==================================================
 
             const sql = `
 
                 INSERT INTO bills
                 (
+
                     bill_no,
                     customer_id,
+
                     customer_name,
                     customer_mobile,
                     customer_place,
+
                     bill_date,
                     bill_time,
+
                     payment_type,
+                    payment_mode,
+
                     advance_amount,
                     balance_amount,
+
                     total_cft,
+
                     wood_total,
                     labour_charge,
                     other_charge,
                     others_total,
+
+                    discount_amount,
                     grand_total,
+
                     wood_data,
                     others_data,
-                    remark
+
+                    remark,
+
+                    return_amount,
+                    status
+
                 )
 
                 VALUES
                 (
+
+                    ?,
+                    ?,
+
+                    ?,
+                    ?,
+                    ?,
+
+                    ?,
+                    ?,
+
+                    ?,
+                    ?,
+
+                    ?,
+                    ?,
+
+                    ?,
+
                     ?,
                     ?,
                     ?,
                     ?,
+
                     ?,
                     ?,
+
                     ?,
                     ?,
+
                     ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?,
+
                     ?,
                     ?
+
                 )
 
             `;
 
 
             // ==================================================
-            // VALUES ARRAY
+            // VALUES
             // ==================================================
 
             const values = [
 
                 billNo,
-
                 customerId,
 
                 customerName,
-
                 customerMobile,
-
                 customerPlace,
 
                 billDate,
-
                 billTime,
 
                 paymentType,
+                paymentMode,
 
                 advanceAmount,
-
                 balanceAmount,
 
                 totalCFT,
 
                 woodTotal,
-
                 labourCharge,
-
                 otherCharge,
-
                 othersTotal,
 
+                discountAmount,
                 grandTotal,
 
                 woodData,
-
                 othersData,
 
-                remark
+                remark,
+
+                returnAmount,
+                status
 
             ];
-
-
-            console.log(
-                "======================================"
-            );
-
-            console.log(
-                "INSERTING BILL"
-            );
-
-            console.log(
-                "Bill Number:",
-                billNo
-            );
-
-            console.log(
-                "Customer ID:",
-                customerId
-            );
-
-            console.log(
-                "Grand Total:",
-                grandTotal
-            );
-
-            console.log(
-                "======================================"
-            );
 
 
             // ==================================================
@@ -606,12 +765,22 @@ app.post("/save-bill", (req, res) => {
                     );
 
                     console.log(
+                        "Grand Total:",
+                        grandTotal
+                    );
+
+                    console.log(
+                        "Status:",
+                        status
+                    );
+
+                    console.log(
                         "======================================"
                     );
 
 
                     // ==================================================
-                    // SEND RESULT TO FRONTEND
+                    // RESPONSE
                     // ==================================================
 
                     return res.json({
@@ -628,7 +797,13 @@ app.post("/save-bill", (req, res) => {
                             billNo,
 
                         customerId:
-                            customerId
+                            customerId,
+
+                        status:
+                            status,
+
+                        grandTotal:
+                            grandTotal
 
                     });
 
@@ -665,11 +840,9 @@ app.get("/bills", (req, res) => {
             if (err) {
 
                 console.error(
-                    "GET ALL BILLS ERROR:"
+                    "GET ALL BILLS ERROR:",
+                    err
                 );
-
-                console.error(err);
-
 
                 return res.status(500).json({
 
@@ -720,14 +893,20 @@ app.get("/pending-bills", (req, res) => {
             customer_mobile,
             customer_place,
             bill_date,
+            payment_type,
+            payment_mode,
             advance_amount,
             balance_amount,
+            discount_amount,
             grand_total,
+            return_amount,
+            status,
             remark
 
         FROM bills
 
-        WHERE balance_amount > 1
+        WHERE status = 'PENDING'
+           OR balance_amount > 0
 
         ORDER BY id DESC
 
@@ -741,11 +920,9 @@ app.get("/pending-bills", (req, res) => {
             if (err) {
 
                 console.error(
-                    "GET PENDING BILLS ERROR:"
+                    "GET PENDING BILLS ERROR:",
+                    err
                 );
-
-                console.error(err);
-
 
                 return res.status(500).json({
 
@@ -807,11 +984,9 @@ app.get("/bill/:id", (req, res) => {
             if (err) {
 
                 console.error(
-                    "GET SINGLE BILL ERROR:"
+                    "GET SINGLE BILL ERROR:",
+                    err
                 );
-
-                console.error(err);
-
 
                 return res.status(500).json({
 
@@ -870,7 +1045,8 @@ app.put("/update-pending", (req, res) => {
 
     const {
         id,
-        paidAmount
+        paidAmount,
+        paymentMode
     } = req.body;
 
 
@@ -894,10 +1070,6 @@ app.put("/update-pending", (req, res) => {
 
     }
 
-
-    // ==================================================
-    // PAYMENT
-    // ==================================================
 
     const payment =
         Math.round(
@@ -923,32 +1095,35 @@ app.put("/update-pending", (req, res) => {
 
 
     // ==================================================
-    // GET CURRENT PAYMENT
+    // GET CURRENT BILL
     // ==================================================
 
     connection.query(
+
         `
 
             SELECT
                 advance_amount,
-                balance_amount
+                balance_amount,
+                payment_mode,
+                status
 
             FROM bills
 
             WHERE id = ?
 
         `,
+
         [id],
+
         (err, results) => {
 
             if (err) {
 
                 console.error(
-                    "SELECT PENDING BILL ERROR:"
+                    "SELECT PENDING BILL ERROR:",
+                    err
                 );
-
-                console.error(err);
-
 
                 return res.status(500).json({
 
@@ -1001,12 +1176,24 @@ app.put("/update-pending", (req, res) => {
 
 
             // ==================================================
+            // DON'T PAY MORE THAN BALANCE
+            // ==================================================
+
+            const actualPayment =
+                Math.min(
+                    payment,
+                    balance
+                );
+
+
+            // ==================================================
             // NEW VALUES
             // ==================================================
 
             const newAdvance =
                 Math.round(
-                    advance + payment
+                    advance +
+                    actualPayment
                 );
 
 
@@ -1014,9 +1201,32 @@ app.put("/update-pending", (req, res) => {
                 Math.max(
                     0,
                     Math.round(
-                        balance - payment
+                        balance -
+                        actualPayment
                     )
                 );
+
+
+            // ==================================================
+            // STATUS
+            // ==================================================
+
+            const newStatus =
+                newBalance <= 0
+                    ? "DELIVERED"
+                    : "PENDING";
+
+
+            // ==================================================
+            // PAYMENT MODE
+            // ==================================================
+
+            const newPaymentMode =
+                String(
+                    paymentMode ||
+                    results[0].payment_mode ||
+                    ""
+                ).trim();
 
 
             // ==================================================
@@ -1024,34 +1234,47 @@ app.put("/update-pending", (req, res) => {
             // ==================================================
 
             connection.query(
+
                 `
 
                     UPDATE bills
 
                     SET
+
                         advance_amount = ?,
-                        balance_amount = ?
+
+                        balance_amount = ?,
+
+                        payment_mode = ?,
+
+                        status = ?
 
                     WHERE id = ?
 
                 `,
+
                 [
+
                     newAdvance,
+
                     newBalance,
+
+                    newPaymentMode,
+
+                    newStatus,
+
                     id
+
                 ],
+
                 (updateError) => {
 
                     if (updateError) {
 
                         console.error(
-                            "UPDATE PENDING BILL ERROR:"
-                        );
-
-                        console.error(
+                            "UPDATE PENDING BILL ERROR:",
                             updateError
                         );
-
 
                         return res.status(500).json({
 
@@ -1086,7 +1309,313 @@ app.put("/update-pending", (req, res) => {
                             newAdvance,
 
                         balanceAmount:
-                            newBalance
+                            newBalance,
+
+                        paymentMode:
+                            newPaymentMode,
+
+                        status:
+                            newStatus
+
+                    });
+
+                }
+
+            );
+
+        }
+
+    );
+
+});
+
+
+// ======================================================
+// RETURN BILL
+// ======================================================
+//
+// User sends:
+//
+// {
+//     id: 10,
+//     returnAmount: 500
+// }
+//
+// The return amount is added to the existing return amount.
+//
+// Grand total is reduced by the return amount.
+//
+// Status becomes RETURN.
+// ======================================================
+
+app.put("/return-bill", (req, res) => {
+
+    const {
+        id,
+        returnAmount
+    } = req.body;
+
+
+    // ==================================================
+    // VALIDATION
+    // ==================================================
+
+    if (
+        !id ||
+        returnAmount === undefined
+    ) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Bill ID and return amount are required"
+
+        });
+
+    }
+
+
+    const amount =
+        Math.round(
+            Number(returnAmount)
+        );
+
+
+    if (
+        isNaN(amount) ||
+        amount <= 0
+    ) {
+
+        return res.status(400).json({
+
+            success: false,
+
+            message:
+                "Return amount must be greater than 0"
+
+        });
+
+    }
+
+
+    // ==================================================
+    // GET BILL
+    // ==================================================
+
+    connection.query(
+
+        `
+
+            SELECT
+
+                grand_total,
+                return_amount,
+                status
+
+            FROM bills
+
+            WHERE id = ?
+
+        `,
+
+        [id],
+
+        (err, results) => {
+
+            if (err) {
+
+                console.error(
+                    "GET RETURN BILL ERROR:",
+                    err
+                );
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        "Database Error",
+
+                    error:
+                        err.message,
+
+                    code:
+                        err.code
+
+                });
+
+            }
+
+
+            if (
+                results.length === 0
+            ) {
+
+                return res.status(404).json({
+
+                    success: false,
+
+                    message:
+                        "Bill Not Found"
+
+                });
+
+            }
+
+
+            // ==================================================
+            // OLD VALUES
+            // ==================================================
+
+            const oldGrandTotal =
+                Math.round(
+                    Number(
+                        results[0].grand_total
+                    ) || 0
+                );
+
+
+            const oldReturnAmount =
+                Math.round(
+                    Number(
+                        results[0].return_amount
+                    ) || 0
+                );
+
+
+            // ==================================================
+            // DON'T RETURN MORE THAN GRAND TOTAL
+            // ==================================================
+
+            const availableAmount =
+                Math.max(
+                    0,
+                    oldGrandTotal
+                );
+
+
+            const actualReturn =
+                Math.min(
+                    amount,
+                    availableAmount
+                );
+
+
+            // ==================================================
+            // NEW RETURN TOTAL
+            // ==================================================
+
+            const newReturnAmount =
+                Math.round(
+                    oldReturnAmount +
+                    actualReturn
+                );
+
+
+            // ==================================================
+            // NEW GRAND TOTAL
+            // ==================================================
+
+            const newGrandTotal =
+                Math.max(
+                    0,
+                    Math.round(
+                        oldGrandTotal -
+                        actualReturn
+                    )
+                );
+
+
+            // ==================================================
+            // STATUS
+            // ==================================================
+
+            const newStatus =
+                "RETURN";
+
+
+            // ==================================================
+            // UPDATE
+            // ==================================================
+
+            connection.query(
+
+                `
+
+                    UPDATE bills
+
+                    SET
+
+                        grand_total = ?,
+
+                        return_amount = ?,
+
+                        status = ?
+
+                    WHERE id = ?
+
+                `,
+
+                [
+
+                    newGrandTotal,
+
+                    newReturnAmount,
+
+                    newStatus,
+
+                    id
+
+                ],
+
+                (updateError) => {
+
+                    if (updateError) {
+
+                        console.error(
+                            "RETURN BILL UPDATE ERROR:",
+                            updateError
+                        );
+
+                        return res.status(500).json({
+
+                            success: false,
+
+                            message:
+                                "Database Error",
+
+                            error:
+                                updateError.message,
+
+                            code:
+                                updateError.code
+
+                        });
+
+                    }
+
+
+                    // ==================================================
+                    // SUCCESS
+                    // ==================================================
+
+                    res.json({
+
+                        success: true,
+
+                        message:
+                            "Bill Returned Successfully",
+
+                        returnAmount:
+                            newReturnAmount,
+
+                        grandTotal:
+                            newGrandTotal,
+
+                        status:
+                            newStatus
 
                     });
 
@@ -1157,11 +1686,9 @@ app.post("/update-remark", (req, res) => {
             if (err) {
 
                 console.error(
-                    "UPDATE REMARK ERROR:"
+                    "UPDATE REMARK ERROR:",
+                    err
                 );
-
-                console.error(err);
-
 
                 return res.status(500).json({
 
@@ -1292,7 +1819,6 @@ if (require.main === module) {
             );
 
         }
-
     );
 
 }

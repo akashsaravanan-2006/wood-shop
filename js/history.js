@@ -2876,21 +2876,102 @@ function buildPDFHTML(
 
 
 /* =========================================================
-   DIRECT PDF DOWNLOAD
-   NO PRINT PAGE
+   DOWNLOAD BILL PDF - FIXED VERSION
    ========================================================= */
 
-async function downloadBillPDF(
-    billId,
-    button
-) {
+async function downloadBillPDF(billId, button = null) {
+
+    if (!billId) {
+
+        alert("Bill ID not found.");
+
+        return;
+    }
+
 
     const oldText =
-        button?.textContent ||
-        "PDF";
+        button?.textContent || "PDF";
+
+
+    let pdfContainer = null;
 
 
     try {
+
+        console.log(
+            "===================================="
+        );
+
+        console.log(
+            "PREPARING PDF:",
+            billId
+        );
+
+        console.log(
+            "===================================="
+        );
+
+
+        /* =====================================================
+           CHECK HTML2PDF
+           ===================================================== */
+
+        if (
+            typeof html2pdf === "undefined"
+        ) {
+
+            /*
+             * Load library automatically
+             */
+
+            await new Promise(
+                function(resolve, reject) {
+
+                    const script =
+                        document.createElement(
+                            "script"
+                        );
+
+                    script.src =
+                        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+
+                    script.onload =
+                        resolve;
+
+                    script.onerror =
+                        function() {
+
+                            reject(
+                                new Error(
+                                    "Unable to load html2pdf.js"
+                                )
+                            );
+
+                        };
+
+                    document.head.appendChild(
+                        script
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (
+            typeof html2pdf === "undefined"
+        ) {
+
+            throw new Error(
+                "PDF library is not available."
+            );
+        }
+
+
+        /* =====================================================
+           BUTTON
+           ===================================================== */
 
         if (button) {
 
@@ -2903,65 +2984,86 @@ async function downloadBillPDF(
         }
 
 
-        if (
-            typeof window.html2pdf !==
-            "function"
-        ) {
-
-            throw new Error(
-                "PDF library did not load. Check your internet connection."
-            );
-
-        }
-
+        /* =====================================================
+           GET BILL FROM BACKEND
+           ===================================================== */
 
         const response =
             await fetch(
+
                 `${API_URL}/bill/${encodeURIComponent(
                     billId
                 )}`,
+
                 {
-                    method: "GET",
+
+                    method:
+                        "GET",
 
                     headers: {
                         "Content-Type":
                             "application/json"
                     },
 
-                    cache: "no-store"
+                    cache:
+                        "no-store"
+
                 }
+
             );
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
             throw new Error(
-                `Bill API HTTP ${
-                    response.status
-                }`
+                `HTTP ${response.status}`
             );
-
         }
 
 
-        const result =
+        const data =
             await response.json();
 
 
+        console.log(
+            "PDF API RESPONSE:",
+            data
+        );
+
+
+        /* =====================================================
+           SUPPORT API RESPONSE
+           ===================================================== */
+
         const bill =
-            result?.bill ??
-            result?.data ??
-            result;
+            data?.bill ??
+            data?.data ??
+            data;
 
 
-        if (!bill) {
+        if (
+            !bill ||
+            typeof bill !==
+                "object"
+        ) {
 
             throw new Error(
                 "Bill data not found."
             );
-
         }
 
+
+        console.log(
+            "PDF BILL:",
+            bill
+        );
+
+
+        /* =====================================================
+           BILL NUMBER
+           ===================================================== */
 
         const billNo =
             bill?.bill_no ??
@@ -2969,47 +3071,97 @@ async function downloadBillPDF(
             `BILL-${billId}`;
 
 
-        const pdfContainer =
+        /* =====================================================
+           CREATE PDF HTML
+           ===================================================== */
+
+        pdfContainer =
             document.createElement(
                 "div"
             );
 
 
         pdfContainer.innerHTML =
-            buildPDFHTML(
+            pdfHTML(
                 bill
             );
 
 
         /*
-         * PDF is generated inside
-         * the current page.
+         * VERY IMPORTANT
          *
-         * NO window.open()
+         * DO NOT USE:
          *
-         * NO window.print()
+         * z-index: -9999
+         *
+         * DO NOT USE:
+         *
+         * display:none
+         *
+         * DO NOT USE:
+         *
+         * visibility:hidden
+         *
+         *
+         * html2canvas must be able to render
+         * the element.
          */
 
+
         pdfContainer.style.position =
-            "fixed";
+            "absolute";
+
+
+        /*
+         * Keep it inside the document.
+         *
+         * We use opacity 1 because
+         * html2canvas needs to see it.
+         */
 
         pdfContainer.style.left =
             "0";
 
+
         pdfContainer.style.top =
             "0";
+
 
         pdfContainer.style.width =
             "794px";
 
+
+        pdfContainer.style.minHeight =
+            "1123px";
+
+
         pdfContainer.style.background =
             "#ffffff";
 
+
+        pdfContainer.style.color =
+            "#111111";
+
+
+        pdfContainer.style.padding =
+            "20px";
+
+
+        pdfContainer.style.boxSizing =
+            "border-box";
+
+
         pdfContainer.style.zIndex =
-            "-9999";
+            "999999";
+
 
         pdfContainer.style.opacity =
-            "0.01";
+            "1";
+
+
+        pdfContainer.style.visibility =
+            "visible";
+
 
         pdfContainer.style.pointerEvents =
             "none";
@@ -3020,11 +3172,15 @@ async function downloadBillPDF(
         );
 
 
+        /* =====================================================
+           WAIT FOR RENDER
+           ===================================================== */
+
         await new Promise(
-            function (resolve) {
+            function(resolve) {
 
                 requestAnimationFrame(
-                    function () {
+                    function() {
 
                         requestAnimationFrame(
                             resolve
@@ -3038,119 +3194,314 @@ async function downloadBillPDF(
 
 
         await new Promise(
-            function (resolve) {
+            function(resolve) {
 
                 setTimeout(
                     resolve,
-                    250
+                    500
                 );
 
             }
         );
 
 
-        const safeBillNo =
-            String(
-                billNo
-            )
-            .replace(
-                /[\\/:*?"<>|]/g,
-                "_"
-            );
+        /* =====================================================
+           CHECK CONTENT
+           ===================================================== */
 
-
-        await html2pdf()
-            .set({
-
-                margin: 8,
-
-                filename:
-                    `${safeBillNo}.pdf`,
-
-                image: {
-
-                    type: "jpeg",
-
-                    quality: 0.98
-
-                },
-
-                html2canvas: {
-
-                    scale: 2,
-
-                    useCORS: true,
-
-                    allowTaint: false,
-
-                    backgroundColor:
-                        "#ffffff",
-
-                    logging: false,
-
-                    scrollX: 0,
-
-                    scrollY: 0,
-
-                    windowWidth: 794
-
-                },
-
-                jsPDF: {
-
-                    unit: "mm",
-
-                    format: "a4",
-
-                    orientation:
-                        "portrait",
-
-                    compress: true
-
-                },
-
-                pagebreak: {
-
-                    mode: [
-                        "css",
-                        "legacy"
-                    ]
-
-                }
-
-            })
-
-            .from(
-                pdfContainer
-            )
-
-            .save();
-
-
-        pdfContainer.remove();
+        console.log(
+            "PDF CONTAINER:",
+            pdfContainer
+        );
 
 
         console.log(
-            "PDF DOWNLOADED:",
-            billNo
+            "PDF TEXT:",
+            pdfContainer.innerText
         );
+
+
+        if (
+            !pdfContainer.innerText ||
+            !pdfContainer.innerText.trim()
+        ) {
+
+            throw new Error(
+                "PDF container is empty."
+            );
+        }
+
+
+        /* =====================================================
+           PDF FILE NAME
+           ===================================================== */
+
+        const safeFileName =
+            String(
+                billNo
+            )
+                .replace(
+                    /[<>:"/\\|?*]+/g,
+                    "_"
+                )
+                .trim();
+
+
+        /* =====================================================
+           PDF OPTIONS
+           ===================================================== */
+
+        const pdfOptions = {
+
+            margin:
+                8,
+
+            filename:
+                `${safeFileName}.pdf`,
+
+            image: {
+
+                type:
+                    "jpeg",
+
+                quality:
+                    0.98
+
+            },
+
+            html2canvas: {
+
+                scale:
+                    2,
+
+                useCORS:
+                    true,
+
+                allowTaint:
+                    false,
+
+                backgroundColor:
+                    "#ffffff",
+
+                logging:
+                    true,
+
+                scrollX:
+                    0,
+
+                scrollY:
+                    0,
+
+                windowWidth:
+                    794,
+
+                windowHeight:
+                    Math.max(
+                        1123,
+                        pdfContainer
+                            .scrollHeight
+                    )
+
+            },
+
+            jsPDF: {
+
+                unit:
+                    "mm",
+
+                format:
+                    "a4",
+
+                orientation:
+                    "portrait",
+
+                compress:
+                    true
+
+            },
+
+            pagebreak: {
+
+                mode: [
+                    "css",
+                    "legacy"
+                ]
+
+            }
+
+        };
+
+
+        console.log(
+            "GENERATING PDF..."
+        );
+
+
+        /* =====================================================
+           GENERATE PDF
+           ===================================================== */
+
+        const pdfBlob =
+            await html2pdf()
+
+                .set(
+                    pdfOptions
+                )
+
+                .from(
+                    pdfContainer
+                )
+
+                .outputPdf(
+                    "blob"
+                );
+
+
+        /* =====================================================
+           CHECK PDF SIZE
+           ===================================================== */
+
+        console.log(
+            "PDF SIZE:",
+            pdfBlob.size
+        );
+
+
+        if (
+            !pdfBlob ||
+            pdfBlob.size < 1000
+        ) {
+
+            throw new Error(
+                "Generated PDF is empty."
+            );
+        }
+
+
+        /* =====================================================
+           DOWNLOAD
+           ===================================================== */
+
+        const downloadUrl =
+            URL.createObjectURL(
+                pdfBlob
+            );
+
+
+        const downloadLink =
+            document.createElement(
+                "a"
+            );
+
+
+        downloadLink.href =
+            downloadUrl;
+
+
+        downloadLink.download =
+            `${safeFileName}.pdf`;
+
+
+        downloadLink.style.display =
+            "none";
+
+
+        document.body.appendChild(
+            downloadLink
+        );
+
+
+        downloadLink.click();
+
+
+        downloadLink.remove();
+
+
+        /*
+         * Give browser time to start download
+         */
+
+        setTimeout(
+            function() {
+
+                URL.revokeObjectURL(
+                    downloadUrl
+                );
+
+            },
+            3000
+        );
+
+
+        console.log(
+            "===================================="
+        );
+
+        console.log(
+            "PDF DOWNLOAD SUCCESS"
+        );
+
+        console.log(
+            `FILE: ${safeFileName}.pdf`
+        );
+
+        console.log(
+            "SIZE:",
+            pdfBlob.size,
+            "bytes"
+        );
+
+        console.log(
+            "===================================="
+        );
+
 
     }
     catch (error) {
 
         console.error(
-            "PDF ERROR:",
+            "===================================="
+        );
+
+        console.error(
+            "PDF DOWNLOAD ERROR:",
             error
+        );
+
+        console.error(
+            "===================================="
         );
 
 
         alert(
-            "Unable to create bill PDF.\n\n" +
+
+            "PDF creation failed.\n\n" +
             error.message
+
         );
 
     }
     finally {
+
+        /* =====================================================
+           REMOVE TEMPORARY PDF
+           ===================================================== */
+
+        if (
+            pdfContainer &&
+            pdfContainer.parentNode
+        ) {
+
+            pdfContainer.parentNode.removeChild(
+                pdfContainer
+            );
+
+        }
+
+
+        /* =====================================================
+           RESTORE BUTTON
+           ===================================================== */
 
         if (button) {
 
@@ -3165,7 +3516,6 @@ async function downloadBillPDF(
     }
 
 }
-
 
 /* =========================================================
    SEARCH BUTTON

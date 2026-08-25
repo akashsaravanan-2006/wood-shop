@@ -451,8 +451,8 @@ console.log(
 );
 
 console.log(
-    "FULL OTHER JSON:",
-    JSON.stringify(otherItems, null, 2)
+    "FULL WOOD JSON:",
+    JSON.stringify(woodCalculations, null, 2)
 );
 
 // ============================================================

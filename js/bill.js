@@ -780,43 +780,135 @@ if (
                 // LENGTH TEXT
                 // ============================================
 
-                let lengthText =
-                    "-";
+               // ============================================
+// CREATE WOOD ROWS
+// ============================================
+//
+// Example:
+// Length = 4, Qty = 3
+// Length = 5, Qty = 6
+// Length = 2, Qty = 10
+//
+// Bill:
+//
+// Wood | Size  | Length | Qty
+// Teak | 4 × 7 |   4    |  3
+//      |       |   5    |  6
+//      |       |   2    | 10
+//
+// ============================================
+
+if (lengthValues.length === 0) {
+
+    lengthValues.push({
+        length: 0,
+        qty: 0
+    });
+
+}
 
 
-                if (
-                    lengthValues.length > 0
-                ) {
+// --------------------------------------------
+// CREATE ONE ROW FOR EACH LENGTH / QTY
+// --------------------------------------------
 
-                    lengthText =
-                        lengthValues
-                            .map(
-                                function (
-                                    lengthItem
-                                ) {
+lengthValues.forEach(function (lengthItem, pieceIndex) {
 
-                                    return `
-
-                                        ${lengthItem.length}
-                                        → ${lengthItem.qty}
-
-                                    `;
-
-                                }
-                            )
-                            .join(
-                                "<br>"
-                            );
-
-                }
+    const row =
+        document.createElement("tr");
 
 
-                console.log(
-                    "LENGTH DATA:",
-                    lengthValues
-                );
+    // ----------------------------------------
+    // FIRST ROW
+    // Show wood, size, total length, CFT,
+    // rate, amount and quality.
+    // ----------------------------------------
+
+    if (pieceIndex === 0) {
+
+        row.innerHTML = `
+
+            <td rowspan="${lengthValues.length}">
+                ${index + 1}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${escapeHTML(woodName)}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${escapeHTML(size)}
+            </td>
+
+            <td>
+                ${lengthItem.length}
+            </td>
+
+            <td>
+                ${lengthItem.qty}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${totalLength.toFixed(2)}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${cubicFeet.toFixed(2)}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${money(rate)}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${money(amount)}
+            </td>
+
+            <td rowspan="${lengthValues.length}">
+                ${escapeHTML(quality)}
+            </td>
+
+        `;
+
+    }
 
 
+    // ----------------------------------------
+    // REMAINING LENGTH / QTY ROWS
+    // ----------------------------------------
+
+    else {
+
+        row.innerHTML = `
+
+            <td>
+                ${lengthItem.length}
+            </td>
+
+            <td>
+                ${lengthItem.qty}
+            </td>
+
+        `;
+
+    }
+
+
+    woodTable.appendChild(row);
+
+
+    console.log(
+        "WOOD PIECE ROW CREATED:",
+        index + 1,
+        "Piece:",
+        pieceIndex + 1,
+        "Length:",
+        lengthItem.length,
+        "Qty:",
+        lengthItem.qty
+    );
+
+});
                 // ============================================
                 // TOTAL QUANTITY
                 // ============================================

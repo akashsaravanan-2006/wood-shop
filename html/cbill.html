@@ -13,13 +13,12 @@
 
     <link
         rel="stylesheet"
-        href="../css/bill.css?v=14">
+        href="../css/bill.css?v=15">
 
 </head>
 
 
 <body>
-
 
 <div class="bill-container">
 
@@ -29,7 +28,6 @@
     ====================================================== -->
 
     <div class="header">
-
 
         <div class="logo">
 
@@ -47,28 +45,23 @@
                 ஸ்ரீ அம்மன் சாமில்
             </h1>
 
-
             <h4>
                 தேக்கு, வேம்பு, பூவரசு வியாபாரம்
             </h4>
-
 
             <p>
                 2/17,A, மணப்பாறை மெயின் ரோடு,
                 சத்தியமங்கலம்
             </p>
 
-
             <p>
                 குளித்தலை வட்டம்,
                 கரூர் மாவட்டம் - 639 120
             </p>
 
-
             <h3>
                 Mobile : 9443076409 , 9715050908
             </h3>
-
 
             <h4>
                 GST : 33DLKPK5760D1Z5
@@ -84,17 +77,19 @@
 
     <!-- =====================================================
          BILL INFORMATION
+
+         IMPORTANT:
+         Bill No is loaded from DB / existing bill data.
+         Do NOT generate or modify it in HTML.
     ====================================================== -->
 
     <div class="billInfo">
-
 
         <div>
 
             <b>
                 Bill No :
             </b>
-
 
             <span id="billNo">
                 ---
@@ -109,13 +104,10 @@
                 Date :
             </b>
 
-
             <span id="billDate">
             </span>
 
-
             <br>
-
 
             <small id="billDayTime">
             </small>
@@ -130,21 +122,17 @@
 
     <!-- =====================================================
          CUSTOMER DETAILS
-         
-         IMPORTANT:
-         These values are loaded from DATABASE.
-         Do not generate Bill No / Customer No here.
+
+         These values are loaded by cbill.js / DB.
     ====================================================== -->
 
     <div class="customer">
-
 
         <span>
 
             <b>
                 Customer :
             </b>
-
 
             <span id="customerName">
                 -
@@ -159,7 +147,6 @@
                 Mobile :
             </b>
 
-
             <span id="customerMobile">
                 -
             </span>
@@ -172,7 +159,6 @@
             <b>
                 Place :
             </b>
-
 
             <span id="customerPlace">
                 -
@@ -199,9 +185,7 @@
         class="wood-table"
         id="woodDetailsTable">
 
-
         <thead>
-
 
             <tr>
 
@@ -209,41 +193,33 @@
                     S.No
                 </th>
 
-
                 <th>
                     Wood
                 </th>
-
 
                 <th>
                     Size
                 </th>
 
-
                 <th>
                     Length
                 </th>
-
 
                 <th>
                     Qty
                 </th>
 
-
                 <th>
                     CFT
                 </th>
-
 
                 <th>
                     Rate
                 </th>
 
-
                 <th>
                     Amount
                 </th>
-
 
                 <th>
                     Quality
@@ -251,14 +227,14 @@
 
             </tr>
 
-
         </thead>
 
 
         <tbody id="woodTable">
 
-        </tbody>
+            <!-- cbill.js inserts wood rows here -->
 
+        </tbody>
 
     </table>
 
@@ -267,19 +243,15 @@
          WOOD DETAILS TOTAL
     ====================================================== -->
 
-    <div
-        class="wood-details-total">
-
+    <div class="wood-details-total">
 
         <span>
             Wood Details Total
         </span>
 
-
         <strong id="woodDetailsTotal">
             ₹ 0.00
         </strong>
-
 
     </div>
 
@@ -294,11 +266,10 @@
 
 
     <table
-        class="charges-table">
-
+        class="charges-table"
+        id="chargesTable">
 
         <thead>
-
 
             <tr>
 
@@ -306,11 +277,9 @@
                     S.No
                 </th>
 
-
                 <th>
                     Name
                 </th>
-
 
                 <th>
                     Amount
@@ -318,14 +287,14 @@
 
             </tr>
 
-
         </thead>
 
 
         <tbody id="chargeTable">
 
-        </tbody>
+            <!-- cbill.js inserts charges here -->
 
+        </tbody>
 
     </table>
 
@@ -343,7 +312,6 @@
 
         <div class="cftTotal">
 
-
             <h3>
                 CFT Total
             </h3>
@@ -353,9 +321,9 @@
                 id="cftSummary"
                 class="cft-summary">
 
+                <!-- cbill.js inserts grouped CFT here -->
 
             </div>
-
 
         </div>
 
@@ -366,16 +334,13 @@
 
         <p>
 
-
             <span>
                 Wood Total
             </span>
 
-
             <span id="woodTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -386,16 +351,13 @@
 
         <p>
 
-
             <span>
                 Others Total
             </span>
 
-
             <span id="othersTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -406,16 +368,13 @@
 
         <p>
 
-
             <span>
                 Subtotal
             </span>
 
-
             <span id="subtotal">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -429,16 +388,13 @@
             class="discount-row"
             style="display:none;">
 
-
             <span>
                 Discount
             </span>
 
-
             <span id="discountAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -449,16 +405,13 @@
 
         <h2>
 
-
             <span>
                 Grand Total
             </span>
 
-
             <span id="grandTotal">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </h2>
 
@@ -472,16 +425,13 @@
             class="advance-row"
             style="display:none;">
 
-
             <span>
                 Advance Amount
             </span>
 
-
             <span id="advanceAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -492,16 +442,13 @@
 
         <p class="balance-row">
 
-
             <span>
                 Balance Amount
             </span>
 
-
             <span id="balanceAmount">
-                ₹ 0
+                ₹ 0.00
             </span>
-
 
         </p>
 
@@ -515,16 +462,13 @@
 
     <div class="signature">
 
-
         <p>
             Customer Signature
         </p>
 
-
         <p>
             Authorized Signature
         </p>
-
 
     </div>
 
@@ -534,12 +478,14 @@
 
     <!-- =====================================================
          BUTTONS
+
+         ONLY 3 BUTTONS
+         1. Print Bill
+         2. Clear
+         3. WhatsApp
     ====================================================== -->
 
     <div class="buttons">
-
-
-       
 
         <button
             id="printBtn"
@@ -548,9 +494,6 @@
             Print Bill
 
         </button>
-
-
-       
 
 
         <button
@@ -562,10 +505,6 @@
         </button>
 
 
-        <!-- =================================================
-             WHATSAPP
-        ================================================== -->
-
         <button
             id="whatsappBtn"
             type="button">
@@ -573,7 +512,6 @@
             WhatsApp
 
         </button>
-
 
     </div>
 
@@ -583,8 +521,8 @@
 
 <!-- =========================================================
      PDF LIBRARIES
-     
-     Required by WhatsApp PDF generation.
+
+     Used by WhatsApp PDF generation.
 ========================================================= -->
 
 <script
@@ -602,17 +540,17 @@
 ========================================================= -->
 
 <script
-    src="../js/storedata.js?v=14">
+    src="../js/storedata.js?v=15">
 </script>
 
 
 <script
-    src="../js/cbill.js?v=14">
+    src="../js/cbill.js?v=15">
 </script>
 
 
 <script
-    src="../js/inputControl.js?v=14">
+    src="../js/inputControl.js?v=15">
 </script>
 
 

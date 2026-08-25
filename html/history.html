@@ -12,7 +12,7 @@
 
     <meta
         name="description"
-        content="Amman Saw Mill Bill History"
+        content="Amman Saw Mill - Bill History"
     >
 
     <title>Bill History | Amman Saw Mill</title>
@@ -20,11 +20,16 @@
 
     <!-- =====================================================
          HISTORY CSS
+         
+         history.html is inside /html/
+         history.css is in the ROOT folder
+         
+         Therefore: ../history.css
          ===================================================== -->
 
     <link
         rel="stylesheet"
-        href="history.css"
+        href="../history.css?v=4"
     >
 
 </head>
@@ -53,14 +58,14 @@
                 </div>
 
 
-                <div>
+                <div class="brand-text">
 
                     <h1>
                         Bill History
                     </h1>
 
                     <p>
-                        Manage, search and download your bills
+                        View and manage all customer bills
                     </p>
 
                 </div>
@@ -70,13 +75,14 @@
 
             <button
                 id="homeBtn"
-                class="btn btn-light"
+                class="btn btn-home"
                 type="button"
             >
-                ⌂ Home
+                Home
             </button>
 
         </header>
+
 
 
         <!-- =================================================
@@ -88,14 +94,13 @@
 
             <!-- TOTAL -->
 
-            <div class="summary-card">
+            <div class="summary-card total-card">
 
                 <div class="summary-icon">
-                    ▤
+                    #
                 </div>
 
-
-                <div>
+                <div class="summary-content">
 
                     <span>
                         Total Bills
@@ -110,19 +115,19 @@
             </div>
 
 
+
             <!-- PENDING -->
 
             <div class="summary-card pending-card">
 
                 <div class="summary-icon">
-                    ◷
+                    !
                 </div>
 
-
-                <div>
+                <div class="summary-content">
 
                     <span>
-                        Pending
+                        Pending Bills
                     </span>
 
                     <strong id="pendingBills">
@@ -134,19 +139,19 @@
             </div>
 
 
+
             <!-- DELIVERED -->
 
-            <div class="summary-card finished-card">
+            <div class="summary-card delivered-card">
 
                 <div class="summary-icon">
                     ✓
                 </div>
 
-
-                <div>
+                <div class="summary-content">
 
                     <span>
-                        Delivered
+                        Delivered Bills
                     </span>
 
                     <strong id="finishedBills">
@@ -158,7 +163,8 @@
             </div>
 
 
-            <!-- RETURNED -->
+
+            <!-- RETURN -->
 
             <div class="summary-card return-card">
 
@@ -166,11 +172,10 @@
                     ↩
                 </div>
 
-
-                <div>
+                <div class="summary-content">
 
                     <span>
-                        Returned
+                        Return Bills
                     </span>
 
                     <strong id="returnBills">
@@ -187,29 +192,25 @@
 
 
         <!-- =================================================
-             SEARCH / FILTER
+             SEARCH AND FILTER
              ================================================= -->
 
         <section class="control-panel">
 
 
-            <div class="search-area">
+            <div class="control-row">
 
 
                 <!-- SEARCH -->
 
-                <div class="search-box">
-
-                    <span class="search-icon">
-                        ⌕
-                    </span>
-
+                <div class="search-wrapper">
 
                     <input
                         id="searchInput"
+                        class="search-input"
                         type="search"
                         autocomplete="off"
-                        placeholder="Search bill no, customer, mobile, place, payment..."
+                        placeholder="Search Bill No / Customer ID / Name / Mobile / Place"
                     >
 
 
@@ -217,7 +218,7 @@
                         id="clearSearchBtn"
                         class="clear-search"
                         type="button"
-                        title="Clear search"
+                        title="Clear Search"
                     >
                         ×
                     </button>
@@ -226,11 +227,11 @@
 
 
 
-                <!-- SEARCH BUTTON -->
+                <!-- SEARCH -->
 
                 <button
                     id="searchBtn"
-                    class="btn btn-primary"
+                    class="btn btn-search"
                     type="button"
                 >
                     Search
@@ -238,7 +239,7 @@
 
 
 
-                <!-- STATUS FILTER -->
+                <!-- FILTER -->
 
                 <select
                     id="statusFilter"
@@ -246,19 +247,19 @@
                 >
 
                     <option value="all">
-                        All Status
+                        All Bills
                     </option>
 
                     <option value="pending">
-                        Pending
+                        Pending Bills
                     </option>
 
                     <option value="finished">
-                        Delivered
+                        Delivered Bills
                     </option>
 
                     <option value="return">
-                        Returned
+                        Return Bills
                     </option>
 
                 </select>
@@ -269,10 +270,10 @@
 
                 <button
                     id="refreshBtn"
-                    class="btn btn-secondary"
+                    class="btn btn-refresh"
                     type="button"
                 >
-                    ↻ Refresh
+                    Refresh
                 </button>
 
 
@@ -280,7 +281,7 @@
 
 
 
-            <!-- RESULT INFORMATION -->
+            <!-- RESULT -->
 
             <div class="result-info">
 
@@ -288,12 +289,12 @@
                     0 bills
                 </span>
 
-                <span>
-                    •
+                <span class="separator">
+                    |
                 </span>
 
                 <span>
-                    PDF downloads directly without opening a print page
+                    PDF opens directly as a bill document
                 </span>
 
             </div>
@@ -307,28 +308,32 @@
              BILL TABLE
              ================================================= -->
 
-        <main class="table-card">
+        <section class="table-card">
 
 
-            <!-- TABLE HEADER -->
+            <div class="table-header">
 
-            <div class="table-heading">
+                <div>
 
-                <h2>
-                    All Bills
-                </h2>
+                    <h2>
+                        Bill Records
+                    </h2>
 
-                <p>
-                    Payment Type and Payment Mode are shown separately.
-                </p>
+                    <p>
+                        Customer, payment, amount and bill status
+                    </p>
+
+                </div>
 
             </div>
 
 
 
-            <!-- TABLE SCROLL -->
+            <!-- =================================================
+                 TABLE
+                 ================================================= -->
 
-            <div class="table-scroll">
+            <div class="table-container">
 
 
                 <table
@@ -336,104 +341,75 @@
                 >
 
 
-                    <!-- =====================================
-                         TABLE HEADER
-                         ===================================== -->
-
                     <thead>
 
                         <tr>
-
 
                             <th>
                                 S.No
                             </th>
 
-
                             <th>
                                 Bill No
                             </th>
-
 
                             <th>
                                 Customer ID
                             </th>
 
-
                             <th>
                                 Customer Name
                             </th>
-
 
                             <th>
                                 Mobile
                             </th>
 
-
                             <th>
                                 Place
                             </th>
-
 
                             <th>
                                 Date
                             </th>
 
-
-                            <!-- PAYMENT TYPE -->
-
                             <th>
                                 Payment Type
                             </th>
-
-
-                            <!-- PAYMENT MODE -->
 
                             <th>
                                 Payment Mode
                             </th>
 
-
                             <th>
                                 Grand Total
                             </th>
-
 
                             <th>
                                 Advance
                             </th>
 
-
                             <th>
                                 Balance
                             </th>
-
 
                             <th>
                                 Return
                             </th>
 
-
                             <th>
                                 Status
                             </th>
 
-
                             <th>
                                 Actions
                             </th>
-
 
                         </tr>
 
                     </thead>
 
 
-
-                    <!-- =====================================
-                         TABLE BODY
-                         JS WILL INSERT ROWS HERE
-                         ===================================== -->
 
                     <tbody id="historyBody">
 
@@ -443,7 +419,7 @@
                                 colspan="15"
                                 class="loading-cell"
                             >
-                                Loading bills...
+                                Loading bill history...
                             </td>
 
                         </tr>
@@ -457,7 +433,7 @@
             </div>
 
 
-        </main>
+        </section>
 
 
 
@@ -467,9 +443,13 @@
 
         <footer class="page-footer">
 
-            Bill Management
-            &nbsp; • &nbsp;
-            History
+            <span>
+                Amman Saw Mill
+            </span>
+
+            <span>
+                Bill Management System
+            </span>
 
         </footer>
 
@@ -479,9 +459,7 @@
 
 
     <!-- =====================================================
-         HTML2PDF LIBRARY
-         IMPORTANT:
-         THIS MUST COME BEFORE history.js
+         HTML2PDF
          ===================================================== -->
 
     <script
@@ -494,9 +472,16 @@
 
     <!-- =====================================================
          HISTORY JS
+
+         history.html = /html/history.html
+         history.js  = /history.js
+
+         Therefore: ../history.js
          ===================================================== -->
 
-    <script src="history.js"></script>
+    <script
+        src="../history.js?v=4"
+    ></script>
 
 
 </body>

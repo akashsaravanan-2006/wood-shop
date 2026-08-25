@@ -1328,18 +1328,37 @@ if (
 // CFT SUMMARY
 // ============================================================
 
+// ============================================================
+// CFT SUMMARY
+//
+// SAME WOOD + SAME QUALITY = COMBINE CFT
+//
+// Example:
+//
+// Teak (1) = 3.06
+// Teak (2) = 3.65
+// Teak (2) = 8.00
+//
+// Result:
+//
+// Teak (1) = 3.06 CFT
+// Teak (2) = 11.65 CFT
+// ============================================================
+
 const cftSummary =
     document.getElementById(
         "cftSummary"
     );
 
 
-if (
-    cftSummary
-) {
+if (cftSummary) {
 
     cftSummary.innerHTML = "";
 
+
+    // ========================================================
+    // NO WOOD
+    // ========================================================
 
     if (
         woodCalculations.length === 0
@@ -1354,22 +1373,30 @@ if (
         `;
 
     }
+
+
+    // ========================================================
+    // GROUP CFT
+    // ========================================================
+
     else {
 
-        woodCalculations.forEach(
-            function (
-                item,
-                index
-            ) {
+        const groupedCFT = new Map();
 
-                if (
-                    !item
-                ) {
+
+        woodCalculations.forEach(
+            function (item) {
+
+                if (!item) {
 
                     return;
 
                 }
 
+
+                // ==================================================
+                // WOOD NAME
+                // ==================================================
 
                 let woodName =
                     item.woodType ||
@@ -1389,9 +1416,7 @@ if (
                 }
 
 
-                if (
-                    !woodName
-                ) {
+                if (!woodName) {
 
                     woodName =
                         "-";
@@ -1399,18 +1424,104 @@ if (
                 }
 
 
+                // ==================================================
+                // QUALITY
+                // ==================================================
+
                 const quality =
                     item.quality !== undefined &&
                     item.quality !== ""
-                        ? item.quality
+                        ? String(
+                            item.quality
+                        )
                         : "1";
 
+
+                // ==================================================
+                // CFT
+                // ==================================================
 
                 const cubicFeet =
                     toNumber(
                         item.cubicFeet
                     );
 
+
+                // ==================================================
+                // GROUP KEY
+                //
+                // BOTH WOOD + QUALITY MUST MATCH
+                // ==================================================
+
+                const groupKey =
+                    woodName
+                    .trim()
+                    .toLowerCase() +
+                    "|" +
+                    quality
+                    .trim()
+                    .toLowerCase();
+
+
+                // ==================================================
+                // ADD TO EXISTING GROUP
+                // ==================================================
+
+                if (
+                    groupedCFT.has(
+                        groupKey
+                    )
+                ) {
+
+                    const existing =
+                        groupedCFT.get(
+                            groupKey
+                        );
+
+
+                    existing.cft +=
+                        cubicFeet;
+
+                }
+
+
+                // ==================================================
+                // CREATE NEW GROUP
+                // ==================================================
+
+                else {
+
+                    groupedCFT.set(
+                        groupKey,
+                        {
+
+                            woodName:
+                                woodName,
+
+                            quality:
+                                quality,
+
+                            cft:
+                                cubicFeet
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ========================================================
+        // DISPLAY GROUPED CFT
+        // ========================================================
+
+        let serialNumber = 1;
+
+
+        groupedCFT.forEach(
+            function (group) {
 
                 const div =
                     document.createElement(
@@ -1426,20 +1537,20 @@ if (
 
                     <strong>
 
-                        ${index + 1}.
+                        ${serialNumber}.
                         ${escapeHTML(
-                            woodName
+                            group.woodName
                         )}
 
                         (${escapeHTML(
-                            quality
+                            group.quality
                         )})
 
                     </strong>
 
                     <span>
 
-                        ${cubicFeet.toFixed(2)}
+                        ${group.cft.toFixed(2)}
                         CFT
 
                     </span>
@@ -1450,6 +1561,9 @@ if (
                 cftSummary.appendChild(
                     div
                 );
+
+
+                serialNumber++;
 
             }
         );

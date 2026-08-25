@@ -1,12 +1,30 @@
 // ============================================================
 // BILL.JS
-// FINAL CORRECTED VERSION
+// FINAL CLEAN VERSION
 //
-// WOOD TABLE:
-//
-// S.No | Wood | Size | Length | Qty | CFT | Rate | Amount | Quality
-//
-// TOTAL LENGTH IS NOT DISPLAYED
+// FEATURES
+// ------------------------------------------------------------
+// Customer details
+// Bill number
+// Date and time
+// Wood details
+// Length + Quantity separately
+// Total Length NOT displayed
+// CFT calculation
+// Same Wood + Same Quality CFT grouped
+// Other charges
+// Wood total
+// Others total
+// Subtotal
+// Discount
+// Grand total
+// Advance
+// Balance
+// Print
+// Edit
+// Clear
+// Confirm
+// WhatsApp + PDF
 // ============================================================
 
 console.clear();
@@ -47,7 +65,8 @@ function toNumber(value) {
 
 function money(value) {
 
-    return "₹ " + toNumber(value).toFixed(2);
+    return "₹ " +
+        toNumber(value).toFixed(2);
 
 }
 
@@ -104,7 +123,7 @@ if (
 
 
 // ============================================================
-// FALLBACK TO LOCAL STORAGE
+// FALLBACK LOCAL STORAGE
 // ============================================================
 
 if (
@@ -218,9 +237,7 @@ const customerPlaceElement =
     );
 
 
-if (
-    customerNameElement
-) {
+if (customerNameElement) {
 
     customerNameElement.textContent =
         customerName || "-";
@@ -228,9 +245,7 @@ if (
 }
 
 
-if (
-    customerMobileElement
-) {
+if (customerMobileElement) {
 
     customerMobileElement.textContent =
         customerMobile || "-";
@@ -238,9 +253,7 @@ if (
 }
 
 
-if (
-    customerPlaceElement
-) {
+if (customerPlaceElement) {
 
     customerPlaceElement.textContent =
         customerPlace || "-";
@@ -320,9 +333,7 @@ const currentTime =
     `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
 
 
-if (
-    billDateElement
-) {
+if (billDateElement) {
 
     billDateElement.textContent =
         currentDate;
@@ -330,9 +341,7 @@ if (
 }
 
 
-if (
-    billDayTimeElement
-) {
+if (billDayTimeElement) {
 
     billDayTimeElement.textContent =
         currentTime;
@@ -350,9 +359,7 @@ const billNoElement =
     );
 
 
-if (
-    billNoElement
-) {
+if (billNoElement) {
 
     const billNumber =
         billData.billNo ||
@@ -366,9 +373,7 @@ if (
         );
 
 
-    if (
-        billNumber
-    ) {
+    if (billNumber) {
 
         billNoElement.textContent =
             billNumber;
@@ -376,9 +381,8 @@ if (
     }
     else {
 
-        console.log(
-            "Bill number not available yet."
-        );
+        billNoElement.textContent =
+            "---";
 
     }
 
@@ -450,26 +454,32 @@ if (
 }
 
 
-console.log("====================================");
-
 console.log(
     "WOOD CALCULATIONS COUNT:",
     woodCalculations.length
-);
-
-console.log(
-    "WOOD CALCULATIONS:"
 );
 
 console.table(
     woodCalculations
 );
 
-console.log("====================================");
-
 
 // ============================================================
 // WOOD TABLE
+//
+// 9 COLUMNS:
+//
+// S.No
+// Wood
+// Size
+// Length
+// Qty
+// CFT
+// Rate
+// Amount
+// Quality
+//
+// TOTAL LENGTH IS NOT DISPLAYED
 // ============================================================
 
 const woodTable =
@@ -478,9 +488,7 @@ const woodTable =
     );
 
 
-if (
-    woodTable
-) {
+if (woodTable) {
 
     woodTable.innerHTML = "";
 
@@ -497,10 +505,11 @@ if (
 
             <tr>
 
-                <td colspan="9">
-
+                <td
+                    colspan="9"
+                    style="text-align:center;"
+                >
                     No wood data
-
                 </td>
 
             </tr>
@@ -511,7 +520,7 @@ if (
 
 
     // ========================================================
-    // WOOD DATA EXISTS
+    // WOOD DATA
     // ========================================================
 
     else {
@@ -522,33 +531,7 @@ if (
                 index
             ) {
 
-                console.log(
-                    "------------------------------------"
-                );
-
-                console.log(
-                    "PROCESSING WOOD CALCULATION:",
-                    index + 1
-                );
-
-                console.log(
-                    "WOOD ITEM:",
-                    item
-                );
-
-
-                // ==================================================
-                // SAFETY CHECK
-                // ==================================================
-
-                if (
-                    !item
-                ) {
-
-                    console.warn(
-                        "Empty wood calculation:",
-                        index + 1
-                    );
+                if (!item) {
 
                     return;
 
@@ -577,12 +560,9 @@ if (
                 }
 
 
-                if (
-                    !woodName
-                ) {
+                if (!woodName) {
 
-                    woodName =
-                        "-";
+                    woodName = "-";
 
                 }
 
@@ -641,19 +621,21 @@ if (
                 }
 
 
-                console.log(
-                    "WOOD:",
-                    woodName
-                );
-
-                console.log(
-                    "SIZE:",
-                    size
-                );
-
-
                 // ==================================================
                 // PIECES
+                //
+                // Example:
+                //
+                // 4 -> 3
+                // 5 -> 6
+                // 2 -> 10
+                //
+                // DISPLAY:
+                //
+                // Length | Qty
+                // 4      | 3
+                // 5      | 6
+                // 2      | 10
                 // ==================================================
 
                 const pieces =
@@ -664,28 +646,6 @@ if (
                         : [];
 
 
-                console.log(
-                    "PIECES:",
-                    pieces
-                );
-
-
-                // ==================================================
-                // LENGTH + QUANTITY
-                //
-                // Example:
-                //
-                // Length 4, Qty 3
-                // Length 5, Qty 6
-                // Length 2, Qty 10
-                //
-                // DISPLAY:
-                //
-                // 4 | 3
-                // 5 | 6
-                // 2 | 10
-                // ==================================================
-
                 let lengthValues = [];
 
 
@@ -694,9 +654,7 @@ if (
                         piece
                     ) {
 
-                        if (
-                            !piece
-                        ) {
+                        if (!piece) {
 
                             return;
 
@@ -743,12 +701,6 @@ if (
                         }
 
                     }
-                );
-
-
-                console.log(
-                    "LENGTH VALUES:",
-                    lengthValues
                 );
 
 
@@ -804,9 +756,7 @@ if (
                         piece
                     ) {
 
-                        if (
-                            !piece
-                        ) {
+                        if (!piece) {
 
                             return;
 
@@ -837,108 +787,6 @@ if (
                         );
 
                 }
-
-
-                console.log(
-                    "TOTAL QUANTITY:",
-                    totalQty
-                );
-
-
-                // ==================================================
-                // INTERNAL TOTAL LENGTH
-                //
-                // IMPORTANT:
-                //
-                // This is NOT displayed in the table.
-                //
-                // It is retained internally so existing
-                // calculations/data are not broken.
-                // ==================================================
-
-                let totalLength =
-                    toNumber(
-                        item.totalLength
-                    );
-
-
-                // ==================================================
-                // CALCULATE TOTAL LENGTH IF NOT STORED
-                // ==================================================
-
-                if (
-                    totalLength === 0
-                ) {
-
-                    pieces.forEach(
-                        function (
-                            piece
-                        ) {
-
-                            if (
-                                !piece
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            const length =
-                                toNumber(
-                                    piece.length
-                                );
-
-
-                            const extraLength =
-                                toNumber(
-                                    piece.extraLength
-                                );
-
-
-                            const qty =
-                                toNumber(
-                                    piece.qty
-                                );
-
-
-                            totalLength +=
-                                (
-                                    length +
-                                    extraLength
-                                ) *
-                                qty;
-
-                        }
-                    );
-
-                }
-
-
-                // ==================================================
-                // DIRECT TOTAL LENGTH FALLBACK
-                // ==================================================
-
-                if (
-                    totalLength === 0 &&
-                    item.length !== undefined
-                ) {
-
-                    totalLength =
-                        toNumber(
-                            item.length
-                        ) *
-                        toNumber(
-                            item.qty
-                        );
-
-                }
-
-
-                console.log(
-                    "INTERNAL TOTAL LENGTH:",
-                    totalLength
-                );
 
 
                 // ==================================================
@@ -978,33 +826,14 @@ if (
                 const quality =
                     item.quality !== undefined &&
                     item.quality !== ""
-                        ? item.quality
+                        ? String(
+                            item.quality
+                        )
                         : "1";
 
 
-                console.log(
-                    "CFT:",
-                    cubicFeet
-                );
-
-                console.log(
-                    "RATE:",
-                    rate
-                );
-
-                console.log(
-                    "AMOUNT:",
-                    amount
-                );
-
-                console.log(
-                    "QUALITY:",
-                    quality
-                );
-
-
                 // ==================================================
-                // IF NO LENGTH DATA
+                // NO LENGTH DATA
                 // ==================================================
 
                 if (
@@ -1013,11 +842,9 @@ if (
 
                     lengthValues.push({
 
-                        length:
-                            0,
+                        length: 0,
 
-                        qty:
-                            totalQty
+                        qty: totalQty
 
                     });
 
@@ -1032,26 +859,8 @@ if (
                     lengthValues.length;
 
 
-                console.log(
-                    "ROW COUNT:",
-                    rowCount
-                );
-
-
                 // ==================================================
-                // CREATE ROW FOR EACH LENGTH + QTY
-                //
-                // EXACTLY 9 TABLE COLUMNS
-                //
-                // 1 S.No
-                // 2 Wood
-                // 3 Size
-                // 4 Length
-                // 5 Qty
-                // 6 CFT
-                // 7 Rate
-                // 8 Amount
-                // 9 Quality
+                // CREATE EACH LENGTH + QTY ROW
                 // ==================================================
 
                 lengthValues.forEach(
@@ -1076,110 +885,71 @@ if (
 
                             row.innerHTML = `
 
-                                <!-- S.NO -->
-
                                 <td
                                     rowspan="${rowCount}"
-                                    class="sno-cell">
-
+                                    class="sno-cell"
+                                >
                                     ${index + 1}
-
                                 </td>
 
-
-                                <!-- WOOD -->
-
                                 <td
                                     rowspan="${rowCount}"
-                                    class="wood-cell">
-
+                                    class="wood-cell"
+                                >
                                     ${escapeHTML(
                                         woodName
                                     )}
-
                                 </td>
-
-
-                                <!-- SIZE -->
 
                                 <td
                                     rowspan="${rowCount}"
-                                    class="size-cell">
-
+                                    class="size-cell"
+                                >
                                     ${escapeHTML(
                                         size
                                     )}
-
                                 </td>
 
-
-                                <!-- LENGTH -->
-
                                 <td
-                                    class="length-cell">
-
+                                    class="length-cell"
+                                >
                                     ${lengthItem.length}
-
                                 </td>
 
-
-                                <!-- QUANTITY -->
-
                                 <td
-                                    class="qty-cell">
-
+                                    class="qty-cell"
+                                >
                                     ${lengthItem.qty}
-
                                 </td>
-
-
-                                <!-- CFT -->
 
                                 <td
                                     rowspan="${rowCount}"
-                                    class="cft-cell">
-
+                                    class="cft-cell"
+                                >
                                     ${cubicFeet.toFixed(2)}
-
                                 </td>
-
-
-                                <!-- RATE -->
 
                                 <td
                                     rowspan="${rowCount}"
-                                    class="rate-cell">
-
-                                    ${money(
-                                        rate
-                                    )}
-
+                                    class="rate-cell"
+                                >
+                                    ${money(rate)}
                                 </td>
-
-
-                                <!-- AMOUNT -->
 
                                 <td
                                     rowspan="${rowCount}"
-                                    class="amount-cell">
-
-                                    ${money(
-                                        amount
-                                    )}
-
+                                    class="amount-cell"
+                                >
+                                    ${money(amount)}
                                 </td>
-
-
-                                <!-- QUALITY -->
 
                                 <td
                                     rowspan="${rowCount}"
-                                    class="quality-cell">
-
+                                    class="quality-cell"
+                                >
                                     ${escapeHTML(
                                         quality
                                     )}
-
                                 </td>
 
                             `;
@@ -1189,8 +959,6 @@ if (
 
                         // ==================================================
                         // ADDITIONAL ROW
-                        //
-                        // ONLY LENGTH AND QTY
                         // ==================================================
 
                         else {
@@ -1198,18 +966,15 @@ if (
                             row.innerHTML = `
 
                                 <td
-                                    class="length-cell">
-
+                                    class="length-cell"
+                                >
                                     ${lengthItem.length}
-
                                 </td>
 
-
                                 <td
-                                    class="qty-cell">
-
+                                    class="qty-cell"
+                                >
                                     ${lengthItem.qty}
-
                                 </td>
 
                             `;
@@ -1217,42 +982,8 @@ if (
                         }
 
 
-                        // ==================================================
-                        // ADD ROW TO TABLE
-                        // ==================================================
-
                         woodTable.appendChild(
                             row
-                        );
-
-
-                        console.log(
-                            "WOOD PIECE ROW CREATED:",
-                            {
-                                calculation:
-                                    index + 1,
-
-                                piece:
-                                    pieceIndex + 1,
-
-                                length:
-                                    lengthItem.length,
-
-                                quantity:
-                                    lengthItem.qty,
-
-                                cft:
-                                    cubicFeet,
-
-                                rate:
-                                    rate,
-
-                                amount:
-                                    amount,
-
-                                quality:
-                                    quality
-                            }
                         );
 
                     }
@@ -1278,9 +1009,7 @@ woodCalculations.forEach(
         item
     ) {
 
-        if (
-            !item
-        ) {
+        if (!item) {
 
             return;
 
@@ -1297,7 +1026,7 @@ woodCalculations.forEach(
 
 
 console.log(
-    "WOOD DETAILS TOTAL:",
+    "WOOD TOTAL:",
     woodTotal
 );
 
@@ -1326,12 +1055,8 @@ if (
 
 // ============================================================
 // CFT SUMMARY
-// ============================================================
-
-// ============================================================
-// CFT SUMMARY
 //
-// SAME WOOD + SAME QUALITY = COMBINE CFT
+// SAME WOOD + SAME QUALITY = COMBINE
 //
 // Example:
 //
@@ -1339,7 +1064,7 @@ if (
 // Teak (2) = 3.65
 // Teak (2) = 8.00
 //
-// Result:
+// RESULT:
 //
 // Teak (1) = 3.06 CFT
 // Teak (2) = 11.65 CFT
@@ -1356,10 +1081,6 @@ if (cftSummary) {
     cftSummary.innerHTML = "";
 
 
-    // ========================================================
-    // NO WOOD
-    // ========================================================
-
     if (
         woodCalculations.length === 0
     ) {
@@ -1367,25 +1088,24 @@ if (cftSummary) {
         cftSummary.innerHTML = `
 
             <div class="cft-item">
+
                 -
+
             </div>
 
         `;
 
     }
-
-
-    // ========================================================
-    // GROUP CFT
-    // ========================================================
-
     else {
 
-        const groupedCFT = new Map();
+        const groupedCFT =
+            new Map();
 
 
         woodCalculations.forEach(
-            function (item) {
+            function (
+                item
+            ) {
 
                 if (!item) {
 
@@ -1418,8 +1138,7 @@ if (cftSummary) {
 
                 if (!woodName) {
 
-                    woodName =
-                        "-";
+                    woodName = "-";
 
                 }
 
@@ -1450,21 +1169,21 @@ if (cftSummary) {
                 // ==================================================
                 // GROUP KEY
                 //
-                // BOTH WOOD + QUALITY MUST MATCH
+                // WOOD + QUALITY
                 // ==================================================
 
                 const groupKey =
                     woodName
-                    .trim()
-                    .toLowerCase() +
+                        .trim()
+                        .toLowerCase() +
                     "|" +
                     quality
-                    .trim()
-                    .toLowerCase();
+                        .trim()
+                        .toLowerCase();
 
 
                 // ==================================================
-                // ADD TO EXISTING GROUP
+                // EXISTING GROUP
                 // ==================================================
 
                 if (
@@ -1486,7 +1205,7 @@ if (cftSummary) {
 
 
                 // ==================================================
-                // CREATE NEW GROUP
+                // NEW GROUP
                 // ==================================================
 
                 else {
@@ -1521,7 +1240,9 @@ if (cftSummary) {
 
 
         groupedCFT.forEach(
-            function (group) {
+            function (
+                group
+            ) {
 
                 const div =
                     document.createElement(
@@ -1658,9 +1379,7 @@ otherItems.forEach(
         item
     ) {
 
-        if (
-            !item
-        ) {
+        if (!item) {
 
             return;
 
@@ -1698,27 +1417,6 @@ if (
         );
 
 }
-
-
-console.log(
-    "LABOUR CHARGE:",
-    labourCharge
-);
-
-console.log(
-    "OTHER CHARGE:",
-    otherCharge
-);
-
-console.log(
-    "ADDITIONAL TOTAL:",
-    additionalTotal
-);
-
-console.log(
-    "OTHERS TOTAL:",
-    othersTotal
-);
 
 
 // ============================================================
@@ -1816,9 +1514,7 @@ if (
             item
         ) {
 
-            if (
-                !item
-            ) {
+            if (!item) {
 
                 return;
 
@@ -1886,17 +1582,11 @@ if (
 
             <tr>
 
-                <td>
-                    -
-                </td>
+                <td>-</td>
 
-                <td>
-                    -
-                </td>
+                <td>-</td>
 
-                <td>
-                    -
-                </td>
+                <td>-</td>
 
             </tr>
 
@@ -1995,7 +1685,7 @@ console.log(
 
 
 // ============================================================
-// DISPLAY WOOD TOTAL
+// DISPLAY TOTALS
 // ============================================================
 
 const woodTotalElement =
@@ -2003,10 +1693,7 @@ const woodTotalElement =
         "woodTotal"
     );
 
-
-if (
-    woodTotalElement
-) {
+if (woodTotalElement) {
 
     woodTotalElement.textContent =
         money(
@@ -2016,19 +1703,12 @@ if (
 }
 
 
-// ============================================================
-// DISPLAY OTHERS TOTAL
-// ============================================================
-
 const othersTotalElement =
     document.getElementById(
         "othersTotal"
     );
 
-
-if (
-    othersTotalElement
-) {
+if (othersTotalElement) {
 
     othersTotalElement.textContent =
         money(
@@ -2038,19 +1718,12 @@ if (
 }
 
 
-// ============================================================
-// DISPLAY SUBTOTAL
-// ============================================================
-
 const subtotalElement =
     document.getElementById(
         "subtotal"
     );
 
-
-if (
-    subtotalElement
-) {
+if (subtotalElement) {
 
     subtotalElement.textContent =
         money(
@@ -2079,9 +1752,7 @@ if (
     discount > 0
 ) {
 
-    if (
-        discountRow
-    ) {
+    if (discountRow) {
 
         discountRow.style.display =
             "flex";
@@ -2089,9 +1760,7 @@ if (
     }
 
 
-    if (
-        discountAmountElement
-    ) {
+    if (discountAmountElement) {
 
         discountAmountElement.textContent =
             "- " +
@@ -2104,9 +1773,7 @@ if (
 }
 else {
 
-    if (
-        discountRow
-    ) {
+    if (discountRow) {
 
         discountRow.style.display =
             "none";
@@ -2117,7 +1784,7 @@ else {
 
 
 // ============================================================
-// DISPLAY GRAND TOTAL
+// GRAND TOTAL DISPLAY
 // ============================================================
 
 const grandTotalElement =
@@ -2189,7 +1856,7 @@ if (
 
 
 console.log(
-    "ADVANCE AMOUNT:",
+    "ADVANCE:",
     advanceAmount
 );
 
@@ -2207,7 +1874,7 @@ const balanceAmount =
 
 
 console.log(
-    "BALANCE AMOUNT:",
+    "BALANCE:",
     balanceAmount
 );
 
@@ -2231,9 +1898,7 @@ if (
     advanceAmount > 0
 ) {
 
-    if (
-        advanceRow
-    ) {
+    if (advanceRow) {
 
         advanceRow.style.display =
             "flex";
@@ -2255,9 +1920,7 @@ if (
 }
 else {
 
-    if (
-        advanceRow
-    ) {
+    if (advanceRow) {
 
         advanceRow.style.display =
             "none";
@@ -2417,9 +2080,7 @@ const printBtn =
     );
 
 
-if (
-    printBtn
-) {
+if (printBtn) {
 
     printBtn.addEventListener(
         "click",
@@ -2447,9 +2108,7 @@ const editBtn =
     );
 
 
-if (
-    editBtn
-) {
+if (editBtn) {
 
     editBtn.addEventListener(
         "click",
@@ -2485,9 +2144,7 @@ const clearBtn =
     );
 
 
-if (
-    clearBtn
-) {
+if (clearBtn) {
 
     clearBtn.addEventListener(
         "click",
@@ -2504,13 +2161,7 @@ if (
                 );
 
 
-            if (
-                !confirmClear
-            ) {
-
-                console.log(
-                    "CLEAR CANCELLED"
-                );
+            if (!confirmClear) {
 
                 return;
 
@@ -2558,9 +2209,7 @@ const confirmBill =
     );
 
 
-if (
-    confirmBill
-) {
+if (confirmBill) {
 
     confirmBill.addEventListener(
         "click",
@@ -2601,8 +2250,8 @@ if (
 }
 else {
 
-    console.error(
-        "ERROR: confirmBill button not found!"
+    console.warn(
+        "confirmBill button not found."
     );
 
 }
@@ -2612,13 +2261,11 @@ else {
 // WHATSAPP + PDF
 // ============================================================
 //
-// Click WhatsApp:
+// IMPORTANT:
 //
-// 1. Get customer details
-// 2. Generate complete bill PDF
-// 3. Create greeting message
-// 4. Share PDF through device share
-// 5. WhatsApp can be selected from share sheet
+// This is the ONLY WhatsApp handler.
+//
+// No duplicate WhatsApp code below this section.
 //
 // ============================================================
 
@@ -2628,9 +2275,7 @@ const whatsappBtn =
     );
 
 
-if (
-    whatsappBtn
-) {
+if (whatsappBtn) {
 
     whatsappBtn.addEventListener(
         "click",
@@ -2641,7 +2286,7 @@ if (
             );
 
             console.log(
-                "WHATSAPP BILL BUTTON CLICKED"
+                "WHATSAPP BUTTON CLICKED"
             );
 
             console.log(
@@ -2671,30 +2316,46 @@ if (
                 "";
 
 
-            // Remove spaces, +91, -, brackets etc.
             customerMobileForWhatsApp =
                 String(
                     customerMobileForWhatsApp
                 )
-                .replace(
-                    /\D/g,
-                    ""
-                );
+                    .replace(
+                        /\D/g,
+                        ""
+                    );
+
+
+            // ==================================================
+            // REMOVE INDIA PREFIX
+            // ==================================================
+
+            if (
+                customerMobileForWhatsApp.length === 12 &&
+                customerMobileForWhatsApp.startsWith("91")
+            ) {
+
+                customerMobileForWhatsApp =
+                    customerMobileForWhatsApp.substring(
+                        2
+                    );
+
+            }
 
 
             console.log(
-                "CUSTOMER NAME:",
+                "WHATSAPP CUSTOMER:",
                 customerNameForWhatsApp
             );
 
             console.log(
-                "CUSTOMER MOBILE:",
+                "WHATSAPP MOBILE:",
                 customerMobileForWhatsApp
             );
 
 
             // ==================================================
-            // VALIDATE CUSTOMER NAME
+            // VALIDATE NAME
             // ==================================================
 
             if (
@@ -2716,19 +2377,6 @@ if (
             // ==================================================
 
             if (
-                customerMobileForWhatsApp.length === 12 &&
-                customerMobileForWhatsApp.startsWith("91")
-            ) {
-
-                customerMobileForWhatsApp =
-                    customerMobileForWhatsApp.substring(
-                        2
-                    );
-
-            }
-
-
-            if (
                 customerMobileForWhatsApp.length !== 10
             ) {
 
@@ -2743,25 +2391,13 @@ if (
 
 
             // ==================================================
-            // CREATE DISPLAY NAME
-            //
-            // Example:
-            //
-            // Akash Saravanan
-            //
-            // becomes:
-            //
-            // Mr. Akash Saravanan
+            // MESSAGE
             // ==================================================
 
             const greetingName =
                 customerNameForWhatsApp
                     .trim();
 
-
-            // ==================================================
-            // PROFESSIONAL MESSAGE
-            // ==================================================
 
             const whatsappMessage =
 
@@ -2788,7 +2424,7 @@ We look forward to serving you again.
             // CONFIRM
             // ==================================================
 
-            const sendConfirmation =
+            const confirmSend =
                 confirm(
                     "Generate the bill PDF and send it to " +
                     customerNameForWhatsApp +
@@ -2796,9 +2432,7 @@ We look forward to serving you again.
                 );
 
 
-            if (
-                !sendConfirmation
-            ) {
+            if (!confirmSend) {
 
                 console.log(
                     "WHATSAPP SEND CANCELLED"
@@ -2810,7 +2444,7 @@ We look forward to serving you again.
 
 
             // ==================================================
-            // CHECK HTML2PDF
+            // CHECK PDF LIBRARY
             // ==================================================
 
             if (
@@ -2820,11 +2454,11 @@ We look forward to serving you again.
 
                 alert(
                     "PDF generator is not loaded.\n\n" +
-                    "Please check your internet connection and reload the page."
+                    "Please check the html2pdf.js script in bill.html and reload the page."
                 );
 
                 console.error(
-                    "html2pdf.js NOT FOUND"
+                    "ERROR: html2pdf.js NOT FOUND"
                 );
 
                 return;
@@ -2833,7 +2467,7 @@ We look forward to serving you again.
 
 
             // ==================================================
-            // SHOW LOADING
+            // DISABLE BUTTON
             // ==================================================
 
             const oldButtonText =
@@ -2848,10 +2482,13 @@ We look forward to serving you again.
                 "Creating PDF...";
 
 
+            let pdfWrapper = null;
+
+
             try {
 
                 // ==================================================
-                // BILL CONTAINER
+                // BILL ELEMENT
                 // ==================================================
 
                 const billElement =
@@ -2860,9 +2497,7 @@ We look forward to serving you again.
                     );
 
 
-                if (
-                    !billElement
-                ) {
+                if (!billElement) {
 
                     throw new Error(
                         "Bill container not found."
@@ -2872,17 +2507,24 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // PDF FILE NAME
+                // BILL NUMBER
                 // ==================================================
 
                 const billNumber =
                     billData.billNo ||
                     billData.billNumber ||
-                    document.getElementById(
-                        "billNo"
-                    )?.textContent?.trim() ||
+                    document
+                        .getElementById(
+                            "billNo"
+                        )
+                        ?.textContent
+                        ?.trim() ||
                     "Bill";
 
+
+                // ==================================================
+                // SAFE FILE NAME
+                // ==================================================
 
                 const safeCustomerName =
                     customerNameForWhatsApp
@@ -2897,14 +2539,22 @@ We look forward to serving you again.
                         );
 
 
+                const safeBillNumber =
+                    String(
+                        billNumber
+                    )
+                        .replace(
+                            /[^a-zA-Z0-9_-]/g,
+                            "_"
+                        );
+
+
                 const pdfFileName =
-                    `${safeCustomerName}_${billNumber}.pdf`;
+                    `${safeCustomerName}_${safeBillNumber}.pdf`;
 
 
                 // ==================================================
                 // CLONE BILL
-                //
-                // We clone instead of modifying the actual bill.
                 // ==================================================
 
                 const billClone =
@@ -2914,7 +2564,7 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // HIDE BUTTONS IN PDF
+                // REMOVE BUTTONS
                 // ==================================================
 
                 const clonedButtons =
@@ -2923,18 +2573,12 @@ We look forward to serving you again.
                     );
 
 
-                if (
-                    clonedButtons
-                ) {
+                if (clonedButtons) {
 
                     clonedButtons.remove();
 
                 }
 
-
-                // ==================================================
-                // HIDE ANY OTHER NON-BILL ELEMENTS
-                // ==================================================
 
                 billClone
                     .querySelectorAll(
@@ -2955,7 +2599,7 @@ We look forward to serving you again.
                 // PDF WRAPPER
                 // ==================================================
 
-                const pdfWrapper =
+                pdfWrapper =
                     document.createElement(
                         "div"
                     );
@@ -3047,7 +2691,7 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // GENERATE PDF BLOB
+                // GENERATE PDF
                 // ==================================================
 
                 whatsappBtn.textContent =
@@ -3068,14 +2712,20 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // REMOVE CLONE
+                // REMOVE TEMPORARY PDF ELEMENT
                 // ==================================================
 
-                pdfWrapper.remove();
+                if (pdfWrapper) {
+
+                    pdfWrapper.remove();
+
+                    pdfWrapper = null;
+
+                }
 
 
                 // ==================================================
-                // CREATE PDF FILE
+                // CREATE FILE
                 // ==================================================
 
                 const pdfFile =
@@ -3096,6 +2746,7 @@ We look forward to serving you again.
                     pdfFileName
                 );
 
+
                 console.log(
                     "PDF SIZE:",
                     pdfFile.size
@@ -3103,7 +2754,7 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // CHECK FILE SHARING SUPPORT
+                // SHARE DATA
                 // ==================================================
 
                 const shareData = {
@@ -3122,7 +2773,9 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // NATIVE FILE SHARE
+                // NATIVE SHARE
+                //
+                // Works best on mobile.
                 // ==================================================
 
                 if (
@@ -3154,27 +2807,21 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // FALLBACK
+                // DESKTOP FALLBACK
                 //
-                // Desktop browsers may not support file sharing.
-                // In that case:
-                //
-                // 1. Download PDF
-                // 2. Open WhatsApp chat
-                // 3. Message is pre-filled
-                // 4. User attaches downloaded PDF
+                // Download PDF + open WhatsApp
                 // ==================================================
 
                 else {
 
                     console.log(
-                        "FILE SHARING NOT SUPPORTED"
+                        "FILE SHARE NOT SUPPORTED."
                     );
 
 
-                    // ----------------------------------------------
+                    // ==================================================
                     // DOWNLOAD PDF
-                    // ----------------------------------------------
+                    // ==================================================
 
                     const downloadURL =
                         URL.createObjectURL(
@@ -3207,19 +2854,30 @@ We look forward to serving you again.
                     downloadLink.remove();
 
 
-                    URL.revokeObjectURL(
-                        downloadURL
+                    setTimeout(
+                        function () {
+
+                            URL.revokeObjectURL(
+                                downloadURL
+                            );
+
+                        },
+                        1000
                     );
 
 
-                    // ----------------------------------------------
-                    // OPEN WHATSAPP
-                    // ----------------------------------------------
+                    // ==================================================
+                    // WHATSAPP NUMBER
+                    // ==================================================
 
                     const whatsappNumber =
                         "91" +
                         customerMobileForWhatsApp;
 
+
+                    // ==================================================
+                    // WHATSAPP URL
+                    // ==================================================
 
                     const whatsappURL =
                         "https://wa.me/" +
@@ -3230,6 +2888,10 @@ We look forward to serving you again.
                         );
 
 
+                    // ==================================================
+                    // OPEN WHATSAPP
+                    // ==================================================
+
                     window.open(
                         whatsappURL,
                         "_blank"
@@ -3237,9 +2899,9 @@ We look forward to serving you again.
 
 
                     alert(
-                        "The bill PDF has been downloaded.\n\n" +
+                        "Bill PDF downloaded successfully.\n\n" +
                         "WhatsApp has been opened for the customer.\n\n" +
-                        "Please attach the downloaded PDF to the WhatsApp message."
+                        "Please attach the downloaded PDF."
                     );
 
                 }
@@ -3254,26 +2916,20 @@ We look forward to serving you again.
 
 
                 // ==================================================
-                // REMOVE CLONE IF ERROR OCCURRED
+                // REMOVE TEMP ELEMENT
                 // ==================================================
 
-                const remainingWrapper =
-                    document.querySelector(
-                        'body > div[style*="-100000px"]'
-                    );
+                if (pdfWrapper) {
 
+                    pdfWrapper.remove();
 
-                if (
-                    remainingWrapper
-                ) {
-
-                    remainingWrapper.remove();
+                    pdfWrapper = null;
 
                 }
 
 
                 // ==================================================
-                // USER CANCELLED SHARE
+                // USER CANCELLED
                 // ==================================================
 
                 if (
@@ -3283,7 +2939,7 @@ We look forward to serving you again.
                 ) {
 
                     console.log(
-                        "User cancelled sharing."
+                        "User cancelled WhatsApp sharing."
                     );
 
                 }
@@ -3291,7 +2947,7 @@ We look forward to serving you again.
 
                     alert(
                         "Unable to create or share the bill PDF.\n\n" +
-                        "Please try again."
+                        "Please check the browser console for details."
                     );
 
                 }
@@ -3312,140 +2968,6 @@ We look forward to serving you again.
                     "WhatsApp";
 
             }
-
-        }
-    );
-
-}
-else {
-
-    console.warn(
-        "WhatsApp button not found."
-    );
-}
-
-
-// ============================================================
-// FINAL READY
-// ============================================================
-
-console.log(
-    "===================================="
-);
-
-console.log(
-    "          BILL.JS READY"
-);
-
-console.log(
-    "===================================="
-);
-
-            // ==================================================
-            // VALIDATE MOBILE
-            // ==================================================
-
-            if (
-                mobile.length !== 10
-            ) {
-
-                alert(
-                    "Customer mobile number is not valid.\n\n" +
-                    "Please enter a valid 10-digit mobile number."
-                );
-
-                return;
-
-            }
-
-
-            // ==================================================
-            // CONFIRM SEND
-            // ==================================================
-
-            const confirmSend =
-                confirm(
-                    "Do you want to send this bill through WhatsApp?"
-                );
-
-
-            if (
-                !confirmSend
-            ) {
-
-                console.log(
-                    "WHATSAPP SEND CANCELLED"
-                );
-
-                return;
-
-            }
-
-
-            // ==================================================
-            // INDIA NUMBER
-            // ==================================================
-
-            const whatsappNumber =
-                "91" + mobile;
-
-
-            // ==================================================
-            // WHATSAPP MESSAGE
-            // ==================================================
-
-            const message =
-
-`🧾 *WOOD BILL*
-
-Customer: ${customerName || "-"}
-Mobile: ${customerMobile || "-"}
-Place: ${customerPlace || "-"}
-
-----------------------------
-
-Wood Details Total: ${money(woodTotal)}
-
-Others Total: ${money(othersTotal)}
-
-Subtotal: ${money(subtotal)}
-
-Discount: ${money(discount)}
-
-*Grand Total: ${money(grandTotal)}*
-
-Advance Amount: ${money(advanceAmount)}
-
-Balance Amount: ${money(balanceAmount)}
-
-----------------------------
-
-Thank you 🙏
-ஸ்ரீ அம்மன் சாமில்`;
-
-
-            // ==================================================
-            // WHATSAPP URL
-            // ==================================================
-
-            const whatsappURL =
-                "https://wa.me/" +
-                whatsappNumber +
-                "?text=" +
-                encodeURIComponent(
-                    message
-                );
-
-
-            console.log(
-                "WHATSAPP URL CREATED"
-            );
-
-
-            window.open(
-                whatsappURL,
-                "_blank"
-            );
 
         }
     );

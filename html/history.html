@@ -1,271 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>Bill History</title>
-
-    <link
-        rel="stylesheet"
-        href="../css/history.css?v=30">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill History</title>
+<link rel="stylesheet" href="history.css">
 </head>
-
-
 <body>
+<div class="page-shell">
 
-<div class="container">
-
-
-    <!-- =========================================
-         HEADER
-    ========================================== -->
-
-    <div class="header">
-
-        <h1>
-            Bill History
-        </h1>
-
-        <button
-            type="button"
-            id="homeBtn">
-
-            Home
-
-        </button>
-
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">₹</div>
+    <div>
+      <h1>Bill History</h1>
+      <p>Manage, search and download your bills</p>
     </div>
+  </div>
+  <button id="homeBtn" class="btn btn-light" type="button">⌂ Home</button>
+</header>
 
+<section class="summary-grid">
+  <div class="summary-card">
+    <div class="summary-icon">▤</div>
+    <div><span>Total Bills</span><strong id="totalBills">0</strong></div>
+  </div>
+  <div class="summary-card pending-card">
+    <div class="summary-icon">◷</div>
+    <div><span>Pending</span><strong id="pendingBills">0</strong></div>
+  </div>
+  <div class="summary-card finished-card">
+    <div class="summary-icon">✓</div>
+    <div><span>Delivered</span><strong id="finishedBills">0</strong></div>
+  </div>
+  <div class="summary-card return-card">
+    <div class="summary-icon">↩</div>
+    <div><span>Returned</span><strong id="returnBills">0</strong></div>
+  </div>
+</section>
 
-    <!-- =========================================
-         SEARCH
-    ========================================== -->
-
-    <div class="searchBox">
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search Bill No / Customer ID / Name / Mobile / Place"
-            autocomplete="off">
-
-        <button
-            type="button"
-            id="searchBtn">
-
-            Search
-
-        </button>
-
-
-        <button
-            type="button"
-            id="refreshBtn">
-
-            Refresh
-
-        </button>
-
+<section class="control-panel">
+  <div class="search-area">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input id="searchInput" type="search" autocomplete="off"
+             placeholder="Search bill no, customer, mobile, place, payment...">
+      <button id="clearSearchBtn" class="clear-search" type="button">×</button>
     </div>
-
-
-    <!-- =========================================
-         FILTER
-    ========================================== -->
-
-    <div class="filterBox">
-
-        <label for="statusFilter">
-            Filter Bills
-        </label>
-
-        <select id="statusFilter">
-
-            <option value="all">
-                All Bills
-            </option>
-
-            <option value="pending">
-                Pending Bills
-            </option>
-
-            <option value="finished">
-                Finished / Delivered
-            </option>
-
-            <option value="return">
-                Return Bills
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <!-- =========================================
-         SUMMARY
-    ========================================== -->
-
-    <div class="summary">
-
-
-        <div class="summaryCard">
-
-            <span>
-                Total Bills
-            </span>
-
-            <strong id="totalBills">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="summaryCard pendingSummary">
-
-            <span>
-                Pending Bills
-            </span>
-
-            <strong id="pendingBills">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="summaryCard finishedSummary">
-
-            <span>
-                Finished Bills
-            </span>
-
-            <strong id="finishedBills">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="summaryCard returnSummary">
-
-            <span>
-                Return Bills
-            </span>
-
-            <strong id="returnBills">
-                0
-            </strong>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================================
-         TABLE
-    ========================================== -->
-
-    <div class="tableContainer">
-
-        <table id="historyTable">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        S.No
-                    </th>
-
-                    <th>
-                        Bill No
-                    </th>
-
-                    <th>
-                        Customer ID
-                    </th>
-
-                    <th>
-                        Customer Name
-                    </th>
-
-                    <th>
-                        Mobile
-                    </th>
-
-                    <th>
-                        Place
-                    </th>
-
-                    <th>
-                        Date
-                    </th>
-
-                    <th>
-                        Payment Mode
-                    </th>
-
-                    <th>
-                        Grand Total
-                    </th>
-
-                    <th>
-                        Advance
-                    </th>
-
-                    <th>
-                        Balance
-                    </th>
-
-                    <th>
-                        Return
-                    </th>
-
-                    <th>
-                        Status
-                    </th>
-
-                    <th>
-                        Actions
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="historyBody">
-
-                <tr>
-
-                    <td colspan="14">
-                        Loading...
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
+    <button id="searchBtn" class="btn btn-primary" type="button">Search</button>
+    <select id="statusFilter" class="status-filter">
+      <option value="all">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="finished">Delivered</option>
+      <option value="return">Returned</option>
+    </select>
+    <button id="refreshBtn" class="btn btn-secondary" type="button">↻ Refresh</button>
+  </div>
+  <div class="result-info">
+    <span id="resultCount">0 bills</span>
+    <span>•</span>
+    <span>PDF downloads directly without opening a print page</span>
+  </div>
+</section>
+
+<main class="table-card">
+  <div class="table-heading">
+    <h2>All Bills</h2>
+    <p>Payment Type and Payment Mode are shown in separate columns.</p>
+  </div>
+
+  <div class="table-scroll">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Bill No</th>
+          <th>Customer ID</th>
+          <th>Customer Name</th>
+          <th>Mobile</th>
+          <th>Place</th>
+          <th>Date</th>
+          <th>Payment Type</th>
+          <th>Payment Mode</th>
+          <th>Grand Total</th>
+          <th>Advance</th>
+          <th>Balance</th>
+          <th>Return</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr><td colspan="15" class="loading-cell">Loading bills...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer class="page-footer">Bill Management&nbsp; • &nbsp;History</footer>
 </div>
 
-
-<script src="../js/history.js?v=30"></script>
-
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="history.js"></script>
 </body>
-
 </html>

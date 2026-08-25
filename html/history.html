@@ -15,29 +15,14 @@
         content="Amman Saw Mill - Bill History"
     >
 
-    <meta
-        name="theme-color"
-        content="#111827"
-    >
+    <title>
+        Bill History | Amman Saw Mill
+    </title>
 
-    <title>Bill History | Amman Saw Mill</title>
-
-
-    <!-- =====================================================
-         HISTORY CSS
-
-         File structure:
-
-         /html/history.html
-         /css/history.css
-
-         Therefore:
-         ../css/history.css
-         ===================================================== -->
-
+    <!-- MAIN HISTORY CSS -->
     <link
         rel="stylesheet"
-        href="../css/history.css?v=5"
+        href="../css/history.css?v=60"
     >
 
 </head>
@@ -46,25 +31,25 @@
 <body>
 
     <!-- =====================================================
-         PAGE WRAPPER
+         PAGE
          ===================================================== -->
 
-    <div class="page-shell">
+    <div class="page">
 
 
         <!-- =================================================
              HEADER
              ================================================= -->
 
-        <header class="topbar">
+        <header class="page-header">
 
-            <div class="brand">
+            <div class="brand-section">
 
-                <div class="brand-icon">
+                <div class="brand-logo">
                     ₹
                 </div>
 
-                <div class="brand-text">
+                <div>
 
                     <h1>
                         Bill History
@@ -80,15 +65,15 @@
 
 
             <button
-                id="homeBtn"
-                class="btn btn-home"
                 type="button"
+                id="homeBtn"
+                class="home-btn"
             >
+                <span>⌂</span>
                 Home
             </button>
 
         </header>
-
 
 
         <!-- =================================================
@@ -98,7 +83,7 @@
         <section class="summary-grid">
 
 
-            <!-- TOTAL BILLS -->
+            <!-- TOTAL -->
 
             <div class="summary-card total-card">
 
@@ -121,8 +106,7 @@
             </div>
 
 
-
-            <!-- PENDING BILLS -->
+            <!-- PENDING -->
 
             <div class="summary-card pending-card">
 
@@ -145,8 +129,7 @@
             </div>
 
 
-
-            <!-- DELIVERED BILLS -->
+            <!-- DELIVERED -->
 
             <div class="summary-card delivered-card">
 
@@ -169,8 +152,7 @@
             </div>
 
 
-
-            <!-- RETURN BILLS -->
+            <!-- RETURN -->
 
             <div class="summary-card return-card">
 
@@ -192,60 +174,41 @@
 
             </div>
 
-
         </section>
 
 
-
         <!-- =================================================
-             SEARCH + FILTER
+             SEARCH PANEL
              ================================================= -->
 
         <section class="control-panel">
 
+            <div class="search-row">
 
-            <div class="control-row">
+                <div class="search-box">
 
-
-                <!-- SEARCH BOX -->
-
-                <div class="search-wrapper">
+                    <span class="search-icon">
+                        🔍
+                    </span>
 
                     <input
+                        type="text"
                         id="searchInput"
-                        class="search-input"
-                        type="search"
+                        placeholder="Search Bill No, Customer, Mobile or Place..."
                         autocomplete="off"
-                        placeholder="Search Bill No / Customer ID / Name / Mobile / Place"
                     >
 
                     <button
+                        type="button"
                         id="clearSearchBtn"
                         class="clear-search"
-                        type="button"
-                        title="Clear Search"
-                        aria-label="Clear Search"
+                        title="Clear search"
                     >
                         ×
                     </button>
 
                 </div>
 
-
-
-                <!-- SEARCH BUTTON -->
-
-                <button
-                    id="searchBtn"
-                    class="btn btn-search"
-                    type="button"
-                >
-                    Search
-                </button>
-
-
-
-                <!-- STATUS FILTER -->
 
                 <select
                     id="statusFilter"
@@ -257,69 +220,63 @@
                     </option>
 
                     <option value="pending">
-                        Pending Bills
+                        Pending
                     </option>
 
                     <option value="finished">
-                        Delivered Bills
+                        Delivered
                     </option>
 
                     <option value="return">
-                        Return Bills
+                        Return
                     </option>
 
                 </select>
 
 
-
-                <!-- REFRESH -->
-
                 <button
-                    id="refreshBtn"
-                    class="btn btn-refresh"
                     type="button"
+                    id="searchBtn"
+                    class="search-btn"
                 >
-                    Refresh
+                    Search
                 </button>
 
 
+                <button
+                    type="button"
+                    id="refreshBtn"
+                    class="refresh-btn"
+                >
+                    ↻ Refresh
+                </button>
+
             </div>
 
-
-
-            <!-- SEARCH RESULT INFORMATION -->
 
             <div class="result-info">
 
-                <span id="resultCount">
+                <strong id="resultCount">
                     0 bills
-                </span>
-
-                <span class="separator">
-                    •
-                </span>
+                </strong>
 
                 <span>
-                    Payment Type and Payment Mode are shown separately
+                    Payment Type and Payment Mode are shown separately.
                 </span>
 
             </div>
-
 
         </section>
 
 
-
         <!-- =================================================
-             BILL RECORDS
+             BILL TABLE CARD
              ================================================= -->
 
-        <section class="table-card">
+        <section class="bill-card">
 
 
-            <!-- TABLE HEADER -->
-
-            <div class="table-header">
+            <div class="bill-card-header">
 
                 <div>
 
@@ -336,19 +293,12 @@
             </div>
 
 
+            <!-- IMPORTANT:
+                 Horizontal scroll is here -->
 
-            <!-- =================================================
-                 TABLE CONTAINER
-                 ================================================= -->
+            <div class="table-scroll">
 
-            <div class="table-container">
-
-
-                <table
-                    class="history-table"
-                    id="historyTable"
-                >
-
+                <table class="bill-table">
 
                     <thead>
 
@@ -419,82 +369,61 @@
                     </thead>
 
 
-
                     <tbody id="historyBody">
 
                         <tr>
 
                             <td
                                 colspan="15"
-                                class="loading-cell"
+                                class="noData"
                             >
-                                Loading bills...
+                                Loading bill history...
                             </td>
 
                         </tr>
 
                     </tbody>
 
-
                 </table>
-
 
             </div>
 
 
+            <!-- TABLE FOOTER -->
+
+            <div class="table-footer">
+
+                <span>
+                    Amman Saw Mill Bill Management System
+                </span>
+
+                <span>
+                    Secure Bill History
+                </span>
+
+            </div>
+
         </section>
-
-
-
-        <!-- =================================================
-             FOOTER
-             ================================================= -->
-
-        <footer class="page-footer">
-
-            <span>
-                Amman Saw Mill
-            </span>
-
-            <span>
-                Bill Management System
-            </span>
-
-        </footer>
 
 
     </div>
 
 
-
     <!-- =====================================================
          HTML2PDF LIBRARY
-
-         PDF button should be handled by history.js.
          ===================================================== -->
 
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
     ></script>
-
 
 
     <!-- =====================================================
          HISTORY JS
-
-         File structure:
-
-         /html/history.html
-         /js/history.js
-
-         Therefore:
-         ../js/history.js
          ===================================================== -->
 
     <script
-        src="../js/history.js?v=5"
+        src="../js/history.js?v=60"
     ></script>
 
 

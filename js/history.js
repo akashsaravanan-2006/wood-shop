@@ -1,14 +1,14 @@
+"use strict";
+
 /* =========================================================
    AMMAN SAW MILL
    BILL HISTORY
-   FULL CLEAN VERSION
+   FULL UPDATED VERSION
    ========================================================= */
-
-"use strict";
 
 console.log("======================================");
 console.log("AMMAN SAW MILL - HISTORY.JS");
-console.log("HISTORY VERSION 100");
+console.log("HISTORY VERSION 120");
 console.log("======================================");
 
 
@@ -69,7 +69,7 @@ let allBills = [];
 
 
 /* =========================================================
-   NUMBER HELPERS
+   NUMBER
    ========================================================= */
 
 function numberValue(value) {
@@ -82,16 +82,21 @@ function numberValue(value) {
         return 0;
     }
 
-    const n = Number(
-        String(value)
-            .replace(/[₹,\s]/g, "")
-    );
+    const n =
+        Number(
+            String(value)
+                .replace(/[₹,\s]/g, "")
+        );
 
     return Number.isFinite(n)
         ? n
         : 0;
 }
 
+
+/* =========================================================
+   MONEY
+   ========================================================= */
 
 function formatMoney(value) {
 
@@ -102,7 +107,7 @@ function formatMoney(value) {
 
 
 /* =========================================================
-   HTML ESCAPE
+   ESCAPE HTML
    ========================================================= */
 
 function escapeHtml(value) {
@@ -118,7 +123,7 @@ function escapeHtml(value) {
 
 
 /* =========================================================
-   JSON HELPER
+   JSON PARSER
    ========================================================= */
 
 function parseJSON(value) {
@@ -165,6 +170,52 @@ function parseJSON(value) {
 
 
 /* =========================================================
+   NORMALIZE ARRAY
+   ========================================================= */
+
+function normalizeArray(value) {
+
+    const parsed =
+        parseJSON(value);
+
+    if (Array.isArray(parsed)) {
+        return parsed;
+    }
+
+    if (
+        parsed &&
+        typeof parsed === "object"
+    ) {
+
+        const possibleArrays = [
+            parsed.items,
+            parsed.data,
+            parsed.others,
+            parsed.otherItems,
+            parsed.otherCharges,
+            parsed.charges,
+            parsed.additionalItems,
+            parsed.additionalCharges
+        ];
+
+        for (
+            const item of possibleArrays
+        ) {
+
+            if (Array.isArray(item)) {
+                return item;
+            }
+
+        }
+
+    }
+
+    return [];
+
+}
+
+
+/* =========================================================
    BILL ID
    ========================================================= */
 
@@ -197,7 +248,7 @@ function getBillNumber(bill) {
 
 
 /* =========================================================
-   CUSTOMER
+   CUSTOMER ID
    ========================================================= */
 
 function getCustomerId(bill) {
@@ -211,6 +262,10 @@ function getCustomerId(bill) {
 }
 
 
+/* =========================================================
+   CUSTOMER NAME
+   ========================================================= */
+
 function getCustomerName(bill) {
 
     return (
@@ -223,6 +278,10 @@ function getCustomerName(bill) {
 }
 
 
+/* =========================================================
+   CUSTOMER MOBILE
+   ========================================================= */
+
 function getCustomerMobile(bill) {
 
     return (
@@ -234,6 +293,10 @@ function getCustomerMobile(bill) {
 
 }
 
+
+/* =========================================================
+   CUSTOMER PLACE
+   ========================================================= */
 
 function getCustomerPlace(bill) {
 
@@ -248,7 +311,7 @@ function getCustomerPlace(bill) {
 
 
 /* =========================================================
-   PAYMENT
+   PAYMENT TYPE
    ========================================================= */
 
 function getPaymentType(bill) {
@@ -264,6 +327,10 @@ function getPaymentType(bill) {
 }
 
 
+/* =========================================================
+   PAYMENT MODE
+   ========================================================= */
+
 function getPaymentMode(bill) {
 
     const mode =
@@ -275,16 +342,13 @@ function getPaymentMode(bill) {
             .trim()
             .toLowerCase();
 
-
     if (mode === "upi") {
         return "UPI";
     }
 
-
     if (mode === "cash") {
         return "CASH";
     }
-
 
     return "-";
 
@@ -292,7 +356,7 @@ function getPaymentMode(bill) {
 
 
 /* =========================================================
-   AMOUNTS
+   WOOD TOTAL
    ========================================================= */
 
 function getWoodTotal(bill) {
@@ -305,25 +369,41 @@ function getWoodTotal(bill) {
 }
 
 
+/* =========================================================
+   LABOUR CHARGE
+   ========================================================= */
+
 function getLabourCharge(bill) {
 
     return numberValue(
         bill?.labour_charge ??
-        bill?.labourCharge
+        bill?.labourCharge ??
+        bill?.labour?.labourCharge ??
+        bill?.labour?.labour_charge
     );
 
 }
 
+
+/* =========================================================
+   OTHER CHARGE
+   ========================================================= */
 
 function getOtherCharge(bill) {
 
     return numberValue(
         bill?.other_charge ??
-        bill?.otherCharge
+        bill?.otherCharge ??
+        bill?.labour?.otherCharge ??
+        bill?.labour?.other_charge
     );
 
 }
 
+
+/* =========================================================
+   OTHERS TOTAL
+   ========================================================= */
 
 function getOthersTotal(bill) {
 
@@ -334,6 +414,10 @@ function getOthersTotal(bill) {
 
 }
 
+
+/* =========================================================
+   DISCOUNT
+   ========================================================= */
 
 function getDiscount(bill) {
 
@@ -346,6 +430,10 @@ function getDiscount(bill) {
 }
 
 
+/* =========================================================
+   GRAND TOTAL
+   ========================================================= */
+
 function getGrandTotal(bill) {
 
     return numberValue(
@@ -355,6 +443,10 @@ function getGrandTotal(bill) {
 
 }
 
+
+/* =========================================================
+   ADVANCE
+   ========================================================= */
 
 function getAdvance(bill) {
 
@@ -366,6 +458,10 @@ function getAdvance(bill) {
 }
 
 
+/* =========================================================
+   BALANCE
+   ========================================================= */
+
 function getBalance(bill) {
 
     return numberValue(
@@ -375,6 +471,10 @@ function getBalance(bill) {
 
 }
 
+
+/* =========================================================
+   RETURN
+   ========================================================= */
 
 function getReturnAmount(bill) {
 
@@ -395,7 +495,6 @@ function getStatus(bill) {
     const returnAmount =
         getReturnAmount(bill);
 
-
     const dbStatus =
         String(
             bill?.status ??
@@ -404,7 +503,6 @@ function getStatus(bill) {
         )
             .trim()
             .toLowerCase();
-
 
     if (
         returnAmount > 0 ||
@@ -416,7 +514,6 @@ function getStatus(bill) {
 
     }
 
-
     if (
         getBalance(bill) > 0
     ) {
@@ -425,27 +522,27 @@ function getStatus(bill) {
 
     }
 
-
     return "finished";
 
 }
 
+
+/* =========================================================
+   STATUS TEXT
+   ========================================================= */
 
 function getStatusText(bill) {
 
     const status =
         getStatus(bill);
 
-
     if (status === "pending") {
         return "PENDING";
     }
 
-
     if (status === "return") {
         return "RETURN";
     }
-
 
     return "DELIVERED";
 
@@ -462,10 +559,8 @@ function formatDate(value) {
         return "-";
     }
 
-
     const date =
         new Date(value);
-
 
     if (
         Number.isNaN(
@@ -476,7 +571,6 @@ function formatDate(value) {
         return String(value);
 
     }
-
 
     return date.toLocaleDateString(
         "en-IN"
@@ -497,17 +591,7 @@ function getWoodData(bill) {
         bill?.wood ??
         [];
 
-
-    data =
-        parseJSON(data);
-
-
-    if (Array.isArray(data)) {
-        return data;
-    }
-
-
-    return [];
+    return normalizeArray(data);
 
 }
 
@@ -524,65 +608,87 @@ function getLabourData(bill) {
         bill?.labour ??
         [];
 
-
-    data =
-        parseJSON(data);
-
-
-    if (Array.isArray(data)) {
-        return data;
-    }
-
-
-    if (
-        data &&
-        typeof data === "object"
-    ) {
-
-        return [data];
-
-    }
-
-
-    return [];
+    return normalizeArray(data);
 
 }
 
 
 /* =========================================================
    OTHER DATA
+   IMPORTANT
+   THIS FIXES YOUR OTHER CHARGES PDF
    ========================================================= */
 
 function getOtherData(bill) {
 
-    let data =
-        bill?.others_data ??
-        bill?.othersData ??
-        bill?.other_data ??
-        bill?.otherData ??
-        bill?.charges ??
-        bill?.additional_charges ??
-        [];
+    const possibleSources = [
 
+        bill?.others_data,
 
-    data =
-        parseJSON(data);
+        bill?.othersData,
 
+        bill?.other_data,
 
-    if (Array.isArray(data)) {
-        return data;
-    }
+        bill?.otherData,
 
+        bill?.other_items,
 
-    if (
-        data &&
-        typeof data === "object"
+        bill?.otherItems,
+
+        bill?.other_charges,
+
+        bill?.otherCharges,
+
+        bill?.additional_items,
+
+        bill?.additionalItems,
+
+        bill?.additional_charges,
+
+        bill?.additionalCharges,
+
+        bill?.charges,
+
+        bill?.labour?.othersData,
+
+        bill?.labour?.otherItems,
+
+        bill?.labour?.items,
+
+        bill?.labour_data?.othersData,
+
+        bill?.labour_data?.otherItems,
+
+        bill?.labour_data?.items
+
+    ];
+
+    for (
+        const source of possibleSources
     ) {
 
-        return [data];
+        const array =
+            normalizeArray(source);
+
+        if (
+            Array.isArray(array) &&
+            array.length > 0
+        ) {
+
+            console.log(
+                "OTHER CHARGES FOUND:",
+                array
+            );
+
+            return array;
+
+        }
 
     }
 
+    console.log(
+        "NO ADDITIONAL OTHER ITEMS FOUND"
+    );
 
     return [];
 
@@ -590,7 +696,7 @@ function getOtherData(bill) {
 
 
 /* =========================================================
-   WOOD TYPE
+   WOOD NAME
    ========================================================= */
 
 function getWoodName(item) {
@@ -601,7 +707,6 @@ function getWoodName(item) {
         item?.wood ??
         item?.woodName ??
         "-";
-
 
     if (
         String(name)
@@ -614,7 +719,6 @@ function getWoodName(item) {
             "Other";
 
     }
-
 
     return name;
 
@@ -709,46 +813,55 @@ function getWoodAmount(item) {
 
 function getWoodQuantity(item) {
 
-    let qty = 0;
-
-
     const pieces =
         Array.isArray(item?.pieces)
             ? item.pieces
             : [];
 
+    if (
+        pieces.length > 0
+    ) {
 
-    pieces.forEach(
-        function(piece) {
-
-            qty +=
-                numberValue(
-                    piece?.qty
+        const quantities =
+            pieces
+                .map(
+                    piece =>
+                        numberValue(
+                            piece?.qty
+                        )
+                )
+                .filter(
+                    qty => qty > 0
                 );
 
+        if (
+            quantities.length > 0
+        ) {
+
+            return quantities.join(", ");
+
         }
-    );
-
-
-    if (qty === 0) {
-
-        qty =
-            numberValue(
-                item?.qty ??
-                item?.quantity ??
-                item?.pieces_count
-            );
 
     }
 
+    const qty =
+        numberValue(
+            item?.qty ??
+            item?.quantity ??
+            item?.pieces_count
+        );
 
-    return qty;
+    return qty > 0
+        ? String(qty)
+        : "-";
 
 }
 
 
 /* =========================================================
    WOOD LENGTH
+   IMPORTANT:
+   LENGTH AND QTY ARE NOW SEPARATE
    ========================================================= */
 
 function getWoodLengths(item) {
@@ -758,61 +871,89 @@ function getWoodLengths(item) {
             ? item.pieces
             : [];
 
-
     if (
-        pieces.length === 0
+        pieces.length > 0
     ) {
 
-        const length =
-            numberValue(
-                item?.length
-            );
+        const lengths =
+            pieces
+                .map(
+                    function(piece) {
 
+                        const length =
+                            numberValue(
+                                piece?.length
+                            );
 
-        return length > 0
-            ? String(length)
-            : "-";
+                        const extra =
+                            numberValue(
+                                piece?.extraLength
+                            );
+
+                        const finalLength =
+                            length + extra;
+
+                        return finalLength > 0
+                            ? String(finalLength)
+                            : "";
+
+                    }
+                )
+                .filter(Boolean);
+
+        if (
+            lengths.length > 0
+        ) {
+
+            return lengths.join(", ");
+
+        }
 
     }
 
+    const length =
+        numberValue(
+            item?.length
+        );
 
-    return pieces
-        .map(
-            function(piece) {
+    return length > 0
+        ? String(length)
+        : "-";
 
-                const length =
-                    numberValue(
-                        piece?.length
-                    );
-
-
-                const extra =
-                    numberValue(
-                        piece?.extraLength
-                    );
+}
 
 
-                const qty =
-                    numberValue(
-                        piece?.qty
-                    );
+/* =========================================================
+   OTHER ITEM NAME
+   ========================================================= */
+
+function getOtherItemName(item) {
+
+    return (
+        item?.name ??
+        item?.reason ??
+        item?.title ??
+        item?.description ??
+        item?.type ??
+        "Other Charge"
+    );
+
+}
 
 
-                const finalLength =
-                    length + extra;
+/* =========================================================
+   OTHER ITEM AMOUNT
+   ========================================================= */
 
+function getOtherItemAmount(item) {
 
-                if (finalLength <= 0) {
-                    return "";
-                }
-
-
-                return `${finalLength} x ${qty}`;
-
-            }
-        )
-        .filter(Boolean)
-        .join(", ");
+    return numberValue(
+        item?.amount ??
+        item?.charge ??
+        item?.value ??
+        item?.price ??
+        item?.total
+    );
 
 }
 
@@ -826,7 +967,6 @@ async function loadBills() {
     console.log(
         "Loading bill history..."
     );
-
 
     if (historyBody) {
 
@@ -842,7 +982,6 @@ async function loadBills() {
         `;
 
     }
-
 
     try {
 
@@ -861,7 +1000,6 @@ async function loadBills() {
                 }
             );
 
-
         if (!response.ok) {
 
             throw new Error(
@@ -870,18 +1008,17 @@ async function loadBills() {
 
         }
 
-
         const data =
             await response.json();
-
 
         console.log(
             "HISTORY RESPONSE:",
             data
         );
 
-
-        if (Array.isArray(data)) {
+        if (
+            Array.isArray(data)
+        ) {
 
             allBills = data;
 
@@ -912,7 +1049,6 @@ async function loadBills() {
 
         }
 
-
         updateSummary();
 
         applyFilters();
@@ -924,7 +1060,6 @@ async function loadBills() {
             "HISTORY ERROR:",
             error
         );
-
 
         if (historyBody) {
 
@@ -956,14 +1091,11 @@ function displayBills(bills) {
         return;
     }
 
-
     historyBody.innerHTML = "";
-
 
     updateResultCount(
         bills.length
     );
-
 
     if (
         !Array.isArray(bills) ||
@@ -985,29 +1117,20 @@ function displayBills(bills) {
 
     }
 
-
     bills.forEach(
         function(bill, index) {
 
             const status =
                 getStatus(bill);
 
-
             const paymentMode =
                 getPaymentMode(bill);
-
 
             const returnAmount =
                 getReturnAmount(bill);
 
-
             const row =
                 document.createElement("tr");
-
-
-            /* =================================================
-               STATUS COLOUR CLASS
-               ================================================= */
 
             if (
                 status === "pending"
@@ -1032,10 +1155,6 @@ function displayBills(bills) {
 
             }
 
-
-            /* =================================================
-               PAYMENT MODE
-               ================================================= */
 
             let paymentModeHTML = `
                 <span
@@ -1076,10 +1195,6 @@ function displayBills(bills) {
             }
 
 
-            /* =================================================
-               RETURN
-               ================================================= */
-
             const returnHTML =
                 returnAmount > 0
 
@@ -1097,10 +1212,6 @@ function displayBills(bills) {
                         </span>
                     `;
 
-
-            /* =================================================
-               RETURN BUTTON
-               ================================================= */
 
             const returnButtonHTML =
                 status === "return"
@@ -1128,10 +1239,6 @@ function displayBills(bills) {
                     `;
 
 
-            /* =================================================
-               PDF BUTTON
-               ================================================= */
-
             const pdfButtonHTML = `
                 <button
                     type="button"
@@ -1144,10 +1251,6 @@ function displayBills(bills) {
                 </button>
             `;
 
-
-            /* =================================================
-               ROW
-               ================================================= */
 
             row.innerHTML = `
 
@@ -1249,14 +1352,12 @@ function displayBills(bills) {
 
             `;
 
-
             historyBody.appendChild(
                 row
             );
 
         }
     );
-
 
     attachActionEvents();
 
@@ -1275,13 +1376,11 @@ function updateSummary() {
 
     let returned = 0;
 
-
     allBills.forEach(
         function(bill) {
 
             const status =
                 getStatus(bill);
-
 
             if (
                 status === "pending"
@@ -1351,7 +1450,6 @@ function updateResultCount(count) {
         return;
     }
 
-
     resultCount.textContent =
         `${count} ${
             count === 1
@@ -1390,10 +1488,6 @@ function applyFilters() {
         [...allBills];
 
 
-    /* =====================================================
-       SEARCH
-       ===================================================== */
-
     if (search) {
 
         filtered =
@@ -1422,7 +1516,6 @@ function applyFilters() {
                         .join(" ")
                         .toLowerCase();
 
-
                     return text.includes(
                         search
                     );
@@ -1432,10 +1525,6 @@ function applyFilters() {
 
     }
 
-
-    /* =====================================================
-       STATUS
-       ===================================================== */
 
     if (
         selectedStatus !== "all"
@@ -1474,7 +1563,7 @@ function applyFilters() {
 
 
 /* =========================================================
-   LOAD jsPDF
+   LOAD JSPDF
    ========================================================= */
 
 function loadJsPDF() {
@@ -1547,7 +1636,6 @@ function loadJsPDF() {
                     }
                 );
 
-
                 return;
 
             }
@@ -1558,10 +1646,8 @@ function loadJsPDF() {
                     "script"
                 );
 
-
             script.src =
                 "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-
 
             script.async = true;
 
@@ -1619,7 +1705,7 @@ function loadJsPDF() {
 
 
 /* =========================================================
-   PDF DRAW HELPERS
+   PDF CELL
    ========================================================= */
 
 function pdfCell(
@@ -1681,16 +1767,18 @@ function pdfCell(
             : "normal"
     );
 
-
     doc.setFontSize(
         fontSize
     );
 
 
-    let tx = x + 2;
+    let tx =
+        x + 2;
 
 
-    if (align === "center") {
+    if (
+        align === "center"
+    ) {
 
         tx =
             x +
@@ -1699,7 +1787,9 @@ function pdfCell(
     }
 
 
-    if (align === "right") {
+    if (
+        align === "right"
+    ) {
 
         tx =
             x +
@@ -1712,7 +1802,9 @@ function pdfCell(
     doc.text(
         String(text ?? "-"),
         tx,
-        y + height / 2 + 2.2,
+        y +
+        height / 2 +
+        2.2,
         {
             align:
                 align === "right"
@@ -1727,7 +1819,7 @@ function pdfCell(
 
 
 /* =========================================================
-   PDF PAGE HEADER
+   PDF HEADER
    ========================================================= */
 
 function addPDFHeader(
@@ -1744,11 +1836,9 @@ function addPDFHeader(
         "bold"
     );
 
-
     doc.setFontSize(
         19
     );
-
 
     doc.text(
         "AMMAN SAW MILL",
@@ -1765,14 +1855,12 @@ function addPDFHeader(
         "normal"
     );
 
-
     doc.setFontSize(
         9
     );
 
-
     doc.text(
-        "BILL",
+        `BILL - ${getBillNumber(bill)}`,
         pageWidth / 2,
         20,
         {
@@ -1785,7 +1873,6 @@ function addPDFHeader(
         0.5
     );
 
-
     doc.line(
         10,
         24,
@@ -1797,7 +1884,7 @@ function addPDFHeader(
 
 
 /* =========================================================
-   PDF CUSTOMER DETAILS
+   CUSTOMER DETAILS
    ========================================================= */
 
 function addCustomerPDFDetails(
@@ -1808,25 +1895,15 @@ function addCustomerPDFDetails(
 
     const x = 10;
 
-    const totalWidth =
-        190;
+    const label1 = 30;
 
+    const value1 = 65;
 
-    const label1 =
-        30;
+    const label2 = 30;
 
-    const value1 =
-        65;
+    const value2 = 65;
 
-    const label2 =
-        30;
-
-    const value2 =
-        65;
-
-
-    const rowHeight =
-        8;
+    const rowHeight = 8;
 
 
     const rows = [
@@ -1834,7 +1911,6 @@ function addCustomerPDFDetails(
         [
             "Bill No",
             getBillNumber(bill),
-
             "Date",
             formatDate(
                 bill?.bill_date ??
@@ -1846,7 +1922,6 @@ function addCustomerPDFDetails(
         [
             "Customer ID",
             getCustomerId(bill),
-
             "Customer",
             getCustomerName(bill)
         ],
@@ -1854,7 +1929,6 @@ function addCustomerPDFDetails(
         [
             "Mobile",
             getCustomerMobile(bill),
-
             "Place",
             getCustomerPlace(bill)
         ],
@@ -1862,7 +1936,6 @@ function addCustomerPDFDetails(
         [
             "Payment Type",
             getPaymentType(bill),
-
             "Payment Mode",
             getPaymentMode(bill)
         ],
@@ -1870,7 +1943,6 @@ function addCustomerPDFDetails(
         [
             "Status",
             getStatusText(bill),
-
             "",
             ""
         ]
@@ -1913,37 +1985,67 @@ function addCustomerPDFDetails(
             );
 
 
-            pdfCell(
-                doc,
-                row[2],
-                x +
-                label1 +
-                value1,
-                y,
-                label2,
-                rowHeight,
-                {
-                    fill: true,
-                    bold: true,
-                    fontSize: 7
-                }
-            );
+            if (row[2]) {
+
+                pdfCell(
+                    doc,
+                    row[2],
+                    x +
+                    label1 +
+                    value1,
+                    y,
+                    label2,
+                    rowHeight,
+                    {
+                        fill: true,
+                        bold: true,
+                        fontSize: 7
+                    }
+                );
 
 
-            pdfCell(
-                doc,
-                row[3],
-                x +
-                label1 +
-                value1 +
-                label2,
-                y,
-                value2,
-                rowHeight,
-                {
-                    fontSize: 7
-                }
-            );
+                pdfCell(
+                    doc,
+                    row[3],
+                    x +
+                    label1 +
+                    value1 +
+                    label2,
+                    y,
+                    value2,
+                    rowHeight,
+                    {
+                        fontSize: 7
+                    }
+                );
+
+            }
+            else {
+
+                pdfCell(
+                    doc,
+                    "",
+                    x +
+                    label1 +
+                    value1,
+                    y,
+                    label2,
+                    rowHeight
+                );
+
+                pdfCell(
+                    doc,
+                    "",
+                    x +
+                    label1 +
+                    value1 +
+                    label2,
+                    y,
+                    value2,
+                    rowHeight
+                );
+
+            }
 
 
             y +=
@@ -1960,6 +2062,7 @@ function addCustomerPDFDetails(
 
 /* =========================================================
    PDF WOOD DETAILS
+   LENGTH AND QTY SEPARATE
    ========================================================= */
 
 function addWoodPDF(
@@ -1974,9 +2077,7 @@ function addWoodPDF(
     const pageHeight =
         doc.internal.pageSize.getHeight();
 
-
     const margin = 10;
-
 
     let y =
         startY;
@@ -1987,11 +2088,9 @@ function addWoodPDF(
         "bold"
     );
 
-
     doc.setFontSize(
         11
     );
-
 
     doc.text(
         "WOOD DETAILS",
@@ -1999,9 +2098,12 @@ function addWoodPDF(
         y
     );
 
-
     y += 5;
 
+
+    /*
+       TOTAL WIDTH = 190
+    */
 
     const columns = [
 
@@ -2012,32 +2114,22 @@ function addWoodPDF(
 
         {
             title: "Wood",
-            width: 27
+            width: 25
         },
 
         {
-            title: "Quality",
-            width: 18
-        },
-
-        {
-            title: "Breadth",
-            width: 17
-        },
-
-        {
-            title: "Thickness",
-            width: 19
+            title: "Size",
+            width: 25
         },
 
         {
             title: "Length",
-            width: 29
+            width: 30
         },
 
         {
             title: "Qty",
-            width: 13
+            width: 15
         },
 
         {
@@ -2047,12 +2139,12 @@ function addWoodPDF(
 
         {
             title: "Rate",
-            width: 21
+            width: 25
         },
 
         {
             title: "Amount",
-            width: 20
+            width: 44
         }
 
     ];
@@ -2084,7 +2176,6 @@ function addWoodPDF(
                 }
             );
 
-
             x +=
                 column.width;
 
@@ -2112,7 +2203,6 @@ function addWoodPDF(
             }
         );
 
-
         return y + 15;
 
     }
@@ -2138,23 +2228,24 @@ function addWoodPDF(
             }
 
 
+            const size =
+                `${getBreadth(item)} x ${getThickness(item)}`;
+
+
             const values = [
 
                 index + 1,
 
                 getWoodName(item),
 
-                getQuality(item),
-
-                getBreadth(item),
-
-                getThickness(item),
+                size,
 
                 getWoodLengths(item),
 
                 getWoodQuantity(item),
 
-                getCFT(item).toFixed(2),
+                getCFT(item)
+                    .toFixed(2),
 
                 "Rs. " +
                 formatMoney(
@@ -2174,7 +2265,10 @@ function addWoodPDF(
 
 
             columns.forEach(
-                function(column, colIndex) {
+                function(
+                    column,
+                    colIndex
+                ) {
 
                     pdfCell(
                         doc,
@@ -2185,15 +2279,22 @@ function addWoodPDF(
                         9,
                         {
                             fontSize: 6.5,
+
                             align:
                                 colIndex === 0 ||
                                 colIndex === 2 ||
                                 colIndex === 3 ||
                                 colIndex === 4 ||
-                                colIndex === 6 ||
-                                colIndex === 7
+                                colIndex === 5
+
                                     ? "center"
-                                    : "left"
+
+                                    : colIndex === 6 ||
+                                      colIndex === 7
+
+                                        ? "right"
+
+                                        : "left"
                         }
                     );
 
@@ -2217,7 +2318,8 @@ function addWoodPDF(
 
 
 /* =========================================================
-   PDF LABOUR + OTHER DETAILS
+   PDF CHARGES
+   THIS FIXES YOUR "OTHER CHARGES NOT PRINTING"
    ========================================================= */
 
 function addChargesPDF(
@@ -2225,6 +2327,9 @@ function addChargesPDF(
     bill,
     startY
 ) {
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
 
     const margin = 10;
 
@@ -2237,69 +2342,95 @@ function addChargesPDF(
         "bold"
     );
 
-
     doc.setFontSize(
         11
     );
 
-
     doc.text(
-        "LABOUR / OTHER DETAILS",
+        "OTHER CHARGES",
         margin,
         y
     );
 
-
     y += 5;
+
+
+    /*
+       3 COLUMNS
+       S.NO | NAME | AMOUNT
+    */
+
+    const col1 = 15;
+
+    const col2 = 115;
+
+    const col3 = 60;
+
+
+    pdfCell(
+        doc,
+        "S.No",
+        margin,
+        y,
+        col1,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Charge / Description",
+        margin + col1,
+        y,
+        col2,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Amount",
+        margin + col1 + col2,
+        y,
+        col3,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    y += 8;
 
 
     const rows = [];
 
 
-    const labourData =
-        getLabourData(bill);
-
-
-    labourData.forEach(
-        function(item) {
-
-            if (!item) {
-                return;
-            }
-
-
-            const name =
-                item?.name ??
-                item?.type ??
-                item?.description ??
-                item?.title ??
-                "Labour";
-
-
-            const amount =
-                numberValue(
-                    item?.amount ??
-                    item?.charge ??
-                    item?.value
-                );
-
-
-            rows.push([
-                name,
-                amount
-            ]);
-
-        }
-    );
-
+    /* =====================================================
+       LABOUR
+       ===================================================== */
 
     const labourCharge =
         getLabourCharge(bill);
 
 
     if (
-        labourCharge > 0 &&
-        rows.length === 0
+        labourCharge > 0
     ) {
 
         rows.push([
@@ -2309,6 +2440,10 @@ function addChargesPDF(
 
     }
 
+
+    /* =====================================================
+       OTHER CHARGE
+       ===================================================== */
 
     const otherCharge =
         getOtherCharge(bill);
@@ -2326,8 +2461,18 @@ function addChargesPDF(
     }
 
 
+    /* =====================================================
+       ADDITIONAL OTHER ITEMS
+       ===================================================== */
+
     const otherData =
         getOtherData(bill);
+
+
+    console.log(
+        "PDF OTHER DATA:",
+        otherData
+    );
 
 
     otherData.forEach(
@@ -2339,36 +2484,42 @@ function addChargesPDF(
 
 
             const amount =
-                numberValue(
-                    item?.amount ??
-                    item?.charge ??
-                    item?.value
+                getOtherItemAmount(
+                    item
+                );
+
+
+            /*
+               IMPORTANT:
+               Do not remove zero-value items
+               if they have a name.
+            */
+
+            const name =
+                getOtherItemName(
+                    item
                 );
 
 
             if (
-                amount <= 0
+                amount > 0 ||
+                name !== "Other Charge"
             ) {
-                return;
+
+                rows.push([
+                    name,
+                    amount
+                ]);
+
             }
-
-
-            const name =
-                item?.name ??
-                item?.reason ??
-                item?.title ??
-                item?.description ??
-                "Other";
-
-
-            rows.push([
-                name,
-                amount
-            ]);
 
         }
     );
 
+
+    /* =====================================================
+       NO CHARGES
+       ===================================================== */
 
     if (
         rows.length === 0
@@ -2382,18 +2533,53 @@ function addChargesPDF(
     }
 
 
+    /* =====================================================
+       PRINT ROWS
+       ===================================================== */
+
     rows.forEach(
-        function(row) {
+        function(row, index) {
+
+            if (
+                y >
+                pageHeight - 30
+            ) {
+
+                doc.addPage();
+
+                addPDFHeader(
+                    doc,
+                    bill
+                );
+
+                y = 31;
+
+            }
+
+
+            pdfCell(
+                doc,
+                index + 1,
+                margin,
+                y,
+                col1,
+                8,
+                {
+                    fontSize: 7,
+                    align: "center"
+                }
+            );
+
 
             pdfCell(
                 doc,
                 row[0],
-                margin,
+                margin + col1,
                 y,
-                120,
+                col2,
                 8,
                 {
-                    fontSize: 8
+                    fontSize: 7
                 }
             );
 
@@ -2402,12 +2588,12 @@ function addChargesPDF(
                 doc,
                 "Rs. " +
                 formatMoney(row[1]),
-                margin + 120,
+                margin + col1 + col2,
                 y,
-                70,
+                col3,
                 8,
                 {
-                    fontSize: 8,
+                    fontSize: 7,
                     align: "right"
                 }
             );
@@ -2434,21 +2620,12 @@ function addTotalsPDF(
     startY
 ) {
 
-    const pageWidth =
-        doc.internal.pageSize.getWidth();
-
-
     const pageHeight =
         doc.internal.pageSize.getHeight();
 
+    const x = 105;
 
-    const x =
-        105;
-
-
-    const width =
-        95;
-
+    const width = 95;
 
     let y =
         startY;
@@ -2549,15 +2726,19 @@ function addTotalsPDF(
                 "Balance";
 
 
+            const height =
+                isGrand || isBalance
+                    ? 10
+                    : 8;
+
+
             pdfCell(
                 doc,
                 row[0],
                 x,
                 y,
                 width * 0.55,
-                isGrand || isBalance
-                    ? 10
-                    : 8,
+                height,
                 {
                     fill:
                         isGrand ||
@@ -2584,9 +2765,7 @@ function addTotalsPDF(
                 width * 0.55,
                 y,
                 width * 0.45,
-                isGrand || isBalance
-                    ? 10
-                    : 8,
+                height,
                 {
                     fill:
                         isGrand ||
@@ -2607,10 +2786,7 @@ function addTotalsPDF(
             );
 
 
-            y +=
-                isGrand || isBalance
-                    ? 10
-                    : 8;
+            y += height;
 
         }
     );
@@ -2622,7 +2798,7 @@ function addTotalsPDF(
 
 
 /* =========================================================
-   CREATE COMPLETE PDF
+   COMPLETE PDF
    ========================================================= */
 
 function createBillPDF(
@@ -2644,8 +2820,7 @@ function createBillPDF(
     );
 
 
-    let y =
-        31;
+    let y = 31;
 
 
     y =
@@ -2667,6 +2842,9 @@ function createBillPDF(
         );
 
 
+    y += 2;
+
+
     y =
         addChargesPDF(
             doc,
@@ -2675,12 +2853,14 @@ function createBillPDF(
         );
 
 
-    y =
-        addTotalsPDF(
-            doc,
-            bill,
-            y
-        );
+    y += 2;
+
+
+    addTotalsPDF(
+        doc,
+        bill,
+        y
+    );
 
 
     /* =====================================================
@@ -2705,7 +2885,6 @@ function createBillPDF(
         const width =
             doc.internal.pageSize.getWidth();
 
-
         const height =
             doc.internal.pageSize.getHeight();
 
@@ -2714,7 +2893,6 @@ function createBillPDF(
             "helvetica",
             "normal"
         );
-
 
         doc.setFontSize(
             7
@@ -2754,7 +2932,9 @@ function createBillPDF(
 
 
 /* =========================================================
-   OPEN PDF IN SAME TAB
+   OPEN PDF
+   SAME TAB
+   NO DOWNLOAD
    ========================================================= */
 
 async function openBillPDF(
@@ -2816,9 +2996,16 @@ async function openBillPDF(
         );
 
 
-        /* =================================================
-           BUTTON
-           ================================================= */
+        console.log(
+            "WOOD DATA:",
+            getWoodData(bill)
+        );
+
+        console.log(
+            "OTHER DATA:",
+            getOtherData(bill)
+        );
+
 
         if (button) {
 
@@ -2850,7 +3037,7 @@ async function openBillPDF(
 
 
         /* =================================================
-           VERIFY PDF
+           VERIFY PAGES
            ================================================= */
 
         const pages =
@@ -2876,7 +3063,7 @@ async function openBillPDF(
 
 
         /* =================================================
-           GET PDF BLOB
+           CREATE BLOB
            ================================================= */
 
         const pdfBlob =
@@ -2914,37 +3101,23 @@ async function openBillPDF(
 
 
         console.log(
-            "PDF URL CREATED:",
+            "PDF URL:",
             pdfURL
         );
 
 
-        /* =================================================
-           SAME TAB
-           ================================================= */
-
         /*
-           IMPORTANT:
+           OPEN DIRECTLY IN CURRENT TAB.
 
-           We use the current browser tab.
-
-           We do NOT use:
+           No:
            window.open()
-
-           We do NOT use:
-           "_blank"
-
-           We do NOT use:
+           _blank
            download=""
         */
 
-        window.location.href =
-            pdfURL;
-
-
-        /*
-           Do NOT revoke URL here.
-        */
+        window.location.assign(
+            pdfURL
+        );
 
     }
     catch (error) {
@@ -2994,10 +3167,8 @@ async function handleReturn(
     const billId =
         getBillId(bill);
 
-
     const billNo =
         getBillNumber(bill);
-
 
     const grandTotal =
         getGrandTotal(bill);
@@ -3392,7 +3563,6 @@ document.addEventListener(
         console.log(
             "HISTORY PAGE READY"
         );
-
 
         loadBills();
 

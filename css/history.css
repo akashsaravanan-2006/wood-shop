@@ -1,262 +1,859 @@
-/* Reset */
+/* ==========================================
+   GLOBAL
+========================================== */
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Page */
 body {
-  background: #f5f6f8;
-  color: #333;
-  line-height: 1.5;
+    background: #f4f6fb;
+    color: #111827;
 }
 
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+
+/* ==========================================
+   MAIN CONTAINER
+========================================== */
+
+.container {
+    width: 98%;
+    max-width: 1600px;
+    margin: 30px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    overflow-x: auto;
 }
 
-/* Header */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 15px 20px;
-  border-radius: 8px 8px 0 0;
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 20px;
 }
 
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+.pageHeader h1 {
+    color: #1e3a8a;
+    font-size: 46px;
+    font-weight: bold;
+    margin: 0;
 }
 
-.brand-logo {
-  font-size: 1.8rem;
-  color: #0078d4;
-  font-weight: bold;
+
+/* ==========================================
+   TITLE
+========================================== */
+
+h1 {
+    color: #1e3a8a;
+    font-size: 46px;
+    font-weight: bold;
+    margin-bottom: 25px;
 }
 
-.page-header h1 {
-  font-size: 1.4rem;
-  margin-bottom: 4px;
+
+/* ==========================================
+   SUBTITLE / DESCRIPTION
+========================================== */
+
+.subtitle,
+.pageSubtitle {
+    color: #475569;
+    font-size: 17px;
+    margin-top: -15px;
+    margin-bottom: 25px;
 }
 
-.page-header p {
-  font-size: 0.9rem;
-  color: #666;
+
+/* ==========================================
+   HOME / BACK BUTTON
+========================================== */
+
+#homeBtn,
+#backBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #333333;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.home-btn {
-  background: #0078d4;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
+#homeBtn:hover,
+#backBtn:hover {
+    background: #555555;
 }
 
-.home-btn:hover {
-  background: #005a9e;
+
+/* ==========================================
+   STATISTICS CARDS
+   Supports existing history cards
+========================================== */
+
+.statsContainer,
+.stats,
+.summaryCards,
+.dashboardCards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
 }
 
-/* Sawtooth divider */
-.sawtooth {
-  height: 6px;
-  background: repeating-linear-gradient(
-    -45deg,
-    #f5f6f8,
-    #f5f6f8 6px,
-    #fff 6px,
-    #fff 12px
-  );
+.statCard,
+.summaryCard,
+.dashboardCard {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
 }
 
-/* Summary Cards */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin: 20px 0;
+.statCard h3,
+.summaryCard h3,
+.dashboardCard h3 {
+    color: #475569;
+    font-size: 16px;
+    margin-bottom: 8px;
 }
 
-.summary-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+.statCard strong,
+.summaryCard strong,
+.dashboardCard strong {
+    color: #1e3a8a;
+    font-size: 28px;
 }
 
-.summary-icon {
-  font-size: 1.5rem;
-  color: #0078d4;
+
+/* ==========================================
+   SEARCH SECTION
+========================================== */
+
+.searchSection,
+.searchContainer {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.summary-content span {
-  font-size: 0.9rem;
-  color: #666;
+.topBar {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 0;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-.summary-content strong {
-  display: block;
-  font-size: 1.2rem;
-  color: #333;
-  margin-top: 4px;
+
+/* ==========================================
+   SEARCH INPUT
+========================================== */
+
+#searchBox {
+    flex: 1;
+    min-width: 300px;
+    height: 55px;
+    padding: 0 18px;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    font-size: 18px;
+    outline: none;
+    background: #ffffff;
 }
 
-/* Control Panel */
-.control-panel {
-  background: #fff;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
+#searchBox:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
-.search-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
+
+/* Supports other possible search input IDs */
+
+#searchInput {
+    flex: 1;
+    min-width: 300px;
+    height: 55px;
+    padding: 0 18px;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    font-size: 18px;
+    outline: none;
 }
 
-.search-box {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0 8px;
-  background: #fafafa;
+#searchInput:focus {
+    border-color: #2563eb;
 }
 
-.search-box input {
-  flex: 1;
-  border: none;
-  padding: 8px;
-  font-size: 0.95rem;
-  background: transparent;
+
+/* ==========================================
+   SEARCH BUTTON
+========================================== */
+
+#searchBtn {
+    width: 140px;
+    height: 55px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-.search-box input:focus {
-  outline: none;
+#searchBtn:hover {
+    background: #1d4ed8;
 }
 
-.search-icon {
-  color: #666;
-  margin-right: 6px;
+
+/* ==========================================
+   REFRESH BUTTON
+========================================== */
+
+#refreshBtn {
+    width: 140px;
+    height: 55px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-.clear-search {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: #999;
-  cursor: pointer;
+#refreshBtn:hover {
+    background: #15803d;
 }
 
-.status-filter,
-.search-btn,
-.refresh-btn {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-  transition: background 0.3s ease;
+
+/* ==========================================
+   GENERAL BUTTON
+========================================== */
+
+button {
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
-.search-btn {
-  background: #0078d4;
-  color: #fff;
-  border: none;
+
+/* ==========================================
+   BILL COUNT / INFO TEXT
+========================================== */
+
+.billCount,
+.countText,
+.infoText {
+    margin-top: 12px;
+    color: #475569;
+    font-size: 15px;
 }
 
-.search-btn:hover {
-  background: #005a9e;
+.billCount strong,
+.countText strong {
+    color: #173f8a;
 }
 
-.refresh-btn:hover {
-  background: #f0f0f0;
+
+/* ==========================================
+   TABLE CONTAINER
+========================================== */
+
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 10px;
 }
 
-.result-info {
-  font-size: 0.85rem;
-  color: #666;
+
+/* ==========================================
+   TABLE
+========================================== */
+
+table {
+    width: 100%;
+    min-width: 1500px;
+    border-collapse: collapse;
+    background: #ffffff;
 }
 
-/* Bill Table */
-.bill-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  overflow: hidden;
+
+/* ==========================================
+   TABLE HEADER
+========================================== */
+
+thead {
+    background: #173f8a;
+    color: white;
 }
 
-.bill-card-header {
-  padding: 15px;
-  border-bottom: 1px solid #e0e0e0;
+thead tr {
+    background: #173f8a;
 }
 
-.bill-card-header h2 {
-  font-size: 1.2rem;
-  margin-bottom: 4px;
+th {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: white;
 }
 
-.bill-card-header p {
-  font-size: 0.9rem;
-  color: #666;
+
+/* ==========================================
+   TABLE BODY
+========================================== */
+
+td {
+    padding: 16px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e4e4e4;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 15px;
+    color: #111827;
 }
 
-.table-scroll {
-  overflow-x: auto;
+
+/* ==========================================
+   ALTERNATE ROW
+========================================== */
+
+tbody tr:nth-child(even) {
+    background: #f8fbff;
 }
 
-.bill-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+
+/* ==========================================
+   ROW HOVER
+========================================== */
+
+tbody tr:hover {
+    background: #edf4ff;
 }
 
-.bill-table th,
-.bill-table td {
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
-  text-align: left;
+
+/* ==========================================
+   BILL NUMBER
+========================================== */
+
+.billNo,
+.billNumber {
+    color: #2563eb;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.bill-table th {
-  background: #f9f9f9;
-  font-weight: 600;
-  color: #333;
+.billNo:hover,
+.billNumber:hover {
+    text-decoration: underline;
 }
 
-.bill-table tr:hover {
-  background: #f5f6f8;
+
+/* ==========================================
+   CUSTOMER ID
+========================================== */
+
+td:nth-child(2) {
+    font-weight: bold;
 }
+
+
+/* ==========================================
+   AMOUNT - GRAND TOTAL
+========================================== */
+
+.grandTotal,
+.totalAmount {
+    font-weight: bold;
+    color: #111827;
+}
+
+
+/* ==========================================
+   ADVANCE AMOUNT
+========================================== */
+
+.advanceAmount {
+    color: #0a9b39;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   BALANCE / PENDING AMOUNT
+========================================== */
+
+.balanceAmount,
+.pendingAmount {
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   RETURN AMOUNT
+========================================== */
+
+.returnAmount {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   PAYMENT TYPE
+========================================== */
+
+.paymentType {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #eef2f7;
+    color: #475569;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   PAYMENT MODE
+========================================== */
+
+.paymentMode {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   STATUS
+========================================== */
+
+.status {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* Pending */
+
+.status.pending,
+.pending,
+.status-PENDING {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+
+/* Delivered */
+
+.status.delivered,
+.delivered,
+.status-DELIVERED {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+
+/* Return */
+
+.status.return,
+.return,
+.status-RETURN {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+
+/* ==========================================
+   ACTION COLUMN
+========================================== */
+
+.actions,
+.actionColumn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* ==========================================
+   PDF BUTTON
+========================================== */
+
+.pdfBtn {
+    min-width: 55px;
+    height: 40px;
+    padding: 0 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.pdfBtn:hover {
+    background: #dbeafe;
+}
+
+
+/* ==========================================
+   VIEW BUTTON
+========================================== */
+
+.viewBtn {
+    min-width: 70px;
+    height: 40px;
+    padding: 0 12px;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.viewBtn:hover {
+    background: #1d4ed8;
+}
+
+
+/* ==========================================
+   RETURN BUTTON
+========================================== */
+
+.returnBtn {
+    min-width: 70px;
+    height: 40px;
+    padding: 0 12px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.returnBtn:hover {
+    background: #d97706;
+}
+
+
+/* ==========================================
+   DELETE BUTTON
+========================================== */
+
+.deleteBtn {
+    min-width: 70px;
+    height: 40px;
+    padding: 0 12px;
+    background: #dc2626;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.deleteBtn:hover {
+    background: #b91c1c;
+}
+
+
+/* ==========================================
+   EDIT BUTTON
+========================================== */
+
+.editBtn {
+    min-width: 65px;
+    height: 40px;
+    padding: 0 12px;
+    background: #7c3aed;
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.editBtn:hover {
+    background: #6d28d9;
+}
+
+
+/* ==========================================
+   NO DATA
+========================================== */
 
 .noData {
-  text-align: center;
-  color: #999;
-  font-style: italic;
+    padding: 35px;
+    color: red;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
 }
 
-/* Footer */
-.table-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 15px;
-  background: #f9f9f9;
-  font-size: 0.85rem;
-  color: #666;
+
+/* ==========================================
+   EMPTY TABLE
+========================================== */
+
+.emptyMessage {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #1e3a8a;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   PAGINATION
+========================================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.pagination button {
+    padding: 10px 18px;
+    background: #2563eb;
+    color: white;
+    border-radius: 6px;
+}
+
+.pagination button:hover {
+    background: #1d4ed8;
+}
+
+.pagination button:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================
+   SELECT / FILTER
+========================================== */
+
+#filterSelect,
+.filterSelect,
+select {
+    height: 55px;
+    padding: 0 15px;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    background: white;
+    color: #111827;
+    font-size: 16px;
+    outline: none;
+}
+
+#filterSelect:focus,
+.filterSelect:focus,
+select:focus {
+    border-color: #2563eb;
+}
+
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.tableContainer::-webkit-scrollbar,
+.container::-webkit-scrollbar {
+    height: 10px;
+}
+
+.tableContainer::-webkit-scrollbar-track,
+.container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.tableContainer::-webkit-scrollbar-thumb,
+.container::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+}
+
+.tableContainer::-webkit-scrollbar-thumb:hover,
+.container::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+
+/* ==========================================
+   RESPONSIVE - 1200px
+========================================== */
+
+@media (max-width: 1200px) {
+
+    .container {
+        width: 99%;
+        padding: 20px;
+    }
+
+    .pageHeader h1,
+    h1 {
+        font-size: 36px;
+    }
+
+    table {
+        min-width: 1450px;
+    }
+
+    th {
+        font-size: 15px;
+    }
+
+    td {
+        font-size: 14px;
+    }
+
+    .statsContainer,
+    .stats,
+    .summaryCards,
+    .dashboardCards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ==========================================
+   RESPONSIVE - 768px
+========================================== */
+
+@media (max-width: 768px) {
+
+    .container {
+        width: 100%;
+        margin: 10px auto;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .pageHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pageHeader h1,
+    h1 {
+        font-size: 30px;
+        text-align: left;
+    }
+
+    #homeBtn,
+    #backBtn {
+        width: 100%;
+    }
+
+    .topBar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #searchBox,
+    #searchInput {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    #searchBtn,
+    #refreshBtn {
+        width: 100%;
+    }
+
+    .statsContainer,
+    .stats,
+    .summaryCards,
+    .dashboardCards {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        min-width: 1450px;
+    }
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+
+    .container {
+        padding: 10px;
+    }
+
+    .pageHeader h1,
+    h1 {
+        font-size: 26px;
+    }
+
+    .searchSection,
+    .searchContainer {
+        padding: 12px;
+    }
+
+    #searchBox,
+    #searchInput,
+    #searchBtn,
+    #refreshBtn {
+        height: 48px;
+    }
 }

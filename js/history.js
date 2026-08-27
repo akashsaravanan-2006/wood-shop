@@ -5112,178 +5112,54 @@ async function openBillPDF(
 }
 
 
-/* ============================================================
-   RETURN BILL
-   ============================================================ */
+/* =====================================================
+   RETURN
+   GO TO RETURN PAGE
+   ===================================================== */
 
-async function handleReturn(
-    bill
-) {
+document
+    .querySelectorAll(
+        ".returnBtn:not(.returnedBtn)"
+    )
+    .forEach(
+        function(button) {
 
-    const billId =
-        getBillId(
-            bill
-        );
+            button.addEventListener(
+                "click",
+                function() {
 
+                    const billId =
+                        button.dataset.billId;
 
-    const billNo =
-        getBillNumber(
-            bill
-        );
+                    if (!billId) {
 
+                        alert(
+                            "Bill ID not found."
+                        );
 
-    const total =
-        getGrandTotal(
-            bill
-        );
+                        return;
+                    }
 
+                    /*
+                     * Save the selected bill ID
+                     * so return.html can read it.
+                     */
+                    localStorage.setItem(
+                        "returnBillId",
+                        String(billId)
+                    );
 
-    const value =
-        prompt(
+                    /*
+                     * Open Return page
+                     */
+                    window.location.href =
+                        "../html/return.html";
 
-            `Enter Return Amount\n\n` +
-
-            `Bill No: ${billNo}\n` +
-
-            `Grand Total: ₹ ${formatMoney(
-                total
-            )}`
-
-        );
-
-
-    if (
-        value === null
-    ) {
-
-        return;
-    }
-
-
-    const returnAmount =
-        Number(
-            value
-        );
-
-
-    if (
-        !Number.isFinite(
-            returnAmount
-        ) ||
-        returnAmount <= 0
-    ) {
-
-        alert(
-            "Enter a valid return amount."
-        );
-
-        return;
-    }
-
-
-    if (
-        returnAmount >
-        total
-    ) {
-
-        alert(
-            "Return amount cannot be greater than Grand Total."
-        );
-
-        return;
-    }
-
-
-    const confirmed =
-        confirm(
-
-            `Confirm Return?\n\n` +
-
-            `Bill: ${billNo}\n` +
-
-            `Amount: ₹ ${formatMoney(
-                returnAmount
-            )}`
-
-        );
-
-
-    if (
-        !confirmed
-    ) {
-
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-
-                `${API_URL}/bills/${encodeURIComponent(
-                    billId
-                )}`,
-
-                {
-                    method: "PATCH",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            {
-                                return_amount:
-                                    returnAmount,
-
-                                status:
-                                    "return"
-                            }
-                        )
                 }
             );
 
-
-        if (
-            !response.ok
-        ) {
-
-            const text =
-                await response.text();
-
-
-            throw new Error(
-                `HTTP ${response.status}: ${text}`
-            );
         }
-
-
-        alert(
-            "Return saved successfully."
-        );
-
-
-        await loadBills();
-
-    }
-    catch (error) {
-
-        console.error(
-            "RETURN ERROR:",
-            error
-        );
-
-
-        alert(
-            "Return update failed.\n\n" +
-            error.message
-        );
-    }
-}
-
+    );
 
 /* ============================================================
    ACTION EVENTS

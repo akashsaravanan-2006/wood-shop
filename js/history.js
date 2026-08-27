@@ -1946,128 +1946,36 @@ function displayBills(
                     `;
 
 
-            const grandTotal =
-
-
-
-                getGrandTotal(bill);
-
-
-
-
-
-
-
-
-
-
             const returnButtonHTML =
 
-
-
-                (
-
-
-
-                    grandTotal > 0 &&
-
-
-
-                    returnAmount >= grandTotal
-
-
-
-                )
-
-
+                status === "return"
 
                     ? `
 
-
-
                         <button
-
-
-
                             type="button"
-
-
-
                             class="
-
-
-
                                 returnBtn
-
-
-
                                 returnedBtn
-
-
-
                             "
-
-
-
                             disabled
-
-
-
                         >
-
-
-
                             Returned
-
-
-
                         </button>
-
-
 
                     `
 
-
-
                     : `
 
-
-
                         <button
-
-
-
                             type="button"
-
-
-
                             class="returnBtn"
-
-
-
                             data-bill-id="${escapeHtml(
-
-
-
                                 getBillId(bill)
-
-
-
                             )}"
-
-
-
                         >
-
-
-
                             Return
-
-
-
                         </button>
-
-
 
                     `;
 
@@ -5208,156 +5116,126 @@ async function openBillPDF(
    RETURN BILL
    ============================================================ */
 
-async function handleReturn(
-    bill
-) {
+/* ============================================================
+   RETURN BILL
+============================================================ */
 
-    const billId =
-        getBillId(
-            bill
-        );
+async function handleReturn(bill) {
 
+    const billId = getBillId(bill);
+    const billNo = getBillNumber(bill);
+    const total = getGrandTotal(bill);
 
-    const billNo =
-        getBillNumber(
-            bill
-        );
+    // Ask return amount
+    const value = prompt(
+        `Enter Return Amount\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Grand Total: ₹ ${formatMoney(total)}`
+    );
 
-
-    const total =
-        getGrandTotal(
-            bill
-        );
-
-
-    const value =
-        prompt(
-
-            `Enter Return Amount\n\n` +
-
-            `Bill No: ${billNo}\n` +
-
-            `Grand Total: ₹ ${formatMoney(
-                total
-            )}`
-
-        );
-
-
-    if (
-        value === null
-    ) {
-
+    // Cancel
+    if (value === null) {
         return;
     }
 
+    const returnAmount = Number(value);
 
-    const returnAmount =
-        Number(
-            value
-        );
-
-
+    // Validate amount
     if (
-        !Number.isFinite(
-            returnAmount
-        ) ||
+        !Number.isFinite(returnAmount) ||
         returnAmount <= 0
     ) {
-
-        alert(
-            "Enter a valid return amount."
-        );
-
+        alert("Enter a valid return amount.");
         return;
     }
 
-
-    if (
-        returnAmount >
-        total
-    ) {
-
+    // Return amount cannot exceed total
+    if (returnAmount > total) {
         alert(
             "Return amount cannot be greater than Grand Total."
         );
-
         return;
     }
 
+    // Confirm
+    const confirmed = confirm(
+        `Confirm Return?\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Return Amount: ₹ ${formatMoney(returnAmount)}`
+    );
 
-    const confirmed =
-        confirm(
-
-            `Confirm Return?\n\n` +
-
-            `Bill: ${billNo}\n` +
-
-            `Amount: ₹ ${formatMoney(
-                returnAmount
-            )}`
-
-        );
-
-
-    if (
-        !confirmed
-    ) {
-
+    if (!confirmed) {
         return;
     }
-
 
     try {
 
-        const response =
-            await fetch(
+        console.log("======================================");
+        console.log("RETURN UPDATE");
+        console.log("Bill ID:", billId);
+        console.log("Bill No:", billNo);
+        console.log("Return Amount:", returnAmount);
+        console.log("======================================");
 
-                `${API_URL}/bills/${encodeURIComponent(
-                    billId
-                )}`,
+        /*
+         * IMPORTANT:
+         * Use the backend return route.
+         *
+         * PUT /api/return-bill
+         */
 
-                {
-                    method: "PATCH",
+        const response = await fetch(
+            `${API_URL}/return-bill`,
+            {
+                method: "PUT",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body:
-                        JSON.stringify(
-                            {
-                                return_amount:
-                                    returnAmount,
+                body: JSON.stringify({
+                    id: billId,
+                    returnAmount: returnAmount
+                })
+            }
+        );
 
-                                status:
-                                    "return"
-                            }
-                        )
-                }
-            );
+        // Check HTTP error
+        if (!response.ok) {
 
-
-        if (
-            !response.ok
-        ) {
-
-            const text =
+            const errorText =
                 await response.text();
 
-
             throw new Error(
-                `HTTP ${response.status}: ${text}`
+                `HTTP ${response.status}: ${errorText}`
             );
         }
 
+        const result =
+            await response.json();
 
-        alert(
-            "Return saved successfully."
+        console.log(
+            "RETURN RESPONSE:",
+            result
         );
 
+        // Check backend error
+        if (
+            result &&
+            result.success === false
+        ) {
+            throw new Error(
+                result.message ||
+                "Return update failed."
+            );
+        }
 
+        // Success
+        alert(
+            "Return amount updated successfully."
+        );
+
+        // Reload history
         await loadBills();
 
     }
@@ -5368,14 +5246,12 @@ async function handleReturn(
             error
         );
 
-
         alert(
             "Return update failed.\n\n" +
             error.message
         );
     }
 }
-
 
 /* ============================================================
    ACTION EVENTS
@@ -5419,13 +5295,6 @@ function attachActionEvents() {
        RETURN BUTTONS
     */
 
-    /* ============================================================
-   RETURN BUTTON
-   OPEN RETURN.HTML WITH SELECTED BILL ID
-   ============================================================ */
-
-function attachReturnPageEvents() {
-
     document
         .querySelectorAll(
             ".returnBtn:not(.returnedBtn)"
@@ -5435,92 +5304,52 @@ function attachReturnPageEvents() {
 
                 button.addEventListener(
                     "click",
-                    function(event) {
-
-                        event.preventDefault();
+                    async function() {
 
                         const billId =
                             button.dataset.billId;
 
-                        console.log(
-                            "RETURN BUTTON CLICKED"
-                        );
-
-                        console.log(
-                            "SELECTED BILL ID:",
-                            billId
-                        );
-
-                        if (!billId) {
-
-                            alert(
-                                "Bill ID not found."
-                            );
-
-                            return;
-                        }
-
-
-                        /*
-                         * Save selected Bill ID.
-                         *
-                         * return.html will read
-                         * this value from localStorage.
-                         */
-
-                        localStorage.setItem(
-                            "returnBillId",
-                            String(billId)
-                        );
-
-
-                        /*
-                         * Also save the bill number
-                         * if it is available.
-                         */
 
                         const bill =
                             allBills.find(
                                 function(item) {
 
                                     return String(
-                                        getBillId(item)
+                                        getBillId(
+                                            item
+                                        )
                                     ) ===
-                                    String(billId);
+                                    String(
+                                        billId
+                                    );
 
                                 }
                             );
 
 
-                        if (bill) {
+                        if (
+                            !bill
+                        ) {
 
-                            const billNo =
-                                bill.bill_no ||
-                                bill.billNo ||
-                                "";
-
-                            localStorage.setItem(
-                                "returnBillNo",
-                                String(billNo)
+                            alert(
+                                "Bill not found."
                             );
 
+                            return;
                         }
 
 
-                        /*
-                         * Go to Return page.
-                         */
-
-                        window.location.href =
-                            "../html/return.html";
+                        await handleReturn(
+                            bill
+                        );
 
                     }
                 );
 
             }
         );
-
 }
+
 
 /* ============================================================
    SEARCH BUTTON

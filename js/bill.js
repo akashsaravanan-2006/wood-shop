@@ -1931,30 +1931,36 @@ if (confirmBill) {
 
             try {
 
-                // ==================================================
-                // SEND TO BACKEND
-                // ==================================================
+                /// -----------------------------------------
+// SAVE BILL DATA LOCALLY ONLY
+// -----------------------------------------
 
-                const response =
-                    await fetch(
-                        "https://wood-shop-backend.vercel.app/api/save-bill",
-                        {
-                            method:
-                                "POST",
+try {
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+    localStorage.setItem(
+        "quotationBillData",
+        JSON.stringify(billToSave)
+    );
 
-                            body:
-                                JSON.stringify(
-                                    billToSave
-                                )
-                        }
-                    );
+    console.log(
+        "Bill data stored locally for cbill.js"
+    );
 
+    // DO NOT call /api/save-bill here
 
+} catch (error) {
+
+    console.error(
+        "LOCAL BILL SAVE ERROR:",
+        error
+    );
+
+    alert(
+        "Unable to prepare bill data.\n\n" +
+        error.message
+    );
+
+}
                 // ==================================================
                 // RESPONSE
                 // ==================================================

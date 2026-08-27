@@ -2,108 +2,155 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Wood Shop</title>
+    <title>Amman Saw Mill | Wood Shop</title>
 
     <link
         rel="stylesheet"
-        href="../css/style.css">
+        href="../css/style.css?v=10">
 
 </head>
 
 
 <body>
 
+    <!-- =========================================
+         BACKGROUND OVERLAY
+    ========================================== -->
+
+    <div class="page-overlay"></div>
+
+
+    <!-- =========================================
+         MAIN CONTAINER
+    ========================================== -->
+
     <div class="container">
 
-        <!-- SHOP NAME -->
+        <!-- SHOP HEADER -->
 
-        <h3>
-            ஸ்ரீ அம்மன் சாமில்
-        </h3>
+        <div class="shop-header">
 
+            <div class="shop-icon">
+                🪵
+            </div>
 
-        <!-- BUSINESS TYPE -->
+            <h1>
+                ஸ்ரீ அம்மன் சாமில்
+            </h1>
 
-        <h4>
-            தேக்கு, வேம்பு, பூவரசு வியாபாரம்
-        </h4>
+            <p class="business-type">
+                தேக்கு, வேம்பு, பூவரசு வியாபாரம்
+            </p>
 
+            <div class="header-line"></div>
 
-        <!-- ADDRESS -->
+            <p class="mobile">
+                <span>📞</span>
+                Mobile : 9443076409 , 9715050908
+            </p>
 
+            <p class="gst">
+                <span>GST</span> : 33DLKPK5760D1Z5
+            </p>
 
-
-        <!-- MOBILE -->
-
-        <h3>
-            Mobile : 9443076409 , 9715050908
-        </h3>
-
-
-        <!-- GST -->
-
-        <h4>
-            GST : 33DLKPK5760D1Z5
-        </h4>
+        </div>
 
 
-        <!-- =====================================
-             WOOD CALCULATION
-        ====================================== -->
+        <!-- =========================================
+             MENU BUTTONS
+        ========================================== -->
 
-        <button
-            type="button"
-            id="woodBtn">
+        <div class="menu-section">
 
-            Wood Calculation
+            <button
+                type="button"
+                id="woodBtn"
+                class="menu-btn wood-btn">
 
-        </button>
+                <span class="btn-icon">🪵</span>
 
+                <span class="btn-content">
+                    <strong>Wood Calculation</strong>
+                    <small>Calculate wood quantity and amount</small>
+                </span>
 
-        <!-- =====================================
-             PENDING BILL
-        ====================================== -->
+                <span class="arrow">→</span>
 
-        <button
-            type="button"
-            id="pendingBtn">
-
-            Pending Bill
-
-        </button>
+            </button>
 
 
-        <!-- =====================================
-             HISTORY
-        ====================================== -->
+            <button
+                type="button"
+                id="pendingBtn"
+                class="menu-btn pending-btn">
 
-        <button
-            type="button"
-            id="historyBtn">
+                <span class="btn-icon">⏳</span>
 
-            History
+                <span class="btn-content">
+                    <strong>Pending Bill</strong>
+                    <small>View pending customer bills</small>
+                </span>
 
-        </button>
+                <span class="arrow">→</span>
+
+            </button>
 
 
-        <!-- =====================================
-             CLEAR ALL DATA
-        ====================================== -->
+            <button
+                type="button"
+                id="historyBtn"
+                class="menu-btn history-btn">
 
-        <button
-            type="button"
-            id="clearBtn">
+                <span class="btn-icon">📋</span>
 
-            Clear
+                <span class="btn-content">
+                    <strong>History</strong>
+                    <small>View all previous bills</small>
+                </span>
 
-        </button>
+                <span class="arrow">→</span>
+
+            </button>
+
+
+            <button
+                type="button"
+                id="clearBtn"
+                class="menu-btn clear-btn">
+
+                <span class="btn-icon">🗑️</span>
+
+                <span class="btn-content">
+                    <strong>Clear</strong>
+                    <small>Clear current calculation</small>
+                </span>
+
+                <span class="arrow">→</span>
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+
+        <div class="footer">
+
+            <span>AMMAN SAW MILL</span>
+
+            <span class="footer-dot">•</span>
+
+            <span>Quality Wood &amp; Service</span>
+
+        </div>
 
     </div>
 
@@ -117,11 +164,11 @@
          3. inputControl.js
     ========================================== -->
 
-    <link rel="stylesheet" href="../css/style.css?v=2">
+    <script src="../js/storedata.js?v=10"></script>
 
-<script src="../js/storedata.js?v=2"></script>
-<script src="../js/script.js?v=2"></script>
-<script src="../js/inputControl.js?v=2"></script>
+    <script src="../js/script.js?v=10"></script>
+
+    <script src="../js/inputControl.js?v=10"></script>
 
 </body>
 

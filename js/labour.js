@@ -852,98 +852,80 @@ function addOtherItem() {
 // ============================================================
 // SAVE LABOUR DATA
 // ============================================================
-//
-// This does NOT touch storedata.js.
-//
-// It only preserves your existing localStorage behaviour.
-//
+// Labour.js only saves the values.
+// It does NOT create PDF.
+// It does NOT create quotation.
+// It does NOT modify wood data.
 // ============================================================
 
 function saveLabourData() {
 
-    // Calculate first
+    // Get latest values
+    labourCharge = roundMoney(
+        labourChargeInput ? labourChargeInput.value : 0
+    );
 
+    otherCharge = roundMoney(
+        otherChargeInput ? otherChargeInput.value : 0
+    );
+
+    // Recalculate totals
     calculateGrandTotal();
 
-
+    // Prepare data for bill.js / history.js
     const data = {
 
-        woodTotal:
-            roundMoney(
-                woodTotal
-            ),
+        // Wood total comes from wood page
+        woodTotal: roundMoney(woodTotal),
 
-        labourCharge:
-            roundMoney(
-                labourCharge
-            ),
+        // Labour value
+        labourCharge: roundMoney(labourCharge),
 
-        otherCharge:
-            roundMoney(
-                otherCharge
-            ),
+        // Main other charge
+        otherCharge: roundMoney(otherCharge),
 
-        otherItems:
-            otherItems.map(
-                function (item) {
+        // Additional other charges
+        otherItems: Array.isArray(otherItems)
+            ? otherItems.map(function (item) {
 
-                    return {
+                return {
+                    reason: String(
+                        item && item.reason
+                            ? item.reason
+                            : "Other"
+                    ),
 
-                        reason:
-                            String(
-                                item.reason
-                            ),
+                    amount: roundMoney(
+                        item && item.amount
+                            ? item.amount
+                            : 0
+                    )
+                };
 
-                        amount:
-                            roundMoney(
-                                item.amount
-                            )
+            })
+            : [],
 
-                    };
+        // Total of Labour + Other Charge + Additional Items
+        othersTotal: roundMoney(othersTotal),
 
-                }
-            ),
-
-        othersTotal:
-            roundMoney(
-                othersTotal
-            ),
-
-        grandTotal:
-            roundMoney(
-                grandTotal
-            )
-
+        // Wood Total + Others Total
+        grandTotal: roundMoney(grandTotal)
     };
 
+    // ========================================================
+    // SAVE EVERYTHING IN ONE PLACE
+    // ========================================================
 
-    // Existing localStorage
     localStorage.setItem(
         "labourData",
         JSON.stringify(data)
     );
 
-
-    // Existing compatibility values
-    localStorage.setItem(
-        "labourFinalTotal",
-        grandTotal.toFixed(2)
-    );
-
-
-    localStorage.setItem(
-        "labourBaseTotal",
-        grandTotal.toFixed(2)
-    );
-
-
     console.log(
-        "LABOUR DATA SAVED:",
+        "LABOUR VALUES SAVED:",
         data
     );
-
 }
-
 
 // ============================================================
 // LOAD LABOUR DATA

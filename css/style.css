@@ -1,56 +1,34 @@
 /* =========================================================
-   AMMAN SAW MILL
-   PROFESSIONAL HOME PAGE
-========================================================= */
-
-
-/* =========================================================
-   RESET
+   GLOBAL
 ========================================================= */
 
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 
 /* =========================================================
-   BODY
+   HOME PAGE BACKGROUND
 ========================================================= */
 
 body {
-
     min-height: 100vh;
 
-    font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    background-image:
-        url("../img/img2.jpg");
+    background-image: url("../images/img2.jpg");
 
     background-size: cover;
-
     background-position: center;
-
     background-repeat: no-repeat;
-
     background-attachment: fixed;
-
-    color: #172033;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 30px 15px;
-
-    position: relative;
-
 }
 
 
@@ -58,55 +36,44 @@ body {
    BACKGROUND OVERLAY
 ========================================================= */
 
-.page-overlay {
+.home-overlay {
+    min-height: 100vh;
 
-    position: fixed;
+    width: 100%;
 
-    inset: 0;
+    display: flex;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(7, 18, 32, 0.78),
-            rgba(20, 32, 48, 0.58)
-        );
+    align-items: center;
 
-    z-index: 0;
+    justify-content: center;
 
+    padding: 40px 20px;
+
+    background: rgba(0, 0, 0, 0.42);
 }
 
 
 /* =========================================================
-   MAIN CONTAINER
+   MAIN HOME CARD
 ========================================================= */
 
-.container {
-
+.home-container {
     width: 100%;
 
-    max-width: 620px;
+    max-width: 470px;
 
-    position: relative;
+    background: rgba(255, 255, 255, 0.97);
 
-    z-index: 1;
+    border-radius: 20px;
 
-    background:
-        rgba(255, 255, 255, 0.96);
-
-    border-radius: 24px;
-
-    padding: 38px;
+    padding: 38px 34px 30px;
 
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.30);
+        0 20px 50px rgba(0, 0, 0, 0.28);
 
-    border:
-        1px solid rgba(255, 255, 255, 0.75);
+    text-align: center;
 
-    backdrop-filter: blur(12px);
-
-    -webkit-backdrop-filter: blur(12px);
-
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 
@@ -115,515 +82,171 @@ body {
 ========================================================= */
 
 .shop-header {
-
-    text-align: center;
-
-    margin-bottom: 30px;
-
-}
-
-
-/* =========================================================
-   ICON
-========================================================= */
-
-.shop-icon {
-
-    width: 70px;
-
-    height: 70px;
-
-    margin: 0 auto 16px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #0f766e,
-            #115e59
-        );
-
-    border-radius: 20px;
-
-    font-size: 34px;
-
-    box-shadow:
-        0 10px 25px rgba(15, 118, 110, 0.28);
-
-}
-
-
-/* =========================================================
-   SHOP NAME
-========================================================= */
-
-.shop-header h1 {
-
-    font-size: 30px;
-
-    font-weight: 800;
-
-    color: #102033;
-
-    letter-spacing: 0.3px;
-
-    margin-bottom: 8px;
-
-}
-
-
-/* =========================================================
-   BUSINESS TYPE
-========================================================= */
-
-.business-type {
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    color: #526176;
-
-    line-height: 1.7;
-
-}
-
-
-/* =========================================================
-   HEADER LINE
-========================================================= */
-
-.header-line {
-
-    width: 80px;
-
-    height: 4px;
-
-    margin: 18px auto;
-
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #0f766e,
-            #14b8a6
-        );
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-.mobile {
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    color: #344256;
-
-    margin-top: 10px;
-
-}
-
-
-.mobile span {
-
-    margin-right: 5px;
-
-}
-
-
-/* =========================================================
-   GST
-========================================================= */
-
-.gst {
-
-    font-size: 13px;
-
-    color: #657287;
-
-    margin-top: 7px;
-
-}
-
-
-.gst span {
-
-    font-weight: 800;
-
-    color: #0f766e;
-
-}
-
-
-/* =========================================================
-   MENU SECTION
-========================================================= */
-
-.menu-section {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
-
-}
-
-
-/* =========================================================
-   COMMON BUTTON
-========================================================= */
-
-.menu-btn {
-
     width: 100%;
 
-    min-height: 82px;
-
-    border: none;
-
-    border-radius: 16px;
-
-    padding: 14px 18px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-    cursor: pointer;
-
-    text-align: left;
-
-    font-family: inherit;
-
-    transition:
-        transform 0.20s ease,
-        box-shadow 0.20s ease,
-        border-color 0.20s ease;
-
-    position: relative;
-
-    overflow: hidden;
-
+    margin-bottom: 28px;
 }
 
+.shop-header h1 {
+    font-size: 34px;
 
-/* =========================================================
-   BUTTON SHINE
-========================================================= */
-
-.menu-btn::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: -120%;
-
-    width: 80%;
-
-    height: 100%;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.30),
-            transparent
-        );
-
-    transform: skewX(-20deg);
-
-    transition: left 0.55s ease;
-
-}
-
-
-.menu-btn:hover::before {
-
-    left: 140%;
-
-}
-
-
-/* =========================================================
-   BUTTON HOVER
-========================================================= */
-
-.menu-btn:hover {
-
-    transform:
-        translateY(-3px);
-
-}
-
-
-.menu-btn:active {
-
-    transform:
-        translateY(0);
-
-}
-
-
-/* =========================================================
-   ICON
-========================================================= */
-
-.btn-icon {
-
-    width: 52px;
-
-    height: 52px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 14px;
-
-    font-size: 25px;
-
-}
-
-
-/* =========================================================
-   BUTTON CONTENT
-========================================================= */
-
-.btn-content {
-
-    flex: 1;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 4px;
-
-}
-
-
-.btn-content strong {
-
-    font-size: 16px;
-
-    font-weight: 750;
-
-}
-
-
-.btn-content small {
-
-    font-size: 12px;
-
-    font-weight: 500;
-
-    opacity: 0.72;
-
-}
-
-
-/* =========================================================
-   ARROW
-========================================================= */
-
-.arrow {
-
-    font-size: 23px;
+    line-height: 1.25;
 
     font-weight: 700;
 
-    opacity: 0.65;
+    color: #1f2937;
+
+    margin-bottom: 10px;
+}
+
+.shop-header h2 {
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    font-weight: 500;
+
+    color: #5b4636;
+
+    margin-bottom: 12px;
+}
+
+.contact-info {
+    width: 100%;
+
+    text-align: center;
+}
+
+.contact-info p {
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.home-menu {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+/* =========================================================
+   MENU BUTTON
+========================================================= */
+
+.menu-btn {
+    width: 100%;
+
+    min-height: 76px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #8b4513;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    padding: 14px 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
 
     transition:
-        transform 0.2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.16);
 }
 
 
-.menu-btn:hover .arrow {
+/* BUTTON HOVER */
 
-    transform:
-        translateX(5px);
+.menu-btn:hover {
+    background: #6f350e;
 
-    opacity: 1;
+    transform: translateY(-2px);
 
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+
+/* BUTTON ACTIVE */
+
+.menu-btn:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 
 /* =========================================================
-   WOOD CALCULATION
+   BUTTON TEXT
 ========================================================= */
 
-.wood-btn {
+.btn-title {
+    display: block;
 
-    background:
-        linear-gradient(
-            135deg,
-            #ecfdf5,
-            #dff7ef
-        );
+    width: 100%;
 
-    color: #065f46;
+    font-size: 17px;
 
-    border:
-        1px solid #a7f3d0;
+    line-height: 1.3;
 
-    box-shadow:
-        0 8px 20px rgba(16, 185, 129, 0.10);
+    font-weight: 700;
 
+    margin-bottom: 5px;
 }
 
+.btn-description {
+    display: block;
 
-.wood-btn:hover {
+    width: 100%;
 
-    box-shadow:
-        0 14px 30px rgba(16, 185, 129, 0.18);
+    font-size: 13px;
 
-}
+    line-height: 1.4;
 
+    font-weight: 400;
 
-.wood-btn .btn-icon {
-
-    background: #d1fae5;
-
+    opacity: 0.92;
 }
 
 
 /* =========================================================
-   PENDING BILL
+   CLEAR BUTTON
 ========================================================= */
 
-.pending-btn {
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff7ed,
-            #ffedd5
-        );
-
-    color: #9a3412;
-
-    border:
-        1px solid #fed7aa;
-
-    box-shadow:
-        0 8px 20px rgba(249, 115, 22, 0.09);
-
+.clear-menu-btn {
+    background: #4b5563;
 }
 
-
-.pending-btn:hover {
-
-    box-shadow:
-        0 14px 30px rgba(249, 115, 22, 0.17);
-
-}
-
-
-.pending-btn .btn-icon {
-
-    background: #ffedd5;
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-.history-btn {
-
-    background:
-        linear-gradient(
-            135deg,
-            #eff6ff,
-            #dbeafe
-        );
-
-    color: #1e40af;
-
-    border:
-        1px solid #bfdbfe;
-
-    box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.09);
-
-}
-
-
-.history-btn:hover {
-
-    box-shadow:
-        0 14px 30px rgba(37, 99, 235, 0.17);
-
-}
-
-
-.history-btn .btn-icon {
-
-    background: #dbeafe;
-
-}
-
-
-/* =========================================================
-   CLEAR
-========================================================= */
-
-.clear-btn {
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff1f2,
-            #ffe4e6
-        );
-
-    color: #be123c;
-
-    border:
-        1px solid #fecdd3;
-
-    box-shadow:
-        0 8px 20px rgba(225, 29, 72, 0.08);
-
-}
-
-
-.clear-btn:hover {
-
-    box-shadow:
-        0 14px 30px rgba(225, 29, 72, 0.16);
-
-}
-
-
-.clear-btn .btn-icon {
-
-    background: #ffe4e6;
-
+.clear-menu-btn:hover {
+    background: #374151;
 }
 
 
@@ -631,212 +254,100 @@ body {
    FOOTER
 ========================================================= */
 
-.footer {
+.home-footer {
+    margin-top: 25px;
 
-    margin-top: 28px;
+    padding-top: 18px;
 
-    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
 
-    border-top:
-        1px solid #e5e7eb;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 9px;
-
-    color: #7a8799;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    letter-spacing: 0.6px;
-
+    text-align: center;
 }
 
+.home-footer p {
+    font-size: 14px;
 
-.footer-dot {
+    font-weight: 700;
 
-    color: #0f766e;
+    letter-spacing: 0.5px;
 
-    font-size: 15px;
+    color: #374151;
 
+    margin-bottom: 4px;
+}
+
+.home-footer span {
+    font-size: 13px;
+
+    color: #6b7280;
 }
 
 
 /* =========================================================
-   RESPONSIVE - TABLET
+   MOBILE
 ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
 
-    body {
-
-        padding: 20px 12px;
-
+    .home-overlay {
+        padding: 25px 15px;
     }
 
+    .home-container {
+        max-width: 100%;
 
-    .container {
+        padding: 30px 22px 25px;
 
-        max-width: 560px;
-
-        padding: 30px 24px;
-
-        border-radius: 20px;
-
+        border-radius: 16px;
     }
-
 
     .shop-header h1 {
-
-        font-size: 27px;
-
+        font-size: 28px;
     }
 
-}
-
-
-/* =========================================================
-   RESPONSIVE - MOBILE
-========================================================= */
-
-@media (max-width: 480px) {
-
-    body {
-
-        padding: 12px;
-
-        align-items: flex-start;
-
-        padding-top: 25px;
-
+    .shop-header h2 {
+        font-size: 14px;
     }
 
-
-    .container {
-
-        padding: 25px 17px;
-
-        border-radius: 18px;
-
-    }
-
-
-    .shop-icon {
-
-        width: 60px;
-
-        height: 60px;
-
-        font-size: 29px;
-
-        border-radius: 17px;
-
-    }
-
-
-    .shop-header h1 {
-
-        font-size: 23px;
-
-    }
-
-
-    .business-type {
-
+    .contact-info p {
         font-size: 13px;
-
     }
-
-
-    .mobile {
-
-        font-size: 12px;
-
-        line-height: 1.6;
-
-    }
-
-
-    .gst {
-
-        font-size: 11px;
-
-    }
-
 
     .menu-btn {
-
-        min-height: 75px;
-
-        padding: 11px 13px;
-
-        gap: 11px;
-
-        border-radius: 14px;
-
+        min-height: 72px;
     }
 
-
-    .btn-icon {
-
-        width: 45px;
-
-        height: 45px;
-
-        border-radius: 12px;
-
-        font-size: 21px;
-
+    .btn-title {
+        font-size: 16px;
     }
 
-
-    .btn-content strong {
-
-        font-size: 14px;
-
+    .btn-description {
+        font-size: 12px;
     }
-
-
-    .btn-content small {
-
-        font-size: 10px;
-
-    }
-
-
-    .arrow {
-
-        font-size: 19px;
-
-    }
-
-
-    .footer {
-
-        font-size: 9px;
-
-        flex-wrap: wrap;
-
-    }
-
 }
 
 
 /* =========================================================
-   ACCESSIBILITY
+   VERY SMALL MOBILE
 ========================================================= */
 
-.menu-btn:focus-visible {
+@media (max-width: 380px) {
 
-    outline:
-        3px solid rgba(20, 184, 166, 0.35);
+    .home-container {
+        padding: 25px 18px 22px;
+    }
 
-    outline-offset: 3px;
+    .shop-header h1 {
+        font-size: 25px;
+    }
 
+    .shop-header h2 {
+        font-size: 13px;
+    }
+
+    .menu-btn {
+        min-height: 68px;
+
+        padding: 12px 14px;
+    }
 }

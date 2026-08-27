@@ -5116,156 +5116,126 @@ async function openBillPDF(
    RETURN BILL
    ============================================================ */
 
-async function handleReturn(
-    bill
-) {
+/* ============================================================
+   RETURN BILL
+============================================================ */
 
-    const billId =
-        getBillId(
-            bill
-        );
+async function handleReturn(bill) {
 
+    const billId = getBillId(bill);
+    const billNo = getBillNumber(bill);
+    const total = getGrandTotal(bill);
 
-    const billNo =
-        getBillNumber(
-            bill
-        );
+    // Ask return amount
+    const value = prompt(
+        `Enter Return Amount\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Grand Total: ₹ ${formatMoney(total)}`
+    );
 
-
-    const total =
-        getGrandTotal(
-            bill
-        );
-
-
-    const value =
-        prompt(
-
-            `Enter Return Amount\n\n` +
-
-            `Bill No: ${billNo}\n` +
-
-            `Grand Total: ₹ ${formatMoney(
-                total
-            )}`
-
-        );
-
-
-    if (
-        value === null
-    ) {
-
+    // Cancel
+    if (value === null) {
         return;
     }
 
+    const returnAmount = Number(value);
 
-    const returnAmount =
-        Number(
-            value
-        );
-
-
+    // Validate amount
     if (
-        !Number.isFinite(
-            returnAmount
-        ) ||
+        !Number.isFinite(returnAmount) ||
         returnAmount <= 0
     ) {
-
-        alert(
-            "Enter a valid return amount."
-        );
-
+        alert("Enter a valid return amount.");
         return;
     }
 
-
-    if (
-        returnAmount >
-        total
-    ) {
-
+    // Return amount cannot exceed total
+    if (returnAmount > total) {
         alert(
             "Return amount cannot be greater than Grand Total."
         );
-
         return;
     }
 
+    // Confirm
+    const confirmed = confirm(
+        `Confirm Return?\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Return Amount: ₹ ${formatMoney(returnAmount)}`
+    );
 
-    const confirmed =
-        confirm(
-
-            `Confirm Return?\n\n` +
-
-            `Bill: ${billNo}\n` +
-
-            `Amount: ₹ ${formatMoney(
-                returnAmount
-            )}`
-
-        );
-
-
-    if (
-        !confirmed
-    ) {
-
+    if (!confirmed) {
         return;
     }
-
 
     try {
 
-        const response =
-            await fetch(
+        console.log("======================================");
+        console.log("RETURN UPDATE");
+        console.log("Bill ID:", billId);
+        console.log("Bill No:", billNo);
+        console.log("Return Amount:", returnAmount);
+        console.log("======================================");
 
-                `${API_URL}/bills/${encodeURIComponent(
-                    billId
-                )}`,
+        /*
+         * IMPORTANT:
+         * Use the backend return route.
+         *
+         * PUT /api/return-bill
+         */
 
-                {
-                    method: "PATCH",
+        const response = await fetch(
+            `${API_URL}/return-bill`,
+            {
+                method: "PUT",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body:
-                        JSON.stringify(
-                            {
-                                return_amount:
-                                    returnAmount,
+                body: JSON.stringify({
+                    id: billId,
+                    returnAmount: returnAmount
+                })
+            }
+        );
 
-                                status:
-                                    "return"
-                            }
-                        )
-                }
-            );
+        // Check HTTP error
+        if (!response.ok) {
 
-
-        if (
-            !response.ok
-        ) {
-
-            const text =
+            const errorText =
                 await response.text();
 
-
             throw new Error(
-                `HTTP ${response.status}: ${text}`
+                `HTTP ${response.status}: ${errorText}`
             );
         }
 
+        const result =
+            await response.json();
 
-        alert(
-            "Return saved successfully."
+        console.log(
+            "RETURN RESPONSE:",
+            result
         );
 
+        // Check backend error
+        if (
+            result &&
+            result.success === false
+        ) {
+            throw new Error(
+                result.message ||
+                "Return update failed."
+            );
+        }
 
+        // Success
+        alert(
+            "Return amount updated successfully."
+        );
+
+        // Reload history
         await loadBills();
 
     }
@@ -5276,14 +5246,12 @@ async function handleReturn(
             error
         );
 
-
         alert(
             "Return update failed.\n\n" +
             error.message
         );
     }
 }
-
 
 /* ============================================================
    ACTION EVENTS

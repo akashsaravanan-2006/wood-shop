@@ -1956,11 +1956,6 @@ function displayBills(
 
 
 
-            const returnAmount =
-
-
-
-                getReturnAmount(bill);
 
 
 

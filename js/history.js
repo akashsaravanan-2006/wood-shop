@@ -5327,6 +5327,13 @@ function attachActionEvents() {
        RETURN BUTTONS
     */
 
+    /* ============================================================
+   RETURN BUTTON
+   OPEN RETURN.HTML WITH SELECTED BILL ID
+   ============================================================ */
+
+function attachReturnPageEvents() {
+
     document
         .querySelectorAll(
             ".returnBtn:not(.returnedBtn)"
@@ -5336,52 +5343,92 @@ function attachActionEvents() {
 
                 button.addEventListener(
                     "click",
-                    async function() {
+                    function(event) {
+
+                        event.preventDefault();
 
                         const billId =
                             button.dataset.billId;
 
+                        console.log(
+                            "RETURN BUTTON CLICKED"
+                        );
 
-                        const bill =
-                            allBills.find(
-                                function(item) {
+                        console.log(
+                            "SELECTED BILL ID:",
+                            billId
+                        );
 
-                                    return String(
-                                        getBillId(
-                                            item
-                                        )
-                                    ) ===
-                                    String(
-                                        billId
-                                    );
-
-                                }
-                            );
-
-
-                        if (
-                            !bill
-                        ) {
+                        if (!billId) {
 
                             alert(
-                                "Bill not found."
+                                "Bill ID not found."
                             );
 
                             return;
                         }
 
 
-                        await handleReturn(
-                            bill
+                        /*
+                         * Save selected Bill ID.
+                         *
+                         * return.html will read
+                         * this value from localStorage.
+                         */
+
+                        localStorage.setItem(
+                            "returnBillId",
+                            String(billId)
                         );
+
+
+                        /*
+                         * Also save the bill number
+                         * if it is available.
+                         */
+
+                        const bill =
+                            allBills.find(
+                                function(item) {
+
+                                    return String(
+                                        getBillId(item)
+                                    ) ===
+                                    String(billId);
+
+                                }
+                            );
+
+
+                        if (bill) {
+
+                            const billNo =
+                                bill.bill_no ||
+                                bill.billNo ||
+                                "";
+
+                            localStorage.setItem(
+                                "returnBillNo",
+                                String(billNo)
+                            );
+
+                        }
+
+
+                        /*
+                         * Go to Return page.
+                         */
+
+                        window.location.href =
+                            "../html/return.html";
 
                     }
                 );
 
             }
         );
-}
 
+}
 
 /* ============================================================
    SEARCH BUTTON

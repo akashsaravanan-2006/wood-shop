@@ -1187,3 +1187,163 @@ body {
         font-size: 15px;
     }
 }
+/* =========================================================
+   ACTION BUTTONS - FORCE PROFESSIONAL DESIGN
+   ========================================================= */
+
+/* Actions column */
+.bill-table td:last-child {
+    white-space: nowrap;
+    text-align: center;
+    padding: 10px 12px;
+}
+
+/* All action buttons */
+.bill-table td:last-child button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+    min-width: 58px;
+
+    padding: 0 10px;
+    margin: 2px;
+
+    border-radius: 6px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+/* =========================================================
+   PDF BUTTON
+   ========================================================= */
+
+.bill-table td:last-child button:first-child {
+    background: #eff6ff;
+    color: #2563eb;
+
+    border: 1px solid #93c5fd;
+
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.12);
+}
+
+.bill-table td:last-child button:first-child:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    border-color: #60a5fa;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 3px 7px rgba(37, 99, 235, 0.18);
+}
+
+.bill-table td:last-child button:first-child:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   RETURN BUTTON
+   ========================================================= */
+
+.bill-table td:last-child button:last-child {
+    background: #fff7ed;
+    color: #ea580c;
+
+    border: 1px solid #fdba74;
+
+    box-shadow: 0 1px 2px rgba(234, 88, 12, 0.12);
+}
+
+.bill-table td:last-child button:last-child:hover {
+    background: #ffedd5;
+    color: #c2410c;
+
+    border-color: #fb923c;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 3px 7px rgba(234, 88, 12, 0.18);
+}
+
+.bill-table td:last-child button:last-child:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   IF JAVASCRIPT HAS THESE CLASSES
+   ========================================================= */
+
+.bill-table .pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 58px;
+    height: 34px;
+
+    padding: 0 10px;
+
+    background: #eff6ff !important;
+    color: #2563eb !important;
+
+    border: 1px solid #93c5fd !important;
+    border-radius: 6px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bill-table .pdf-btn:hover {
+    background: #dbeafe !important;
+    border-color: #60a5fa !important;
+}
+
+
+.bill-table .return-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 65px;
+    height: 34px;
+
+    padding: 0 10px;
+
+    background: #fff7ed !important;
+    color: #ea580c !important;
+
+    border: 1px solid #fdba74 !important;
+    border-radius: 6px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bill-table .return-btn:hover {
+    background: #ffedd5 !important;
+    border-color: #fb923c !important;
+}
+
+
+/* =========================================================
+   ACTION BUTTON GAP
+   ========================================================= */
+
+.bill-table td:last-child {
+    min-width: 145px;
+}

@@ -5117,6 +5117,11 @@ async function openBillPDF(
    GO TO RETURN PAGE
    ===================================================== */
 
+/* ============================================================
+   RETURN BUTTON
+   OPEN RETURN PAGE
+   ============================================================ */
+
 document
     .querySelectorAll(
         ".returnBtn:not(.returnedBtn)"
@@ -5141,8 +5146,8 @@ document
                     }
 
                     /*
-                     * Save the selected bill ID
-                     * so return.html can read it.
+                     * Save selected bill ID
+                     * for return.html
                      */
                     localStorage.setItem(
                         "returnBillId",
@@ -5150,7 +5155,7 @@ document
                     );
 
                     /*
-                     * Open Return page
+                     * Open Return Page
                      */
                     window.location.href =
                         "../html/return.html";
@@ -5160,7 +5165,6 @@ document
 
         }
     );
-
 /* ============================================================
    ACTION EVENTS
    ============================================================ */

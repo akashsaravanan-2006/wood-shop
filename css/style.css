@@ -1,353 +1,217 @@
-/* =========================================================
-   GLOBAL
-========================================================= */
+/* =====================================
+   RESET
+   ===================================== */
 
 * {
-    box-sizing: border-box;
+
     margin: 0;
+
     padding: 0;
-}
 
-html,
-body {
-    width: 100%;
-    min-height: 100%;
+    box-sizing: border-box;
+
     font-family: Arial, Helvetica, sans-serif;
+
 }
 
 
-/* =========================================================
-   HOME PAGE BACKGROUND
-========================================================= */
+/* =====================================
+   BODY
+   ===================================== */
 
 body {
-    min-height: 100vh;
 
-    background-image: url("../images/img2.jpg");
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-
-
-/* =========================================================
-   BACKGROUND OVERLAY
-========================================================= */
-
-.home-overlay {
-    min-height: 100vh;
-
-    width: 100%;
+    background: #f4f4f4;
 
     display: flex;
 
-    align-items: center;
-
     justify-content: center;
 
-    padding: 40px 20px;
+    align-items: center;
 
-    background: rgba(0, 0, 0, 0.42);
+    min-height: 100vh;
+
+    padding: 20px;
+
 }
 
 
-/* =========================================================
-   MAIN HOME CARD
-========================================================= */
+/* =====================================
+   MAIN CONTAINER
+   ===================================== */
 
-.home-container {
-    width: 100%;
+.container {
 
-    max-width: 470px;
+    background: white;
 
-    background: rgba(255, 255, 255, 0.97);
+    width: 400px;
 
-    border-radius: 20px;
+    max-width: 100%;
 
-    padding: 38px 34px 30px;
+    padding: 40px;
 
-    box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.28);
+    border-radius: 15px;
 
     text-align: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.20);
+
 }
 
 
-/* =========================================================
-   SHOP HEADER
-========================================================= */
+/* =====================================
+   SHOP NAME
+   ===================================== */
 
-.shop-header {
-    width: 100%;
+.container h3 {
 
-    margin-bottom: 28px;
+    margin-bottom: 5px;
+
+    color: #000000;
+
 }
 
-.shop-header h1 {
-    font-size: 34px;
 
-    line-height: 1.25;
+/* =====================================
+   BUSINESS TYPE
+   ===================================== */
 
-    font-weight: 700;
+.container h4 {
 
-    color: #1f2937;
+    margin-bottom: 5px;
 
-    margin-bottom: 10px;
+    color: #000000;
+
 }
 
-.shop-header h2 {
-    font-size: 16px;
+
+/* =====================================
+   ADDRESS
+   ===================================== */
+
+.address {
+
+    margin-top: 5px;
+
+    margin-bottom: 25px;
+
+    color: #555555;
 
     line-height: 1.5;
 
+}
+
+
+/* =====================================
+   MOBILE
+   ===================================== */
+
+.container h3:nth-of-type(2) {
+
+    margin-top: 15px;
+
+    margin-bottom: 0;
+
+    color: #000000;
+
+}
+
+
+/* =====================================
+   GST
+   ===================================== */
+
+.container h4:last-of-type {
+
+    margin-bottom: 15px;
+
+    color: #000000;
+
+}
+
+
+/* =====================================
+   BUTTONS
+   ===================================== */
+
+button {
+
+    width: 100%;
+
+    padding: 18px;
+
+    margin: 10px 0;
+
+    font-size: 18px;
+
     font-weight: 500;
-
-    color: #5b4636;
-
-    margin-bottom: 12px;
-}
-
-.contact-info {
-    width: 100%;
-
-    text-align: center;
-}
-
-.contact-info p {
-    font-size: 14px;
-
-    line-height: 1.6;
-
-    color: #374151;
-}
-
-
-/* =========================================================
-   MENU
-========================================================= */
-
-.home-menu {
-    width: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
-}
-
-
-/* =========================================================
-   MENU BUTTON
-========================================================= */
-
-.menu-btn {
-    width: 100%;
-
-    min-height: 76px;
 
     border: none;
 
-    border-radius: 12px;
-
-    background: #8b4513;
-
-    color: #ffffff;
+    border-radius: 8px;
 
     cursor: pointer;
 
-    padding: 14px 20px;
+    background: #8B4513;
 
-    display: flex;
+    color: white;
 
-    flex-direction: column;
+    transition: background 0.3s ease,
+                transform 0.1s ease;
 
-    align-items: center;
-
-    justify-content: center;
-
-    text-align: center;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
-
-    box-shadow:
-        0 5px 12px rgba(0, 0, 0, 0.16);
 }
 
 
-/* BUTTON HOVER */
+/* =====================================
+   BUTTON HOVER
+   ===================================== */
 
-.menu-btn:hover {
-    background: #6f350e;
+button:hover {
 
-    transform: translateY(-2px);
+    background: #5c2d0c;
 
-    box-shadow:
-        0 8px 18px rgba(0, 0, 0, 0.22);
 }
 
 
-/* BUTTON ACTIVE */
+/* =====================================
+   BUTTON CLICK
+   ===================================== */
 
-.menu-btn:active {
-    transform: translateY(0);
+button:active {
 
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+
 }
 
 
-/* =========================================================
-   BUTTON TEXT
-========================================================= */
+/* =====================================
+   MOBILE RESPONSIVE
+   ===================================== */
 
-.btn-title {
-    display: block;
+@media (max-width: 500px) {
 
-    width: 100%;
+    body {
 
-    font-size: 17px;
+        padding: 15px;
 
-    line-height: 1.3;
-
-    font-weight: 700;
-
-    margin-bottom: 5px;
-}
-
-.btn-description {
-    display: block;
-
-    width: 100%;
-
-    font-size: 13px;
-
-    line-height: 1.4;
-
-    font-weight: 400;
-
-    opacity: 0.92;
-}
-
-
-/* =========================================================
-   CLEAR BUTTON
-========================================================= */
-
-.clear-menu-btn {
-    background: #4b5563;
-}
-
-.clear-menu-btn:hover {
-    background: #374151;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.home-footer {
-    margin-top: 25px;
-
-    padding-top: 18px;
-
-    border-top: 1px solid #e5e7eb;
-
-    text-align: center;
-}
-
-.home-footer p {
-    font-size: 14px;
-
-    font-weight: 700;
-
-    letter-spacing: 0.5px;
-
-    color: #374151;
-
-    margin-bottom: 4px;
-}
-
-.home-footer span {
-    font-size: 13px;
-
-    color: #6b7280;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 600px) {
-
-    .home-overlay {
-        padding: 25px 15px;
     }
 
-    .home-container {
-        max-width: 100%;
 
-        padding: 30px 22px 25px;
+    .container {
 
-        border-radius: 16px;
+        width: 100%;
+
+        padding: 30px 20px;
+
     }
 
-    .shop-header h1 {
-        font-size: 28px;
+
+    button {
+
+        padding: 16px;
+
+        font-size: 17px;
+
     }
 
-    .shop-header h2 {
-        font-size: 14px;
-    }
-
-    .contact-info p {
-        font-size: 13px;
-    }
-
-    .menu-btn {
-        min-height: 72px;
-    }
-
-    .btn-title {
-        font-size: 16px;
-    }
-
-    .btn-description {
-        font-size: 12px;
-    }
-}
-
-
-/* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
-
-@media (max-width: 380px) {
-
-    .home-container {
-        padding: 25px 18px 22px;
-    }
-
-    .shop-header h1 {
-        font-size: 25px;
-    }
-
-    .shop-header h2 {
-        font-size: 13px;
-    }
-
-    .menu-btn {
-        min-height: 68px;
-
-        padding: 12px 14px;
-    }
 }

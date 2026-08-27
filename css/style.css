@@ -3,15 +3,10 @@
    ===================================== */
 
 * {
-
     margin: 0;
-
     padding: 0;
-
     box-sizing: border-box;
-
     font-family: Arial, Helvetica, sans-serif;
-
 }
 
 
@@ -20,19 +15,18 @@
    ===================================== */
 
 body {
-
-    background-image: url("../images/img2.webp")
+    background-image: url("../images/img2.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
     min-height: 100vh;
-
     padding: 20px;
-
 }
 
 
@@ -41,11 +35,9 @@ body {
    ===================================== */
 
 .container {
-
     background: white;
 
     width: 400px;
-
     max-width: 100%;
 
     padding: 40px;
@@ -55,7 +47,6 @@ body {
     text-align: center;
 
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.20);
-
 }
 
 
@@ -64,11 +55,8 @@ body {
    ===================================== */
 
 .container h3 {
-
     margin-bottom: 5px;
-
     color: #000000;
-
 }
 
 
@@ -77,11 +65,8 @@ body {
    ===================================== */
 
 .container h4 {
-
     margin-bottom: 5px;
-
     color: #000000;
-
 }
 
 
@@ -90,15 +75,11 @@ body {
    ===================================== */
 
 .address {
-
     margin-top: 5px;
-
     margin-bottom: 25px;
 
     color: #555555;
-
     line-height: 1.5;
-
 }
 
 
@@ -107,13 +88,9 @@ body {
    ===================================== */
 
 .container h3:nth-of-type(2) {
-
     margin-top: 15px;
-
     margin-bottom: 0;
-
     color: #000000;
-
 }
 
 
@@ -122,11 +99,8 @@ body {
    ===================================== */
 
 .container h4:last-of-type {
-
     margin-bottom: 15px;
-
     color: #000000;
-
 }
 
 
@@ -135,30 +109,24 @@ body {
    ===================================== */
 
 button {
-
     width: 100%;
 
     padding: 18px;
-
     margin: 10px 0;
 
     font-size: 18px;
-
     font-weight: 500;
 
     border: none;
-
     border-radius: 8px;
 
     cursor: pointer;
 
     background: #8B4513;
-
     color: white;
 
     transition: background 0.3s ease,
                 transform 0.1s ease;
-
 }
 
 
@@ -167,9 +135,7 @@ button {
    ===================================== */
 
 button:hover {
-
     background: #5c2d0c;
-
 }
 
 
@@ -178,9 +144,7 @@ button:hover {
    ===================================== */
 
 button:active {
-
     transform: scale(0.98);
-
 }
 
 
@@ -191,27 +155,16 @@ button:active {
 @media (max-width: 500px) {
 
     body {
-
         padding: 15px;
-
     }
-
 
     .container {
-
         width: 100%;
-
         padding: 30px 20px;
-
     }
-
 
     button {
-
         padding: 16px;
-
         font-size: 17px;
-
     }
-
 }

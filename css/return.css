@@ -1,0 +1,518 @@
+/* ==========================================
+   GLOBAL
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ==========================================
+   BODY
+========================================== */
+
+body {
+    background: #f4f6fb;
+    min-height: 100vh;
+}
+
+
+/* ==========================================
+   MAIN CONTAINER
+========================================== */
+
+.container {
+
+    width: 95%;
+    max-width: 1200px;
+
+    margin: 30px auto;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.pageHeader {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+.pageHeader h1 {
+
+    color: #1e3a8a;
+
+    font-size: 38px;
+
+    margin-bottom: 8px;
+
+}
+
+
+.pageHeader p {
+
+    color: #64748b;
+
+    font-size: 17px;
+
+}
+
+
+/* ==========================================
+   BACK BUTTON
+========================================== */
+
+#backBtn {
+
+    background: #333;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 12px 24px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+#backBtn:hover {
+
+    background: #555;
+
+}
+
+
+/* ==========================================
+   BILL CARD
+========================================== */
+
+.billCard {
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    padding: 25px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.billCard h2 {
+
+    color: #173f8a;
+
+    margin-bottom: 22px;
+
+    font-size: 24px;
+
+}
+
+
+/* ==========================================
+   DETAILS GRID
+========================================== */
+
+.detailsGrid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.detailBox {
+
+    background: #f8fbff;
+
+    border: 1px solid #dce6f2;
+
+    border-radius: 7px;
+
+    padding: 16px;
+
+}
+
+
+.detailBox span {
+
+    display: block;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.detailBox strong {
+
+    display: block;
+
+    color: #111827;
+
+    font-size: 18px;
+
+}
+
+
+.detailBox .advance {
+
+    color: #16a34a;
+
+}
+
+
+.detailBox .balance {
+
+    color: #dc2626;
+
+}
+
+
+.detailBox .returnAmount {
+
+    color: #f59e0b;
+
+}
+
+
+/* ==========================================
+   RETURN CARD
+========================================== */
+
+.returnCard {
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    padding: 25px;
+
+}
+
+
+.returnCard h2 {
+
+    color: #173f8a;
+
+    font-size: 24px;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* ==========================================
+   RETURN FORM
+========================================== */
+
+.returnForm {
+
+    max-width: 500px;
+
+}
+
+
+.returnForm label {
+
+    display: block;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    color: #1f2937;
+
+    margin-bottom: 10px;
+
+}
+
+
+#returnAmount {
+
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 15px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 7px;
+
+    font-size: 18px;
+
+    outline: none;
+
+}
+
+
+#returnAmount:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
+
+}
+
+
+.returnForm small {
+
+    display: block;
+
+    color: #64748b;
+
+    margin-top: 8px;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================================
+   BUTTON AREA
+========================================== */
+
+.buttonArea {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 25px;
+
+}
+
+
+/* ==========================================
+   SAVE RETURN
+========================================== */
+
+#saveReturnBtn {
+
+    min-width: 170px;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #f59e0b;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+#saveReturnBtn:hover {
+
+    background: #d97706;
+
+}
+
+
+/* ==========================================
+   CANCEL
+========================================== */
+
+#cancelBtn {
+
+    min-width: 130px;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #64748b;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+#cancelBtn:hover {
+
+    background: #475569;
+
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+.message {
+
+    margin-top: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+
+    display: none;
+
+}
+
+
+.message.success {
+
+    display: block;
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    border: 1px solid #86efac;
+
+}
+
+
+.message.error {
+
+    display: block;
+
+    background: #fee2e2;
+
+    color: #991b1b;
+
+    border: 1px solid #fca5a5;
+
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+
+    .detailsGrid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .container {
+
+        width: 96%;
+
+        padding: 18px;
+
+        margin: 15px auto;
+
+    }
+
+
+    .pageHeader {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+
+    .pageHeader h1 {
+
+        font-size: 30px;
+
+    }
+
+
+    .detailsGrid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .buttonArea {
+
+        flex-direction: column;
+
+    }
+
+
+    #saveReturnBtn,
+    #cancelBtn {
+
+        width: 100%;
+
+    }
+
+}

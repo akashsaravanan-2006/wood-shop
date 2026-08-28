@@ -2529,125 +2529,74 @@ if (
 
 
 /* ============================================================
-   WHATSAPP PDF
-   ============================================================
-
-   This section DOES NOT save the bill to database.
-
-   It only creates the PDF and sends it to
-   your WhatsApp API.
+   WHATSAPP PDF - NO API / NO TOKEN
    ============================================================ */
 
 const whatsappBtn =
-    document.getElementById(
-        "whatsappBtn"
-    );
+    document.getElementById("whatsappBtn");
 
-
-if (
-    whatsappBtn
-) {
+if (whatsappBtn) {
 
     whatsappBtn.addEventListener(
         "click",
         async function () {
 
-            console.log(
-                "======================================"
-            );
-
-            console.log(
-                "WHATSAPP BUTTON CLICKED"
-            );
-
-            console.log(
-                "======================================"
-            );
-
-
-            /* ------------------------------------------------
-               CUSTOMER NAME
-               ------------------------------------------------ */
-
             const customerNameForWhatsApp =
-                customerName ||
-                "";
-
-
-            /* ------------------------------------------------
-               CUSTOMER MOBILE
-               ------------------------------------------------ */
+                customerName || "";
 
             let customerMobileForWhatsApp =
-                customerMobile ||
-                "";
-
-
-            customerMobileForWhatsApp =
-                String(
-                    customerMobileForWhatsApp
-                )
-                .replace(
-                    /\D/g,
-                    ""
-                );
-
+                customerMobile || "";
 
             /* ------------------------------------------------
-               REMOVE +91
+               CLEAN MOBILE NUMBER
+               ------------------------------------------------ */
+
+            customerMobileForWhatsApp =
+                String(customerMobileForWhatsApp)
+                    .replace(/\D/g, "");
+
+            /* ------------------------------------------------
+               REMOVE 91 IF ALREADY PRESENT
                ------------------------------------------------ */
 
             if (
                 customerMobileForWhatsApp.length === 12 &&
                 customerMobileForWhatsApp.startsWith("91")
             ) {
-
                 customerMobileForWhatsApp =
-                    customerMobileForWhatsApp.substring(
-                        2
-                    );
-
+                    customerMobileForWhatsApp.substring(2);
             }
 
-
             /* ------------------------------------------------
-               VALIDATE CUSTOMER
+               VALIDATION
                ------------------------------------------------ */
 
-            if (
-                !customerNameForWhatsApp
-            ) {
+            if (!customerNameForWhatsApp) {
 
                 alert(
                     "Customer name is missing."
                 );
 
                 return;
-
             }
-
 
             if (
                 customerMobileForWhatsApp.length !== 10
             ) {
 
                 alert(
-                    "Customer mobile number is not valid.\n\n" +
-                    "Please enter a valid 10-digit mobile number."
+                    "Please enter a valid 10-digit customer mobile number."
                 );
 
                 return;
-
             }
 
-
             /* ------------------------------------------------
-               CHECK HTML2PDF
+               CHECK PDF GENERATOR
                ------------------------------------------------ */
 
             if (
-                typeof html2pdf ===
-                "undefined"
+                typeof html2pdf === "undefined"
             ) {
 
                 alert(
@@ -2655,135 +2604,49 @@ if (
                     "Please check html2pdf.js in bill.html."
                 );
 
-                console.error(
-                    "html2pdf.js NOT FOUND"
-                );
-
                 return;
-
             }
-
 
             const oldButtonText =
                 whatsappBtn.textContent;
 
-
-            whatsappBtn.disabled =
-                true;
-
+            whatsappBtn.disabled = true;
 
             whatsappBtn.textContent =
                 "Creating PDF...";
 
-
-            let pdfWrapper =
-                null;
-
+            let pdfWrapper = null;
 
             try {
 
-                /* ------------------------------------------------
+                /* =================================================
                    BILL ELEMENT
-                   ------------------------------------------------ */
+                   ================================================= */
 
                 const billElement =
-                    document.querySelector(
-                        ".bill-container"
-                    );
+                    document.querySelector(".bill-container") ||
+                    document.querySelector(".bill") ||
+                    document.querySelector("main");
 
-
-                if (
-                    !billElement
-                ) {
+                if (!billElement) {
 
                     throw new Error(
-                        "Bill container not found."
+                        "Bill section could not be found."
                     );
-
                 }
 
-
-                /* ------------------------------------------------
-                   QUOTATION FILE NAME
-                   ------------------------------------------------ */
-
-                const safeCustomerName =
-                    customerNameForWhatsApp
-                        .replace(
-                            /[^a-zA-Z0-9 ]/g,
-                            ""
-                        )
-                        .trim()
-                        .replace(
-                            /\s+/g,
-                            "_"
-                        ) ||
-                    "Customer";
-
-
-                const pdfFileName =
-                    `${safeCustomerName}_QUOTATION.pdf`;
-
-
-                /* ------------------------------------------------
-                   CLONE BILL
-                   ------------------------------------------------ */
-
-                const billClone =
-                    billElement.cloneNode(
-                        true
-                    );
-
-
-                /* ------------------------------------------------
-                   REMOVE BUTTONS
-                   ------------------------------------------------ */
-
-                const clonedButtons =
-                    billClone.querySelector(
-                        ".buttons"
-                    );
-
-
-                if (
-                    clonedButtons
-                ) {
-
-                    clonedButtons.remove();
-
-                }
-
-
-                billClone
-                    .querySelectorAll(
-                        "button"
-                    )
-                    .forEach(
-                        function (
-                            button
-                        ) {
-
-                            button.remove();
-
-                        }
-                    );
-
-
-                /* ------------------------------------------------
-                   PDF WRAPPER
-                   ------------------------------------------------ */
+                /* =================================================
+                   CREATE TEMP PDF AREA
+                   ================================================= */
 
                 pdfWrapper =
-                    document.createElement(
-                        "div"
-                    );
-
+                    document.createElement("div");
 
                 pdfWrapper.style.position =
                     "fixed";
 
                 pdfWrapper.style.left =
-                    "0";
+                    "-100000px";
 
                 pdfWrapper.style.top =
                     "0";
@@ -2791,292 +2654,74 @@ if (
                 pdfWrapper.style.width =
                     "794px";
 
-                pdfWrapper.style.minHeight =
-                    "1123px";
-
                 pdfWrapper.style.background =
                     "#ffffff";
 
-                pdfWrapper.style.zIndex =
-                    "-9999";
+                pdfWrapper.style.padding =
+                    "20px";
 
-                pdfWrapper.style.opacity =
-                    "0.01";
-
-                pdfWrapper.style.pointerEvents =
-                    "none";
-
-                pdfWrapper.style.boxSizing =
-                    "border-box";
-
-
-                /* ------------------------------------------------
-                   CLONE WIDTH
-                   ------------------------------------------------ */
-
-                billClone.style.width =
-                    "100%";
-
-                billClone.style.maxWidth =
-                    "none";
-
-                billClone.style.margin =
-                    "0";
-
-                billClone.style.background =
-                    "#ffffff";
-
+                const billClone =
+                    billElement.cloneNode(true);
 
                 pdfWrapper.appendChild(
                     billClone
                 );
 
-
                 document.body.appendChild(
                     pdfWrapper
                 );
 
+                /* =================================================
+                   PDF FILE NAME
+                   ================================================= */
 
-                /* ------------------------------------------------
-                   TABLE FIX
-                   ------------------------------------------------ */
-
-                pdfWrapper
-                    .querySelectorAll(
-                        "table"
-                    )
-                    .forEach(
-                        function (
-                            table
-                        ) {
-
-                            table.style.width =
-                                "100%";
-
-                            table.style.borderCollapse =
-                                "collapse";
-
-                        }
-                    );
-
-
-                /* ------------------------------------------------
-                   WAIT FOR RENDER
-                   ------------------------------------------------ */
-
-                await new Promise(
-                    function (
-                        resolve
-                    ) {
-
-                        requestAnimationFrame(
-                            function () {
-
-                                requestAnimationFrame(
-                                    resolve
-                                );
-
-                            }
+                const safeCustomerName =
+                    customerNameForWhatsApp
+                        .replace(
+                            /[^a-zA-Z0-9]/g,
+                            "_"
                         );
 
-                    }
-                );
+                const pdfFileName =
+                    "Amman_Saw_Mill_Bill_" +
+                    safeCustomerName +
+                    ".pdf";
 
-
-                /* ------------------------------------------------
-                   WAIT FOR IMAGES
-                   ------------------------------------------------ */
-
-                const images =
-                    pdfWrapper.querySelectorAll(
-                        "img"
-                    );
-
-
-                await Promise.all(
-                    Array.from(
-                        images
-                    ).map(
-                        function (
-                            img
-                        ) {
-
-                            if (
-                                img.complete
-                            ) {
-
-                                return Promise.resolve();
-
-                            }
-
-
-                            return new Promise(
-                                function (
-                                    resolve
-                                ) {
-
-                                    img.onload =
-                                        resolve;
-
-                                    img.onerror =
-                                        resolve;
-
-                                }
-                            );
-
-                        }
-                    )
-                );
-
-
-                /* ------------------------------------------------
-                   EXTRA WAIT
-                   ------------------------------------------------ */
-
-                await new Promise(
-                    function (
-                        resolve
-                    ) {
-
-                        setTimeout(
-                            resolve,
-                            500
-                        );
-
-                    }
-                );
-
-
-                /* ------------------------------------------------
-                   PDF OPTIONS
-                   ------------------------------------------------ */
-
-                const pdfOptions = {
-
-                    margin:
-                        8,
-
-                    filename:
-                        pdfFileName,
-
-                    image: {
-
-                        type:
-                            "jpeg",
-
-                        quality:
-                            0.98
-
-                    },
-
-                    html2canvas: {
-
-                        scale:
-                            2,
-
-                        useCORS:
-                            true,
-
-                        allowTaint:
-                            false,
-
-                        backgroundColor:
-                            "#ffffff",
-
-                        logging:
-                            false,
-
-                        scrollX:
-                            0,
-
-                        scrollY:
-                            0,
-
-                        windowWidth:
-                            794,
-
-                        windowHeight:
-                            Math.max(
-                                1123,
-                                pdfWrapper.scrollHeight
-                            )
-
-                    },
-
-                    jsPDF: {
-
-                        unit:
-                            "mm",
-
-                        format:
-                            "a4",
-
-                        orientation:
-                            "portrait",
-
-                        compress:
-                            true
-
-                    },
-
-                    pagebreak: {
-
-                        mode: [
-                            "css",
-                            "legacy"
-                        ]
-
-                    }
-
-                };
-
-
-                /* ------------------------------------------------
-                   GENERATE PDF
-                   ------------------------------------------------ */
-
-                whatsappBtn.textContent =
-                    "Generating PDF...";
-
+                /* =================================================
+                   GENERATE COMPLETE PDF
+                   ================================================= */
 
                 const pdfBlob =
                     await html2pdf()
-                        .set(
-                            pdfOptions
-                        )
-                        .from(
-                            pdfWrapper
-                        )
-                        .outputPdf(
-                            "blob"
-                        );
+                        .set({
 
+                            margin: 0,
 
-                console.log(
-                    "PDF GENERATED:",
-                    pdfBlob.size
-                );
+                            filename:
+                                pdfFileName,
 
+                            image: {
+                                type: "jpeg",
+                                quality: 0.98
+                            },
 
-                /* ------------------------------------------------
-                   REMOVE WRAPPER
-                   ------------------------------------------------ */
+                            html2canvas: {
+                                scale: 2,
+                                useCORS: true,
+                                backgroundColor:
+                                    "#ffffff"
+                            },
 
-                if (
-                    pdfWrapper
-                ) {
+                            jsPDF: {
+                                unit: "mm",
+                                format: "a4",
+                                orientation:
+                                    "portrait"
+                            }
 
-                    pdfWrapper.remove();
-
-                    pdfWrapper =
-                        null;
-
-                }
-
-
-                /* ------------------------------------------------
-                   VALIDATE PDF
-                   ------------------------------------------------ */
+                        })
+                        .from(pdfWrapper)
+                        .outputPdf("blob");
 
                 if (
                     !pdfBlob ||
@@ -3086,19 +2731,15 @@ if (
                     throw new Error(
                         "Generated PDF is empty."
                     );
-
                 }
 
-
-                /* ------------------------------------------------
-                   CREATE FILE
-                   ------------------------------------------------ */
+                /* =================================================
+                   CREATE PDF FILE
+                   ================================================= */
 
                 const pdfFile =
                     new File(
-                        [
-                            pdfBlob
-                        ],
+                        [pdfBlob],
                         pdfFileName,
                         {
                             type:
@@ -3106,229 +2747,162 @@ if (
                         }
                     );
 
+                /* =================================================
+                   GREETING MESSAGE
+                   ================================================= */
 
-                /* ------------------------------------------------
-                   BASE64
-                   ------------------------------------------------ */
+                const message =
+                    "Hello " +
+                    customerNameForWhatsApp +
+                    " 👋\n\n" +
 
-                whatsappBtn.textContent =
-                    "Preparing WhatsApp...";
+                    "Thank you for choosing " +
+                    "Amman Saw Mill.\n\n" +
 
+                    "Please find your bill attached.\n\n" +
 
-                const pdfBase64 =
-                    await new Promise(
-                        function (
-                            resolve,
-                            reject
-                        ) {
+                    "Thank you for your business! 🌳";
 
-                            const reader =
-                                new FileReader();
-
-
-                            reader.onload =
-                                function () {
-
-                                    resolve(
-                                        reader.result
-                                    );
-
-                                };
-
-
-                            reader.onerror =
-                                function (
-                                    error
-                                ) {
-
-                                    reject(
-                                        error
-                                    );
-
-                                };
-
-
-                            reader.readAsDataURL(
-                                pdfFile
-                            );
-
-                        }
-                    );
-
-
-                /* ------------------------------------------------
-                   SEND TO WHATSAPP API
-                   ------------------------------------------------ */
-
-                whatsappBtn.textContent =
-                    "Sending WhatsApp...";
-
-
-                const response =
-                    await fetch(
-                        "/api/whatsapp/send-bill",
-                        {
-
-                            method:
-                                "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    pdfBase64:
-                                        pdfBase64,
-
-                                    fileName:
-                                        pdfFileName,
-
-                                    customerName:
-                                        customerNameForWhatsApp,
-
-                                    mobile:
-                                        customerMobileForWhatsApp
-
-                                })
-
-                        }
-                    );
-
-
-                /* ------------------------------------------------
-                   READ RESPONSE
-                   ------------------------------------------------ */
-
-                let result;
-
-
-                try {
-
-                    result =
-                        await response.json();
-
-                }
-                catch (
-                    responseError
-                ) {
-
-                    throw new Error(
-                        "Backend returned an invalid response."
-                    );
-
-                }
-
-
-                console.log(
-                    "WHATSAPP RESULT:",
-                    result
-                );
-
-
-                /* ------------------------------------------------
-                   SUCCESS
-                   ------------------------------------------------ */
+                /* =================================================
+                   MOBILE - SHARE PDF DIRECTLY
+                   ================================================= */
 
                 if (
-                    response.ok &&
-                    result.success
+                    navigator.share &&
+                    navigator.canShare &&
+                    navigator.canShare({
+                        files: [pdfFile]
+                    })
                 ) {
 
-                    alert(
-                        "Quotation sent successfully to " +
-                        customerNameForWhatsApp +
-                        " on WhatsApp."
-                    );
+                    whatsappBtn.textContent =
+                        "Opening WhatsApp...";
 
+                    await navigator.share({
+
+                        files: [
+                            pdfFile
+                        ],
+
+                        text: message,
+
+                        title:
+                            "Amman Saw Mill Bill"
+
+                    });
 
                     return;
-
                 }
 
+                /* =================================================
+                   DESKTOP FALLBACK
+                   ================================================= */
 
-                /* ------------------------------------------------
-                   404
-                   ------------------------------------------------ */
-
-                if (
-                    response.status === 404
-                ) {
-
-                    throw new Error(
-                        "WhatsApp API route not found.\n\n" +
-                        "Check /api/whatsapp/send-bill."
+                const downloadURL =
+                    URL.createObjectURL(
+                        pdfBlob
                     );
 
-                }
+                const downloadLink =
+                    document.createElement("a");
 
+                downloadLink.href =
+                    downloadURL;
 
-                /* ------------------------------------------------
-                   API ERROR
-                   ------------------------------------------------ */
+                downloadLink.download =
+                    pdfFileName;
 
-                throw new Error(
-                    result.message ||
-                    "Unable to send quotation through WhatsApp."
+                document.body.appendChild(
+                    downloadLink
+                );
+
+                downloadLink.click();
+
+                downloadLink.remove();
+
+                setTimeout(
+                    function () {
+
+                        URL.revokeObjectURL(
+                            downloadURL
+                        );
+
+                    },
+                    2000
+                );
+
+                /* =================================================
+                   OPEN WHATSAPP CHAT
+                   ================================================= */
+
+                const whatsappURL =
+                    "https://wa.me/91" +
+                    customerMobileForWhatsApp +
+                    "?text=" +
+                    encodeURIComponent(
+                        message +
+                        "\n\n" +
+                        "I have attached the bill PDF."
+                    );
+
+                window.open(
+                    whatsappURL,
+                    "_blank"
+                );
+
+                alert(
+                    "Bill PDF downloaded.\n\n" +
+                    "WhatsApp opened for " +
+                    customerNameForWhatsApp +
+                    ".\n\n" +
+                    "Please attach the downloaded PDF and send it."
                 );
 
             }
-            catch (
-                error
-            ) {
+            catch (error) {
 
                 console.error(
                     "WHATSAPP PDF ERROR:",
                     error
                 );
 
+                /*
+                 * User cancelling the share sheet
+                 * is not treated as a serious error.
+                 */
 
                 if (
-                    pdfWrapper
+                    error.name !==
+                    "AbortError"
                 ) {
 
-                    pdfWrapper.remove();
-
-                    pdfWrapper =
-                        null;
-
+                    alert(
+                        "Unable to prepare the bill PDF.\n\n" +
+                        error.message
+                    );
                 }
-
-
-                alert(
-                    "Unable to send quotation through WhatsApp.\n\n" +
-                    error.message
-                );
 
             }
             finally {
 
+                if (pdfWrapper) {
+
+                    pdfWrapper.remove();
+
+                    pdfWrapper = null;
+                }
+
                 whatsappBtn.disabled =
                     false;
-
 
                 whatsappBtn.textContent =
                     oldButtonText ||
                     "WhatsApp";
-
             }
-
         }
     );
 
 }
-else {
-
-    console.warn(
-        "WhatsApp button not found."
-    );
-
-}
-
 
 /* ============================================================
    FINAL READY

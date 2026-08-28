@@ -4359,34 +4359,56 @@ function addTotalsPDF(
         startY;
 
 
+    /*
+       IMPORTANT:
+
+       Labour Charge, Other Charge, and any additional
+       named items already appear as individual rows
+       inside the "OTHER CHARGES" box (see addChargesPDF).
+
+       So down here in the final Totals box we do NOT
+       repeat them individually — we only show the
+       rolled-up numbers, matching the reference template:
+
+           Wood Total
+           Others Total
+           Subtotal
+           Discount
+           Grand Total
+           Advance Amount
+           Balance Amount
+    */
+
+    const woodTotalValue =
+        getWoodTotal(
+            bill
+        );
+
+    const othersTotalValue =
+        getOthersTotal(
+            bill
+        );
+
+    const subtotalValue =
+        woodTotalValue +
+        othersTotalValue;
+
+
     const rows = [
 
         [
             "Wood Total",
-            getWoodTotal(
-                bill
-            )
-        ],
-
-        [
-            "Labour Charge",
-            getLabourCharge(
-                bill
-            )
-        ],
-
-        [
-            "Other Charge",
-            getOtherCharge(
-                bill
-            )
+            woodTotalValue
         ],
 
         [
             "Others Total",
-            getOthersTotal(
-                bill
-            )
+            othersTotalValue
+        ],
+
+        [
+            "Subtotal",
+            subtotalValue
         ],
 
         [
@@ -4404,14 +4426,14 @@ function addTotalsPDF(
         ],
 
         [
-            "Advance / Paid",
+            "Advance Amount",
             getAdvance(
                 bill
             )
         ],
 
         [
-            "Balance",
+            "Balance Amount",
             getBalance(
                 bill
             )
@@ -4467,7 +4489,7 @@ function addTotalsPDF(
 
             const isBalance =
                 row[0] ===
-                "Balance";
+                "Balance Amount";
 
 
             const height =

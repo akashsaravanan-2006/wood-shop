@@ -1,1458 +1,5617 @@
-            /* =========================================================
-               HISTORY.JS
-               VERSION: MULTI-RETURN + BROWSER PDF VIEW FIX
-               BILL HISTORY + SAME-TAB PDF VIEW
-               ========================================================= */
+"use strict";
 
-            "use strict";
+/* ============================================================
+   AMMAN SAW MILL
+   HISTORY.JS
+   FULL UPDATED VERSION
+   ============================================================
 
-            const API_URL = "https://wood-shop-backend.vercel.app/api";
+   FEATURES
+   ------------------------------------------------------------
+   1. Bill History
+   2. Real Bill Number
+   3. Search
+   4. Status Filter
+   5. Pending / Delivered / Return
+   6. Return Bill (multi-return, cumulative)
+   7. PDF generated using jsPDF
+   8. PDF opens in SAME TAB
+   9. PDF is NOT automatically downloaded
+   10. Complete bill fetched before PDF generation
+   11. Wood details
+   12. Quality
+   13. Length and Quantity separately
+   14. Individual piece length + quantity
+   15. Same Wood + Same Quality CFT grouped
+   16. CFT Total
+   17. Labour Charge
+   18. Other Charge
+   19. Additional Other Charges
+   20. Others Total
+   21. Discount
+   22. Grand Total
+   23. Advance
+   24. Balance
+   ============================================================ */
 
-            const historyBody = document.getElementById("historyBody");
-            const searchInput = document.getElementById("searchInput");
-            const searchBtn = document.getElementById("searchBtn");
-            const refreshBtn = document.getElementById("refreshBtn");
-            const homeBtn = document.getElementById("homeBtn");
-            const statusFilter = document.getElementById("statusFilter");
-            const clearSearchBtn = document.getElementById("clearSearchBtn");
 
-            const totalBills = document.getElementById("totalBills");
-            const pendingBills = document.getElementById("pendingBills");
-            const finishedBills = document.getElementById("finishedBills");
-            const returnBills = document.getElementById("returnBills");
-            const resultCount = document.getElementById("resultCount");
+/* ============================================================
+   BACKEND
+   ============================================================ */
 
-            let allBills = [];
+const API_URL =
+    "https://wood-shop-backend.vercel.app/api";
 
-            function num(value) {
-                if (value === null || value === undefined || value === "") return 0;
-                const n = Number(String(value).replace(/,/g, "").replace(/[₹$]/g, "").trim());
-                return Number.isFinite(n) ? n : 0;
+
+console.log("======================================");
+console.log("AMMAN SAW MILL - HISTORY.JS");
+console.log("FULL UPDATED VERSION");
+console.log("======================================");
+
+
+/* ============================================================
+   PAGE ELEMENTS
+   ============================================================ */
+
+const historyBody =
+    document.getElementById("historyBody");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+const refreshBtn =
+    document.getElementById("refreshBtn");
+
+const homeBtn =
+    document.getElementById("homeBtn");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const clearSearchBtn =
+    document.getElementById("clearSearchBtn");
+
+const totalBills =
+    document.getElementById("totalBills");
+
+const pendingBills =
+    document.getElementById("pendingBills");
+
+const finishedBills =
+    document.getElementById("finishedBills");
+
+const returnBills =
+    document.getElementById("returnBills");
+
+const resultCount =
+    document.getElementById("resultCount");
+
+
+/* ============================================================
+   GLOBAL DATA
+   ============================================================ */
+
+let allBills = [];
+
+
+/* ============================================================
+   NUMBER HELPER
+   ============================================================ */
+
+function numberValue(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return 0;
+    }
+
+    if (
+        typeof value === "number"
+    ) {
+        return Number.isFinite(value)
+            ? value
+            : 0;
+    }
+
+    const text =
+        String(value)
+            .replace(/[₹,\s]/g, "")
+            .trim();
+
+    const number =
+        Number(text);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+}
+
+
+/* ============================================================
+   MONEY
+   ============================================================ */
+
+function formatMoney(value) {
+
+    return numberValue(value)
+        .toFixed(2);
+}
+
+
+/* ============================================================
+   HTML ESCAPE
+   ============================================================ */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ============================================================
+   JSON PARSER
+   ============================================================ */
+
+function parseJSON(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return [];
+    }
+
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (
+        typeof value === "object"
+    ) {
+        return value;
+    }
+
+    if (
+        typeof value === "string"
+    ) {
+
+        try {
+
+            return JSON.parse(value);
+
+        } catch (error) {
+
+            console.error(
+                "JSON PARSE ERROR:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+    return [];
+}
+
+
+/* ============================================================
+   NORMALIZE ARRAY
+   ============================================================ */
+
+function normalizeArray(value) {
+
+    const parsed =
+        parseJSON(value);
+
+    if (
+        Array.isArray(parsed)
+    ) {
+        return parsed;
+    }
+
+    if (
+        parsed &&
+        typeof parsed === "object"
+    ) {
+
+        const possibleArrays = [
+
+            parsed.items,
+
+            parsed.data,
+
+            parsed.others,
+
+            parsed.otherItems,
+
+            parsed.otherCharges,
+
+            parsed.charges,
+
+            parsed.additionalItems,
+
+            parsed.additionalCharges,
+
+            parsed.otherData,
+
+            parsed.othersData
+
+        ];
+
+        for (
+            const item of possibleArrays
+        ) {
+
+            if (
+                Array.isArray(item)
+            ) {
+
+                return item;
             }
+        }
+    }
 
-            function money(value) {
-                return num(value);
+    return [];
+}
+
+
+/* ============================================================
+   BILL ID
+   ============================================================ */
+
+function getBillId(bill) {
+
+    return (
+
+        bill?.id ??
+
+        bill?.bill_id ??
+
+        bill?.billId ??
+
+        bill?._id ??
+
+        bill?.uuid ??
+
+        ""
+    );
+}
+
+
+/* ============================================================
+   BILL NUMBER
+   ============================================================ */
+
+function getBillNumber(bill) {
+
+    const number =
+
+        bill?.bill_no ??
+
+        bill?.billNo ??
+
+        bill?.bill_number ??
+
+        bill?.billNumber ??
+
+        bill?.invoice_no ??
+
+        bill?.invoiceNo ??
+
+        "";
+
+    if (
+        String(number).trim()
+    ) {
+
+        return String(number);
+    }
+
+    const id =
+        getBillId(bill);
+
+    if (id) {
+
+        return "BILL-" + id;
+    }
+
+    return "---";
+}
+
+
+/* ============================================================
+   CUSTOMER ID
+   ============================================================ */
+
+function getCustomerId(bill) {
+
+    return (
+
+        bill?.customer_id ??
+
+        bill?.customerId ??
+
+        "-"
+    );
+}
+
+
+/* ============================================================
+   CUSTOMER NAME
+   ============================================================ */
+
+function getCustomerName(bill) {
+
+    return (
+
+        bill?.customer_name ??
+
+        bill?.customerName ??
+
+        bill?.customer ??
+
+        bill?.name ??
+
+        "-"
+    );
+}
+
+
+/* ============================================================
+   CUSTOMER MOBILE
+   ============================================================ */
+
+function getCustomerMobile(bill) {
+
+    return (
+
+        bill?.customer_mobile ??
+
+        bill?.customerMobile ??
+
+        bill?.mobile ??
+
+        "-"
+    );
+}
+
+
+/* ============================================================
+   CUSTOMER PLACE
+   ============================================================ */
+
+function getCustomerPlace(bill) {
+
+    return (
+
+        bill?.customer_place ??
+
+        bill?.customerPlace ??
+
+        bill?.place ??
+
+        "-"
+    );
+}
+
+
+/* ============================================================
+   PAYMENT TYPE
+   ============================================================ */
+
+function getPaymentType(bill) {
+
+    return String(
+
+        bill?.payment_type ??
+
+        bill?.paymentType ??
+
+        "-"
+
+    )
+        .trim()
+        .toUpperCase();
+}
+
+
+/* ============================================================
+   PAYMENT MODE
+   ============================================================ */
+
+function getPaymentMode(bill) {
+
+    const mode =
+        String(
+
+            bill?.payment_mode ??
+
+            bill?.paymentMode ??
+
+            ""
+
+        )
+            .trim()
+            .toLowerCase();
+
+    if (
+        mode === "upi"
+    ) {
+
+        return "UPI";
+    }
+
+    if (
+        mode === "cash"
+    ) {
+
+        return "CASH";
+    }
+
+    return "-";
+}
+
+
+/* ============================================================
+   WOOD TOTAL
+   ============================================================ */
+
+function getWoodTotal(bill) {
+
+    return numberValue(
+
+        bill?.wood_total ??
+
+        bill?.woodTotal ??
+
+        bill?.wood_amount ??
+
+        bill?.woodAmount
+
+    );
+}
+
+
+/* ============================================================
+   LABOUR CHARGE
+   ============================================================ */
+
+function getLabourCharge(bill) {
+
+    const possibleValues = [
+
+        bill?.labour_charge,
+
+        bill?.labourCharge,
+
+        bill?.labour_amount,
+
+        bill?.labourAmount,
+
+        bill?.labour?.labourCharge,
+
+        bill?.labour?.labour_charge,
+
+        bill?.labour_data?.labourCharge,
+
+        bill?.labour_data?.labour_charge,
+
+        bill?.labour_data?.labourAmount,
+
+        bill?.labourData?.labourCharge,
+
+        bill?.labourData?.labour_charge
+
+    ];
+
+    for (
+        const value of possibleValues
+    ) {
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        ) {
+
+            return numberValue(value);
+        }
+    }
+
+    return 0;
+}
+
+
+/* ============================================================
+   OTHER MAIN CHARGE
+   ============================================================ */
+
+function getOtherCharge(bill) {
+
+    const possibleValues = [
+
+        bill?.other_charge,
+
+        bill?.otherCharge,
+
+        bill?.other_amount,
+
+        bill?.otherAmount,
+
+        bill?.labour?.otherCharge,
+
+        bill?.labour?.other_charge,
+
+        bill?.labour_data?.otherCharge,
+
+        bill?.labour_data?.other_charge,
+
+        bill?.labourData?.otherCharge,
+
+        bill?.labourData?.other_charge
+
+    ];
+
+    for (
+        const value of possibleValues
+    ) {
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        ) {
+
+            return numberValue(value);
+        }
+    }
+
+    return 0;
+}
+
+
+/* ============================================================
+   OTHER DATA
+   ============================================================ */
+
+function getOtherData(bill) {
+
+    const sources = [
+
+        bill?.others_data,
+
+        bill?.othersData,
+
+        bill?.other_data,
+
+        bill?.otherData,
+
+        bill?.other_items,
+
+        bill?.otherItems,
+
+        bill?.other_charges,
+
+        bill?.otherCharges,
+
+        bill?.additional_items,
+
+        bill?.additionalItems,
+
+        bill?.additional_charges,
+
+        bill?.additionalCharges,
+
+        bill?.charges,
+
+        bill?.labour?.othersData,
+
+        bill?.labour?.otherItems,
+
+        bill?.labour?.items,
+
+        bill?.labour?.otherData,
+
+        bill?.labour_data?.othersData,
+
+        bill?.labour_data?.otherItems,
+
+        bill?.labour_data?.items,
+
+        bill?.labour_data?.otherData,
+
+        bill?.labourData?.othersData,
+
+        bill?.labourData?.otherItems,
+
+        bill?.labourData?.items,
+
+        bill?.labourData?.otherData
+
+    ];
+
+
+    for (
+        const source of sources
+    ) {
+
+        const array =
+            normalizeArray(source);
+
+        if (
+            Array.isArray(array) &&
+            array.length > 0
+        ) {
+
+            console.log(
+                "OTHER CHARGES FOUND:",
+                array
+            );
+
+            return array;
+        }
+    }
+
+
+    console.log(
+        "NO ADDITIONAL OTHER ITEMS FOUND"
+    );
+
+    return [];
+}
+
+
+/* ============================================================
+   OTHER ITEM NAME
+   ============================================================ */
+
+function getOtherItemName(item) {
+
+    return (
+
+        item?.name ??
+
+        item?.reason ??
+
+        item?.title ??
+
+        item?.description ??
+
+        item?.type ??
+
+        item?.chargeName ??
+
+        item?.charge_name ??
+
+        "Other Charge"
+    );
+}
+
+
+/* ============================================================
+   OTHER ITEM AMOUNT
+   ============================================================ */
+
+function getOtherItemAmount(item) {
+
+    return numberValue(
+
+        item?.amount ??
+
+        item?.charge ??
+
+        item?.value ??
+
+        item?.price ??
+
+        item?.total ??
+
+        item?.chargeAmount ??
+
+        item?.charge_amount
+
+    );
+}
+
+
+/* ============================================================
+   OTHERS TOTAL
+   ============================================================ */
+
+function getOthersTotal(bill) {
+
+    const storedValues = [
+
+        bill?.others_total,
+
+        bill?.othersTotal,
+
+        bill?.total_others,
+
+        bill?.totalOthers
+
+    ];
+
+    for (
+        const value of storedValues
+    ) {
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            value !== ""
+        ) {
+
+            const number =
+                numberValue(value);
+
+            if (
+                number > 0
+            ) {
+
+                return number;
             }
+        }
+    }
 
-            function fmt(value) {
-                return money(value).toFixed(2);
+
+    const labour =
+        getLabourCharge(bill);
+
+    const other =
+        getOtherCharge(bill);
+
+    const additional =
+        getOtherData(bill)
+            .reduce(
+                function(total, item) {
+
+                    return total +
+                        getOtherItemAmount(item);
+
+                },
+                0
+            );
+
+
+    return (
+        labour +
+        other +
+        additional
+    );
+}
+
+
+/* ============================================================
+   DISCOUNT
+   ============================================================ */
+
+function getDiscount(bill) {
+
+    return numberValue(
+
+        bill?.discount_amount ??
+
+        bill?.discountAmount ??
+
+        bill?.discount ??
+
+        bill?.discount_value ??
+
+        bill?.discountValue
+
+    );
+}
+
+
+/* ============================================================
+   GRAND TOTAL
+   ============================================================ */
+
+function getGrandTotal(bill) {
+
+    return numberValue(
+
+        bill?.grand_total ??
+
+        bill?.grandTotal ??
+
+        bill?.total_amount ??
+
+        bill?.totalAmount
+
+    );
+}
+
+
+/* ============================================================
+   ADVANCE
+   ============================================================ */
+
+function getAdvance(bill) {
+
+    return numberValue(
+
+        bill?.advance_amount ??
+
+        bill?.advanceAmount ??
+
+        bill?.advance ??
+
+        bill?.paid_amount ??
+
+        bill?.paidAmount
+
+    );
+}
+
+
+/* ============================================================
+   BALANCE
+   ============================================================ */
+
+function getBalance(bill) {
+
+    return numberValue(
+
+        bill?.balance_amount ??
+
+        bill?.balanceAmount ??
+
+        bill?.balance ??
+
+        bill?.due_amount ??
+
+        bill?.dueAmount
+
+    );
+}
+
+
+/* ============================================================
+   RETURN AMOUNT
+   ============================================================ */
+
+function getReturnAmount(bill) {
+
+    return numberValue(
+
+        bill?.return_amount ??
+
+        bill?.returnAmount ??
+
+        bill?.returned_amount ??
+
+        bill?.returnedAmount
+
+    );
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+function getStatus(bill) {
+
+    const returned =
+        getReturnAmount(bill);
+
+    const dbStatus =
+        String(
+
+            bill?.status ??
+
+            bill?.bill_status ??
+
+            bill?.billStatus ??
+
+            ""
+
+        )
+            .trim()
+            .toLowerCase();
+
+
+    if (
+
+        returned > 0 ||
+
+        dbStatus === "return" ||
+
+        dbStatus === "returned"
+
+    ) {
+
+        return "return";
+    }
+
+
+    if (
+
+        dbStatus === "pending" ||
+
+        dbStatus === "pending bill" ||
+
+        getBalance(bill) > 0
+
+    ) {
+
+        return "pending";
+    }
+
+
+    return "finished";
+}
+
+
+/* ============================================================
+   STATUS TEXT
+   ============================================================ */
+
+function getStatusText(bill) {
+
+    const status =
+        getStatus(bill);
+
+    if (
+        status === "pending"
+    ) {
+
+        return "PENDING";
+    }
+
+    if (
+        status === "return"
+    ) {
+
+        return "RETURN";
+    }
+
+    return "DELIVERED";
+}
+
+
+/* ============================================================
+   DATE
+   ============================================================ */
+
+function formatDate(value) {
+
+    if (
+        !value
+    ) {
+
+        return "-";
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+    }
+
+    return date.toLocaleDateString(
+        "en-IN"
+    );
+}
+
+
+/* ============================================================
+   TIME
+   ============================================================ */
+
+function getTime(bill) {
+
+    return (
+
+        bill?.bill_time ??
+
+        bill?.billTime ??
+
+        bill?.time ??
+
+        bill?.created_time ??
+
+        "-"
+    );
+}
+
+
+/* ============================================================
+   WOOD DATA
+   ============================================================ */
+
+function getWoodData(bill) {
+
+    const possibleSources = [
+
+        bill?.wood_data,
+
+        bill?.woodData,
+
+        bill?.wood_details,
+
+        bill?.woodDetails,
+
+        bill?.wood_items,
+
+        bill?.woodItems,
+
+        bill?.items,
+
+        bill?.wood
+
+    ];
+
+
+    for (
+        const source of possibleSources
+    ) {
+
+        const array =
+            normalizeArray(source);
+
+        if (
+            Array.isArray(array) &&
+            array.length > 0
+        ) {
+
+            return array;
+        }
+    }
+
+
+    return [];
+}
+
+
+/* ============================================================
+   WOOD NAME
+   ============================================================ */
+
+function getWoodName(item) {
+
+    let name =
+
+        item?.woodType ??
+
+        item?.wood_type ??
+
+        item?.wood ??
+
+        item?.woodName ??
+
+        item?.name ??
+
+        "-";
+
+
+    if (
+        String(name)
+            .trim()
+            .toLowerCase() === "other"
+    ) {
+
+        name =
+
+            item?.otherWood ??
+
+            item?.other_wood ??
+
+            item?.otherWoodName ??
+
+            "Other";
+    }
+
+
+    return String(name);
+}
+
+
+/* ============================================================
+   QUALITY
+   ============================================================ */
+
+function getQuality(item) {
+
+    const quality =
+
+        item?.quality ??
+
+        item?.Quality ??
+
+        item?.woodQuality ??
+
+        item?.wood_quality ??
+
+        item?.grade ??
+
+        "-";
+
+
+    return String(
+        quality
+    );
+}
+
+
+/* ============================================================
+   BREADTH
+   ============================================================ */
+
+function getBreadth(item) {
+
+    return numberValue(
+
+        item?.breadth ??
+
+        item?.breadthInch ??
+
+        item?.breadth_inch
+
+    );
+}
+
+
+/* ============================================================
+   THICKNESS
+   ============================================================ */
+
+function getThickness(item) {
+
+    return numberValue(
+
+        item?.thickness ??
+
+        item?.thicknessInch ??
+
+        item?.thickness_inch
+
+    );
+}
+
+
+/* ============================================================
+   RATE
+   ============================================================ */
+
+function getRate(item) {
+
+    return numberValue(
+
+        item?.rate ??
+
+        item?.pricePerCft ??
+
+        item?.price_per_cft
+
+    );
+}
+
+
+/* ============================================================
+   CFT
+   ============================================================ */
+
+function getCFT(item) {
+
+    return numberValue(
+
+        item?.cubicFeet ??
+
+        item?.cubic_feet ??
+
+        item?.cft ??
+
+        item?.CFT
+
+    );
+}
+
+
+/* ============================================================
+   WOOD AMOUNT
+   ============================================================ */
+
+function getWoodAmount(item) {
+
+    return numberValue(
+
+        item?.amount ??
+
+        item?.totalAmount ??
+
+        item?.total_amount ??
+
+        item?.woodAmount ??
+
+        item?.wood_amount
+
+    );
+}
+
+
+/* ============================================================
+   PIECES
+   ============================================================ */
+
+function getPieces(item) {
+
+    if (
+        Array.isArray(item?.pieces) &&
+        item.pieces.length > 0
+    ) {
+
+        return item.pieces;
+    }
+
+
+    if (
+        Array.isArray(item?.lengths) &&
+        item.lengths.length > 0
+    ) {
+
+        return item.lengths;
+    }
+
+
+    return [];
+}
+
+
+/* ============================================================
+   LENGTH
+   ============================================================ */
+
+function getPieceLength(piece) {
+
+    const length =
+        numberValue(
+
+            piece?.length ??
+
+            piece?.feet ??
+
+            piece?.len
+
+        );
+
+
+    const extra =
+        numberValue(
+
+            piece?.extraLength ??
+
+            piece?.extra_length ??
+
+            piece?.extra
+
+        );
+
+
+    return length + extra;
+}
+
+
+/* ============================================================
+   PIECE QTY
+   ============================================================ */
+
+function getPieceQty(piece) {
+
+    const qty =
+        numberValue(
+
+            piece?.qty ??
+
+            piece?.quantity ??
+
+            piece?.pieces ??
+
+            piece?.count
+
+        );
+
+
+    return qty > 0
+        ? qty
+        : 1;
+}
+
+
+/* ============================================================
+   FALLBACK LENGTH
+   ============================================================ */
+
+function getItemLength(item) {
+
+    return numberValue(
+
+        item?.length ??
+
+        item?.totalLength ??
+
+        item?.total_length
+
+    );
+}
+
+
+/* ============================================================
+   FALLBACK QTY
+   ============================================================ */
+
+function getItemQty(item) {
+
+    return numberValue(
+
+        item?.qty ??
+
+        item?.quantity ??
+
+        item?.pieces_count ??
+
+        item?.piecesCount
+
+    );
+}
+
+
+/* ============================================================
+   LENGTH TEXT
+   ============================================================ */
+
+function getLengthText(item) {
+
+    const pieces =
+        getPieces(item);
+
+
+    if (
+        pieces.length > 0
+    ) {
+
+        const values =
+            pieces
+                .map(
+                    function(piece) {
+
+                        const length =
+                            getPieceLength(
+                                piece
+                            );
+
+                        return length > 0
+                            ? String(length)
+                            : "";
+                    }
+                )
+                .filter(Boolean);
+
+
+        if (
+            values.length > 0
+        ) {
+
+            return values.join(", ");
+        }
+    }
+
+
+    const length =
+        getItemLength(item);
+
+
+    return length > 0
+        ? String(length)
+        : "-";
+}
+
+
+/* ============================================================
+   QUANTITY TEXT
+   ============================================================ */
+
+function getQuantityText(item) {
+
+    const pieces =
+        getPieces(item);
+
+
+    if (
+        pieces.length > 0
+    ) {
+
+        const values =
+            pieces
+                .map(
+                    function(piece) {
+
+                        const qty =
+                            getPieceQty(
+                                piece
+                            );
+
+                        return qty > 0
+                            ? String(qty)
+                            : "";
+                    }
+                )
+                .filter(Boolean);
+
+
+        if (
+            values.length > 0
+        ) {
+
+            return values.join(", ");
+        }
+    }
+
+
+    const qty =
+        getItemQty(item);
+
+
+    return qty > 0
+        ? String(qty)
+        : "-";
+}
+
+
+/* ============================================================
+   CFT CALCULATION FALLBACK
+   ============================================================ */
+
+function calculateCFTFromPieces(item) {
+
+    const pieces =
+        getPieces(item);
+
+
+    if (
+        pieces.length === 0
+    ) {
+
+        return getCFT(item);
+    }
+
+
+    const breadth =
+        getBreadth(item);
+
+    const thickness =
+        getThickness(item);
+
+
+    let totalCFT = 0;
+
+
+    pieces.forEach(
+        function(piece) {
+
+            const length =
+                getPieceLength(
+                    piece
+                );
+
+            const qty =
+                getPieceQty(
+                    piece
+                );
+
+
+            /*
+               CFT formula:
+
+               Breadth × Thickness × Length × Qty
+               ---------------------------------
+                         144
+
+               This assumes inch dimensions
+               and length in feet.
+            */
+
+            if (
+                breadth > 0 &&
+                thickness > 0 &&
+                length > 0 &&
+                qty > 0
+            ) {
+
+                totalCFT +=
+
+                    (
+                        breadth *
+                        thickness *
+                        length *
+                        qty
+                    ) / 144;
             }
+        }
+    );
 
-            function esc(value) {
-                return String(value ?? "")
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
 
-            function parseJSON(value, fallback = []) {
-                if (Array.isArray(value)) return value;
-                if (value && typeof value === "object") return value;
-                if (typeof value !== "string" || !value.trim()) return fallback;
+    return totalCFT;
+}
 
-                try {
-                    return JSON.parse(value);
-                } catch {
-                    return fallback;
+
+/* ============================================================
+   GET FINAL CFT
+   ============================================================ */
+
+function getFinalCFT(item) {
+
+    const stored =
+        getCFT(item);
+
+
+    if (
+        stored > 0
+    ) {
+
+        return stored;
+    }
+
+
+    return calculateCFTFromPieces(
+        item
+    );
+}
+
+
+/* ============================================================
+   LOAD BILLS
+   ============================================================ */
+
+async function loadBills() {
+
+    console.log(
+        "Loading bill history..."
+    );
+
+
+    if (
+        historyBody
+    ) {
+
+        historyBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="15"
+                    class="loading-cell"
+                >
+                    Loading bill history...
+                </td>
+
+            </tr>
+
+        `;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/bills`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    cache: "no-store"
                 }
-            }
+            );
 
-            function billId(bill) {
-                return bill?.id ?? bill?.bill_id ?? bill?.billId ?? bill?._id ?? "";
-            }
 
-            function paymentType(bill) {
-                return String(
-                    bill?.payment_type ??
-                    bill?.paymentType ??
-                    "-"
-                ).trim().toUpperCase() || "-";
-            }
+        if (
+            !response.ok
+        ) {
 
-            function paymentMode(bill) {
-                const mode = String(
-                    bill?.payment_mode ??
-                    bill?.paymentMode ??
-                    ""
-                ).trim().toUpperCase();
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
 
-                return mode === "UPI" ? "UPI" : mode === "CASH" ? "CASH" : "-";
-            }
 
-            function customerName(bill) {
-                return bill?.customer_name ?? bill?.customerName ?? bill?.customer ?? "-";
-            }
+        const data =
+            await response.json();
 
-            function customerMobile(bill) {
-                return bill?.customer_mobile ?? bill?.customerMobile ?? bill?.mobile ?? "-";
-            }
 
-            function customerPlace(bill) {
-                return bill?.customer_place ?? bill?.customerPlace ?? bill?.place ?? "-";
-            }
+        console.log(
+            "HISTORY RESPONSE:",
+            data
+        );
 
-            function grandTotal(bill) {
-                return money(
-                    bill?.grand_total ??
-                    bill?.grandTotal ??
-                    bill?.total_amount ??
-                    bill?.totalAmount ??
-                    bill?.final_total ??
-                    bill?.finalTotal
+
+        if (
+            Array.isArray(data)
+        ) {
+
+            allBills =
+                data;
+
+        }
+        else if (
+            Array.isArray(
+                data?.bills
+            )
+        ) {
+
+            allBills =
+                data.bills;
+
+        }
+        else if (
+            Array.isArray(
+                data?.result
+            )
+        ) {
+
+            allBills =
+                data.result;
+
+        }
+        else if (
+            Array.isArray(
+                data?.data
+            )
+        ) {
+
+            allBills =
+                data.data;
+
+        }
+        else {
+
+            throw new Error(
+                "Bills array not found."
+            );
+        }
+
+
+        console.log(
+            "TOTAL BILLS:",
+            allBills.length
+        );
+
+
+        updateSummary();
+
+        applyFilters();
+
+    }
+    catch (error) {
+
+        console.error(
+            "HISTORY LOAD ERROR:",
+            error
+        );
+
+
+        if (
+            historyBody
+        ) {
+
+            historyBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="15"
+                        class="error-cell"
+                    >
+
+                        Failed to load bills
+
+                        <br>
+
+                        <small>
+                            ${escapeHtml(
+                                error.message
+                            )}
+                        </small>
+
+                    </td>
+
+                </tr>
+
+            `;
+        }
+    }
+}
+
+
+/* ============================================================
+   DISPLAY BILLS
+   ============================================================ */
+
+function displayBills(
+    bills
+) {
+
+    if (
+        !historyBody
+    ) {
+
+        return;
+    }
+
+
+    historyBody.innerHTML = "";
+
+
+    updateResultCount(
+        bills.length
+    );
+
+
+    if (
+        !Array.isArray(bills) ||
+        bills.length === 0
+    ) {
+
+        historyBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="15"
+                    class="empty-cell"
+                >
+
+                    <div
+                        style="
+                            font-size:32px;
+                            margin-bottom:8px;
+                        "
+                    >
+                        🔍
+                    </div>
+
+                    No bills found
+
+                    <br>
+
+                    <small>
+                        Try another search or filter.
+                    </small>
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    bills.forEach(
+        function(
+            bill,
+            index
+        ) {
+
+            const status =
+                getStatus(bill);
+
+
+            const paymentMode =
+                getPaymentMode(bill);
+
+
+            const returnAmount =
+                getReturnAmount(bill);
+
+
+            const row =
+                document.createElement(
+                    "tr"
                 );
+
+
+            /*
+               IMPORTANT FOR CSS
+
+               pendingRow = red
+               returnRow  = yellow
+               finishedRow = normal
+            */
+
+            if (
+                status === "pending"
+            ) {
+
+                row.className =
+                    "pendingRow";
+
+            }
+            else if (
+                status === "return"
+            ) {
+
+                row.className =
+                    "returnRow";
+
+            }
+            else {
+
+                row.className =
+                    "finishedRow";
             }
 
-            function advance(bill) {
-                return money(
-                    bill?.advance_amount ??
-                    bill?.advanceAmount ??
-                    bill?.advance ??
-                    bill?.paid_amount ??
-                    bill?.paidAmount
-                );
-            }
 
-            function balance(bill) {
-                return money(
-                    bill?.balance_amount ??
-                    bill?.balanceAmount ??
-                    bill?.balance ??
-                    bill?.due_amount ??
-                    bill?.dueAmount
-                );
-            }
+            let paymentModeHTML = `
 
-            function returnAmount(bill) {
-                return money(
-                    bill?.return_amount ??
-                    bill?.returnAmount ??
-                    bill?.returned_amount ??
-                    bill?.returnedAmount ??
-                    bill?.total_return ??
-                    bill?.totalReturn
-                );
-            }
+                <span
+                    class="
+                        payment-pill
+                        paymentNone
+                    "
+                >
+                    -
+                </span>
 
-            function woodTotal(bill) {
-                return money(
-                    bill?.wood_total ??
-                    bill?.woodTotal ??
-                    bill?.wood_amount ??
-                    bill?.woodAmount
-                );
-            }
+            `;
 
-            function labourCharge(bill) {
-                return money(
-                    bill?.labour_charge ??
-                    bill?.labourCharge ??
-                    bill?.labour_amount ??
-                    bill?.labourAmount ??
-                    bill?.labour?.labourCharge ??
-                    bill?.labour?.labour_charge ??
-                    bill?.labour_data?.labourCharge ??
-                    bill?.labour_data?.labour_charge ??
-                    bill?.labourData?.labourCharge ??
-                    bill?.labourData?.labour_charge
-                );
-            }
 
-            function otherCharge(bill) {
-                return money(
-                    bill?.other_charge ??
-                    bill?.otherCharge ??
-                    bill?.other_amount ??
-                    bill?.otherAmount ??
-                    bill?.labour?.otherCharge ??
-                    bill?.labour?.other_charge ??
-                    bill?.labour_data?.otherCharge ??
-                    bill?.labour_data?.other_charge ??
-                    bill?.labourData?.otherCharge ??
-                    bill?.labourData?.other_charge
-                );
-            }
+            if (
+                paymentMode === "CASH"
+            ) {
 
-            function discount(bill) {
-                return money(
-                    bill?.discount_amount ??
-                    bill?.discountAmount ??
-                    bill?.discount ??
-                    bill?.discount_value ??
-                    bill?.discountValue
-                );
-            }
+                paymentModeHTML = `
 
-            function woodData(bill) {
-                const sources = [
-                    bill?.wood_data,
-                    bill?.woodData,
-                    bill?.wood_details,
-                    bill?.woodDetails,
-                    bill?.wood_items,
-                    bill?.woodItems,
-                    bill?.items,
-                    bill?.wood
-                ];
+                    <span
+                        class="
+                            payment-pill
+                            paymentCash
+                        "
+                    >
+                        CASH
+                    </span>
 
-                for (const source of sources) {
-                    const array = normalizeArray(source);
-                    if (array.length) return array;
-                }
-
-                return [];
-            }
-
-            function othersData(bill) {
-                const sources = [
-                    bill?.others_data,
-                    bill?.othersData,
-                    bill?.other_data,
-                    bill?.otherData,
-                    bill?.other_items,
-                    bill?.otherItems,
-                    bill?.other_charges,
-                    bill?.otherCharges,
-                    bill?.additional_items,
-                    bill?.additionalItems,
-                    bill?.additional_charges,
-                    bill?.additionalCharges,
-                    bill?.charges,
-                    bill?.labour?.othersData,
-                    bill?.labour?.otherItems,
-                    bill?.labour?.otherData,
-                    bill?.labour_data?.othersData,
-                    bill?.labour_data?.otherItems,
-                    bill?.labour_data?.otherData,
-                    bill?.labourData?.othersData,
-                    bill?.labourData?.otherItems,
-                    bill?.labourData?.otherData
-                ];
-
-                for (const source of sources) {
-                    const array = normalizeArray(source);
-                    if (array.length) return array;
-                }
-
-                return [];
-            }
-
-            function labourData(bill) {
-                const sources = [
-                    bill?.labour_data,
-                    bill?.labourData,
-                    bill?.labour_details,
-                    bill?.labourDetails,
-                    bill?.labour_items,
-                    bill?.labourItems,
-                    bill?.labour?.items,
-                    bill?.labour?.details,
-                    bill?.labour?.labourItems,
-                    bill?.labour?.labourDetails
-                ];
-
-                for (const source of sources) {
-                    const array = normalizeArray(source);
-                    if (array.length) return array;
-                }
-
-                return [];
-            }
-
-            function itemName(item, fallback = "Other") {
-                return String(
-                    item?.name ??
-                    item?.reason ??
-                    item?.title ??
-                    item?.description ??
-                    item?.type ??
-                    item?.chargeName ??
-                    item?.charge_name ??
-                    fallback
-                );
-            }
-
-            function itemAmount(item) {
-                return money(
-                    item?.amount ??
-                    item?.charge ??
-                    item?.value ??
-                    item?.price ??
-                    item?.total ??
-                    item?.chargeAmount ??
-                    item?.charge_amount
-                );
-            }
-
-            function additionalOtherTotal(bill) {
-                return othersData(bill).reduce(
-                    (total, item) => total + itemAmount(item),
-                    0
-                );
-            }
-
-            function othersTotal(bill) {
-                const stored =
-                    bill?.others_total ??
-                    bill?.othersTotal ??
-                    bill?.total_others ??
-                    bill?.totalOthers;
-
-                if (
-                    stored !== undefined &&
-                    stored !== null &&
-                    stored !== ""
-                ) {
-                    return money(stored);
-                }
-
-                return (
-                    labourCharge(bill) +
-                    otherCharge(bill) +
-                    additionalOtherTotal(bill)
-                );
-            }
-
-            function dateText(value) {
-                if (!value) return "-";
-                const d = new Date(value);
-                return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleDateString("en-IN");
-            }
-
-            function getStatus(bill) {
-                const raw = String(
-                    bill?.status ??
-                    bill?.bill_status ??
-                    ""
-                ).trim().toLowerCase();
-
-                if (
-                    returnAmount(bill) > 0 ||
-                    raw === "return" ||
-                    raw === "returned"
-                ) return "return";
-
-                if (balance(bill) > 0 || raw === "pending") return "pending";
-
-                return "finished";
-            }
-
-            function statusText(bill) {
-                const s = getStatus(bill);
-                return s === "return" ? "RETURNED" : s === "pending" ? "PENDING" : "DELIVERED";
-            }
-
-            function paymentHTML(mode) {
-                if (mode === "UPI") return `<span class="payment-pill upi">UPI</span>`;
-                if (mode === "CASH") return `<span class="payment-pill cash">CASH</span>`;
-                return `<span class="payment-pill unknown">-</span>`;
-            }
-
-            function statusHTML(bill) {
-                const s = getStatus(bill);
-                return `<span class="status ${s}">${statusText(bill)}</span>`;
-            }
-
-            /* =========================================================
-               LOAD HISTORY
-               ========================================================= */
-
-            async function loadBills() {
-                historyBody.innerHTML = `
-                    <tr><td colspan="15" class="loading-cell">Loading bills...</td></tr>
                 `;
+            }
 
-                try {
-                    const response = await fetch(`${API_URL}/bills`, {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json" },
-                        cache: "no-store"
-                    });
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+            if (
+                paymentMode === "UPI"
+            ) {
 
-                    const data = await response.json();
+                paymentModeHTML = `
 
-                    if (Array.isArray(data)) {
-                        allBills = data;
-                    } else if (Array.isArray(data?.bills)) {
-                        allBills = data.bills;
-                    } else if (Array.isArray(data?.result)) {
-                        allBills = data.result;
-                    } else {
-                        throw new Error(data?.message || "Invalid bills response");
-                    }
+                    <span
+                        class="
+                            payment-pill
+                            paymentUpi
+                        "
+                    >
+                        UPI
+                    </span>
 
-                    applyFilters();
+                `;
+            }
 
-                } catch (error) {
-                    console.error("HISTORY LOAD ERROR:", error);
 
-                    historyBody.innerHTML = `
-                        <tr>
-                            <td colspan="15" class="error-cell">
-                                Unable to load bill history.<br>
-                                <small>${esc(error.message)}</small>
-                            </td>
-                        </tr>
+            const returnHTML =
+
+                returnAmount > 0
+
+                    ? `
+
+                        <span
+                            class="returnAmount"
+                        >
+                            ₹ ${formatMoney(
+                                returnAmount
+                            )}
+                        </span>
+
+                    `
+
+                    : `
+
+                        <span
+                            class="noReturn"
+                        >
+                            -
+                        </span>
+
                     `;
 
-                    updateSummary([]);
-                    updateResultCount(0);
-                }
-            }
 
-            /* =========================================================
-               DISPLAY
-               ========================================================= */
+            /*
+               RETURN BUTTON
+               ------------------------------------------------
+               MULTI-RETURN / CUMULATIVE MODE
 
-            function displayBills(bills) {
-                historyBody.innerHTML = "";
-                if (!Array.isArray(bills)) bills = [];
+               The Return button stays ACTIVE as long as this
+               bill's Grand Total (the remaining payable amount)
+               is greater than 0 — because the backend supports
+               multiple partial returns that each reduce the
+               Grand Total and add to the Return Amount.
 
-                updateSummary(bills);
-                updateResultCount(bills.length);
+               Only once Grand Total reaches 0 (fully returned /
+               nothing left to return) does the button switch to
+               a disabled "Returned" state.
+            */
 
-                if (!bills.length) {
-                    historyBody.innerHTML = `
-                        <tr>
-                            <td colspan="15" class="empty-cell">
-                                <div style="font-size:32px">⌕</div>
-                                No bills found<br>
-                                <small>Try another search or filter.</small>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
+            const returnButtonHTML =
 
-                bills.forEach((bill, index) => {
-                    const id = billId(bill);
-                    const no = bill?.bill_no ?? bill?.billNo ?? `BILL-${id}`;
-                    const cid = bill?.customer_id ?? bill?.customerId ?? "-";
-                    const gt = grandTotal(bill);
-                    const adv = advance(bill);
-                    const bal = balance(bill);
-                    const ret = returnAmount(bill);
-                    const status = getStatus(bill);
+                getGrandTotal(bill) > 0
 
-                    const row = document.createElement("tr");
+                    ? `
 
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td><span class="bill-number">${esc(no)}</span></td>
-                        <td><span class="customer-id">${esc(cid)}</span></td>
-                        <td><span class="customer-name">${esc(customerName(bill))}</span></td>
-                        <td>${esc(customerMobile(bill))}</td>
-                        <td>${esc(customerPlace(bill))}</td>
-                        <td>${esc(dateText(
-                            bill?.bill_date ??
-                            bill?.billDate ??
-                            bill?.date ??
-                            bill?.created_at
-                        ))}</td>
+                        <button
+                            type="button"
+                            class="returnBtn"
+                            data-bill-id="${escapeHtml(
+                                getBillId(bill)
+                            )}"
+                        >
+                            Return
+                        </button>
 
-                        <!-- SEPARATE PAYMENT TYPE -->
-                        <td><span class="payment-type">${esc(paymentType(bill))}</span></td>
+                    `
 
-                        <!-- SEPARATE PAYMENT MODE -->
-                        <td>${paymentHTML(paymentMode(bill))}</td>
+                    : `
 
-                        <td class="money">₹ ${fmt(gt)}</td>
-                        <td class="money">₹ ${fmt(adv)}</td>
-                        <td class="money ${bal > 0 ? "balance-due" : "balance-zero"}">
-                            ₹ ${fmt(bal)}
-                        </td>
-                        <td class="money">₹ ${fmt(ret)}</td>
-                        <td>${statusHTML(bill)}</td>
+                        <button
+                            type="button"
+                            class="
+                                returnBtn
+                                returnedBtn
+                            "
+                            disabled
+                        >
+                            Returned
+                        </button>
 
-                        <td>
-                            <div class="actions">
-                                <button
-                                    type="button"
-                                    class="action-btn pdf-btn pdfBtn"
-                                    data-bill-id="${esc(id)}">
-                                    PDF
-                                </button>
-
-                                ${
-                                    gt > 0
-                                    ? `
-                                        <button
-                                            type="button"
-                                            class="action-btn return-btn returnBtn"
-                                            data-bill-id="${esc(id)}">
-                                            Return
-                                        </button>
-                                    `
-                                    : ""
-                                }
-                            </div>
-                        </td>
                     `;
 
-                    historyBody.appendChild(row);
-                });
 
-                bindActions();
+            const pdfButtonHTML = `
+
+                <button
+                    type="button"
+                    class="pdfBtn"
+                    data-bill-id="${escapeHtml(
+                        getBillId(bill)
+                    )}"
+                >
+                    PDF
+                </button>
+
+            `;
+
+
+            const billNumber =
+                getBillNumber(
+                    bill
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="bill-number"
+                    >
+                        ${escapeHtml(
+                            billNumber
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${escapeHtml(
+                        getCustomerId(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="customer-name"
+                    >
+                        ${escapeHtml(
+                            getCustomerName(
+                                bill
+                            )
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${escapeHtml(
+                        getCustomerMobile(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${escapeHtml(
+                        getCustomerPlace(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${formatDate(
+
+                        bill?.bill_date ??
+
+                        bill?.billDate ??
+
+                        bill?.date ??
+
+                        bill?.created_at
+
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="payment-type"
+                    >
+                        ${escapeHtml(
+                            getPaymentType(
+                                bill
+                            )
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${paymentModeHTML}
+
+                </td>
+
+
+                <td>
+
+                    ₹ ${formatMoney(
+                        getGrandTotal(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ₹ ${formatMoney(
+                        getAdvance(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td
+                    class="
+                        ${
+                            getBalance(
+                                bill
+                            ) > 0
+                                ? "balance-due"
+                                : "balance-zero"
+                        }
+                    "
+                >
+
+                    ₹ ${formatMoney(
+                        getBalance(
+                            bill
+                        )
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${returnHTML}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="
+                            status
+                            ${status}
+                        "
+                    >
+
+                        ${getStatusText(
+                            bill
+                        )}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div
+                        class="actions"
+                    >
+
+                        ${pdfButtonHTML}
+
+                        ${returnButtonHTML}
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            historyBody.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    attachActionEvents();
+}
+
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+
+function updateSummary() {
+
+    let pending = 0;
+
+    let finished = 0;
+
+    let returned = 0;
+
+
+    allBills.forEach(
+        function(bill) {
+
+            const status =
+                getStatus(bill);
+
+
+            if (
+                status === "pending"
+            ) {
+
+                pending++;
+
+            }
+            else if (
+                status === "return"
+            ) {
+
+                returned++;
+
+            }
+            else {
+
+                finished++;
             }
 
-            function updateSummary(bills) {
-                let pending = 0;
-                let finished = 0;
-                let returned = 0;
+        }
+    );
 
-                bills.forEach(bill => {
-                    const s = getStatus(bill);
-                    if (s === "pending") pending++;
-                    else if (s === "return") returned++;
-                    else finished++;
-                });
 
-                totalBills.textContent = bills.length;
-                pendingBills.textContent = pending;
-                finishedBills.textContent = finished;
-                returnBills.textContent = returned;
-            }
+    if (
+        totalBills
+    ) {
 
-            function updateResultCount(count) {
-                resultCount.textContent =
-                    `${count} ${count === 1 ? "bill" : "bills"}`;
-            }
+        totalBills.textContent =
+            allBills.length;
+    }
 
-            /* =========================================================
-               SEARCH + FILTER
-               ========================================================= */
 
-            function applyFilters() {
-                const search = String(searchInput.value || "").trim().toLowerCase();
-                const selected = String(statusFilter.value || "all").toLowerCase();
+    if (
+        pendingBills
+    ) {
 
-                const filtered = allBills.filter(bill => {
+        pendingBills.textContent =
+            pending;
+    }
+
+
+    if (
+        finishedBills
+    ) {
+
+        finishedBills.textContent =
+            finished;
+    }
+
+
+    if (
+        returnBills
+    ) {
+
+        returnBills.textContent =
+            returned;
+    }
+}
+
+
+/* ============================================================
+   RESULT COUNT
+   ============================================================ */
+
+function updateResultCount(
+    count
+) {
+
+    if (
+        !resultCount
+    ) {
+
+        return;
+    }
+
+
+    resultCount.textContent =
+
+        `${count} ${
+            count === 1
+                ? "bill"
+                : "bills"
+        }`;
+}
+
+
+/* ============================================================
+   FILTER
+   ============================================================ */
+
+function applyFilters() {
+
+    const search =
+        String(
+            searchInput?.value ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    const selectedStatus =
+        String(
+            statusFilter?.value ||
+            "all"
+        )
+            .trim()
+            .toLowerCase();
+
+
+    let filtered =
+        [...allBills];
+
+
+    if (
+        search
+    ) {
+
+        filtered =
+            filtered.filter(
+                function(bill) {
+
                     const text = [
-                        bill?.bill_no,
-                        bill?.billNo,
-                        bill?.customer_id,
-                        bill?.customerId,
-                        customerName(bill),
-                        customerMobile(bill),
-                        customerPlace(bill),
-                        paymentType(bill),
-                        paymentMode(bill),
-                        statusText(bill)
-                    ].map(v => String(v ?? "").toLowerCase()).join(" ");
+
+                        getBillNumber(
+                            bill
+                        ),
+
+                        getCustomerId(
+                            bill
+                        ),
+
+                        getCustomerName(
+                            bill
+                        ),
+
+                        getCustomerMobile(
+                            bill
+                        ),
+
+                        getCustomerPlace(
+                            bill
+                        ),
+
+                        getPaymentType(
+                            bill
+                        ),
+
+                        getPaymentMode(
+                            bill
+                        ),
+
+                        getStatusText(
+                            bill
+                        )
+
+                    ]
+                        .join(" ")
+                        .toLowerCase();
+
+
+                    return text.includes(
+                        search
+                    );
+                }
+            );
+    }
+
+
+    if (
+        selectedStatus !== "all"
+    ) {
+
+        filtered =
+            filtered.filter(
+                function(bill) {
 
                     return (
-                        (!search || text.includes(search)) &&
-                        (selected === "all" || getStatus(bill) === selected)
+
+                        getStatus(
+                            bill
+                        ) ===
+                        selectedStatus
+
                     );
-                });
-
-                displayBills(filtered);
-
-                clearSearchBtn.classList.toggle("visible", Boolean(search));
-            }
-
-            function bindActions() {
-                document.querySelectorAll(".pdfBtn").forEach(button => {
-                    button.addEventListener("click", () => {
-                        downloadBillPDF(button.dataset.billId, button);
-                    });
-                });
-
-                document.querySelectorAll(".returnBtn").forEach(button => {
-                    button.addEventListener("click", async () => {
-                        const bill = allBills.find(
-                            item => String(billId(item)) === String(button.dataset.billId)
-                        );
-
-                        if (bill) await handleReturn(bill);
-                    });
-                });
-            }
-
-            /* =========================================================
-               RETURN
-               ========================================================= */
-
-            async function handleReturn(bill) {
-                const id = billId(bill);
-                const no = bill?.bill_no ?? bill?.billNo ?? `BILL-${id}`;
-
-                // The current grand_total is the remaining amount that can be returned.
-                const remainingTotal = grandTotal(bill);
-
-                if (remainingTotal <= 0) {
-                    alert("No amount is left to return for this bill.");
-                    return;
                 }
+            );
+    }
 
-                const value = prompt(
-                    `Enter Return Amount\n\nBill No: ${no}\nRemaining Grand Total: ₹ ${fmt(remainingTotal)}`
+
+    displayBills(
+        filtered
+    );
+
+
+    if (
+        clearSearchBtn
+    ) {
+
+        clearSearchBtn.classList.toggle(
+            "visible",
+            search.length > 0
+        );
+    }
+}
+
+
+/* ============================================================
+   LOAD JSPDF
+   ============================================================ */
+
+function loadJsPDF() {
+
+    return new Promise(
+        function(
+            resolve,
+            reject
+        ) {
+
+            if (
+
+                window.jspdf &&
+
+                typeof
+                    window.jspdf.jsPDF ===
+                    "function"
+
+            ) {
+
+                resolve(
+                    window.jspdf.jsPDF
                 );
 
-                if (value === null) return;
+                return;
+            }
 
-                const amount = Number(
-                    String(value).replace(/,/g, "").trim()
+
+            const existing =
+                document.querySelector(
+                    'script[data-amman-jspdf="true"]'
                 );
 
-                if (!Number.isFinite(amount) || amount <= 0) {
-                    alert("Enter a valid return amount greater than 0.");
-                    return;
-                }
 
-                if (amount > remainingTotal) {
-                    alert(
-                        "Return amount cannot be greater than the remaining Grand Total.\n\n" +
-                        `Remaining: ₹ ${fmt(remainingTotal)}`
-                    );
-                    return;
-                }
+            if (
+                existing
+            ) {
 
-                if (!confirm(
-                    `Confirm return?\n\n` +
-                    `Bill: ${no}\n` +
-                    `Return now: ₹ ${fmt(amount)}\n` +
-                    `Remaining after return: ₹ ${fmt(Math.max(0, remainingTotal - amount))}`
-                )) {
-                    return;
-                }
+                existing.addEventListener(
+                    "load",
+                    function() {
 
-                try {
-                    // IMPORTANT:
-                    // Use the backend's cumulative return endpoint.
-                    // Every call adds to return_amount and reduces grand_total.
-                    const response = await fetch(
-                        `${API_URL}/return-bill`,
-                        {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: id,
-                                returnAmount: amount
-                            })
+                        if (
+
+                            window.jspdf &&
+
+                            typeof
+                                window.jspdf.jsPDF ===
+                                "function"
+
+                        ) {
+
+                            resolve(
+                                window.jspdf.jsPDF
+                            );
+
                         }
-                    );
+                        else {
 
-                    let result = null;
-
-                    try {
-                        result = await response.json();
-                    } catch {
-                        result = null;
-                    }
-
-                    if (!response.ok || !result?.success) {
-                        throw new Error(
-                            result?.message ||
-                            `HTTP ${response.status}: Return update failed.`
-                        );
-                    }
-
-                    const newGrandTotal = money(result?.grandTotal);
-                    const newReturnAmount = money(result?.returnAmount);
-
-                    alert(
-                        "Return saved successfully.\n\n" +
-                        `Returned this time: ₹ ${fmt(amount)}\n` +
-                        `Total returned: ₹ ${fmt(newReturnAmount)}\n` +
-                        `Remaining Grand Total: ₹ ${fmt(newGrandTotal)}`
-                    );
-
-                    // Reload database values.
-                    // Return button remains while Grand Total > 0.
-                    await loadBills();
-
-                } catch (error) {
-                    console.error("RETURN ERROR:", error);
-                    alert(
-                        "Return update failed.\n\n" +
-                        error.message
-                    );
-                }
-            }
-
-            /* =========================================================
-               PDF DATA HELPERS
-               ========================================================= */
-
-            function woodRowsPDF(data) {
-                if (!Array.isArray(data) || !data.length) {
-                    return `<tr><td colspan="7" style="text-align:center">No wood details</td></tr>`;
-                }
-
-                return data.map((item, i) => {
-                    let type =
-                        item?.woodType ??
-                        item?.wood_type ??
-                        item?.woodName ??
-                        item?.wood ??
-                        item?.name ??
-                        "-";
-
-                    if (String(type).toLowerCase() === "other") {
-                        type =
-                            item?.otherWood ??
-                            item?.other_wood ??
-                            item?.otherWoodName ??
-                            "Other";
-                    }
-
-                    const quality =
-                        item?.quality ??
-                        item?.Quality ??
-                        item?.woodQuality ??
-                        item?.wood_quality ??
-                        item?.grade ??
-                        "-";
-
-                    const breadth =
-                        item?.breadth ??
-                        item?.breadthInch ??
-                        item?.breadth_inch ??
-                        "-";
-
-                    const thickness =
-                        item?.thickness ??
-                        item?.thicknessInch ??
-                        item?.thickness_inch ??
-                        "-";
-
-                    const cft = money(
-                        item?.cubicFeet ??
-                        item?.cubic_feet ??
-                        item?.cft ??
-                        item?.CFT
-                    );
-
-                    const amount = money(
-                        item?.amount ??
-                        item?.totalAmount ??
-                        item?.total_amount ??
-                        item?.woodAmount ??
-                        item?.wood_amount
-                    );
-
-                    let lengthText = "-";
-
-                    const pieces =
-                        Array.isArray(item?.lengths)
-                            ? item.lengths
-                            : Array.isArray(item?.pieces)
-                                ? item.pieces
-                                : [];
-
-                    if (pieces.length) {
-                        lengthText = pieces.map(x => {
-                            const length = num(
-                                x?.length ??
-                                x?.feet ??
-                                x?.len
+                            reject(
+                                new Error(
+                                    "jsPDF did not initialize."
+                                )
                             );
-
-                            const extra = num(
-                                x?.extraLength ??
-                                x?.extra_length ??
-                                x?.extra
-                            );
-
-                            const qty = num(
-                                x?.qty ??
-                                x?.quantity ??
-                                x?.count
-                            ) || 1;
-
-                            return `${fmt(length + extra)} ft × ${qty}`;
-                        }).join("<br>");
-                    } else if (
-                        item?.length !== undefined ||
-                        item?.totalLength !== undefined
-                    ) {
-                        const length = num(
-                            item?.length ??
-                            item?.totalLength
-                        );
-
-                        const extra = num(
-                            item?.extraLength ??
-                            item?.extra_length ??
-                            item?.extra
-                        );
-
-                        const qty = num(
-                            item?.qty ??
-                            item?.quantity
-                        ) || 1;
-
-                        lengthText =
-                            `${fmt(length + extra)} ft × ${qty}`;
+                        }
                     }
-
-                    return `
-                        <tr>
-                            <td>${i + 1}</td>
-                            <td>
-                                ${esc(type)}
-                                <br>
-                                <small>Quality: ${esc(quality)}</small>
-                            </td>
-                            <td>${esc(breadth)}</td>
-                            <td>${esc(thickness)}</td>
-                            <td>${lengthText}</td>
-                            <td>${fmt(cft)} CFT</td>
-                            <td>₹ ${fmt(amount)}</td>
-                        </tr>
-                    `;
-                }).join("");
-            }
-
-            function totalCFTValue(bill) {
-                const stored = money(
-                    bill?.total_cft ??
-                    bill?.totalCFT ??
-                    bill?.cft_total ??
-                    bill?.cftTotal
                 );
 
-                if (stored > 0) return stored;
 
-                return woodData(bill).reduce((total, item) => {
-                    const storedCft = money(
-                        item?.cubicFeet ??
-                        item?.cubic_feet ??
-                        item?.cft ??
-                        item?.CFT
-                    );
+                existing.addEventListener(
+                    "error",
+                    function() {
 
-                    if (storedCft > 0) {
-                        return total + storedCft;
-                    }
-
-                    const breadth = num(
-                        item?.breadth ??
-                        item?.breadthInch ??
-                        item?.breadth_inch
-                    );
-
-                    const thickness = num(
-                        item?.thickness ??
-                        item?.thicknessInch ??
-                        item?.thickness_inch
-                    );
-
-                    const pieces =
-                        Array.isArray(item?.lengths)
-                            ? item.lengths
-                            : Array.isArray(item?.pieces)
-                                ? item.pieces
-                                : [];
-
-                    if (!breadth || !thickness || !pieces.length) {
-                        return total;
-                    }
-
-                    return total + pieces.reduce((sum, piece) => {
-                        const length = num(
-                            piece?.length ??
-                            piece?.feet ??
-                            piece?.len
-                        ) + num(
-                            piece?.extraLength ??
-                            piece?.extra_length ??
-                            piece?.extra
+                        reject(
+                            new Error(
+                                "jsPDF could not be loaded."
+                            )
                         );
-
-                        const qty = num(
-                            piece?.qty ??
-                            piece?.quantity ??
-                            piece?.count
-                        ) || 1;
-
-                        return sum +
-                            (breadth * thickness * length * qty) / 144;
-                    }, 0);
-                }, 0);
-            }
-
-            function labourRowsPDF(bill) {
-                const data = labourData(bill);
-                let rows = "";
-
-                data.forEach(item => {
-                    if (!item) return;
-
-                    const name = itemName(item, "Labour");
-                    const amount = itemAmount(item);
-
-                    rows += `
-                        <tr>
-                            <td>${esc(name)}</td>
-                            <td class="right">₹ ${fmt(amount)}</td>
-                        </tr>
-                    `;
-                });
-
-                if (!rows) {
-                    rows = `
-                        <tr>
-                            <td>Labour Charge</td>
-                            <td class="right">₹ ${fmt(labourCharge(bill))}</td>
-                        </tr>
-                    `;
-                }
-
-                return rows;
-            }
-
-            function otherRowsPDF(data, mainOther) {
-                let rows = "";
-
-                if (mainOther > 0) {
-                    rows += `
-                        <tr>
-                            <td>Other Charge</td>
-                            <td class="right">₹ ${fmt(mainOther)}</td>
-                        </tr>
-                    `;
-                }
-
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        if (!item) return;
-
-                        const name = itemName(item, "Other");
-                        const amount = itemAmount(item);
-
-                        rows += `
-                            <tr>
-                                <td>${esc(name)}</td>
-                                <td class="right">₹ ${fmt(amount)}</td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                return rows || `
-                    <tr>
-                        <td>No Other Charges</td>
-                        <td class="right">₹ 0.00</td>
-                    </tr>
-                `;
-            }
-
-            /* =========================================================
-               PDF TEMPLATE
-               ========================================================= */
-
-            function pdfHTML(bill) {
-                const id = billId(bill);
-                const no = bill?.bill_no ?? bill?.billNo ?? `BILL-${id}`;
-
-                const date = dateText(
-                    bill?.bill_date ??
-                    bill?.billDate ??
-                    bill?.date ??
-                    bill?.created_at
+                    }
                 );
 
-                const time =
-                    bill?.bill_time ??
-                    bill?.billTime ??
-                    "-";
 
-                const cid =
-                    bill?.customer_id ??
-                    bill?.customerId ??
-                    "-";
-
-                const totalCFT = totalCFTValue(bill);
-
-                const wood = woodTotal(bill);
-                const labour = labourCharge(bill);
-                const other = otherCharge(bill);
-                const others = othersTotal(bill);
-                const disc = discount(bill);
-                const total = grandTotal(bill);
-                const adv = advance(bill);
-                const bal = balance(bill);
-                const ret = returnAmount(bill);
-
-                return `
-                <div class="pdf-bill">
-                  <style>
-                    *{box-sizing:border-box}
-                    .pdf-bill{width:794px;min-height:1123px;padding:34px;background:#fff;color:#172033;
-                      font-family:Arial,Helvetica,sans-serif;font-size:12px}
-                    .pdf-head{text-align:center;border-bottom:2px solid #172033;padding-bottom:14px;margin-bottom:14px}
-                    .pdf-head h1{margin:0;font-size:23px}
-                    .pdf-head p{margin:4px 0;font-size:11px;color:#4b5563}
-                    .bill-no{display:flex;justify-content:space-between;background:#f1f5f9;border:1px solid #d5dbe5;
-                      padding:9px 11px;font-weight:700}
-                    .title{margin-top:14px;margin-bottom:7px;padding:7px 10px;background:#eef2f7;
-                      border-left:4px solid #2563eb;font-weight:800}
-                    .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;border:1px solid #d5dbe5;padding:10px}
-                    .label{font-weight:700;color:#4b5563}
-                    .pay{display:flex;gap:10px;margin-top:8px}
-                    .pay div{flex:1;border:1px solid #d5dbe5;padding:8px}
-                    .pay strong{display:block;margin-bottom:3px}
-                    table{width:100%;border-collapse:collapse}
-                    th,td{border:1px solid #d5dbe5;padding:6px 7px;vertical-align:middle}
-                    th{background:#f1f5f9;text-align:left;font-weight:800}
-                    .right{text-align:right}
-                    .grand td{background:#eef6ff;font-size:14px;font-weight:900}
-                    .discount{color:#b91c1c}
-                    .footer{text-align:center;margin-top:22px;padding-top:12px;border-top:1px solid #d5dbe5;color:#6b7280}
-                  </style>
-
-                  <div class="pdf-head">
-                    <h1>ஸ்ரீ அம்மன் சாமில்</h1>
-                    <p>தேக்கு, வேம்பு, பூவரசு வியாபாரம்</p>
-                    <p>Mobile : 9443076409 , 9715050908</p>
-                    <p>GST : 33DLKPK5760D1Z5</p>
-                  </div>
-
-                  <div class="bill-no">
-                    <span>BILL NO: ${esc(no)}</span>
-                    <span>DATE: ${esc(date)}</span>
-                  </div>
-
-                  <div class="title">Customer Information</div>
-
-                  <div class="grid">
-                    <div><span class="label">Customer Name:</span> ${esc(customerName(bill))}</div>
-                    <div><span class="label">Mobile:</span> ${esc(customerMobile(bill))}</div>
-                    <div><span class="label">Place:</span> ${esc(customerPlace(bill))}</div>
-                    <div><span class="label">Customer ID:</span> ${esc(cid)}</div>
-                    <div><span class="label">Date:</span> ${esc(date)}</div>
-                    <div><span class="label">Time:</span> ${esc(time)}</div>
-                  </div>
-
-                  <div class="pay">
-                    <div><strong>Payment Type</strong>${esc(paymentType(bill))}</div>
-                    <div><strong>Payment Mode</strong>${esc(paymentMode(bill))}</div>
-                    <div><strong>Status</strong>${esc(statusText(bill))}</div>
-                  </div>
-
-                  <div class="title">Wood Details</div>
-
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>S.No</th><th>Wood Type</th><th>Breadth</th><th>Thickness</th>
-                        <th>Length / Qty</th><th>CFT</th><th>Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>${woodRowsPDF(woodData(bill))}</tbody>
-                  </table>
-
-                  <div class="title">Wood Summary</div>
-                  <table>
-                    <tr><td>Total CFT</td><td class="right">${fmt(totalCFT)}</td></tr>
-                    <tr><td>Wood Total</td><td class="right">₹ ${fmt(wood)}</td></tr>
-                  </table>
-
-                  <div class="title">Labour Details</div>
-                  <table>
-                    <thead>
-                      <tr><th>Labour / Description</th><th class="right">Amount</th></tr>
-                    </thead>
-                    <tbody>
-                      ${labourRowsPDF(bill)}
-                      <tr><td class="right"><strong>LABOUR TOTAL</strong></td><td class="right"><strong>₹ ${fmt(labour)}</strong></td></tr>
-                    </tbody>
-                  </table>
-
-                  <div class="title">Other Charges / Additional Other</div>
-                  <table>
-                    <thead>
-                      <tr><th>Charge / Description</th><th class="right">Amount</th></tr>
-                    </thead>
-                    <tbody>
-                      ${otherRowsPDF(othersData(bill), other)}
-                      <tr><td class="right"><strong>ADDITIONAL OTHER TOTAL</strong></td><td class="right"><strong>₹ ${fmt(additionalOtherTotal(bill))}</strong></td></tr>
-                      <tr><td class="right"><strong>OTHER CHARGES TOTAL</strong></td><td class="right"><strong>₹ ${fmt(others)}</strong></td></tr>
-                    </tbody>
-                  </table>
-
-                  <div class="title">Payment Summary</div>
-                  <table>
-                    <tr><td>Wood Total</td><td class="right">₹ ${fmt(wood)}</td></tr>
-                    <tr><td>Labour Charge</td><td class="right">₹ ${fmt(labour)}</td></tr>
-                    <tr><td>Other Charge</td><td class="right">₹ ${fmt(other)}</td></tr>
-                    <tr><td>Additional Other Total</td><td class="right">₹ ${fmt(additionalOtherTotal(bill))}</td></tr>
-                    <tr><td>Others Total</td><td class="right">₹ ${fmt(others)}</td></tr>
-
-                    ${disc > 0 ? `
-                      <tr>
-                        <td>Discount</td>
-                        <td class="right discount">- ₹ ${fmt(disc)}</td>
-                      </tr>
-                    ` : ""}
-
-                    <tr class="grand">
-                      <td>Grand Total</td>
-                      <td class="right">₹ ${fmt(total)}</td>
-                    </tr>
-
-                    <tr><td>Advance</td><td class="right">₹ ${fmt(adv)}</td></tr>
-                    <tr><td>Balance</td><td class="right">₹ ${fmt(bal)}</td></tr>
-
-                    ${ret > 0 ? `
-                      <tr><td>Return Amount</td><td class="right">₹ ${fmt(ret)}</td></tr>
-                    ` : ""}
-                  </table>
-
-                  <div class="footer">Thank You</div>
-                </div>
-                `;
+                return;
             }
 
-            /* =========================================================
-               OPEN PDF IN BROWSER
-               SAME TAB
-               NO DOWNLOAD
-               ========================================================= */
 
-            async function downloadBillPDF(id, button) {
+            const script =
+                document.createElement(
+                    "script"
+                );
 
-                const oldText =
-                    button?.textContent || "PDF";
 
-                try {
+            script.src =
+                "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
 
-                    if (button) {
-                        button.disabled = true;
-                        button.textContent = "Creating...";
-                    }
 
-                    /* =====================================================
-                       CHECK PDF LIBRARY
-                       ===================================================== */
+            script.async = true;
+
+
+            script.dataset.ammanJspdf =
+                "true";
+
+
+            script.onload =
+                function() {
 
                     if (
-                        typeof window.html2pdf !== "function"
+
+                        window.jspdf &&
+
+                        typeof
+                            window.jspdf.jsPDF ===
+                            "function"
+
                     ) {
-                        throw new Error(
-                            "PDF library did not load. Check your internet connection."
+
+                        resolve(
+                            window.jspdf.jsPDF
+                        );
+
+                    }
+                    else {
+
+                        reject(
+                            new Error(
+                                "jsPDF loaded but unavailable."
+                            )
                         );
                     }
+                };
 
-                    /* =====================================================
-                       GET COMPLETE BILL
-                       ===================================================== */
 
-                    const response =
-                        await fetch(
-                            `${API_URL}/bill/${encodeURIComponent(id)}`,
-                            {
-                                method: "GET",
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-                                cache: "no-store"
+            script.onerror =
+                function() {
+
+                    reject(
+                        new Error(
+                            "Could not load jsPDF."
+                        )
+                    );
+                };
+
+
+            document.head.appendChild(
+                script
+            );
+
+        }
+    );
+}
+
+
+/* ============================================================
+   PDF CELL
+   ============================================================ */
+
+function pdfCell(
+    doc,
+    text,
+    x,
+    y,
+    width,
+    height,
+    options = {}
+) {
+
+    const fill =
+        options.fill || false;
+
+    const bold =
+        options.bold || false;
+
+    const fontSize =
+        options.fontSize || 7;
+
+    const align =
+        options.align || "left";
+
+
+    if (
+        fill
+    ) {
+
+        doc.setFillColor(
+            240,
+            242,
+            245
+        );
+
+        doc.rect(
+            x,
+            y,
+            width,
+            height,
+            "FD"
+        );
+
+    }
+    else {
+
+        doc.rect(
+            x,
+            y,
+            width,
+            height
+        );
+    }
+
+
+    doc.setFont(
+        "helvetica",
+        bold
+            ? "bold"
+            : "normal"
+    );
+
+
+    doc.setFontSize(
+        fontSize
+    );
+
+
+    let tx =
+        x + 2;
+
+
+    if (
+        align === "center"
+    ) {
+
+        tx =
+            x +
+            width / 2;
+    }
+
+
+    if (
+        align === "right"
+    ) {
+
+        tx =
+            x +
+            width -
+            2;
+    }
+
+
+    doc.text(
+        String(
+            text ?? "-"
+        ),
+        tx,
+        y +
+        height / 2 +
+        2.2,
+        {
+            align:
+                align === "right"
+                    ? "right"
+                    : align === "center"
+                        ? "center"
+                        : "left"
+        }
+    );
+}
+
+
+/* ============================================================
+   PDF HEADER
+   ============================================================ */
+
+function addPDFHeader(
+    doc,
+    bill
+) {
+
+    const pageWidth =
+        doc.internal.pageSize.getWidth();
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        18
+    );
+
+
+    doc.text(
+        "AMMAN SAW MILL",
+        pageWidth / 2,
+        13,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "Wood Timber & Saw Mill",
+        pageWidth / 2,
+        18,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.text(
+        "Mobile : 9443076409 , 9715050908",
+        pageWidth / 2,
+        22,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "GST : 33DLKPK5760D1Z5",
+        pageWidth / 2,
+        26,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setLineWidth(
+        0.5
+    );
+
+
+    doc.line(
+        10,
+        29,
+        pageWidth - 10,
+        29
+    );
+}
+
+
+/* ============================================================
+   CUSTOMER PDF
+   ============================================================ */
+
+function addCustomerPDFDetails(
+    doc,
+    bill,
+    startY
+) {
+
+    const x = 10;
+
+    const labelWidth = 30;
+
+    const valueWidth = 65;
+
+    const rowHeight = 8;
+
+
+    const rows = [
+
+        [
+            "Bill No",
+            getBillNumber(
+                bill
+            ),
+            "Date",
+            formatDate(
+
+                bill?.bill_date ??
+
+                bill?.billDate ??
+
+                bill?.date ??
+
+                bill?.created_at
+
+            )
+        ],
+
+        [
+            "Customer ID",
+            getCustomerId(
+                bill
+            ),
+            "Customer",
+            getCustomerName(
+                bill
+            )
+        ],
+
+        [
+            "Mobile",
+            getCustomerMobile(
+                bill
+            ),
+            "Place",
+            getCustomerPlace(
+                bill
+            )
+        ],
+
+        [
+            "Payment Type",
+            getPaymentType(
+                bill
+            ),
+            "Payment Mode",
+            getPaymentMode(
+                bill
+            )
+        ],
+
+        [
+            "Status",
+            getStatusText(
+                bill
+            ),
+            "Time",
+            getTime(
+                bill
+            )
+        ]
+
+    ];
+
+
+    let y =
+        startY;
+
+
+    rows.forEach(
+        function(row) {
+
+            pdfCell(
+                doc,
+                row[0],
+                x,
+                y,
+                labelWidth,
+                rowHeight,
+                {
+                    fill: true,
+                    bold: true,
+                    fontSize: 7
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                row[1],
+                x + labelWidth,
+                y,
+                valueWidth,
+                rowHeight,
+                {
+                    fontSize: 7
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                row[2],
+                x +
+                labelWidth +
+                valueWidth,
+                y,
+                labelWidth,
+                rowHeight,
+                {
+                    fill: true,
+                    bold: true,
+                    fontSize: 7
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                row[3],
+                x +
+                labelWidth +
+                valueWidth +
+                labelWidth,
+                y,
+                valueWidth,
+                rowHeight,
+                {
+                    fontSize: 7
+                }
+            );
+
+
+            y += rowHeight;
+
+        }
+    );
+
+
+    return y;
+}
+
+
+/* ============================================================
+   WOOD PDF
+   ============================================================ */
+
+function addWoodPDF(
+    doc,
+    bill,
+    startY
+) {
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+    const margin = 10;
+
+    let y =
+        startY;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        11
+    );
+
+
+    doc.text(
+        "WOOD DETAILS",
+        margin,
+        y
+    );
+
+
+    y += 5;
+
+
+    /*
+       A4 width = 210mm
+       Left/right margin = 10mm
+       Available = 190mm
+    */
+
+    const columns = [
+
+        {
+            title: "S.No",
+            width: 9
+        },
+
+        {
+            title: "Wood",
+            width: 23
+        },
+
+        {
+            title: "Quality",
+            width: 18
+        },
+
+        {
+            title: "Size",
+            width: 25
+        },
+
+        {
+            title: "Length",
+            width: 25
+        },
+
+        {
+            title: "Qty",
+            width: 13
+        },
+
+        {
+            title: "CFT",
+            width: 18
+        },
+
+        {
+            title: "Rate",
+            width: 22
+        },
+
+        {
+            title: "Amount",
+            width: 37
+        }
+
+    ];
+
+
+    let headerX =
+        margin;
+
+
+    columns.forEach(
+        function(column) {
+
+            pdfCell(
+                doc,
+                column.title,
+                headerX,
+                y,
+                column.width,
+                8,
+                {
+                    fill: true,
+                    bold: true,
+                    fontSize: 6.2,
+                    align: "center"
+                }
+            );
+
+
+            headerX +=
+                column.width;
+        }
+    );
+
+
+    y += 8;
+
+
+    const woodData =
+        getWoodData(
+            bill
+        );
+
+
+    if (
+        woodData.length === 0
+    ) {
+
+        pdfCell(
+            doc,
+            "No wood details",
+            margin,
+            y,
+            190,
+            9,
+            {
+                fontSize: 8,
+                align: "center"
+            }
+        );
+
+
+        return y + 15;
+    }
+
+
+    let serialNo =
+        1;
+
+
+    woodData.forEach(
+        function(item) {
+
+            let pieces =
+                getPieces(
+                    item
+                );
+
+
+            /*
+               If pieces are not available,
+               create one fallback row.
+            */
+
+            if (
+                pieces.length === 0
+            ) {
+
+                pieces = [
+
+                    {
+                        length:
+                            getItemLength(
+                                item
+                            ),
+
+                        extraLength:
+                            0,
+
+                        qty:
+                            getItemQty(
+                                item
+                            ) || 1
+                    }
+
+                ];
+            }
+
+
+            const woodName =
+                getWoodName(
+                    item
+                );
+
+
+            const quality =
+                getQuality(
+                    item
+                );
+
+
+            const size =
+                `${getBreadth(
+                    item
+                )} x ${getThickness(
+                    item
+                )}`;
+
+
+            const rate =
+                getRate(
+                    item
+                );
+
+
+            const totalCFT =
+                getFinalCFT(
+                    item
+                );
+
+
+            const totalAmount =
+                getWoodAmount(
+                    item
+                );
+
+
+            /*
+               Calculate total measurement
+               so CFT and amount can be
+               divided correctly between
+               individual length rows.
+            */
+
+            let totalMeasure =
+                0;
+
+
+            pieces.forEach(
+                function(piece) {
+
+                    const length =
+                        getPieceLength(
+                            piece
+                        );
+
+                    const qty =
+                        getPieceQty(
+                            piece
+                        );
+
+
+                    totalMeasure +=
+                        length * qty;
+                }
+            );
+
+
+            /*
+               If there is no measurement,
+               avoid division by zero.
+            */
+
+            if (
+                totalMeasure <= 0
+            ) {
+
+                totalMeasure =
+                    pieces.length;
+            }
+
+
+            pieces.forEach(
+                function(
+                    piece
+                ) {
+
+                    if (
+                        y >
+                        pageHeight - 35
+                    ) {
+
+                        doc.addPage();
+
+
+                        addPDFHeader(
+                            doc,
+                            bill
+                        );
+
+
+                        y = 34;
+
+
+                        let newHeaderX =
+                            margin;
+
+
+                        columns.forEach(
+                            function(
+                                column
+                            ) {
+
+                                pdfCell(
+                                    doc,
+                                    column.title,
+                                    newHeaderX,
+                                    y,
+                                    column.width,
+                                    8,
+                                    {
+                                        fill: true,
+                                        bold: true,
+                                        fontSize: 6.2,
+                                        align: "center"
+                                    }
+                                );
+
+
+                                newHeaderX +=
+                                    column.width;
                             }
                         );
 
-                    if (!response.ok) {
 
-                        throw new Error(
-                            `Bill API HTTP ${response.status}`
-                        );
-
+                        y += 8;
                     }
 
-                    const result =
-                        await response.json();
 
-                    const bill =
-                        result?.bill ??
-                        result?.data ??
-                        result;
-
-                    if (!bill) {
-
-                        throw new Error(
-                            "Bill data not found."
+                    const length =
+                        getPieceLength(
+                            piece
                         );
 
-                    }
 
-                    console.log(
-                        "COMPLETE BILL FOR PDF:",
-                        bill
-                    );
-
-                    /* =====================================================
-                       CREATE BILL HTML
-                       ===================================================== */
-
-                    const wrapper =
-                        document.createElement(
-                            "div"
+                    const qty =
+                        getPieceQty(
+                            piece
                         );
 
-                    wrapper.innerHTML =
-                        pdfHTML(bill);
 
-                    /*
-                       Keep the PDF template on the page only while
-                       html2pdf creates the Blob.
+                    const measure =
+                        length * qty;
 
-                       It is NOT displayed as part of the history page.
-                    */
 
-                    wrapper.style.position =
-                        "fixed";
+                    const proportion =
 
-                    wrapper.style.left =
-                        "0";
+                        totalMeasure > 0
 
-                    wrapper.style.top =
-                        "0";
+                            ? measure /
+                              totalMeasure
 
-                    wrapper.style.width =
-                        "794px";
+                            : 1 /
+                              pieces.length;
 
-                    wrapper.style.background =
-                        "#ffffff";
 
-                    wrapper.style.zIndex =
-                        "2147483647";
+                    const pieceCFT =
+                        totalCFT *
+                        proportion;
 
-                    wrapper.style.pointerEvents =
-                        "none";
 
-                    wrapper.style.opacity =
-                        "1";
+                    const pieceAmount =
+                        totalAmount *
+                        proportion;
 
-                    wrapper.style.visibility =
-                        "visible";
 
-                    document.body.appendChild(
-                        wrapper
-                    );
+                    const values = [
 
-                    /* =====================================================
-                       WAIT FOR HTML TO RENDER
-                       ===================================================== */
+                        serialNo,
 
-                    await new Promise(
-                        resolve =>
-                            requestAnimationFrame(
-                                () =>
-                                    requestAnimationFrame(
-                                        resolve
-                                    )
+                        woodName,
+
+                        quality,
+
+                        size,
+
+                        length > 0
+                            ? String(length)
+                            : "-",
+
+                        qty > 0
+                            ? String(qty)
+                            : "-",
+
+                        pieceCFT.toFixed(2),
+
+                        "Rs. " +
+                            formatMoney(
+                                rate
+                            ),
+
+                        "Rs. " +
+                            formatMoney(
+                                pieceAmount
                             )
-                    );
 
-                    await new Promise(
-                        resolve =>
-                            setTimeout(
-                                resolve,
-                                250
-                            )
-                    );
+                    ];
 
-                    /* =====================================================
-                       CREATE PDF AS BLOB
-                       IMPORTANT:
-                       outputPdf("blob") DOES NOT DOWNLOAD
-                       ===================================================== */
 
-                    const pdfBlob =
-                        await html2pdf()
-                            .set({
-                                margin: 8,
+                    let rowX =
+                        margin;
 
-                                image: {
-                                    type: "jpeg",
-                                    quality: 0.98
-                                },
 
-                                html2canvas: {
-                                    scale: 2,
-                                    useCORS: true,
-                                    allowTaint: false,
-                                    backgroundColor:
-                                        "#ffffff",
-                                    logging: false,
+                    columns.forEach(
+                        function(
+                            column,
+                            colIndex
+                        ) {
 
-                                    scrollX: 0,
-                                    scrollY: 0,
+                            let alignment =
+                                "left";
 
-                                    windowWidth:
-                                        794,
 
-                                    windowHeight:
-                                        Math.max(
-                                            1123,
-                                            wrapper.scrollHeight
-                                        )
-                                },
+                            if (
 
-                                jsPDF: {
-                                    unit: "mm",
-                                    format: "a4",
-                                    orientation:
-                                        "portrait",
-                                    compress: true
-                                },
+                                colIndex === 0 ||
 
-                                pagebreak: {
-                                    mode: [
-                                        "css",
-                                        "legacy"
-                                    ]
+                                colIndex === 2 ||
+
+                                colIndex === 3 ||
+
+                                colIndex === 4 ||
+
+                                colIndex === 5 ||
+
+                                colIndex === 6
+
+                            ) {
+
+                                alignment =
+                                    "center";
+
+                            }
+                            else if (
+
+                                colIndex === 7 ||
+
+                                colIndex === 8
+
+                            ) {
+
+                                alignment =
+                                    "right";
+                            }
+
+
+                            pdfCell(
+                                doc,
+                                values[
+                                    colIndex
+                                ],
+                                rowX,
+                                y,
+                                column.width,
+                                9,
+                                {
+                                    fontSize: 6.1,
+                                    align: alignment
                                 }
-                            })
-                            .from(wrapper)
-                            .outputPdf(
-                                "blob"
                             );
 
-                    /* =====================================================
-                       REMOVE TEMPORARY HTML
-                       ===================================================== */
 
-                    wrapper.remove();
-
-                    /* =====================================================
-                       VERIFY PDF
-                       ===================================================== */
-
-                    if (
-                        !pdfBlob ||
-                        pdfBlob.size < 1000
-                    ) {
-
-                        throw new Error(
-                            "Generated PDF is empty."
-                        );
-
-                    }
-
-                    console.log(
-                        "PDF BLOB SIZE:",
-                        pdfBlob.size
+                            rowX +=
+                                column.width;
+                        }
                     );
 
-                    /* =====================================================
-                       CREATE BLOB URL
-                       ===================================================== */
 
-                    const pdfURL =
-                        URL.createObjectURL(
-                            pdfBlob
-                        );
+                    y += 9;
 
-                    console.log(
-                        "PDF URL:",
-                        pdfURL
-                    );
 
-                    /* =====================================================
-                       OPEN PDF IN CURRENT TAB
-                       =====================================================
-
-                       IMPORTANT:
-
-                       DO NOT use:
-                           <a download>
-                           link.download
-                           .save()
-                           window.open()
-                           _blank
-
-                       The browser's built-in PDF viewer will display
-                       the generated bill.
-
-                       This is the same approach used by your sample.
-                       ===================================================== */
-
-                    window.location.href = pdfURL;
-
-                    /*
-                       Do NOT immediately call URL.revokeObjectURL().
-                       The browser PDF viewer still needs the Blob URL.
-                    */
+                    serialNo++;
 
                 }
-                catch (error) {
+            );
 
-                    console.error(
-                        "PDF VIEW ERROR:",
-                        error
+        }
+    );
+
+
+    /*
+       TOTAL WOOD CFT
+    */
+
+    const allWoodCFT =
+        woodData.reduce(
+            function(
+                total,
+                item
+            ) {
+
+                return total +
+                    getFinalCFT(
+                        item
                     );
 
-                    if (button) {
+            },
+            0
+        );
 
-                        button.disabled =
-                            false;
 
-                        button.textContent =
-                            oldText;
+    if (
+        y >
+        pageHeight - 25
+    ) {
 
-                    }
+        doc.addPage();
 
-                    alert(
-                        "Unable to open bill PDF.\n\n" +
-                        error.message
-                    );
+        addPDFHeader(
+            doc,
+            bill
+        );
 
-                }
+        y = 34;
+    }
+
+
+    pdfCell(
+        doc,
+        "",
+        margin,
+        y,
+        137,
+        9,
+        {
+            fill: true
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "WOOD TOTAL CFT",
+        margin + 137,
+        y,
+        28,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        allWoodCFT.toFixed(2),
+        margin + 165,
+        y,
+        25,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "right"
+        }
+    );
+
+
+    y += 14;
+
+
+    return y;
+}
+
+
+/* ============================================================
+   CFT SUMMARY
+   SAME WOOD + SAME QUALITY
+   ============================================================ */
+
+function addCFTSummaryPDF(
+    doc,
+    bill,
+    startY
+) {
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+    const margin = 10;
+
+    let y =
+        startY;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        11
+    );
+
+
+    doc.text(
+        "CFT TOTAL BY WOOD / QUALITY",
+        margin,
+        y
+    );
+
+
+    y += 5;
+
+
+    const col1 = 15;
+
+    const col2 = 95;
+
+    const col3 = 80;
+
+
+    pdfCell(
+        doc,
+        "S.No",
+        margin,
+        y,
+        col1,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Wood / Quality",
+        margin + col1,
+        y,
+        col2,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Total CFT",
+        margin +
+        col1 +
+        col2,
+        y,
+        col3,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    y += 8;
+
+
+    const grouped =
+        new Map();
+
+
+    getWoodData(
+        bill
+    ).forEach(
+        function(item) {
+
+            const wood =
+                String(
+                    getWoodName(
+                        item
+                    )
+                )
+                    .trim() ||
+                "-";
+
+
+            const quality =
+                String(
+                    getQuality(
+                        item
+                    )
+                )
+                    .trim() ||
+                "-";
+
+
+            const cft =
+                getFinalCFT(
+                    item
+                );
+
+
+            const key =
+
+                wood
+                    .toLowerCase() +
+
+                "|" +
+
+                quality
+                    .toLowerCase();
+
+
+            if (
+                grouped.has(
+                    key
+                )
+            ) {
+
+                grouped.get(
+                    key
+                ).cft +=
+                    cft;
 
             }
+            else {
 
-            /* =========================================================
-               EVENTS
-               ========================================================= */
+                grouped.set(
+                    key,
+                    {
 
-            searchBtn?.addEventListener("click", applyFilters);
+                        wood:
+                            wood,
 
-            searchInput?.addEventListener("input", applyFilters);
+                        quality:
+                            quality,
 
-            searchInput?.addEventListener("keydown", event => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    applyFilters();
+                        cft:
+                            cft
+
+                    }
+                );
+            }
+        }
+    );
+
+
+    /*
+       If there are no CFT values
+    */
+
+    if (
+        grouped.size === 0
+    ) {
+
+        pdfCell(
+            doc,
+            "-",
+            margin,
+            y,
+            col1,
+            8,
+            {
+                fontSize: 7,
+                align: "center"
+            }
+        );
+
+
+        pdfCell(
+            doc,
+            "No CFT details",
+            margin + col1,
+            y,
+            col2,
+            8,
+            {
+                fontSize: 7
+            }
+        );
+
+
+        pdfCell(
+            doc,
+            "0.00 CFT",
+            margin +
+            col1 +
+            col2,
+            y,
+            col3,
+            8,
+            {
+                fontSize: 7,
+                align: "right"
+            }
+        );
+
+
+        return y + 16;
+    }
+
+
+    let serial =
+        1;
+
+
+    let grandCFT =
+        0;
+
+
+    grouped.forEach(
+        function(group) {
+
+            if (
+                y >
+                pageHeight - 30
+            ) {
+
+                doc.addPage();
+
+
+                addPDFHeader(
+                    doc,
+                    bill
+                );
+
+
+                y = 34;
+            }
+
+
+            pdfCell(
+                doc,
+                serial,
+                margin,
+                y,
+                col1,
+                8,
+                {
+                    fontSize: 7,
+                    align: "center"
                 }
-            });
+            );
 
-            clearSearchBtn?.addEventListener("click", () => {
-                searchInput.value = "";
+
+            pdfCell(
+                doc,
+                `${group.wood} / Quality ${group.quality}`,
+                margin + col1,
+                y,
+                col2,
+                8,
+                {
+                    fontSize: 7
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                group.cft.toFixed(2) +
+                    " CFT",
+                margin +
+                col1 +
+                col2,
+                y,
+                col3,
+                8,
+                {
+                    fontSize: 7,
+                    align: "right"
+                }
+            );
+
+
+            grandCFT +=
+                group.cft;
+
+
+            y += 8;
+
+            serial++;
+        }
+    );
+
+
+    /*
+       GRAND CFT
+    */
+
+    if (
+        y >
+        pageHeight - 25
+    ) {
+
+        doc.addPage();
+
+        addPDFHeader(
+            doc,
+            bill
+        );
+
+        y = 34;
+    }
+
+
+    pdfCell(
+        doc,
+        "",
+        margin,
+        y,
+        col1,
+        9,
+        {
+            fill: true
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "TOTAL CFT",
+        margin + col1,
+        y,
+        col2,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 8,
+            align: "right"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        grandCFT.toFixed(2) +
+            " CFT",
+        margin +
+        col1 +
+        col2,
+        y,
+        col3,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 8,
+            align: "right"
+        }
+    );
+
+
+    return y + 17;
+}
+
+
+/* ============================================================
+   OTHER CHARGES PDF
+   ============================================================ */
+
+function addChargesPDF(
+    doc,
+    bill,
+    startY
+) {
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+    const margin = 10;
+
+    let y =
+        startY;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(
+        11
+    );
+
+
+    doc.text(
+        "OTHER CHARGES",
+        margin,
+        y
+    );
+
+
+    y += 5;
+
+
+    const col1 = 15;
+
+    const col2 = 115;
+
+    const col3 = 60;
+
+
+    pdfCell(
+        doc,
+        "S.No",
+        margin,
+        y,
+        col1,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Charge / Description",
+        margin + col1,
+        y,
+        col2,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Amount",
+        margin +
+        col1 +
+        col2,
+        y,
+        col3,
+        8,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 7,
+            align: "center"
+        }
+    );
+
+
+    y += 8;
+
+
+    const rows = [];
+
+
+    /*
+       LABOUR
+    */
+
+    const labour =
+        getLabourCharge(
+            bill
+        );
+
+
+    if (
+        labour > 0
+    ) {
+
+        rows.push(
+            [
+                "Labour Charge",
+                labour
+            ]
+        );
+    }
+
+
+    /*
+       MAIN OTHER CHARGE
+    */
+
+    const other =
+        getOtherCharge(
+            bill
+        );
+
+
+    if (
+        other > 0
+    ) {
+
+        rows.push(
+            [
+                "Other Charge",
+                other
+            ]
+        );
+    }
+
+
+    /*
+       ADDITIONAL OTHER ITEMS
+    */
+
+    const additionalItems =
+        getOtherData(
+            bill
+        );
+
+
+    console.log(
+        "PDF ADDITIONAL OTHER DATA:",
+        additionalItems
+    );
+
+
+    additionalItems.forEach(
+        function(item) {
+
+            if (
+                !item
+            ) {
+
+                return;
+            }
+
+
+            const name =
+                getOtherItemName(
+                    item
+                );
+
+
+            const amount =
+                getOtherItemAmount(
+                    item
+                );
+
+
+            /*
+               Keep named items even
+               when amount is zero.
+            */
+
+            if (
+                amount > 0 ||
+                String(
+                    name
+                ).trim() !==
+                "Other Charge"
+            ) {
+
+                rows.push(
+                    [
+                        name,
+                        amount
+                    ]
+                );
+            }
+
+        }
+    );
+
+
+    /*
+       If nothing exists
+    */
+
+    if (
+        rows.length === 0
+    ) {
+
+        rows.push(
+            [
+                "No additional charges",
+                0
+            ]
+        );
+    }
+
+
+    rows.forEach(
+        function(
+            row,
+            index
+        ) {
+
+            if (
+                y >
+                pageHeight - 30
+            ) {
+
+                doc.addPage();
+
+                addPDFHeader(
+                    doc,
+                    bill
+                );
+
+                y = 34;
+            }
+
+
+            pdfCell(
+                doc,
+                index + 1,
+                margin,
+                y,
+                col1,
+                8,
+                {
+                    fontSize: 7,
+                    align: "center"
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                row[0],
+                margin + col1,
+                y,
+                col2,
+                8,
+                {
+                    fontSize: 7
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                "Rs. " +
+                    formatMoney(
+                        row[1]
+                    ),
+                margin +
+                col1 +
+                col2,
+                y,
+                col3,
+                8,
+                {
+                    fontSize: 7,
+                    align: "right"
+                }
+            );
+
+
+            y += 8;
+        }
+    );
+
+
+    /*
+       SHOW OTHERS TOTAL
+    */
+
+    const total =
+        getOthersTotal(
+            bill
+        );
+
+
+    if (
+        y >
+        pageHeight - 25
+    ) {
+
+        doc.addPage();
+
+        addPDFHeader(
+            doc,
+            bill
+        );
+
+        y = 34;
+    }
+
+
+    pdfCell(
+        doc,
+        "",
+        margin,
+        y,
+        col1,
+        9,
+        {
+            fill: true
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "OTHERS TOTAL",
+        margin + col1,
+        y,
+        col2,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 8,
+            align: "right"
+        }
+    );
+
+
+    pdfCell(
+        doc,
+        "Rs. " +
+            formatMoney(
+                total
+            ),
+        margin +
+        col1 +
+        col2,
+        y,
+        col3,
+        9,
+        {
+            fill: true,
+            bold: true,
+            fontSize: 8,
+            align: "right"
+        }
+    );
+
+
+    return y + 17;
+}
+
+
+/* ============================================================
+   TOTALS PDF
+   ============================================================ */
+
+function addTotalsPDF(
+    doc,
+    bill,
+    startY
+) {
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+
+    const x = 105;
+
+    const width = 95;
+
+
+    let y =
+        startY;
+
+
+    const rows = [
+
+        [
+            "Wood Total",
+            getWoodTotal(
+                bill
+            )
+        ],
+
+        [
+            "Labour Charge",
+            getLabourCharge(
+                bill
+            )
+        ],
+
+        [
+            "Other Charge",
+            getOtherCharge(
+                bill
+            )
+        ],
+
+        [
+            "Others Total",
+            getOthersTotal(
+                bill
+            )
+        ],
+
+        [
+            "Discount",
+            getDiscount(
+                bill
+            )
+        ],
+
+        [
+            "Grand Total",
+            getGrandTotal(
+                bill
+            )
+        ],
+
+        [
+            "Advance / Paid",
+            getAdvance(
+                bill
+            )
+        ],
+
+        [
+            "Balance",
+            getBalance(
+                bill
+            )
+        ]
+
+    ];
+
+
+    const returned =
+        getReturnAmount(
+            bill
+        );
+
+
+    if (
+        returned > 0
+    ) {
+
+        rows.splice(
+            rows.length - 2,
+            0,
+            [
+                "Return Amount",
+                returned
+            ]
+        );
+    }
+
+
+    rows.forEach(
+        function(row) {
+
+            if (
+                y >
+                pageHeight - 20
+            ) {
+
+                doc.addPage();
+
+                addPDFHeader(
+                    doc,
+                    bill
+                );
+
+                y = 34;
+            }
+
+
+            const isGrand =
+                row[0] ===
+                "Grand Total";
+
+
+            const isBalance =
+                row[0] ===
+                "Balance";
+
+
+            const height =
+                isGrand ||
+                isBalance
+                    ? 10
+                    : 8;
+
+
+            pdfCell(
+                doc,
+                row[0],
+                x,
+                y,
+                width * 0.55,
+                height,
+                {
+                    fill:
+                        isGrand ||
+                        isBalance,
+
+                    bold:
+                        isGrand ||
+                        isBalance,
+
+                    fontSize:
+                        isGrand ||
+                        isBalance
+                            ? 9
+                            : 8
+                }
+            );
+
+
+            pdfCell(
+                doc,
+                "Rs. " +
+                    formatMoney(
+                        row[1]
+                    ),
+                x +
+                    width *
+                    0.55,
+                y,
+                width *
+                    0.45,
+                height,
+                {
+                    fill:
+                        isGrand ||
+                        isBalance,
+
+                    bold:
+                        isGrand ||
+                        isBalance,
+
+                    fontSize:
+                        isGrand ||
+                        isBalance
+                            ? 9
+                            : 8,
+
+                    align:
+                        "right"
+                }
+            );
+
+
+            y +=
+                height;
+        }
+    );
+
+
+    return y;
+}
+
+
+/* ============================================================
+   CREATE COMPLETE PDF
+   ============================================================ */
+
+function createBillPDF(
+    bill,
+    jsPDF
+) {
+
+    const doc =
+        new jsPDF(
+            {
+                orientation:
+                    "portrait",
+
+                unit:
+                    "mm",
+
+                format:
+                    "a4"
+            }
+        );
+
+
+    addPDFHeader(
+        doc,
+        bill
+    );
+
+
+    let y =
+        34;
+
+
+    /*
+       CUSTOMER
+    */
+
+    y =
+        addCustomerPDFDetails(
+            doc,
+            bill,
+            y
+        );
+
+
+    y += 7;
+
+
+    /*
+       WOOD
+    */
+
+    y =
+        addWoodPDF(
+            doc,
+            bill,
+            y
+        );
+
+
+    y += 2;
+
+
+    /*
+       CFT TOTAL
+    */
+
+    y =
+        addCFTSummaryPDF(
+            doc,
+            bill,
+            y
+        );
+
+
+    y += 2;
+
+
+    /*
+       OTHER CHARGES
+    */
+
+    y =
+        addChargesPDF(
+            doc,
+            bill,
+            y
+        );
+
+
+    y += 2;
+
+
+    /*
+       TOTALS
+    */
+
+    addTotalsPDF(
+        doc,
+        bill,
+        y
+    );
+
+
+    /*
+       FOOTER ON ALL PAGES
+    */
+
+    const pageCount =
+        doc.getNumberOfPages();
+
+
+    for (
+        let page = 1;
+        page <= pageCount;
+        page++
+    ) {
+
+        doc.setPage(
+            page
+        );
+
+
+        const width =
+            doc.internal.pageSize.getWidth();
+
+        const height =
+            doc.internal.pageSize.getHeight();
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.setFontSize(
+            7
+        );
+
+
+        doc.line(
+            10,
+            height - 12,
+            width - 10,
+            height - 12
+        );
+
+
+        doc.text(
+            "AMMAN SAW MILL",
+            10,
+            height - 7
+        );
+
+
+        doc.text(
+            `Bill No: ${getBillNumber(
+                bill
+            )}`,
+            width / 2,
+            height - 7,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.text(
+            `Page ${page} of ${pageCount}`,
+            width - 10,
+            height - 7,
+            {
+                align: "right"
+            }
+        );
+    }
+
+
+    return doc;
+}
+
+
+/* ============================================================
+   GET COMPLETE BILL
+   ============================================================
+
+   IMPORTANT FIX:
+
+   /bills may return only summary fields.
+
+   For PDF we first request:
+
+       /bill/:id
+
+   so wood_data, labour data,
+   other charges, quality,
+   pieces etc. can be received.
+   ============================================================ */
+
+async function getCompleteBill(
+    id
+) {
+
+    console.log(
+        "Fetching complete bill:",
+        id
+    );
+
+
+    /*
+       FIRST:
+       Try individual bill API.
+    */
+
+    try {
+
+        const response =
+            await fetch(
+
+                `${API_URL}/bill/${encodeURIComponent(
+                    id
+                )}`,
+
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    cache: "no-store"
+                }
+            );
+
+
+        if (
+            response.ok
+        ) {
+
+            const result =
+                await response.json();
+
+
+            console.log(
+                "INDIVIDUAL BILL RESPONSE:",
+                result
+            );
+
+
+            const completeBill =
+
+                result?.bill ??
+
+                result?.data ??
+
+                result?.result ??
+
+                result;
+
+
+            if (
+                completeBill &&
+                typeof completeBill ===
+                    "object"
+            ) {
+
+                return completeBill;
+            }
+        }
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Individual bill API failed:",
+            error
+        );
+    }
+
+
+    /*
+       SECOND:
+       Fall back to history bill.
+    */
+
+    const existing =
+        allBills.find(
+            function(item) {
+
+                return String(
+                    getBillId(
+                        item
+                    )
+                ) ===
+                String(id);
+
+            }
+        );
+
+
+    if (
+        existing
+    ) {
+
+        return existing;
+    }
+
+
+    throw new Error(
+        "Complete bill data not found."
+    );
+}
+
+
+/* ============================================================
+   OPEN PDF
+   ============================================================
+
+   SAME TAB
+   NO DOWNLOAD
+   NO html2pdf
+   NO pdfHTML
+   ============================================================ */
+
+async function openBillPDF(
+    billId,
+    button = null
+) {
+
+    const oldText =
+        button
+            ? button.textContent
+            : "PDF";
+
+
+    try {
+
+        console.log(
+            "======================================"
+        );
+
+
+        console.log(
+            "PDF GENERATION START"
+        );
+
+
+        console.log(
+            "Bill ID:",
+            billId
+        );
+
+
+        if (
+            button
+        ) {
+
+            button.disabled =
+                true;
+
+            button.textContent =
+                "Creating...";
+        }
+
+
+        /*
+           LOAD JSPDF
+        */
+
+        const jsPDF =
+            await loadJsPDF();
+
+
+        /*
+           GET COMPLETE BILL
+        */
+
+        const bill =
+            await getCompleteBill(
+                billId
+            );
+
+
+        if (
+            !bill
+        ) {
+
+            throw new Error(
+                "Bill data not found."
+            );
+        }
+
+
+        console.log(
+            "COMPLETE BILL:",
+            bill
+        );
+
+
+        console.log(
+            "BILL NUMBER:",
+            getBillNumber(
+                bill
+            )
+        );
+
+
+        console.log(
+            "WOOD DATA:",
+            getWoodData(
+                bill
+            )
+        );
+
+
+        console.log(
+            "OTHER DATA:",
+            getOtherData(
+                bill
+            )
+        );
+
+
+        console.log(
+            "LABOUR:",
+            getLabourCharge(
+                bill
+            )
+        );
+
+
+        console.log(
+            "OTHER:",
+            getOtherCharge(
+                bill
+            )
+        );
+
+
+        console.log(
+            "OTHERS TOTAL:",
+            getOthersTotal(
+                bill
+            )
+        );
+
+
+        /*
+           CREATE PDF
+        */
+
+        const doc =
+            createBillPDF(
+                bill,
+                jsPDF
+            );
+
+
+        const pages =
+            doc.getNumberOfPages();
+
+
+        console.log(
+            "PDF PAGES:",
+            pages
+        );
+
+
+        if (
+            !pages ||
+            pages < 1
+        ) {
+
+            throw new Error(
+                "PDF has no pages."
+            );
+        }
+
+
+        /*
+           CREATE BLOB
+        */
+
+        const pdfBlob =
+            doc.output(
+                "blob"
+            );
+
+
+        console.log(
+            "PDF BLOB SIZE:",
+            pdfBlob.size
+        );
+
+
+        if (
+            !pdfBlob ||
+            pdfBlob.size < 1000
+        ) {
+
+            throw new Error(
+                "Generated PDF is empty."
+            );
+        }
+
+
+        /*
+           CREATE BLOB URL
+        */
+
+        const pdfURL =
+            URL.createObjectURL(
+                pdfBlob
+            );
+
+
+        console.log(
+            "PDF URL:",
+            pdfURL
+        );
+
+
+        /*
+           IMPORTANT
+
+           This opens the generated
+           PDF in the CURRENT TAB.
+
+           It does NOT download it.
+
+           It does NOT use:
+             window.open()
+             _blank
+             download=""
+             html2pdf
+        */
+
+        window.location.href =
+            pdfURL;
+
+    }
+    catch (error) {
+
+        console.error(
+            "======================================"
+        );
+
+
+        console.error(
+            "PDF ERROR:",
+            error
+        );
+
+
+        console.error(
+            "======================================"
+        );
+
+
+        alert(
+            "PDF creation failed.\n\n" +
+            error.message
+        );
+
+
+        if (
+            button
+        ) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                oldText;
+        }
+    }
+}
+
+
+/* ============================================================
+   RETURN BILL
+   ============================================================
+
+   MULTI-RETURN / CUMULATIVE MODE
+   ------------------------------------------------------------
+   - getGrandTotal(bill) is treated as the amount still
+     remaining/payable for the bill.
+   - Each successful return call is expected to REDUCE the
+     bill's grand_total on the backend and ADD to its
+     return_amount (cumulative), so the same bill can be
+     returned against multiple times until fully settled.
+   - The Return button (see displayBills) stays active as
+     long as getGrandTotal(bill) > 0, and becomes a disabled
+     "Returned" button once it reaches 0.
+   ============================================================ */
+
+async function handleReturn(bill) {
+
+    const billId =
+        getBillId(bill);
+
+    const billNo =
+        getBillNumber(bill);
+
+
+    // The current Grand Total is the amount still available to return.
+    const remainingTotal =
+        getGrandTotal(bill);
+
+
+    if (
+        remainingTotal <= 0
+    ) {
+
+        alert(
+            "No amount is left to return for this bill."
+        );
+
+        return;
+    }
+
+
+    // Ask return amount
+    const value = prompt(
+        `Enter Return Amount\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Remaining Grand Total: ₹ ${formatMoney(remainingTotal)}`
+    );
+
+    // Cancel
+    if (value === null) {
+        return;
+    }
+
+    const returnAmount = Number(
+        String(value)
+            .replace(/,/g, "")
+            .trim()
+    );
+
+    // Validate amount
+    if (
+        !Number.isFinite(returnAmount) ||
+        returnAmount <= 0
+    ) {
+        alert("Enter a valid return amount greater than 0.");
+        return;
+    }
+
+    // Return amount cannot exceed the remaining Grand Total
+    if (returnAmount > remainingTotal) {
+        alert(
+            "Return amount cannot be greater than the remaining Grand Total.\n\n" +
+            `Remaining: ₹ ${formatMoney(remainingTotal)}`
+        );
+        return;
+    }
+
+    // Confirm
+    const confirmed = confirm(
+        `Confirm Return?\n\n` +
+        `Bill No: ${billNo}\n` +
+        `Return now: ₹ ${formatMoney(returnAmount)}\n` +
+        `Remaining after return: ₹ ${formatMoney(
+            Math.max(0, remainingTotal - returnAmount)
+        )}`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        console.log("======================================");
+        console.log("RETURN UPDATE");
+        console.log("Bill ID:", billId);
+        console.log("Bill No:", billNo);
+        console.log("Return Amount:", returnAmount);
+        console.log("======================================");
+
+        /*
+         * IMPORTANT:
+         * Use the backend's cumulative return route.
+         * Every call adds to return_amount and reduces grand_total.
+         *
+         * PUT /api/return-bill
+         */
+
+        const response = await fetch(
+            `${API_URL}/return-bill`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    id: billId,
+                    returnAmount: returnAmount
+                })
+            }
+        );
+
+        let result = null;
+
+        try {
+
+            result =
+                await response.json();
+
+        }
+        catch (parseError) {
+
+            result = null;
+        }
+
+        console.log(
+            "RETURN RESPONSE:",
+            result
+        );
+
+        // Check HTTP + backend error
+        if (
+            !response.ok ||
+            !result?.success
+        ) {
+
+            throw new Error(
+                result?.message ||
+                `HTTP ${response.status}: Return update failed.`
+            );
+        }
+
+        const newGrandTotal =
+            numberValue(result?.grandTotal);
+
+        const newReturnAmount =
+            numberValue(result?.returnAmount);
+
+        // Success
+        alert(
+            "Return saved successfully.\n\n" +
+            `Returned this time: ₹ ${formatMoney(returnAmount)}\n` +
+            `Total returned: ₹ ${formatMoney(newReturnAmount)}\n` +
+            `Remaining Grand Total: ₹ ${formatMoney(newGrandTotal)}`
+        );
+
+        // Reload history.
+        // Return button stays active while Grand Total > 0.
+        await loadBills();
+
+    }
+    catch (error) {
+
+        console.error(
+            "RETURN ERROR:",
+            error
+        );
+
+        alert(
+            "Return update failed.\n\n" +
+            error.message
+        );
+    }
+}
+
+/* ============================================================
+   ACTION EVENTS
+   ============================================================ */
+
+function attachActionEvents() {
+
+
+    /*
+       PDF BUTTONS
+    */
+
+    document
+        .querySelectorAll(
+            ".pdfBtn"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        const billId =
+                            button.dataset.billId;
+
+
+                        openBillPDF(
+                            billId,
+                            button
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /*
+       RETURN BUTTONS
+    */
+
+    document
+        .querySelectorAll(
+            ".returnBtn:not(.returnedBtn)"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    async function() {
+
+                        const billId =
+                            button.dataset.billId;
+
+
+                        const bill =
+                            allBills.find(
+                                function(item) {
+
+                                    return String(
+                                        getBillId(
+                                            item
+                                        )
+                                    ) ===
+                                    String(
+                                        billId
+                                    );
+
+                                }
+                            );
+
+
+                        if (
+                            !bill
+                        ) {
+
+                            alert(
+                                "Bill not found."
+                            );
+
+                            return;
+                        }
+
+
+                        await handleReturn(
+                            bill
+                        );
+
+                    }
+                );
+
+            }
+        );
+}
+
+
+/* ============================================================
+   SEARCH BUTTON
+   ============================================================ */
+
+if (
+    searchBtn
+) {
+
+    searchBtn.addEventListener(
+        "click",
+        function() {
+
+            applyFilters();
+
+        }
+    );
+}
+
+
+/* ============================================================
+   SEARCH INPUT
+   ============================================================ */
+
+if (
+    searchInput
+) {
+
+    searchInput.addEventListener(
+        "input",
+        function() {
+
+            applyFilters();
+
+        }
+    );
+
+
+    searchInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
                 applyFilters();
+            }
+
+        }
+    );
+}
+
+
+/* ============================================================
+   CLEAR SEARCH
+   ============================================================ */
+
+if (
+    clearSearchBtn
+) {
+
+    clearSearchBtn.addEventListener(
+        "click",
+        function() {
+
+            if (
+                searchInput
+            ) {
+
+                searchInput.value =
+                    "";
+            }
+
+
+            if (
+                statusFilter
+            ) {
+
+                statusFilter.value =
+                    "all";
+            }
+
+
+            applyFilters();
+
+
+            if (
+                searchInput
+            ) {
+
                 searchInput.focus();
-            });
+            }
 
-            statusFilter?.addEventListener("change", applyFilters);
+        }
+    );
+}
 
-            refreshBtn?.addEventListener("click", async () => {
-                const oldText = refreshBtn.textContent;
 
-                refreshBtn.disabled = true;
-                refreshBtn.textContent = "↻ Loading...";
+/* ============================================================
+   STATUS FILTER
+   ============================================================ */
 
-                searchInput.value = "";
-                statusFilter.value = "all";
+if (
+    statusFilter
+) {
 
-                try {
-                    await loadBills();
-                } finally {
-                    refreshBtn.disabled = false;
-                    refreshBtn.textContent = oldText;
-                }
-            });
+    statusFilter.addEventListener(
+        "change",
+        function() {
 
-            homeBtn?.addEventListener("click", () => {
-                window.location.href = "index.html";
-            });
+            applyFilters();
 
-            document.addEventListener("DOMContentLoaded", loadBills);
+        }
+    );
+}
+
+
+/* ============================================================
+   REFRESH
+   ============================================================ */
+
+if (
+    refreshBtn
+) {
+
+    refreshBtn.addEventListener(
+        "click",
+        async function() {
+
+            const oldText =
+                refreshBtn.textContent;
+
+
+            refreshBtn.disabled =
+                true;
+
+
+            refreshBtn.textContent =
+                "↻ Loading...";
+
+
+            try {
+
+                await loadBills();
+
+            }
+            finally {
+
+                refreshBtn.disabled =
+                    false;
+
+                refreshBtn.textContent =
+                    oldText;
+            }
+
+        }
+    );
+}
+
+
+/* ============================================================
+   HOME
+   ============================================================ */
+
+if (
+    homeBtn
+) {
+
+    homeBtn.addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "../index.html";
+
+        }
+    );
+}
+
+
+/* ============================================================
+   INITIAL LOAD
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        console.log(
+            "HISTORY PAGE READY"
+        );
+
+
+        loadBills();
+
+    }
+);

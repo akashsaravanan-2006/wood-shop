@@ -2639,37 +2639,22 @@ if (whatsappBtn) {
                    CREATE TEMP PDF AREA
                    ================================================= */
 
-                pdfWrapper =
-                    document.createElement("div");
+                pdfWrapper.style.position = "fixed";
+pdfWrapper.style.left = "0";
+pdfWrapper.style.top = "0";
+pdfWrapper.style.width = "794px";
+pdfWrapper.style.minHeight = "1123px";
 
-                pdfWrapper.style.position =
-                    "fixed";
+pdfWrapper.style.backgroundColor = "#ffffff";
 
-                pdfWrapper.style.left =
-                    "-100000px";
+/* IMPORTANT - PDF FIX */
+pdfWrapper.style.zIndex = "999999";
+pdfWrapper.style.opacity = "1";
+pdfWrapper.style.visibility = "visible";
 
-                pdfWrapper.style.top =
-                    "0";
-
-                pdfWrapper.style.width =
-                    "794px";
-
-                pdfWrapper.style.background =
-                    "#ffffff";
-
-                pdfWrapper.style.padding =
-                    "20px";
-
-                const billClone =
-                    billElement.cloneNode(true);
-
-                pdfWrapper.appendChild(
-                    billClone
-                );
-
-                document.body.appendChild(
-                    pdfWrapper
-                );
+pdfWrapper.style.pointerEvents = "none";
+pdfWrapper.style.boxSizing = "border-box";
+pdfWrapper.style.overflow = "visible";
 
                 /* =================================================
                    PDF FILE NAME

@@ -2532,17 +2532,30 @@ if (
    WHATSAPP PDF - NO TOKEN / NO API
    ============================================================
 
-   Mobile:
-   - Generates the complete bill PDF
-   - Opens the native share sheet
-   - User selects WhatsApp
-   - PDF + greeting are shared
+   IMPORTANT — BROWSER / WHATSAPP LIMITATION:
 
-   Desktop:
-   - Generates and downloads the complete bill PDF
-   - Opens WhatsApp chat for the customer
-   - Greeting is pre-filled
-   - User attaches the downloaded PDF and sends it
+   No website (this page included) can force a file to
+   attach itself inside a WhatsApp chat with zero user
+   action. WhatsApp does not expose that ability to outside
+   pages, for spam/security reasons. So the closest thing
+   to "fully automatic" is:
+
+   Mobile (Web Share API with file support):
+   - Generates the complete bill PDF
+   - Opens the native share sheet automatically
+   - User taps WhatsApp once
+   - PDF + greeting are already attached — nothing to attach
+     manually
+
+   Desktop / unsupported browsers:
+   - Generates the PDF and auto-downloads it
+   - Auto-copies the PDF to the clipboard when the browser
+     allows it, so the user can just press Ctrl+V inside the
+     opened chat instead of browsing for the downloaded file
+   - Auto-opens the exact customer's WhatsApp chat (the
+     number typed on the personal details page) with the
+     greeting message pre-filled
+   - User only has to paste/attach + hit Enter
    ============================================================ */
 
 const whatsappBtn =
@@ -3115,6 +3128,12 @@ if (
 
                 /* ------------------------------------------------
                    MOBILE / SUPPORTED SHARE
+                   ------------------------------------------------
+
+                   This is the ONLY path where the PDF genuinely
+                   attaches itself into WhatsApp automatically —
+                   the OS share sheet hands WhatsApp the file +
+                   text together the moment the user taps it.
                    ------------------------------------------------ */
 
                 if (
@@ -3151,7 +3170,22 @@ if (
                 }
 
                 /* ------------------------------------------------
-                   DESKTOP FALLBACK
+                   DESKTOP / UNSUPPORTED-SHARE FALLBACK
+                   ------------------------------------------------
+
+                   No page can force-attach a file into WhatsApp
+                   from here, so this does everything else
+                   automatically:
+
+                   1. Auto-downloads the PDF
+                   2. Tries to auto-copy the PDF to the clipboard
+                      (so the user can just paste it — Ctrl+V —
+                      into the chat instead of hunting for the
+                      downloaded file)
+                   3. Auto-opens WhatsApp already pointed at the
+                      EXACT customer number entered on the
+                      personal details page, with the greeting
+                      message pre-filled
                    ------------------------------------------------ */
 
                 const downloadURL =
@@ -3193,7 +3227,62 @@ if (
                 );
 
                 /* ------------------------------------------------
+                   TRY TO COPY THE PDF TO THE CLIPBOARD
+
+                   Not every browser allows non-image clipboard
+                   writes, so this is wrapped in its own
+                   try/catch and never blocks the WhatsApp step
+                   below if it fails.
+                   ------------------------------------------------ */
+
+                let pdfCopiedToClipboard =
+                    false;
+
+                try {
+
+                    if (
+                        navigator.clipboard &&
+                        typeof navigator.clipboard.write === "function" &&
+                        typeof window.ClipboardItem !== "undefined"
+                    ) {
+
+                        await navigator.clipboard.write([
+
+                            new ClipboardItem({
+
+                                "application/pdf":
+                                    pdfBlob
+
+                            })
+
+                        ]);
+
+                        pdfCopiedToClipboard =
+                            true;
+
+                        console.log(
+                            "PDF COPIED TO CLIPBOARD"
+                        );
+
+                    }
+
+                }
+                catch (clipboardError) {
+
+                    console.warn(
+                        "CLIPBOARD COPY NOT AVAILABLE:",
+                        clipboardError
+                    );
+
+                    pdfCopiedToClipboard =
+                        false;
+
+                }
+
+                /* ------------------------------------------------
                    OPEN CUSTOMER WHATSAPP CHAT
+                   AUTOMATICALLY — SAME NUMBER TYPED ON
+                   THE PERSONAL DETAILS PAGE
                    ------------------------------------------------ */
 
                 const whatsappURL =
@@ -3209,13 +3298,34 @@ if (
                     "_blank"
                 );
 
-                alert(
-                    "Complete bill PDF created and downloaded.\n\n" +
-                    "WhatsApp has been opened for " +
-                    customerNameForWhatsApp +
-                    ".\n\n" +
-                    "Attach the downloaded PDF and send it."
-                );
+                /* ------------------------------------------------
+                   FINAL STATUS ALERT
+                   ------------------------------------------------ */
+
+                if (
+                    pdfCopiedToClipboard
+                ) {
+
+                    alert(
+                        "Bill PDF downloaded and copied to clipboard.\n\n" +
+                        "WhatsApp has been opened for " +
+                        customerNameForWhatsApp +
+                        " (" + customerMobileForWhatsApp + ").\n\n" +
+                        "Just press Ctrl+V in the chat to attach the PDF, then send."
+                    );
+
+                }
+                else {
+
+                    alert(
+                        "Bill PDF downloaded.\n\n" +
+                        "WhatsApp has been opened for " +
+                        customerNameForWhatsApp +
+                        " (" + customerMobileForWhatsApp + ").\n\n" +
+                        "Attach the downloaded PDF from your Downloads folder and send it."
+                    );
+
+                }
 
             }
             catch (

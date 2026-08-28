@@ -921,6 +921,40 @@ function saveLabourData() {
         JSON.stringify(data)
     );
 
+    // Keep compatibility copies so bill/confirm/history
+    // can read the same additional-charge data.
+    localStorage.setItem(
+        "labourCharge",
+        String(data.labourCharge)
+    );
+
+    localStorage.setItem(
+        "otherCharge",
+        String(data.otherCharge)
+    );
+
+    localStorage.setItem(
+        "othersTotal",
+        String(data.othersTotal)
+    );
+
+    localStorage.setItem(
+        "grandTotal",
+        String(data.grandTotal)
+    );
+
+    localStorage.setItem(
+        "otherItems",
+        JSON.stringify(data.otherItems)
+    );
+
+    // IMPORTANT: the database save code reads "othersData".
+    // Store the exact same array under that key as well.
+    localStorage.setItem(
+        "othersData",
+        JSON.stringify(data.otherItems)
+    );
+
     console.log(
         "LABOUR VALUES SAVED:",
         data

@@ -2529,184 +2529,539 @@ if (
 
 
 /* ============================================================
-   WHATSAPP PDF - NO API / NO TOKEN
+   WHATSAPP PDF - NO TOKEN / NO API
+   ============================================================
+
+   Mobile:
+   - Generates the complete bill PDF
+   - Opens the native share sheet
+   - User selects WhatsApp
+   - PDF + greeting are shared
+
+   Desktop:
+   - Generates and downloads the complete bill PDF
+   - Opens WhatsApp chat for the customer
+   - Greeting is pre-filled
+   - User attaches the downloaded PDF and sends it
    ============================================================ */
 
 const whatsappBtn =
-    document.getElementById("whatsappBtn");
+    document.getElementById(
+        "whatsappBtn"
+    );
 
-if (whatsappBtn) {
+
+if (
+    whatsappBtn
+) {
 
     whatsappBtn.addEventListener(
         "click",
         async function () {
 
-            const customerNameForWhatsApp =
-                customerName || "";
-
-            let customerMobileForWhatsApp =
-                customerMobile || "";
-
-            /* ------------------------------------------------
-               CLEAN MOBILE NUMBER
-               ------------------------------------------------ */
-
-            customerMobileForWhatsApp =
-                String(customerMobileForWhatsApp)
-                    .replace(/\D/g, "");
-
-            /* ------------------------------------------------
-               REMOVE 91 IF ALREADY PRESENT
-               ------------------------------------------------ */
-
-            if (
-                customerMobileForWhatsApp.length === 12 &&
-                customerMobileForWhatsApp.startsWith("91")
-            ) {
-                customerMobileForWhatsApp =
-                    customerMobileForWhatsApp.substring(2);
-            }
-
-            /* ------------------------------------------------
-               VALIDATION
-               ------------------------------------------------ */
-
-            if (!customerNameForWhatsApp) {
-
-                alert(
-                    "Customer name is missing."
-                );
-
-                return;
-            }
-
-            if (
-                customerMobileForWhatsApp.length !== 10
-            ) {
-
-                alert(
-                    "Please enter a valid 10-digit customer mobile number."
-                );
-
-                return;
-            }
-
-            /* ------------------------------------------------
-               CHECK PDF GENERATOR
-               ------------------------------------------------ */
-
-            if (
-                typeof html2pdf === "undefined"
-            ) {
-
-                alert(
-                    "PDF generator is not loaded.\n\n" +
-                    "Please check html2pdf.js in bill.html."
-                );
-
-                return;
-            }
-
             const oldButtonText =
-                whatsappBtn.textContent;
+                whatsappBtn.textContent ||
+                "WhatsApp";
 
-            whatsappBtn.disabled = true;
-
-            whatsappBtn.textContent =
-                "Creating PDF...";
-
-            let pdfWrapper = null;
+            let pdfWrapper =
+                null;
 
             try {
 
-                /* =================================================
-                   BILL ELEMENT
-                   ================================================= */
+                console.log(
+                    "======================================"
+                );
 
-                const billElement =
-                    document.querySelector(".bill-container") ||
-                    document.querySelector(".bill") ||
-                    document.querySelector("main");
+                console.log(
+                    "WHATSAPP PDF START"
+                );
 
-                if (!billElement) {
+                console.log(
+                    "======================================"
+                );
 
-                    throw new Error(
-                        "Bill section could not be found."
-                    );
+                /* ------------------------------------------------
+                   CUSTOMER DETAILS
+                   ------------------------------------------------ */
+
+                let customerNameForWhatsApp =
+                    typeof customerName !== "undefined"
+                        ? String(customerName || "").trim()
+                        : "";
+
+                let customerMobileForWhatsApp =
+                    typeof customerMobile !== "undefined"
+                        ? String(customerMobile || "")
+                        : "";
+
+                customerMobileForWhatsApp =
+                    customerMobileForWhatsApp
+                        .replace(/\D/g, "");
+
+                if (
+                    customerMobileForWhatsApp.length === 12 &&
+                    customerMobileForWhatsApp.startsWith("91")
+                ) {
+
+                    customerMobileForWhatsApp =
+                        customerMobileForWhatsApp.substring(2);
+
                 }
 
-                /* =================================================
-                   CREATE TEMP PDF AREA
-                   ================================================= */
+                if (
+                    !customerNameForWhatsApp
+                ) {
 
-                pdfWrapper.style.position = "fixed";
-pdfWrapper.style.left = "0";
-pdfWrapper.style.top = "0";
-pdfWrapper.style.width = "794px";
-pdfWrapper.style.minHeight = "1123px";
+                    alert(
+                        "Customer name is missing."
+                    );
 
-pdfWrapper.style.backgroundColor = "#ffffff";
+                    return;
 
-/* IMPORTANT - PDF FIX */
-pdfWrapper.style.zIndex = "999999";
-pdfWrapper.style.opacity = "1";
-pdfWrapper.style.visibility = "visible";
+                }
 
-pdfWrapper.style.pointerEvents = "none";
-pdfWrapper.style.boxSizing = "border-box";
-pdfWrapper.style.overflow = "visible";
+                if (
+                    customerMobileForWhatsApp.length !== 10
+                ) {
 
-                /* =================================================
-                   PDF FILE NAME
-                   ================================================= */
+                    alert(
+                        "Please enter a valid 10-digit customer mobile number."
+                    );
+
+                    return;
+
+                }
+
+                /* ------------------------------------------------
+                   CHECK HTML2PDF
+                   ------------------------------------------------ */
+
+                if (
+                    typeof html2pdf === "undefined"
+                ) {
+
+                    alert(
+                        "PDF generator is not loaded.\n\n" +
+                        "Please check html2pdf.js in bill.html."
+                    );
+
+                    console.error(
+                        "html2pdf.js NOT FOUND"
+                    );
+
+                    return;
+
+                }
+
+                whatsappBtn.disabled =
+                    true;
+
+                whatsappBtn.textContent =
+                    "Creating PDF...";
+
+                /* ------------------------------------------------
+                   FIND COMPLETE BILL
+                   ------------------------------------------------ */
+
+                const billElement =
+                    document.querySelector(
+                        ".bill-container"
+                    );
+
+                if (
+                    !billElement
+                ) {
+
+                    throw new Error(
+                        "Bill container not found. Please check bill.html."
+                    );
+
+                }
+
+                /* ------------------------------------------------
+                   FILE NAME
+                   ------------------------------------------------ */
 
                 const safeCustomerName =
                     customerNameForWhatsApp
                         .replace(
-                            /[^a-zA-Z0-9]/g,
+                            /[^a-zA-Z0-9 ]/g,
+                            ""
+                        )
+                        .trim()
+                        .replace(
+                            /\s+/g,
                             "_"
-                        );
+                        ) ||
+                    "Customer";
 
                 const pdfFileName =
-                    "Amman_Saw_Mill_Bill_" +
-                    safeCustomerName +
-                    ".pdf";
+                    `${safeCustomerName}_QUOTATION.pdf`;
 
-                /* =================================================
-                   GENERATE COMPLETE PDF
-                   ================================================= */
+                /* ------------------------------------------------
+                   CREATE PDF WRAPPER
+
+                   IMPORTANT:
+                   The wrapper must be visible to html2canvas.
+                   Never use z-index:-9999 or opacity:0.01.
+                   ------------------------------------------------ */
+
+                pdfWrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+                pdfWrapper.style.position =
+                    "fixed";
+
+                pdfWrapper.style.left =
+                    "0";
+
+                pdfWrapper.style.top =
+                    "0";
+
+                pdfWrapper.style.width =
+                    "794px";
+
+                pdfWrapper.style.minHeight =
+                    "1123px";
+
+                pdfWrapper.style.padding =
+                    "0";
+
+                pdfWrapper.style.margin =
+                    "0";
+
+                pdfWrapper.style.backgroundColor =
+                    "#ffffff";
+
+                pdfWrapper.style.color =
+                    "#000000";
+
+                pdfWrapper.style.zIndex =
+                    "2147483647";
+
+                pdfWrapper.style.opacity =
+                    "1";
+
+                pdfWrapper.style.visibility =
+                    "visible";
+
+                pdfWrapper.style.pointerEvents =
+                    "none";
+
+                pdfWrapper.style.boxSizing =
+                    "border-box";
+
+                pdfWrapper.style.overflow =
+                    "visible";
+
+                /* ------------------------------------------------
+                   CLONE COMPLETE BILL
+                   ------------------------------------------------ */
+
+                const billClone =
+                    billElement.cloneNode(
+                        true
+                    );
+
+                if (
+                    !billClone
+                ) {
+
+                    throw new Error(
+                        "Unable to copy the bill for PDF."
+                    );
+
+                }
+
+                billClone.style.width =
+                    "794px";
+
+                billClone.style.maxWidth =
+                    "794px";
+
+                billClone.style.minHeight =
+                    "0";
+
+                billClone.style.height =
+                    "auto";
+
+                billClone.style.margin =
+                    "0";
+
+                billClone.style.padding =
+                    billElement.style.padding ||
+                    "";
+
+                billClone.style.backgroundColor =
+                    "#ffffff";
+
+                billClone.style.color =
+                    "#000000";
+
+                billClone.style.overflow =
+                    "visible";
+
+                billClone.style.boxSizing =
+                    "border-box";
+
+                /* ------------------------------------------------
+                   REMOVE ACTION BUTTONS SAFELY
+                   ------------------------------------------------ */
+
+                const clonedButtons =
+                    billClone.querySelector(
+                        ".buttons"
+                    );
+
+                if (
+                    clonedButtons
+                ) {
+
+                    clonedButtons.remove();
+
+                }
+
+                billClone
+                    .querySelectorAll(
+                        "button"
+                    )
+                    .forEach(
+                        function (button) {
+
+                            if (
+                                button &&
+                                button.remove
+                            ) {
+
+                                button.remove();
+
+                            }
+
+                        }
+                    );
+
+                /* ------------------------------------------------
+                   FIX TABLES SAFELY
+                   ------------------------------------------------ */
+
+                billClone
+                    .querySelectorAll(
+                        "table"
+                    )
+                    .forEach(
+                        function (table) {
+
+                            if (!table) {
+                                return;
+                            }
+
+                            table.style.width =
+                                "100%";
+
+                            table.style.borderCollapse =
+                                "collapse";
+
+                            table.style.tableLayout =
+                                "fixed";
+
+                        }
+                    );
+
+                /* ------------------------------------------------
+                   FIX IMAGES SAFELY
+                   ------------------------------------------------ */
+
+                billClone
+                    .querySelectorAll(
+                        "img"
+                    )
+                    .forEach(
+                        function (img) {
+
+                            if (!img) {
+                                return;
+                            }
+
+                            img.style.maxWidth =
+                                "100%";
+
+                        }
+                    );
+
+                pdfWrapper.appendChild(
+                    billClone
+                );
+
+                document.body.appendChild(
+                    pdfWrapper
+                );
+
+                /* ------------------------------------------------
+                   WAIT FOR DOM PAINT
+                   ------------------------------------------------ */
+
+                await new Promise(
+                    function (resolve) {
+
+                        requestAnimationFrame(
+                            function () {
+
+                                requestAnimationFrame(
+                                    resolve
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+                /* ------------------------------------------------
+                   WAIT FOR IMAGES
+                   ------------------------------------------------ */
+
+                const images =
+                    pdfWrapper.querySelectorAll(
+                        "img"
+                    );
+
+                await Promise.all(
+                    Array.from(images).map(
+                        function (img) {
+
+                            if (
+                                !img ||
+                                img.complete
+                            ) {
+
+                                return Promise.resolve();
+
+                            }
+
+                            return new Promise(
+                                function (resolve) {
+
+                                    img.onload =
+                                        resolve;
+
+                                    img.onerror =
+                                        resolve;
+
+                                }
+                            );
+
+                        }
+                    )
+                );
+
+                /* ------------------------------------------------
+                   FINAL RENDER WAIT
+                   ------------------------------------------------ */
+
+                await new Promise(
+                    function (resolve) {
+
+                        setTimeout(
+                            resolve,
+                            300
+                        );
+
+                    }
+                );
+
+                /* ------------------------------------------------
+                   PDF OPTIONS
+                   ------------------------------------------------ */
+
+                const pdfOptions = {
+
+                    margin: 8,
+
+                    filename:
+                        pdfFileName,
+
+                    image: {
+
+                        type: "jpeg",
+
+                        quality: 0.98
+
+                    },
+
+                    html2canvas: {
+
+                        scale: 2,
+
+                        useCORS: true,
+
+                        allowTaint: false,
+
+                        backgroundColor:
+                            "#ffffff",
+
+                        logging: false,
+
+                        scrollX: 0,
+
+                        scrollY: 0,
+
+                        windowWidth: 794,
+
+                        windowHeight:
+                            Math.max(
+                                1123,
+                                pdfWrapper.scrollHeight,
+                                billClone.scrollHeight
+                            ),
+
+                        removeContainer: true
+
+                    },
+
+                    jsPDF: {
+
+                        unit: "mm",
+
+                        format: "a4",
+
+                        orientation: "portrait",
+
+                        compress: true
+
+                    },
+
+                    pagebreak: {
+
+                        mode: [
+                            "css",
+                            "legacy"
+                        ]
+
+                    }
+
+                };
+
+                /* ------------------------------------------------
+                   GENERATE PDF
+                   ------------------------------------------------ */
+
+                whatsappBtn.textContent =
+                    "Generating PDF...";
 
                 const pdfBlob =
                     await html2pdf()
-                        .set({
-
-                            margin: 0,
-
-                            filename:
-                                pdfFileName,
-
-                            image: {
-                                type: "jpeg",
-                                quality: 0.98
-                            },
-
-                            html2canvas: {
-                                scale: 2,
-                                useCORS: true,
-                                backgroundColor:
-                                    "#ffffff"
-                            },
-
-                            jsPDF: {
-                                unit: "mm",
-                                format: "a4",
-                                orientation:
-                                    "portrait"
-                            }
-
-                        })
+                        .set(pdfOptions)
                         .from(pdfWrapper)
                         .outputPdf("blob");
+
+                console.log(
+                    "PDF GENERATED:",
+                    pdfBlob
+                        ? pdfBlob.size
+                        : 0
+                );
 
                 if (
                     !pdfBlob ||
@@ -2716,11 +3071,27 @@ pdfWrapper.style.overflow = "visible";
                     throw new Error(
                         "Generated PDF is empty."
                     );
+
                 }
 
-                /* =================================================
+                /* ------------------------------------------------
+                   REMOVE PDF WRAPPER
+                   ------------------------------------------------ */
+
+                if (
+                    pdfWrapper
+                ) {
+
+                    pdfWrapper.remove();
+
+                    pdfWrapper =
+                        null;
+
+                }
+
+                /* ------------------------------------------------
                    CREATE PDF FILE
-                   ================================================= */
+                   ------------------------------------------------ */
 
                 const pdfFile =
                     new File(
@@ -2732,25 +3103,19 @@ pdfWrapper.style.overflow = "visible";
                         }
                     );
 
-                /* =================================================
+                /* ------------------------------------------------
                    GREETING MESSAGE
-                   ================================================= */
+                   ------------------------------------------------ */
 
                 const message =
-                    "Hello " +
-                    customerNameForWhatsApp +
-                    " 👋\n\n" +
+                    `Hello ${customerNameForWhatsApp} 👋\n\n` +
+                    `Thank you for choosing Amman Saw Mill.\n\n` +
+                    `Please find your bill attached.\n\n` +
+                    `Thank you for your business! 🌳`;
 
-                    "Thank you for choosing " +
-                    "Amman Saw Mill.\n\n" +
-
-                    "Please find your bill attached.\n\n" +
-
-                    "Thank you for your business! 🌳";
-
-                /* =================================================
-                   MOBILE - SHARE PDF DIRECTLY
-                   ================================================= */
+                /* ------------------------------------------------
+                   MOBILE / SUPPORTED SHARE
+                   ------------------------------------------------ */
 
                 if (
                     navigator.share &&
@@ -2761,27 +3126,33 @@ pdfWrapper.style.overflow = "visible";
                 ) {
 
                     whatsappBtn.textContent =
-                        "Opening WhatsApp...";
+                        "Opening Share...";
 
                     await navigator.share({
 
+                        title:
+                            "Amman Saw Mill Bill",
+
+                        text:
+                            message,
+
                         files: [
                             pdfFile
-                        ],
-
-                        text: message,
-
-                        title:
-                            "Amman Saw Mill Bill"
+                        ]
 
                     });
 
+                    console.log(
+                        "PDF SHARE COMPLETED"
+                    );
+
                     return;
+
                 }
 
-                /* =================================================
+                /* ------------------------------------------------
                    DESKTOP FALLBACK
-                   ================================================= */
+                   ------------------------------------------------ */
 
                 const downloadURL =
                     URL.createObjectURL(
@@ -2789,13 +3160,18 @@ pdfWrapper.style.overflow = "visible";
                     );
 
                 const downloadLink =
-                    document.createElement("a");
+                    document.createElement(
+                        "a"
+                    );
 
                 downloadLink.href =
                     downloadURL;
 
                 downloadLink.download =
                     pdfFileName;
+
+                downloadLink.style.display =
+                    "none";
 
                 document.body.appendChild(
                     downloadLink
@@ -2813,21 +3189,19 @@ pdfWrapper.style.overflow = "visible";
                         );
 
                     },
-                    2000
+                    3000
                 );
 
-                /* =================================================
-                   OPEN WHATSAPP CHAT
-                   ================================================= */
+                /* ------------------------------------------------
+                   OPEN CUSTOMER WHATSAPP CHAT
+                   ------------------------------------------------ */
 
                 const whatsappURL =
                     "https://wa.me/91" +
                     customerMobileForWhatsApp +
                     "?text=" +
                     encodeURIComponent(
-                        message +
-                        "\n\n" +
-                        "I have attached the bill PDF."
+                        message
                     );
 
                 window.open(
@@ -2836,46 +3210,60 @@ pdfWrapper.style.overflow = "visible";
                 );
 
                 alert(
-                    "Bill PDF downloaded.\n\n" +
-                    "WhatsApp opened for " +
+                    "Complete bill PDF created and downloaded.\n\n" +
+                    "WhatsApp has been opened for " +
                     customerNameForWhatsApp +
                     ".\n\n" +
-                    "Please attach the downloaded PDF and send it."
+                    "Attach the downloaded PDF and send it."
                 );
 
             }
-            catch (error) {
+            catch (
+                error
+            ) {
 
                 console.error(
                     "WHATSAPP PDF ERROR:",
                     error
                 );
 
-                /*
-                 * User cancelling the share sheet
-                 * is not treated as a serious error.
-                 */
-
                 if (
-                    error.name !==
-                    "AbortError"
+                    pdfWrapper
                 ) {
-
-                    alert(
-                        "Unable to prepare the bill PDF.\n\n" +
-                        error.message
-                    );
-                }
-
-            }
-            finally {
-
-                if (pdfWrapper) {
 
                     pdfWrapper.remove();
 
-                    pdfWrapper = null;
+                    pdfWrapper =
+                        null;
+
                 }
+
+                if (
+                    error &&
+                    error.name ===
+                        "AbortError"
+                ) {
+
+                    console.log(
+                        "Share cancelled by user."
+                    );
+
+                    return;
+
+                }
+
+                alert(
+                    "Unable to prepare the bill PDF.\n\n" +
+                    (
+                        error &&
+                        error.message
+                            ? error.message
+                            : "Unknown error"
+                    )
+                );
+
+            }
+            finally {
 
                 whatsappBtn.disabled =
                     false;
@@ -2883,11 +3271,22 @@ pdfWrapper.style.overflow = "visible";
                 whatsappBtn.textContent =
                     oldButtonText ||
                     "WhatsApp";
+
             }
+
         }
     );
 
 }
+else {
+
+    console.warn(
+        "WhatsApp button not found."
+    );
+
+}
+
+
 
 /* ============================================================
    FINAL READY

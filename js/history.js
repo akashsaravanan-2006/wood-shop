@@ -1026,9 +1026,7 @@
                    This is the same approach used by your sample.
                    ===================================================== */
 
-                window.location.assign(
-                    pdfURL
-                );
+                window.location.href = pdfURL;
 
                 /*
                    Do NOT immediately call URL.revokeObjectURL().
